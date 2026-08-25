@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
+import type { RefObject } from 'react';
 import { useAnimations } from '@react-three/drei';
 import { AnimationClip, Group } from 'three';
 
 export type AvatarState = 'IDLE' | 'TALKING' | 'TREE_POSE' | 'DOWNWARD_DOG' | 'WARRIOR_TWO';
 
 export function useAvatarAnimation(
-  groupRef: React.RefObject<Group>, 
+  groupRef: RefObject<Group | null>, 
   animations: AnimationClip[], 
   currentState: AvatarState,
   isPaused: boolean = false,
@@ -24,7 +25,7 @@ export function useAvatarAnimation(
 
     // 1. Identify target clip name based on current state with fuzzy matching
     let targetClipName = '';
-    const stateStr = currentState.toLowerCase();
+    // Identify target clip name based on current state with fuzzy matching
 
     if (currentState === 'IDLE') {
       targetClipName = names.find(n => n.toLowerCase().includes('idle')) || names[0];
@@ -51,11 +52,11 @@ export function useAvatarAnimation(
     const action = actions[targetClipName];
     
     // Reset and fade in the new animation over 0.5s
-    action.reset().fadeIn(0.5).play();
+    action?.reset().fadeIn(0.5).play();
 
     return () => {
       // Fade out this animation smoothly when the state changes
-      action.fadeOut(0.5);
+      action?.fadeOut(0.5);
     };
   }, [currentState, actions, names, sessionKey]);
 
@@ -63,8 +64,8 @@ export function useAvatarAnimation(
   useEffect(() => {
     if (!names || names.length === 0) return;
     
-    const stateStr = currentState.toLowerCase();
     let targetClipName = '';
+    
 
     if (currentState === 'IDLE') {
       targetClipName = names.find(n => n.toLowerCase().includes('idle')) || names[0];
@@ -82,8 +83,9 @@ export function useAvatarAnimation(
       targetClipName = names.find(n => n.toLowerCase().includes('idle')) || names[0];
     }
     
-    if (targetClipName && actions[targetClipName]) {
-      actions[targetClipName].paused = isPaused;
+    const action = targetClipName ? actions[targetClipName] : null;
+    if (action) {
+      action.paused = isPaused;
     }
   }, [isPaused, currentState, actions, names]);
 

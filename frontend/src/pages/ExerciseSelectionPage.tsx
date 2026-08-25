@@ -1,4 +1,3 @@
-import React from 'react';
 import ExerciseSelector from '../components/yoga/ExerciseSelector';
 import { useCoachStore } from '../store/useCoachStore';
 import { ArrowLeft } from 'lucide-react';

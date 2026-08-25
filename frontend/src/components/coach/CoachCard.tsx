@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Coach } from '../../types/coach';
 import { Sparkles } from 'lucide-react';
 

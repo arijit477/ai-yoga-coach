@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { Exercise } from '../../types/exercise';
 import type { Coach } from '../../types/coach';
 import { X, AlertCircle } from 'lucide-react';

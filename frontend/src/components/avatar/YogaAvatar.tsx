@@ -1,4 +1,5 @@
-import React, { Suspense, Component, ReactNode, useRef } from 'react';
+import { Suspense, Component, useRef } from 'react';
+import type { ReactNode } from 'react';
 import { useFBX, Html } from '@react-three/drei';
 import { Group } from 'three';
 import { useAvatarAnimation, type AvatarState } from '../../hooks/useAvatarAnimation';

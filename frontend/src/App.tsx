@@ -1,4 +1,3 @@
-import React from 'react';
 import CoachSelector from './components/coach/CoachSelector';
 import ExerciseSelectionPage from './pages/ExerciseSelectionPage';
 import YogaSessionPage from './pages/YogaSessionPage';

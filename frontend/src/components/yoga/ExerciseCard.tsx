@@ -1,4 +1,3 @@
-import React from 'react';
 import type { Exercise } from '../../types/exercise';
 import { Clock, Activity } from 'lucide-react';
 

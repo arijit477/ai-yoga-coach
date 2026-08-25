@@ -1,4 +1,3 @@
-import React from 'react';
 import { exercises } from '../../data/exercises';
 import ExerciseCard from './ExerciseCard';
 import { useSessionStore } from '../../store/useSessionStore';

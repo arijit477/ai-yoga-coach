@@ -1,4 +1,3 @@
-import React from 'react';
 import { coaches } from '../../data/coaches';
 import CoachCard from './CoachCard';
 import { useCoachStore } from '../../store/useCoachStore';

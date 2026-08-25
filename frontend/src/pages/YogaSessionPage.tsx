@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import AvatarScene from '../components/avatar/AvatarScene';
 import { useCoachStore } from '../store/useCoachStore';
 import { useSessionStore } from '../store/useSessionStore';
