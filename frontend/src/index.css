@@ -1,0 +1,40 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased text-gray-800;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/50 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+  }
+  
+  .glass-dark {
+    @apply bg-gray-900/80 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+  }
+
+  .mesh-bg {
+    background-color: #f4f7f6;
+    background-image: 
+      radial-gradient(at 40% 20%, hsla(28,100%,74%,0.15) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(355,100%,93%,0.2) 0px, transparent 50%),
+      radial-gradient(at 80% 50%, hsla(340,100%,76%,0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(22,100%,77%,0.15) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, hsla(242,100%,70%,0.15) 0px, transparent 50%),
+      radial-gradient(at 0% 0%, hsla(343,100%,76%,0.1) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+}
