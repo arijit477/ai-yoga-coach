@@ -1,9 +1,9 @@
 import ExerciseSelector from '../components/yoga/ExerciseSelector';
 import { useCoachStore } from '../store/useCoachStore';
-import { ArrowLeft } from 'lucide-react';
+
 
 export default function ExerciseSelectionPage() {
-  const { selectedCoach, clearCoach } = useCoachStore();
+  const { selectedCoach } = useCoachStore();
 
   if (!selectedCoach) return null;
 
