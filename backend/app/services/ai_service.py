@@ -1,23 +1,24 @@
 import os
-from openai import OpenAI
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
 # Configure the SDK
-API_KEY = os.getenv("OPENAI_API_KEY")
-client = None
+API_KEY = os.getenv("GEMINI_API_KEY")
+is_configured = False
 if API_KEY and API_KEY.strip():
-    client = OpenAI(api_key=API_KEY)
+    genai.configure(api_key=API_KEY)
+    is_configured = True
 
 COACH_PROFILES = {
-    "maya": {
+    "alice": {
         "personality": "calm, supportive, patient, and concise",
-        "instructions": "You are Maya, a virtual AI yoga coach. You speak in a calm, supportive, patient, and concise manner."
+        "instructions": "You are Alice, a virtual AI yoga coach. You speak in a calm, supportive, patient, and concise manner."
     },
-    "arjun": {
+    "diego": {
         "personality": "energetic, motivating, encouraging, and concise",
-        "instructions": "You are Arjun, a virtual AI yoga coach. You speak in an energetic, motivating, encouraging, and concise manner."
+        "instructions": "You are Diego, a virtual AI yoga coach. You speak in an energetic, motivating, encouraging, and concise manner."
     }
 }
 
@@ -33,8 +34,8 @@ IMPORTANT SAFETY AND SCOPE CONSTRAINTS:
 """
 
 def generate_coach_response(coach_id: str, exercise_id: str, message: str) -> str:
-    if not client:
-        return "[Mock Response: OPENAI_API_KEY not set. Please set the environment variable.]"
+    if not is_configured:
+        return "[Mock Response: GEMINI_API_KEY not set. Please set the environment variable.]"
 
     profile = COACH_PROFILES.get(coach_id.lower())
     if not profile:
@@ -43,16 +44,18 @@ def generate_coach_response(coach_id: str, exercise_id: str, message: str) -> st
     system_instruction = profile["instructions"] + "\n" + SYSTEM_INSTRUCTION_BASE.format(exercise_id=exercise_id)
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_instruction},
-                {"role": "user", "content": message}
-            ],
-            temperature=0.7,
-            max_tokens=150
+        model = genai.GenerativeModel(
+            model_name="gemini-2.5-flash",
+            system_instruction=system_instruction
         )
-        return response.choices[0].message.content.strip()
+        response = model.generate_content(
+            message,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.7,
+                max_output_tokens=150
+            )
+        )
+        return response.text.strip()
     except Exception as e:
         print(f"Error calling LLM: {e}")
         return "I'm having trouble connecting right now. Let's focus on our breathing for a moment."
