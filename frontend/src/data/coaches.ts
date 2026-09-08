@@ -12,13 +12,13 @@ export const coaches: Coach[] = [
     greeting: "Hi! I'm Alice, your calm and supportive yoga coach."
   },
   {
-    id: 'diego',
-    name: 'Diego',
+    id: 'kevin',
+    name: 'Kevin',
     gender: 'male',
     description: 'An enthusiastic and motivating instructor for an energetic session.',
-    avatarModel: '/models/Diego.fbx',
+    avatarModel: '/models/Kevin.fbx',
     personality: 'Energetic and encouraging',
     voice: 'male',
-    greeting: "Hey! I'm Diego. Let's make today's session energetic and focused."
+    greeting: "Hey! I'm Kevin. Let's make today's session energetic and focused."
   }
 ];

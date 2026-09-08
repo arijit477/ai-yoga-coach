@@ -1,15 +1,14 @@
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
 # Configure the SDK
-API_KEY = os.getenv("GEMINI_API_KEY")
-is_configured = False
+API_KEY = os.getenv("OPENAI_API_KEY")
+client = None
 if API_KEY and API_KEY.strip():
-    genai.configure(api_key=API_KEY)
-    is_configured = True
+    client = genai.Client(api_key=API_KEY)
 
 COACH_PROFILES = {
     "alice": {
@@ -34,7 +33,7 @@ IMPORTANT SAFETY AND SCOPE CONSTRAINTS:
 """
 
 def generate_coach_response(coach_id: str, exercise_id: str, message: str) -> str:
-    if not is_configured:
+    if not client:
         return "[Mock Response: GEMINI_API_KEY not set. Please set the environment variable.]"
 
     profile = COACH_PROFILES.get(coach_id.lower())
@@ -44,13 +43,11 @@ def generate_coach_response(coach_id: str, exercise_id: str, message: str) -> st
     system_instruction = profile["instructions"] + "\n" + SYSTEM_INSTRUCTION_BASE.format(exercise_id=exercise_id)
 
     try:
-        model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
-            system_instruction=system_instruction
-        )
-        response = model.generate_content(
-            message,
-            generation_config=genai.types.GenerationConfig(
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=message,
+            config=genai.types.GenerateContentConfig(
+                system_instruction=system_instruction,
                 temperature=0.7,
                 max_output_tokens=150
             )
