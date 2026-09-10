@@ -64,7 +64,7 @@ function getPoseStatus(
         issue.severity === "high"
     );
 
-  if (hasHighSeverityIssue) {
+  if ( score< 50 && hasHighSeverityIssue) {
     return "unsafe";
   }
 

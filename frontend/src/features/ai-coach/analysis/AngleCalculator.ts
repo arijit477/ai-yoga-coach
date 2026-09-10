@@ -6,84 +6,108 @@ export interface Point3D {
   z: number;
 }
 
-/**
- * Calculate the angle ABC.
- *
- * A = first point
- * B = vertex
- * C = third point
- *
- * Example:
- *
- * calculateAngle(hip, knee, ankle)
- *
- * gives the knee angle.
- */
-export function calculateAngle(
-  a: Point3D,
-  b: Point3D,
-  c: Point3D
-): number {
-  const ba = {
+const EPSILON = 1e-8;
+
+function isFinitePoint(point: Point3D): boolean {
+  return (
+    Number.isFinite(point.x) &&
+    Number.isFinite(point.y) &&
+    Number.isFinite(point.z)
+  );
+}
+
+function subtract(a: Point3D, b: Point3D): Point3D {
+  return {
     x: a.x - b.x,
     y: a.y - b.y,
     z: a.z - b.z,
   };
+}
 
-  const bc = {
-    x: c.x - b.x,
-    y: c.y - b.y,
-    z: c.z - b.z,
-  };
-
-  const dotProduct =
-    ba.x * bc.x +
-    ba.y * bc.y +
-    ba.z * bc.z;
-
-  const magnitudeBA = Math.sqrt(
-    ba.x ** 2 +
-      ba.y ** 2 +
-      ba.z ** 2
+function dot(a: Point3D, b: Point3D): number {
+  return (
+    a.x * b.x +
+    a.y * b.y +
+    a.z * b.z
   );
+}
 
-  const magnitudeBC = Math.sqrt(
-    bc.x ** 2 +
-      bc.y ** 2 +
-      bc.z ** 2
+function magnitude(point: Point3D): number {
+  return Math.sqrt(
+    point.x ** 2 +
+      point.y ** 2 +
+      point.z ** 2,
   );
-
-  if (
-    magnitudeBA === 0 ||
-    magnitudeBC === 0
-  ) {
-    return 0;
-  }
-
-  const cosine =
-    dotProduct /
-    (magnitudeBA * magnitudeBC);
-
-  // Protect against floating-point errors.
-  const clampedCosine = Math.max(
-    -1,
-    Math.min(1, cosine)
-  );
-
-  const radians = Math.acos(
-    clampedCosine
-  );
-
-  return radians * (180 / Math.PI);
 }
 
 /**
- * Convenience wrapper for MediaPipe landmarks.
+ * Calculate angle ABC in degrees.
+ *
+ * A and C are the outer points.
+ * B is the vertex.
+ *
+ * Returns null when the angle cannot be calculated
+ * because the input geometry is invalid.
+ */
+export function calculateAngle(
+  a: Point3D,
+  b: Point3D,
+  c: Point3D,
+): number | null {
+  if (
+    !isFinitePoint(a) ||
+    !isFinitePoint(b) ||
+    !isFinitePoint(c)
+  ) {
+    return null;
+  }
+
+  const ba = subtract(a, b);
+  const bc = subtract(c, b);
+
+  const magnitudeBA = magnitude(ba);
+  const magnitudeBC = magnitude(bc);
+
+  if (
+    magnitudeBA < EPSILON ||
+    magnitudeBC < EPSILON
+  ) {
+    return null;
+  }
+
+  const denominator =
+    magnitudeBA * magnitudeBC;
+
+  if (denominator < EPSILON) {
+    return null;
+  }
+
+  const cosine =
+    dot(ba, bc) / denominator;
+
+  // Protect against floating-point values
+  // slightly outside [-1, 1].
+  const clampedCosine = Math.max(
+    -1,
+    Math.min(1, cosine),
+  );
+
+  const angle =
+    Math.acos(clampedCosine) *
+    (180 / Math.PI);
+
+  return Number.isFinite(angle)
+    ? angle
+    : null;
+}
+
+/**
+ * Calculate an angle directly from MediaPipe landmarks.
  */
 export function calculateLandmarkAngle(
   a: Landmark,
   b: Landmark,
-  c: Landmark
-): number {
+  c: Landmark,
+): number | null {
   return calculateAngle(a, b, c);
 }

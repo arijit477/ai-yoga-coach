@@ -47,6 +47,8 @@ const CONNECTIONS: [number, number][] = [
   [P.RIGHT_HEEL, P.RIGHT_FOOT_INDEX],
 ];
 
+const VISIBILITY_THRESHOLD = 0.5;
+
 export function PoseSkeleton({
   landmarks,
   videoWidth,
@@ -70,20 +72,19 @@ export function PoseSkeleton({
     canvas.width = videoWidth;
     canvas.height = videoHeight;
 
-    ctx.clearRect(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!landmarks || landmarks.length === 0) {
       return;
     }
 
-    // Draw connections
-    ctx.lineWidth = 4;
+    /*
+     * Draw skeleton connections.
+     */
+    ctx.lineWidth = 3;
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
 
     for (const [startIndex, endIndex] of CONNECTIONS) {
       const start = landmarks[startIndex];
@@ -95,14 +96,14 @@ export function PoseSkeleton({
 
       if (
         start.visibility !== undefined &&
-        start.visibility < 0.5
+        start.visibility < VISIBILITY_THRESHOLD
       ) {
         continue;
       }
 
       if (
         end.visibility !== undefined &&
-        end.visibility < 0.5
+        end.visibility < VISIBILITY_THRESHOLD
       ) {
         continue;
       }
@@ -121,11 +122,13 @@ export function PoseSkeleton({
       ctx.stroke();
     }
 
-    // Draw landmarks
+    /*
+     * Draw landmarks.
+     */
     for (const landmark of landmarks) {
       if (
         landmark.visibility !== undefined &&
-        landmark.visibility < 0.5
+        landmark.visibility < VISIBILITY_THRESHOLD
       ) {
         continue;
       }
@@ -135,16 +138,26 @@ export function PoseSkeleton({
 
       ctx.beginPath();
 
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
 
+      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
       ctx.fill();
+
+      ctx.beginPath();
+
+      ctx.arc(x, y, 8, 0, Math.PI * 2);
+
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
     }
   }, [landmarks, videoWidth, videoHeight]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 h-full w-full"
+      className="pointer-events-none absolute inset-0 h-full w-full scale-x-[-1]"
+      aria-hidden="true"
     />
   );
 }
