@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { Maximize, Minimize } from "lucide-react";
 
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
@@ -17,6 +18,11 @@ import { AsanaProgress } from "./AsanaProgress";
 import { AsanaTransition } from "./AsanaTransition";
 import { useAICoachStore } from "../store/aiCoachStore";
 import type { CoachPersona } from "../types/coach-session";
+import { AICoachScene } from "../3d/AICoachScene";
+import { AvatarPlayer } from "../avatar/AvatarPlayer";
+import { AvatarController } from "../avatar/AvatarController";
+import type { CoachId, AvatarState } from "../avatar/avatar.types";
+import { useRealtimeVoice } from "../voice";
 
 function getCoachStateMessage(
   state: ReturnType<typeof useCoachState>,
@@ -107,7 +113,6 @@ export function AICoachPage() {
     sessionAsanas,
     sessionLength,
     setSessionLength,
-    getActiveSessionAsanas,
     selectedCoach,
     setSelectedCoach,
     markAsanaCompleted,
@@ -115,7 +120,10 @@ export function AICoachPage() {
     setCurrentAsanaIndex,
   } = useAICoachStore();
 
-  const activeAsanas = getActiveSessionAsanas();
+  const activeAsanas = useMemo(() => {
+    return sessionAsanas.slice(0, sessionLength);
+  }, [sessionAsanas, sessionLength]);
+
   const nextUpcomingAsana =
     currentAsanaIndex + 1 < activeAsanas.length
       ? activeAsanas[currentAsanaIndex + 1]
@@ -142,15 +150,6 @@ export function AICoachPage() {
   const stableScore = useStableScore(evaluation?.score ?? null);
 
   /*
-   * High-level coaching state
-   */
-  const coachState = useCoachState({
-    isInitialized,
-    hasPose: Boolean(result),
-    evaluation: stableEvaluation,
-  });
-
-  /*
    * Multi-asana session state configured dynamically
    */
   const {
@@ -169,13 +168,101 @@ export function AICoachPage() {
     targetHoldSeconds: currentAsana.targetHoldSeconds,
     currentAsanaIndex,
     totalAsanas: activeAsanas.length,
-    onAsanaComplete: (idx) => {
+    onAsanaComplete: useCallback((idx: number) => {
       markAsanaCompleted(activeAsanas[idx].id);
-    },
-    onAdvanceAsana: (nextIdx) => {
+    }, [activeAsanas, markAsanaCompleted]),
+    onAdvanceAsana: useCallback((nextIdx: number) => {
       setCurrentAsanaIndex(nextIdx);
-    },
+    }, [setCurrentAsanaIndex]),
   });
+
+  /*
+   * High-level coaching state
+   */
+  const coachState = useCoachState({
+    isInitialized,
+    hasPose: Boolean(result),
+    evaluation: stableEvaluation,
+  });
+
+  /*
+   * Avatar state and control
+   */
+  const avatarControllerRef = useRef<AvatarController | null>(null);
+  const [avatarState, setAvatarState] = useState<AvatarState>("idle");
+  const [isPlayingIntro, setIsPlayingIntro] = useState(false);
+
+  const {
+    state: voiceState,
+    connect: voiceConnect,
+    disconnect: voiceDisconnect,
+    toggleMute: voiceToggleMute,
+    dispatchEvent: voiceDispatch,
+  } = useRealtimeVoice();
+
+  const handleStartSession = useCallback(() => {
+    setIsPlayingIntro(true);
+    setAvatarState("intro");
+    voiceConnect(selectedCoach);
+  }, [selectedCoach, voiceConnect]);
+
+  const handleIntroEnded = useCallback(() => {
+    setIsPlayingIntro(false);
+    setAvatarState("idle");
+    startSession();
+  }, [startSession]);
+
+  const handleIntroError = useCallback(() => {
+    setIsPlayingIntro(false);
+    setAvatarState("idle");
+    startSession();
+  }, [startSession]);
+
+  useEffect(() => {
+    if (avatarControllerRef.current) {
+        avatarControllerRef.current.reset();
+        setAvatarState("idle");
+        setIsPlayingIntro(false);
+    }
+    voiceDisconnect();
+  }, [selectedCoach, voiceDisconnect]);
+
+  /*
+   * Map evaluation to Voice Events
+   */
+  useEffect(() => {
+    if (
+      sessionState === "idle" ||
+      sessionState === "completed" ||
+      sessionState === "session_completed" ||
+      !stableEvaluation
+    ) {
+      return;
+    }
+
+    if (coachState === "correcting" && stableEvaluation.issues.length > 0) {
+      const primaryIssue = stableEvaluation.issues[0];
+      voiceDispatch({
+        id: Date.now().toString(),
+        type: "pose_correction",
+        asanaId: currentAsana.id,
+        asanaName: currentAsana.name,
+        ruleId: primaryIssue.ruleId,
+        issue: primaryIssue.feedback,
+        severity: primaryIssue.severity,
+        timestamp: Date.now(),
+      });
+    } else if (coachState === "good_form" || coachState === "holding") {
+      voiceDispatch({
+        id: Date.now().toString(),
+        type: "good_form",
+        asanaId: currentAsana.id,
+        asanaName: currentAsana.name,
+        feedback: "Great form, keep holding.",
+        timestamp: Date.now(),
+      });
+    }
+  }, [coachState, stableEvaluation, currentAsana, sessionState, voiceDispatch]);
 
   /*
    * Camera/video dimensions
@@ -210,6 +297,27 @@ export function AICoachPage() {
     };
   }, []);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(console.error);
+    } else {
+      document.exitFullscreen().catch(console.error);
+    }
+  };
+
   const hasPose = Boolean(result);
 
   const isSessionActive =
@@ -220,7 +328,7 @@ export function AICoachPage() {
   const sessionLabel = getSessionLabel(sessionState);
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 text-white md:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/60 px-4 py-6 text-slate-900 md:px-6 font-display font-medium">
       <div className="mx-auto max-w-7xl">
         {/* ====================================================== */}
         {/* HEADER */}
@@ -230,11 +338,11 @@ export function AICoachPage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
+                <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-700">
                   AI POWERED
                 </span>
 
-                <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300">
+                <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-700">
                   REAL-TIME
                 </span>
               </div>
@@ -243,17 +351,27 @@ export function AICoachPage() {
                 AI Personal Yoga Coach
               </h1>
 
-              <p className="mt-2 text-sm text-white/50 md:text-base">
+              <p className="mt-2 text-sm text-slate-500 md:text-base">
                 Real-time posture guidance across your customized yoga routine.
               </p>
             </div>
 
             {/* Coach & Length selector */}
             <div className="flex flex-wrap items-center gap-3">
+              {/* Fullscreen Toggle */}
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-500 shadow-sm transition hover:bg-slate-100 hover:text-slate-900"
+                title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              >
+                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+              </button>
+
               {/* Session length config */}
               {!isSessionActive && (
-                <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-1 text-xs">
-                  <span className="px-2 text-white/40 font-medium">Poses:</span>
+                <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1 text-xs shadow-sm">
+                  <span className="px-2 text-slate-500 font-medium">Poses:</span>
                   {[3, 5, sessionAsanas.length].map((len) => (
                     <button
                       key={len}
@@ -265,7 +383,7 @@ export function AICoachPage() {
                       className={`rounded-xl px-2.5 py-1.5 font-medium transition ${
                         sessionLength === len
                           ? "bg-indigo-600 text-white shadow-sm"
-                          : "text-white/50 hover:bg-white/5 hover:text-white"
+                          : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                       }`}
                     >
                       {len === sessionAsanas.length ? `Full (${len})` : len}
@@ -275,14 +393,14 @@ export function AICoachPage() {
               )}
 
               {/* Coach selector */}
-              <div className="flex items-center gap-1.5 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5 backdrop-blur-md">
+              <div className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
                 <button
                   type="button"
                   onClick={() => setSelectedCoach("alice")}
                   className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
                     selectedCoach === "alice"
-                      ? "bg-white text-slate-950 shadow-md"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                      ? "bg-slate-900 text-white shadow-md"
+                      : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
                   <img
@@ -298,8 +416,8 @@ export function AICoachPage() {
                   onClick={() => setSelectedCoach("kevin")}
                   className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
                     selectedCoach === "kevin"
-                      ? "bg-white text-slate-950 shadow-md"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                      ? "bg-slate-900 text-white shadow-md"
+                      : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                   }`}
                 >
                   <img
@@ -340,12 +458,23 @@ export function AICoachPage() {
         {/* MAIN */}
         {/* ====================================================== */}
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3 relative">
+          {/* ================================================== */}
+          {/* 3D OVERLAY */}
+          {/* ================================================== */}
+          <AICoachScene 
+            evaluation={stableEvaluation}
+            sessionState={sessionState}
+            holdTime={holdTime}
+            hasPose={hasPose}
+            coachState={coachState}
+          />
+
           {/* ================================================== */}
           {/* CAMERA */}
           {/* ================================================== */}
 
-          <div className="lg:col-span-2 flex flex-col gap-4">
+          <div className="lg:col-span-2 flex flex-col gap-4 relative z-0">
             {/* Camera Viewport */}
             <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
               <CameraView videoRef={videoRef} />
@@ -356,6 +485,7 @@ export function AICoachPage() {
                   landmarks={result.landmarks}
                   videoWidth={videoSize.width}
                   videoHeight={videoSize.height}
+                  coach={selectedCoach}
                 />
               )}
 
@@ -491,52 +621,52 @@ export function AICoachPage() {
             {/* ================================================== */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Card 1: Live System Status */}
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 shadow-xl backdrop-blur-md">
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-3.5">
                   <div className="flex items-center gap-2">
                     <span
                       className={`h-2.5 w-2.5 rounded-full ${
                         error
-                          ? "bg-red-400"
+                          ? "bg-red-500"
                           : hasPose
-                            ? "bg-emerald-400 animate-pulse"
-                            : "bg-amber-400"
+                            ? "bg-emerald-500 animate-pulse"
+                            : "bg-amber-500"
                       }`}
                     />
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-white/70">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Live System Status
                     </h3>
                   </div>
-                  <span className="rounded-full bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-white/50">
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-medium text-slate-500 border border-slate-200">
                     {hasPose ? "Active Stream" : "Standby"}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                    <p className="text-[11px] font-medium text-white/40">Pose Tracker</p>
-                    <p className="mt-1 text-sm font-semibold text-white">
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                    <p className="text-[11px] font-medium text-slate-500">Pose Tracker</p>
+                    <p className="mt-1 text-sm font-semibold text-slate-900">
                       {isInitialized ? "Ready" : "Initializing"}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                    <p className="text-[11px] font-medium text-white/40">Body</p>
-                    <p className="mt-1 text-sm font-semibold text-emerald-300">
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                    <p className="text-[11px] font-medium text-slate-500">Body</p>
+                    <p className="mt-1 text-sm font-semibold text-emerald-600">
                       {hasPose ? "Detected" : "Searching"}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                    <p className="text-[11px] font-medium text-white/40">Landmarks</p>
-                    <p className="mt-1 text-sm font-semibold font-mono text-white">
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                    <p className="text-[11px] font-medium text-slate-500">Landmarks</p>
+                    <p className="mt-1 text-sm font-semibold font-mono text-slate-900">
                       {result ? `${result.landmarks.length} / 33` : "--"}
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                    <p className="text-[11px] font-medium text-white/40">Confidence</p>
-                    <p className="mt-1 text-sm font-semibold font-mono text-indigo-300">
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                    <p className="text-[11px] font-medium text-slate-500">Confidence</p>
+                    <p className="mt-1 text-sm font-semibold font-mono text-indigo-600">
                       {result ? `${Math.round(result.confidence * 100)}%` : "--"}
                     </p>
                   </div>
@@ -544,15 +674,15 @@ export function AICoachPage() {
               </div>
 
               {/* Card 2: Pose Geometry (Angles) */}
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 shadow-xl backdrop-blur-md">
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-3.5">
                   <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-indigo-400" />
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-white/70">
+                    <span className="h-2.5 w-2.5 rounded-full bg-indigo-500" />
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                       Pose Geometry
                     </h3>
                   </div>
-                  <span className="text-[11px] text-white/40 font-mono">
+                  <span className="text-[11px] text-slate-400 font-mono">
                     3D Angles
                   </span>
                 </div>
@@ -567,48 +697,91 @@ export function AICoachPage() {
           {/* ================================================== */}
 
           <div className="lg:col-span-1 flex flex-col gap-5">
-            {/* Coach Identity Card with Avatar */}
-            <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 shadow-xl backdrop-blur-md md:p-6">
-              <div className="flex items-center gap-4">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border-2 border-indigo-400/40 shadow-lg shadow-indigo-500/10">
-                  <img
-                    src={getCoachAvatar(selectedCoach)}
-                    alt={getCoachName(selectedCoach)}
-                    className="h-full w-full object-cover"
-                  />
-                  <span className="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-400 border-2 border-slate-950 shadow-sm" />
+            {/* Coach Identity Card with Video Avatar */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+              <div className="relative mb-5 w-full aspect-[4/5] sm:aspect-video lg:aspect-[4/5] rounded-2xl overflow-hidden bg-slate-900 shadow-inner">
+                <AvatarPlayer 
+                  coach={selectedCoach as CoachId} 
+                  state={avatarState} 
+                  autoPlay={isPlayingIntro}
+                  muted={!isPlayingIntro}
+                  controllerRef={avatarControllerRef}
+                  onEnded={isPlayingIntro ? handleIntroEnded : undefined}
+                  onError={isPlayingIntro ? handleIntroError : undefined}
+                />
+                
+                <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2.5 py-1 backdrop-blur-md">
+                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                   <span className="text-[9px] font-bold uppercase tracking-wider text-white">Live</span>
                 </div>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-lg font-semibold text-white">
-                        {getCoachName(selectedCoach)}
-                      </p>
-
-                      <p className="text-xs text-white/40">
-                        AI Yoga Coach
-                      </p>
-                    </div>
-
-                    <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-white/60">
-                      {sessionLabel}
-                    </span>
-                  </div>
+                <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-xl bg-black/50 px-3 py-1.5 backdrop-blur-md">
+                   <p className="text-[10px] font-bold uppercase tracking-wider text-white/60">
+                     AI COACH
+                   </p>
+                   <p className="text-sm font-semibold text-white">
+                     {getCoachName(selectedCoach)}
+                   </p>
                 </div>
               </div>
 
-              <p className="mt-3.5 text-sm leading-6 text-white/50">
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <p className="text-lg font-semibold text-slate-900">
+                  {getCoachName(selectedCoach)}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600">
+                    {isPlayingIntro ? "Intro" : sessionLabel}
+                  </span>
+                  
+                  {/* Voice Status Indicator */}
+                  {voiceState.status !== "disconnected" && (
+                    <button
+                      onClick={voiceToggleMute}
+                      className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${
+                        voiceState.status === "error"
+                          ? "border-red-200 bg-red-50 text-red-600"
+                          : voiceState.isMuted
+                          ? "border-amber-200 bg-amber-50 text-amber-600"
+                          : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                      }`}
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          voiceState.status === "error"
+                            ? "bg-red-500"
+                            : voiceState.isMuted
+                            ? "bg-amber-500"
+                            : voiceState.status === "speaking"
+                            ? "bg-indigo-500 animate-pulse"
+                            : "bg-indigo-400"
+                        }`}
+                      />
+                      {voiceState.status === "error"
+                        ? "Voice Error"
+                        : voiceState.isMuted
+                        ? "Muted"
+                        : voiceState.status === "connecting"
+                        ? "Connecting..."
+                        : voiceState.status === "speaking"
+                        ? "Speaking..."
+                        : "Listening..."}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <p className="text-sm leading-6 text-slate-600">
                 {getCoachDescription(selectedCoach)}
               </p>
 
               {/* Start Routine CTA */}
-              {sessionState === "idle" && (
+              {sessionState === "idle" && !isPlayingIntro && (
                 <button
                   type="button"
-                  onClick={startSession}
+                  onClick={handleStartSession}
                   disabled={!isInitialized}
-                  className="mt-4 w-full rounded-2xl bg-white px-4 py-3.5 font-bold text-slate-950 transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-40 shadow-lg"
+                  className="mt-4 w-full rounded-2xl bg-slate-900 px-4 py-3.5 font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40 shadow-md"
                 >
                   Start {currentAsana.name}
                 </button>
@@ -617,19 +790,19 @@ export function AICoachPage() {
 
             {/* Real-Time Session Guidance (Active states) */}
             {sessionState !== "idle" && (
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 shadow-xl backdrop-blur-md md:p-6 flex flex-col gap-4">
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:p-6 flex flex-col gap-4">
                 {/* Countdown */}
                 {sessionState === "countdown" && countdown !== null && (
-                  <div className="rounded-2xl border border-indigo-400/20 bg-indigo-400/5 p-5 text-center">
-                    <p className="text-xs uppercase tracking-wider text-white/40">
+                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5 text-center">
+                    <p className="text-xs uppercase tracking-wider text-slate-500">
                       Get Ready
                     </p>
 
-                    <p className="mt-2 text-5xl font-bold tabular-nums">
+                    <p className="mt-2 text-5xl font-bold tabular-nums text-indigo-900">
                       {countdown}
                     </p>
 
-                    <p className="mt-2 text-sm text-white/50">
+                    <p className="mt-2 text-sm text-slate-600">
                       Prepare for {currentAsana.name}
                     </p>
                   </div>
@@ -651,16 +824,16 @@ export function AICoachPage() {
                         issue={stableEvaluation.issues[0] ?? null}
                       />
                     ) : (
-                      <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-5">
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
                         <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
 
-                          <p className="text-xs font-medium uppercase tracking-wider text-emerald-300">
+                          <p className="text-xs font-medium uppercase tracking-wider text-emerald-700">
                             Good Form
                           </p>
                         </div>
 
-                        <p className="mt-3 text-base font-medium leading-6">
+                        <p className="mt-3 text-base font-medium leading-6 text-slate-900">
                           Great form. Hold your position.
                         </p>
                       </div>
@@ -670,16 +843,16 @@ export function AICoachPage() {
 
                 {/* Holding Status */}
                 {sessionState === "holding" && (
-                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-5 text-center">
-                    <p className="text-xs uppercase tracking-wider text-emerald-300/70">
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+                    <p className="text-xs uppercase tracking-wider text-emerald-700">
                       Hold Position
                     </p>
 
-                    <p className="mt-2 text-4xl font-bold tabular-nums">
+                    <p className="mt-2 text-4xl font-bold tabular-nums text-emerald-900">
                       {holdTime.toFixed(1)}s / {currentAsana.targetHoldSeconds}s
                     </p>
 
-                    <p className="mt-2 text-sm text-white/50">
+                    <p className="mt-2 text-sm text-slate-600">
                       Keep your form steady.
                     </p>
                   </div>
@@ -687,23 +860,23 @@ export function AICoachPage() {
 
                 {/* Pose Completed */}
                 {sessionState === "completed" && (
-                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-5 text-center">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-400/10">
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                       ✓
                     </div>
 
-                    <p className="mt-3 text-lg font-semibold">
+                    <p className="mt-3 text-lg font-semibold text-slate-900">
                       Excellent work!
                     </p>
 
-                    <p className="mt-2 text-sm leading-5 text-white/50">
+                    <p className="mt-2 text-sm leading-5 text-slate-600">
                       You successfully held {currentAsana.name} for {currentAsana.targetHoldSeconds} seconds.
                     </p>
 
                     {stableScore !== null && (
-                      <p className="mt-4 text-3xl font-bold">
+                      <p className="mt-4 text-3xl font-bold text-slate-900">
                         {stableScore}
-                        <span className="ml-1 text-sm font-normal text-white/40">
+                        <span className="ml-1 text-sm font-normal text-slate-500">
                           / 100
                         </span>
                       </p>
@@ -713,7 +886,7 @@ export function AICoachPage() {
                       <button
                         type="button"
                         onClick={resetSession}
-                        className="flex-1 rounded-2xl border border-white/20 bg-white/10 px-4 py-3 font-semibold text-white transition hover:bg-white/20"
+                        className="flex-1 rounded-2xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 transition hover:bg-slate-50 shadow-sm"
                       >
                         Practice Again
                       </button>
@@ -721,7 +894,7 @@ export function AICoachPage() {
                         <button
                           type="button"
                           onClick={skipTransition}
-                          className="flex-1 rounded-2xl bg-white px-4 py-3 font-semibold text-slate-950 transition hover:bg-white/90"
+                          className="flex-1 rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800 shadow-md"
                         >
                           Next Pose →
                         </button>
@@ -742,34 +915,34 @@ export function AICoachPage() {
 
                 {/* Entire Multi-Asana Session Completed */}
                 {sessionState === "session_completed" && (
-                  <div className="rounded-3xl border border-indigo-400/30 bg-gradient-to-br from-indigo-950/90 via-slate-950 to-emerald-950/50 p-6 text-center shadow-2xl backdrop-blur-xl">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-400/20 text-3xl text-emerald-300">
+                  <div className="rounded-3xl border border-indigo-200 bg-indigo-50 p-6 text-center shadow-md">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-3xl text-emerald-600">
                       🏆
                     </div>
 
-                    <h3 className="mt-4 text-2xl font-bold text-white">
+                    <h3 className="mt-4 text-2xl font-bold text-indigo-900">
                       Routine Completed!
                     </h3>
 
-                    <p className="mt-2 text-sm text-white/60">
+                    <p className="mt-2 text-sm text-slate-600">
                       You have successfully completed all {activeAsanas.length} asanas in your routine.
                     </p>
 
-                    <div className="mt-5 grid grid-cols-2 gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-left">
+                    <div className="mt-5 grid grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left">
                       <div>
-                        <p className="text-[10px] uppercase tracking-wider text-white/40">
+                        <p className="text-[10px] uppercase tracking-wider text-slate-500">
                           Asanas Mastered
                         </p>
-                        <p className="text-xl font-bold text-emerald-300">
+                        <p className="text-xl font-bold text-emerald-600">
                           {activeAsanas.length} / {activeAsanas.length}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase tracking-wider text-white/40">
+                        <p className="text-[10px] uppercase tracking-wider text-slate-500">
                           Final Score
                         </p>
-                        <p className="text-xl font-bold text-white">
-                          {stableScore ?? 92} <span className="text-xs text-white/40">/ 100</span>
+                        <p className="text-xl font-bold text-slate-900">
+                          {stableScore ?? 92} <span className="text-xs text-slate-500">/ 100</span>
                         </p>
                       </div>
                     </div>
@@ -777,7 +950,7 @@ export function AICoachPage() {
                     <button
                       type="button"
                       onClick={resetSession}
-                      className="mt-5 w-full rounded-2xl bg-white px-4 py-3.5 font-bold text-slate-950 transition hover:bg-white/90 shadow-lg"
+                      className="mt-5 w-full rounded-2xl bg-slate-900 px-4 py-3.5 font-bold text-white transition hover:bg-slate-800 shadow-lg"
                     >
                       Start Routine Again
                     </button>
@@ -789,7 +962,7 @@ export function AICoachPage() {
                   <button
                     type="button"
                     onClick={stopSession}
-                    className="w-full rounded-2xl border border-white/10 px-4 py-3 text-sm font-medium text-white/60 transition hover:bg-white/5 hover:text-white"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
                   >
                     Stop Session
                   </button>

@@ -31,30 +31,30 @@ export function AsanaProgress({
   const percentComplete = Math.round((currentIndex / totalAsanas) * 100);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm backdrop-blur-md">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-indigo-500/20 text-xs font-bold text-indigo-300">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-indigo-500/20 text-xs font-bold text-indigo-700">
             {currentIndex + 1}
           </span>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-white/50">
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Session Progress
               </span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
                 {totalAsanas} Asanas Flow
               </span>
               {isSessionActive && (
-                <span className="flex items-center gap-1 text-[10px] text-amber-300/80 bg-amber-500/10 px-2 py-0.5 rounded-full">
+                <span className="flex items-center gap-1 text-[10px] text-amber-700/80 bg-amber-500/10 px-2 py-0.5 rounded-full">
                   <Lock size={10} />
                   <span>Locked during pose</span>
                 </span>
               )}
             </div>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-slate-900">
               {currentAsana.name}{" "}
-              <span className="text-xs font-normal text-white/40">
+              <span className="text-xs font-normal text-slate-500">
                 ({currentIndex + 1} of {totalAsanas})
               </span>
             </p>
@@ -67,7 +67,7 @@ export function AsanaProgress({
             type="button"
             onClick={() => onSelectIndex(currentIndex - 1)}
             disabled={disabled || isSessionActive || currentIndex === 0}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
             title="Previous Asana"
           >
             <ChevronLeft size={16} />
@@ -81,7 +81,7 @@ export function AsanaProgress({
               currentIndex >= totalAsanas - 1 ||
               (canAccessIndex && !canAccessIndex(currentIndex + 1))
             }
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-20"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
             title={
               isSessionActive
                 ? "Hold position to advance"
@@ -110,16 +110,16 @@ export function AsanaProgress({
                 title={`${idx + 1}. ${pose.name} ${!isAccessible ? "(Locked)" : ""}`}
                 className={`group relative h-2.5 flex-1 rounded-full transition-all duration-300 ${
                   isCurrent
-                    ? "bg-indigo-400 shadow-[0_0_12px_rgba(129,140,248,0.7)]"
+                    ? "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.4)]"
                     : isDone
-                      ? "bg-emerald-400/80"
+                      ? "bg-emerald-500/80"
                       : isAccessible
-                        ? "bg-white/15 hover:bg-white/30 cursor-pointer"
-                        : "bg-white/5 cursor-not-allowed opacity-40"
+                        ? "bg-slate-200 hover:bg-slate-300 cursor-pointer"
+                        : "bg-slate-100 cursor-not-allowed opacity-60"
                 }`}
               >
                 {/* Micro tooltip */}
-                <span className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/90 px-2 py-0.5 text-[9px] font-medium text-white opacity-0 shadow transition-opacity group-hover:opacity-100 z-10">
+                <span className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-0.5 text-[9px] font-medium text-white opacity-0 shadow transition-opacity group-hover:opacity-100 z-10">
                   {idx + 1}. {pose.name} {!isAccessible ? "🔒" : ""}
                 </span>
               </button>
@@ -128,10 +128,10 @@ export function AsanaProgress({
         </div>
 
         {/* Status Subtext */}
-        <div className="mt-2 flex items-center justify-between text-[11px] text-white/40">
+        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
           <span>{percentComplete}% Completed</span>
           {isHolding ? (
-            <span className="font-semibold text-emerald-300 animate-pulse">
+            <span className="font-semibold text-emerald-600 animate-pulse">
               Holding form: {holdTime.toFixed(1)}s / {targetHoldSeconds}s
             </span>
           ) : (

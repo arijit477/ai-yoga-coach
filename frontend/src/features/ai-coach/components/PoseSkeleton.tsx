@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 import type { PoseLandmarks } from "../types/landmarks";
 import { PoseLandmarkIndex as P } from "../types/pose-landmarks";
+import type { CoachPersona } from "../types/coach-session";
 
 interface PoseSkeletonProps {
   landmarks: PoseLandmarks | null;
   videoWidth: number;
   videoHeight: number;
+  coach?: CoachPersona;
 }
 
 const CONNECTIONS: [number, number][] = [
@@ -53,6 +55,7 @@ export function PoseSkeleton({
   landmarks,
   videoWidth,
   videoHeight,
+  coach = "alice",
 }: PoseSkeletonProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -81,10 +84,16 @@ export function PoseSkeleton({
     /*
      * Draw skeleton connections.
      */
+    const isKevin = coach === "kevin";
+    const neonColor = isKevin ? "#39ff14" : "#00f3ff";
+    const neonHighlight = isKevin ? "rgba(57, 255, 20, 0.5)" : "rgba(0, 243, 255, 0.5)";
+
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.strokeStyle = neonColor;
+    ctx.shadowColor = neonColor;
+    ctx.shadowBlur = 10;
 
     for (const [startIndex, endIndex] of CONNECTIONS) {
       const start = landmarks[startIndex];
@@ -141,17 +150,22 @@ export function PoseSkeleton({
       ctx.arc(x, y, 5, 0, Math.PI * 2);
 
       ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = neonColor;
       ctx.fill();
 
       ctx.beginPath();
 
       ctx.arc(x, y, 8, 0, Math.PI * 2);
 
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.strokeStyle = neonHighlight;
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
-  }, [landmarks, videoWidth, videoHeight]);
+    
+    // Reset shadow for next frame just in case
+    ctx.shadowBlur = 0;
+  }, [landmarks, videoWidth, videoHeight, coach]);
 
   return (
     <canvas

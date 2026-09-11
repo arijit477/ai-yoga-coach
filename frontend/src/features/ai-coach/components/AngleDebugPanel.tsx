@@ -9,8 +9,8 @@ interface AngleDebugPanelProps {
 export function AngleDebugPanel({ landmarks }: AngleDebugPanelProps) {
   if (!landmarks || landmarks.length < 33) {
     return (
-      <div className="rounded-xl border border-white/5 bg-black/20 p-4 text-center">
-        <p className="text-xs text-white/40">Position full body to calculate joint angles</p>
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+        <p className="text-xs text-slate-500">Position full body to calculate joint angles</p>
       </div>
     );
   }
@@ -70,9 +70,9 @@ interface AngleProps {
 
 function Angle({ label, value }: AngleProps) {
   return (
-    <div className="rounded-xl border border-white/5 bg-black/20 p-2.5 transition hover:border-white/10 hover:bg-black/30">
-      <p className="text-[11px] font-medium text-white/40 leading-tight truncate">{label}</p>
-      <p className="mt-1 text-sm font-bold font-mono text-indigo-300">
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 transition hover:border-slate-300 hover:bg-slate-100">
+      <p className="text-[11px] font-medium text-slate-500 leading-tight truncate">{label}</p>
+      <p className="mt-1 text-sm font-bold font-mono text-indigo-600">
         {value === null ? "--" : `${Math.round(value)}°`}
       </p>
     </div>
