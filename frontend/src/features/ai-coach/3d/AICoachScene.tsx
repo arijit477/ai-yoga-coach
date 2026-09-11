@@ -7,7 +7,6 @@ import { HoldProgress3D } from "./HoldProgress3D";
 import { SessionProgress3D } from "./SessionProgress3D";
 
 import { useAICoachStore } from "../store/aiCoachStore";
-import { useCoachState } from "../../../hooks/useCoachState";
 import { useCoachSession } from "../../../hooks/useCoachSession";
 
 interface AICoachSceneProps {
@@ -15,7 +14,6 @@ interface AICoachSceneProps {
   sessionState: ReturnType<typeof useCoachSession>["state"];
   holdTime: number;
   hasPose: boolean;
-  coachState?: ReturnType<typeof useCoachState>;
 }
 
 export function AICoachScene({ 
@@ -23,7 +21,6 @@ export function AICoachScene({
   sessionState, 
   holdTime,
   hasPose,
-  coachState: _coachState,
 }: AICoachSceneProps) {
   const {
     currentAsana,
@@ -42,6 +39,7 @@ export function AICoachScene({
         camera={{ position: [0, 0, 10], fov: 50 }}
         dpr={[1, 2]} // performance: limit max dpr to 2
         gl={{ alpha: true, antialias: true }}
+        style={{ pointerEvents: "none" }}
       >
         <SceneLighting />
         <SceneBackground />

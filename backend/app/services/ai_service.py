@@ -1,14 +1,14 @@
 import os
-from google import genai
+from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-# Configure the SDK
+# Configure the OpenAI client
 API_KEY = os.getenv("OPENAI_API_KEY")
 client = None
 if API_KEY and API_KEY.strip():
-    client = genai.Client(api_key=API_KEY)
+    client = OpenAI(api_key=API_KEY)
 
 COACH_PROFILES = {
     "alice": {
@@ -18,6 +18,10 @@ COACH_PROFILES = {
     "diego": {
         "personality": "energetic, motivating, encouraging, and concise",
         "instructions": "You are Diego, a virtual AI yoga coach. You speak in an energetic, motivating, encouraging, and concise manner."
+    },
+    "kevin": {
+        "personality": "focused, energetic, and concise",
+        "instructions": "You are Kevin, a virtual AI yoga coach. You speak in a focused, energetic, and concise manner."
     }
 }
 
@@ -34,7 +38,7 @@ IMPORTANT SAFETY AND SCOPE CONSTRAINTS:
 
 def generate_coach_response(coach_id: str, exercise_id: str, message: str) -> str:
     if not client:
-        return "[Mock Response: GEMINI_API_KEY not set. Please set the environment variable.]"
+        return "[Mock Response: OPENAI_API_KEY not set. Please set the environment variable.]"
 
     profile = COACH_PROFILES.get(coach_id.lower())
     if not profile:
@@ -43,16 +47,16 @@ def generate_coach_response(coach_id: str, exercise_id: str, message: str) -> st
     system_instruction = profile["instructions"] + "\n" + SYSTEM_INSTRUCTION_BASE.format(exercise_id=exercise_id)
 
     try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=message,
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.7,
-                max_output_tokens=150
-            )
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": message},
+            ],
+            temperature=0.7,
+            max_tokens=150,
         )
-        return response.text.strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"Error calling LLM: {e}")
         return "I'm having trouble connecting right now. Let's focus on our breathing for a moment."
