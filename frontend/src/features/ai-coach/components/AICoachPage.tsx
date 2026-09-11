@@ -118,6 +118,9 @@ export function AICoachPage() {
     markAsanaCompleted,
     canAccessAsanaIndex,
     setCurrentAsanaIndex,
+    skipToAsanaIndex,
+    goBackToAsanaIndex,
+    skippedAsanaIds,
   } = useAICoachStore();
 
   const activeAsanas = useMemo(() => {
@@ -446,9 +449,18 @@ export function AICoachPage() {
             targetHoldSeconds={currentAsana.targetHoldSeconds}
             isSessionActive={isSessionActive}
             canAccessIndex={canAccessAsanaIndex}
+            skippedAsanaIds={skippedAsanaIds}
             onSelectIndex={(idx) => {
               resetSession();
               setCurrentAsanaIndex(idx);
+            }}
+            onSkipToIndex={(idx) => {
+              resetSession();
+              skipToAsanaIndex(idx);
+            }}
+            onGoBackToIndex={(idx) => {
+              resetSession();
+              goBackToAsanaIndex(idx);
             }}
             disabled={isSessionActive}
           />
@@ -458,7 +470,7 @@ export function AICoachPage() {
         {/* MAIN */}
         {/* ====================================================== */}
 
-        <div className="grid gap-6 lg:grid-cols-3 relative">
+        <div className="grid gap-6 lg:grid-cols-[1fr_2fr_1fr] relative">
           {/* ================================================== */}
           {/* 3D OVERLAY */}
           {/* ================================================== */}
@@ -467,14 +479,20 @@ export function AICoachPage() {
             sessionState={sessionState}
             holdTime={holdTime}
             hasPose={hasPose}
-            coachState={coachState}
           />
 
           {/* ================================================== */}
-          {/* CAMERA */}
+          {/* REFERENCE POSE CARD (LEFT) */}
+          {/* ================================================== */}
+          <div className="lg:col-span-1 flex flex-col gap-5 relative z-0">
+            <AsanaInstruction asana={currentAsana} />
+          </div>
+
+          {/* ================================================== */}
+          {/* CAMERA (CENTER) */}
           {/* ================================================== */}
 
-          <div className="lg:col-span-2 flex flex-col gap-4 relative z-0">
+          <div className="lg:col-span-1 flex flex-col gap-4 relative z-0">
             {/* Camera Viewport */}
             <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
               <CameraView videoRef={videoRef} />
@@ -693,7 +711,7 @@ export function AICoachPage() {
           </div>
 
           {/* ================================================== */}
-          {/* COACH & GUIDANCE PANEL */}
+          {/* COACH & GUIDANCE PANEL (RIGHT) */}
           {/* ================================================== */}
 
           <div className="lg:col-span-1 flex flex-col gap-5">
@@ -780,8 +798,7 @@ export function AICoachPage() {
                 <button
                   type="button"
                   onClick={handleStartSession}
-                  disabled={!isInitialized}
-                  className="mt-4 w-full rounded-2xl bg-slate-900 px-4 py-3.5 font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40 shadow-md"
+                  className="mt-4 w-full rounded-2xl bg-slate-900 px-4 py-3.5 font-bold text-white transition hover:bg-slate-800 shadow-md"
                 >
                   Start {currentAsana.name}
                 </button>
@@ -970,8 +987,6 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Asana Reference Image & Instructions from Supabase */}
-            <AsanaInstruction asana={currentAsana} />
           </div>
         </div>
       </div>
