@@ -300,26 +300,18 @@ export function AICoachPage() {
     };
   }, []);
 
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isCinemaMode, setIsCinemaMode] = useState(false);
 
+  const toggleCinemaMode = () => setIsCinemaMode((v) => !v);
+
+  // Exit cinema mode on Escape key
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsCinemaMode(false);
     };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
   }, []);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(console.error);
-    } else {
-      document.exitFullscreen().catch(console.error);
-    }
-  };
 
   const hasPose = Boolean(result);
 
@@ -331,6 +323,98 @@ export function AICoachPage() {
   const sessionLabel = getSessionLabel(sessionState);
 
   return (
+    <>
+      {/* ====================================================== */}
+      {/* CINEMA MODE OVERLAY */}
+      {/* ====================================================== */}
+      {isCinemaMode && (
+        <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+          {/* Camera + skeleton fills entire viewport */}
+          <div className="relative flex-1 overflow-hidden">
+            <CameraView videoRef={videoRef} />
+
+            {result && (
+              <PoseSkeleton
+                landmarks={result.landmarks}
+                videoWidth={videoSize.width}
+                videoHeight={videoSize.height}
+                coach={selectedCoach}
+              />
+            )}
+
+            {/* Top-left: pose name */}
+            <div className="absolute left-5 top-5 flex items-center gap-3">
+              <span className="text-2xl">🧘</span>
+              <span className="text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
+                {currentAsana.name}
+              </span>
+            </div>
+
+            {/* Top-right: score */}
+            {stableEvaluation && (
+              <div className="absolute right-5 top-5">
+                <span
+                  className={`text-2xl font-extrabold drop-shadow-lg ${
+                    (stableScore ?? 0) >= 70
+                      ? "text-emerald-400"
+                      : (stableScore ?? 0) >= 40
+                        ? "text-amber-400"
+                        : "text-red-400"
+                  }`}
+                >
+                  {stableScore ?? 0}%
+                </span>
+              </div>
+            )}
+
+            {/* Bottom-left: corrections card */}
+            {stableEvaluation && stableEvaluation.issues.length > 0 && (
+              <div className="absolute bottom-6 left-5 max-w-xs rounded-2xl bg-black/70 p-4 backdrop-blur-md border border-white/10 shadow-xl">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-white/50">
+                  {currentAsana.name}
+                </p>
+                <p className="text-xs font-semibold text-white/80 mb-2">
+                  {stableEvaluation.issues[0]?.ruleId?.replace(/_/g, " ")}
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  {stableEvaluation.issues.slice(0, 2).map((issue) => (
+                    <div key={issue.ruleId} className="rounded-xl bg-white/10 px-3 py-1.5 text-[11px] text-white/90">
+                      {issue.feedback}
+                      <span className="ml-2 text-[10px] text-amber-400">target {issue.ruleId?.split("_").at(-1)}°</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bottom-right: coach message */}
+            <div className="absolute bottom-6 right-5 max-w-xs rounded-2xl bg-black/60 px-4 py-3 backdrop-blur-md border border-white/10 flex items-center gap-3">
+              <img
+                src={getCoachAvatar(selectedCoach)}
+                alt={getCoachName(selectedCoach)}
+                className="h-8 w-8 rounded-full object-cover border border-white/20 shrink-0"
+              />
+              <p className="text-sm font-medium text-white leading-snug">
+                {error ? error : getCoachStateMessage(coachState)}
+              </p>
+            </div>
+
+            {/* Exit cinema mode button */}
+            <button
+              type="button"
+              onClick={toggleCinemaMode}
+              className="absolute right-5 top-14 flex items-center gap-1.5 rounded-xl bg-white/10 border border-white/20 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/20 transition"
+            >
+              <Minimize size={13} />
+              Exit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ====================================================== */}
+      {/* NORMAL PAGE LAYOUT */}
+      {/* ====================================================== */}
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/60 px-4 py-6 text-slate-900 md:px-6 font-display font-medium">
       <div className="mx-auto max-w-7xl">
         {/* ====================================================== */}
@@ -361,15 +445,7 @@ export function AICoachPage() {
 
             {/* Coach & Length selector */}
             <div className="flex flex-wrap items-center gap-3">
-              {/* Fullscreen Toggle */}
-              <button
-                type="button"
-                onClick={toggleFullscreen}
-                className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-500 shadow-sm transition hover:bg-slate-100 hover:text-slate-900"
-                title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-              >
-                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-              </button>
+
 
               {/* Session length config */}
               {!isSessionActive && (
@@ -507,36 +583,10 @@ export function AICoachPage() {
                 />
               )}
 
-              {/* Top-left coach status with avatar */}
-              <div className="absolute left-4 top-4 flex items-center gap-2.5 rounded-2xl border border-white/10 bg-black/60 px-3 py-2 backdrop-blur-md">
-                <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/20">
-                  <img
-                    src={getCoachAvatar(selectedCoach)}
-                    alt={getCoachName(selectedCoach)}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-white/40 leading-none">
-                    Coach
-                  </p>
-                  <p className="text-xs font-semibold text-white leading-tight mt-0.5">
-                    {getCoachName(selectedCoach)}
-                  </p>
-                </div>
-                <div
-                  className={`ml-1 h-2 w-2 rounded-full ${
-                    error
-                      ? "bg-red-400"
-                      : hasPose
-                        ? "bg-emerald-400 animate-pulse"
-                        : "bg-blue-400"
-                  }`}
-                />
-              </div>
 
-              {/* Top-right tracking status */}
-              <div className="absolute right-4 top-4 rounded-2xl border border-white/10 bg-black/60 px-3.5 py-2 backdrop-blur-md">
+
+              {/* Top-left tracking status */}
+              <div className="absolute left-4 top-4 rounded-2xl border border-white/10 bg-black/60 px-3.5 py-2 backdrop-blur-md">
                 <p className="text-[10px] font-medium uppercase tracking-wider text-white/40">
                   Tracking
                 </p>
@@ -551,6 +601,16 @@ export function AICoachPage() {
                         : "Initializing..."}
                 </p>
               </div>
+
+              {/* Top-right cinema mode toggle */}
+              <button
+                type="button"
+                onClick={toggleCinemaMode}
+                className="absolute right-4 top-4 flex items-center justify-center rounded-2xl border border-white/10 bg-black/60 p-2 backdrop-blur-md text-white/70 transition hover:bg-black/80 hover:text-white"
+                title={isCinemaMode ? "Exit Cinema Mode" : "Cinema Mode"}
+              >
+                {isCinemaMode ? <Minimize size={16} /> : <Maximize size={16} />}
+              </button>
 
               {/* Reference pose thumbnail preview on camera */}
               <div className="absolute left-4 top-16 hidden sm:flex items-center gap-2.5 rounded-2xl border border-white/10 bg-black/70 p-2 backdrop-blur-md shadow-lg">
@@ -991,5 +1051,6 @@ export function AICoachPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
