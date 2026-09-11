@@ -74,7 +74,7 @@ export function AvatarPlayer({
 
   // Helper to fallback to an image if video is not available or errors out
   const fallbackImageSrc = COACHES[coach]?.id === "alice" 
-    ? "/images/alice.jpg" 
+    ? "/images/alice.png" 
     : "/images/kevin.jpg";
 
   if (!videoSrc || hasError) {

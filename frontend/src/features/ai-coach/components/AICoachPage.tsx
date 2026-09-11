@@ -59,7 +59,7 @@ function getCoachName(coach: CoachPersona): string {
 }
 
 function getCoachAvatar(coach: CoachPersona): string {
-  return coach === "alice" ? "/images/alice.jpg" : "/images/kevin.jpg";
+  return coach === "alice" ? "/images/alice.png" : "/images/kevin.jpg";
 }
 
 function getCoachDescription(coach: CoachPersona): string {
@@ -483,7 +483,7 @@ export function AICoachPage() {
                   }`}
                 >
                   <img
-                    src="/images/alice.jpg"
+                    src="/images/alice.png"
                     alt="Alice"
                     className="h-6 w-6 rounded-full object-cover border border-slate-300"
                   />
