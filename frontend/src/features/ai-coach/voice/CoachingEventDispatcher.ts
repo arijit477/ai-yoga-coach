@@ -5,17 +5,31 @@ interface DispatcherConfig {
   cooldownMs: number;
 }
 
+const DEFAULT_COACHING_COOLDOWN_MS = 4000;
+
+const SEVERITY_WEIGHT: Record<string, number> = {
+  safety_warning: 5,
+  high: 4,
+  medium: 3,
+  low: 2,
+  info: 1,
+};
+
 export class CoachingEventDispatcher {
   private agent: RealtimeVoiceAgent | null = null;
   private lastEventTime: number = 0;
   private lastIssuedRuleId: string | null = null;
+  private lastIssuedSeverity: number = 0;
+  private lastEventType: string | null = null;
   private config: DispatcherConfig;
 
-  constructor(config: DispatcherConfig = { cooldownMs: 5000 }) {
-    this.config = config;
+  constructor(config?: Partial<DispatcherConfig>) {
+    this.config = {
+      cooldownMs: config?.cooldownMs ?? DEFAULT_COACHING_COOLDOWN_MS,
+    };
   }
 
-  setAgent(agent: RealtimeVoiceAgent) {
+  setAgent(agent: RealtimeVoiceAgent | null) {
     this.agent = agent;
   }
 
@@ -23,57 +37,89 @@ export class CoachingEventDispatcher {
    * Receives a candidate event. Checks priority, duplicates, and cooldowns.
    * If valid, dispatches it to the voice agent.
    */
-  dispatch(event: CoachingEvent) {
-    if (!this.agent) return;
+  dispatch(event: CoachingEvent): boolean {
+    if (!this.agent) {
+      return false;
+    }
 
     const now = Date.now();
+    const eventSeverity = event.type === "safety_warning" ? 5 : SEVERITY_WEIGHT[event.severity || "info"] || 1;
 
-    // Always allow safety warnings to pass through immediately
+    // 1. Safety warnings ALWAYS pass through immediately
     if (event.type === "safety_warning") {
-      this.send(event, now);
-      return;
+      this.send(event, now, eventSeverity);
+      return true;
     }
 
-    // Cooldown check
-    if (now - this.lastEventTime < this.config.cooldownMs) {
-      return; // Still in cooldown
-    }
-
-    // Duplicate check for corrections
-    if (event.type === "pose_correction" && event.ruleId === this.lastIssuedRuleId) {
-      // It's the same rule we just corrected, don't spam it.
-      // Wait, if it's been a long time (say 3x cooldown), maybe we should remind them?
-      // For now, let's strictly suppress consecutive duplicates until the issue is resolved
-      // or a different issue takes precedence.
-      return;
-    }
-
-    // Informational/Good form events
-    if (event.type === "good_form") {
-      if (this.lastIssuedRuleId !== null) {
-        // They fixed the previous issue!
-        this.send(event, now);
-        this.lastIssuedRuleId = null;
+    // 2. State-driven one-time lifecycle events (pose_started, pose_held, pose_completed)
+    if (event.type === "pose_started" || event.type === "pose_held" || event.type === "pose_completed") {
+      if (this.lastEventType === event.type) {
+        console.log(`[AI COACH] Coaching event suppressed by cooldown: identical lifecycle event ${event.type}`);
+        return false;
       }
-      return;
+      this.send(event, now, eventSeverity);
+      return true;
     }
 
-    this.send(event, now);
+    // 3. Good form acknowledgment
+    if (event.type === "good_form") {
+      if (this.lastEventType === "good_form") {
+        console.log("[AI COACH] Coaching event suppressed by cooldown: already in good form");
+        return false;
+      }
+      // Send good form acknowledgment if transitioning from a correction or entering good form
+      this.send(event, now, eventSeverity);
+      this.lastIssuedRuleId = null;
+      return true;
+    }
+
+    // 4. Higher-severity preempts an active cooldown of a lower-severity event
+    const isHigherSeverity = eventSeverity > this.lastIssuedSeverity;
+    const timeSinceLastEvent = now - this.lastEventTime;
+
+    if (!isHigherSeverity && timeSinceLastEvent < this.config.cooldownMs) {
+      console.log(
+        `[AI COACH] Coaching event suppressed by cooldown: active cooldown (${Math.round(timeSinceLastEvent)}ms / ${this.config.cooldownMs}ms)`
+      );
+      return false;
+    }
+
+    // 5. Duplicate suppression: do not repeat the exact same rule immediately
+    if (event.type === "pose_correction" && event.ruleId && event.ruleId === this.lastIssuedRuleId) {
+      // Must wait at least 2.5x cooldown before repeating the same correction to prevent voice nagging
+      if (timeSinceLastEvent < this.config.cooldownMs * 2.5) {
+        console.log(
+          `[AI COACH] Coaching event suppressed by cooldown: duplicate rule ${event.ruleId} within repeat window`
+        );
+        return false;
+      }
+    }
+
+    this.send(event, now, eventSeverity);
+    return true;
   }
 
-  private send(event: CoachingEvent, timestamp: number) {
-    if (event.type === "pose_correction" || event.type === "safety_warning") {
+  private send(event: CoachingEvent, timestamp: number, severity: number) {
+    this.lastEventTime = timestamp;
+    this.lastEventType = event.type;
+    this.lastIssuedSeverity = severity;
+
+    if (event.type === "pose_correction") {
       this.lastIssuedRuleId = event.ruleId || null;
-    } else {
+    } else if (event.type !== "safety_warning") {
       this.lastIssuedRuleId = null;
     }
-    
-    this.lastEventTime = timestamp;
+
+    console.log(
+      `[AI COACH] Coaching event dispatched: type=${event.type}, asana=${event.asanaName}, rule=${event.ruleId || "none"}, severity=${event.severity || "normal"}`
+    );
     this.agent?.sendCoachingEvent(event);
   }
 
   reset() {
     this.lastEventTime = 0;
     this.lastIssuedRuleId = null;
+    this.lastIssuedSeverity = 0;
+    this.lastEventType = null;
   }
 }

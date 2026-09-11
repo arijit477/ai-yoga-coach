@@ -36,8 +36,17 @@ export type VoiceStatus =
   | "muted"
   | "error";
 
+export interface VoiceTranscriptItem {
+  id: string;
+  role: "user" | "coach" | "system";
+  text: string;
+  timestamp: number;
+  isCorrection?: boolean;
+}
+
 export interface VoiceState {
   status: VoiceStatus;
   isMuted: boolean;
   error: string | null;
+  transcripts: VoiceTranscriptItem[];
 }

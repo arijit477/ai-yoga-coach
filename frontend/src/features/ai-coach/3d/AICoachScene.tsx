@@ -15,7 +15,7 @@ interface AICoachSceneProps {
   sessionState: ReturnType<typeof useCoachSession>["state"];
   holdTime: number;
   hasPose: boolean;
-  coachState: ReturnType<typeof useCoachState>;
+  coachState?: ReturnType<typeof useCoachState>;
 }
 
 export function AICoachScene({ 
@@ -23,10 +23,9 @@ export function AICoachScene({
   sessionState, 
   holdTime,
   hasPose,
-  coachState
+  coachState: _coachState,
 }: AICoachSceneProps) {
   const {
-    selectedCoach,
     currentAsana,
     sessionAsanas,
     currentAsanaIndex

@@ -22,7 +22,7 @@ import { AICoachScene } from "../3d/AICoachScene";
 import { AvatarPlayer } from "../avatar/AvatarPlayer";
 import { AvatarController } from "../avatar/AvatarController";
 import type { CoachId, AvatarState } from "../avatar/avatar.types";
-import { useRealtimeVoice } from "../voice";
+import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
 
 function getCoachStateMessage(
   state: ReturnType<typeof useCoachState>,
@@ -133,6 +133,7 @@ export function AICoachPage() {
    * Pose tracking
    */
   const { result, isInitialized, error } = usePoseTracking(videoRef);
+  const hasPose = Boolean(result);
 
   /*
    * Dynamic pose evaluation receiving rules for currentAsana
@@ -198,13 +199,32 @@ export function AICoachPage() {
     disconnect: voiceDisconnect,
     toggleMute: voiceToggleMute,
     dispatchEvent: voiceDispatch,
+    updateSessionContext: voiceUpdateContext,
   } = useRealtimeVoice();
 
+  // Track one-shot events per asana to avoid redundant dispatching
+  const hasDispatchedStartRef = useRef<string | null>(null);
+  const hasDispatchedHeldRef = useRef<string | null>(null);
+  const hasDispatchedCompletedRef = useRef<string | null>(null);
+  // Track last dispatched evaluation fingerprint to avoid re-dispatching identical feedback
+  const lastEvalFingerprintRef = useRef<string | null>(null);
+
   const handleStartSession = useCallback(() => {
+    hasDispatchedStartRef.current = null;
+    hasDispatchedHeldRef.current = null;
+    hasDispatchedCompletedRef.current = null;
     setIsPlayingIntro(true);
     setAvatarState("intro");
     voiceConnect(selectedCoach);
   }, [selectedCoach, voiceConnect]);
+
+  const handleStopSession = useCallback(() => {
+    stopSession();
+    voiceDisconnect();
+    hasDispatchedStartRef.current = null;
+    hasDispatchedHeldRef.current = null;
+    hasDispatchedCompletedRef.current = null;
+  }, [stopSession, voiceDisconnect]);
 
   const handleIntroEnded = useCallback(() => {
     setIsPlayingIntro(false);
@@ -218,6 +238,7 @@ export function AICoachPage() {
     startSession();
   }, [startSession]);
 
+  // Clean up voice connection when coach persona changes or unmounts
   useEffect(() => {
     if (avatarControllerRef.current) {
         avatarControllerRef.current.reset();
@@ -225,44 +246,162 @@ export function AICoachPage() {
         setIsPlayingIntro(false);
     }
     voiceDisconnect();
+    hasDispatchedStartRef.current = null;
+    hasDispatchedHeldRef.current = null;
+    hasDispatchedCompletedRef.current = null;
   }, [selectedCoach, voiceDisconnect]);
 
+  // Reset per-asana dispatch locks whenever current asana changes
+  useEffect(() => {
+    hasDispatchedStartRef.current = null;
+    hasDispatchedHeldRef.current = null;
+    hasDispatchedCompletedRef.current = null;
+    lastEvalFingerprintRef.current = null;
+
+    // Push active asana context to OpenAI Realtime voice agent so conversational memory is maintained
+    voiceUpdateContext({
+      coach: selectedCoach,
+      asanaId: currentAsana.id,
+      asanaName: currentAsana.name,
+      score: stableScore ?? undefined,
+      coachState,
+      sessionState,
+      isHolding: sessionState === "holding",
+      isCompleted: sessionState === "completed",
+      primaryIssue: stableEvaluation?.issues[0] ? {
+        ruleId: stableEvaluation.issues[0].ruleId,
+        severity: stableEvaluation.issues[0].severity,
+        currentValue: stableEvaluation.issues[0].currentValue,
+        min: stableEvaluation.issues[0].min,
+        max: stableEvaluation.issues[0].max,
+        feedback: stableEvaluation.issues[0].feedback,
+      } : null,
+    });
+  }, [currentAsana.id, selectedCoach, voiceUpdateContext]);
+
   /*
-   * Map evaluation to Voice Events
+   * Structured Coaching Event Pipeline:
+   * MediaPipe -> PoseEvaluator -> FeedbackPrioritizer -> FeedbackStabilizer -> CoachingEventBuilder -> CoachingEventDispatcher -> RealtimeVoiceAgent
    */
   useEffect(() => {
-    if (
-      sessionState === "idle" ||
-      sessionState === "completed" ||
-      sessionState === "session_completed" ||
-      !stableEvaluation
-    ) {
+    if (sessionState === "idle" || isPlayingIntro) {
       return;
     }
 
-    if (coachState === "correcting" && stableEvaluation.issues.length > 0) {
-      const primaryIssue = stableEvaluation.issues[0];
-      voiceDispatch({
-        id: Date.now().toString(),
-        type: "pose_correction",
-        asanaId: currentAsana.id,
-        asanaName: currentAsana.name,
-        ruleId: primaryIssue.ruleId,
-        issue: primaryIssue.feedback,
-        severity: primaryIssue.severity,
-        timestamp: Date.now(),
-      });
-    } else if (coachState === "good_form" || coachState === "holding") {
-      voiceDispatch({
-        id: Date.now().toString(),
-        type: "good_form",
-        asanaId: currentAsana.id,
-        asanaName: currentAsana.name,
-        feedback: "Great form, keep holding.",
-        timestamp: Date.now(),
-      });
+    // 1. POSE COMPLETED (CoachSessionState = completed)
+    if (sessionState === "completed") {
+      if (hasDispatchedCompletedRef.current !== currentAsana.id) {
+        hasDispatchedCompletedRef.current = currentAsana.id;
+        voiceDispatch(
+          CoachingEventBuilder.buildPoseCompletedEvent(
+            currentAsana.id,
+            currentAsana.name,
+            stableScore ?? undefined,
+          ),
+        );
+      }
+      return;
     }
-  }, [coachState, stableEvaluation, currentAsana, sessionState, voiceDispatch]);
+
+    // 2. POSE STARTED (User enters active detection with valid landmarks)
+    if (
+      sessionState !== "countdown" &&
+      sessionState !== "transition" &&
+      hasPose &&
+      hasDispatchedStartRef.current !== currentAsana.id
+    ) {
+      hasDispatchedStartRef.current = currentAsana.id;
+      voiceDispatch(
+        CoachingEventBuilder.buildPoseStartedEvent(
+          currentAsana.id,
+          currentAsana.name,
+        ),
+      );
+    }
+
+    // 3. POSE HELD (CoachSessionState = holding)
+    if (sessionState === "holding") {
+      if (hasDispatchedHeldRef.current !== currentAsana.id) {
+        hasDispatchedHeldRef.current = currentAsana.id;
+        voiceDispatch(
+          CoachingEventBuilder.buildPoseHeldEvent(
+            currentAsana.id,
+            currentAsana.name,
+            stableScore ?? undefined,
+          ),
+        );
+      }
+    }
+
+    // 4. POSTURE EVALUATION & FEEDBACK
+    if (!stableEvaluation) {
+      return;
+    }
+
+    if (stableEvaluation.issues.length > 0) {
+      // Prioritized primary issue from FeedbackPrioritizer & FeedbackStabilizer
+      const primaryIssue = stableEvaluation.issues[0];
+      // Build a fingerprint to avoid re-dispatching the same issue content
+      const evalFingerprint = `correction:${primaryIssue.ruleId}:${primaryIssue.severity}`;
+      if (lastEvalFingerprintRef.current === evalFingerprint) {
+        return; // Same issue already dispatched — CoachingEventDispatcher cooldown will handle retry
+      }
+      lastEvalFingerprintRef.current = evalFingerprint;
+
+      const isSafety =
+        primaryIssue.severity === "high" &&
+        (primaryIssue.ruleId.includes("safety") ||
+          primaryIssue.feedback.toLowerCase().includes("safety") ||
+          primaryIssue.feedback.toLowerCase().includes("stop") ||
+          primaryIssue.feedback.toLowerCase().includes("pain"));
+
+      if (isSafety) {
+        voiceDispatch(
+          CoachingEventBuilder.buildSafetyWarningEvent(
+            currentAsana.id,
+            currentAsana.name,
+            primaryIssue,
+            stableScore ?? undefined,
+          ),
+        );
+      } else {
+        voiceDispatch(
+          CoachingEventBuilder.buildPoseCorrectionEvent(
+            currentAsana.id,
+            currentAsana.name,
+            primaryIssue,
+            stableScore ?? undefined,
+          ),
+        );
+      }
+    } else if (
+      coachState === "good_form" ||
+      (coachState === "holding" && stableEvaluation.issues.length === 0)
+    ) {
+      // 5. GOOD FORM EVENT (User corrected issue or entered high-accuracy posture)
+      const evalFingerprint = `good_form:${coachState}`;
+      if (lastEvalFingerprintRef.current === evalFingerprint) {
+        return; // Already dispatched good form for this state
+      }
+      lastEvalFingerprintRef.current = evalFingerprint;
+      voiceDispatch(
+        CoachingEventBuilder.buildGoodFormEvent(
+          currentAsana.id,
+          currentAsana.name,
+          stableScore ?? undefined,
+        ),
+      );
+    }
+  }, [
+    sessionState,
+    isPlayingIntro,
+    hasPose,
+    stableEvaluation,
+    coachState,
+    currentAsana,
+    stableScore,
+    voiceDispatch,
+  ]);
 
   /*
    * Camera/video dimensions
@@ -317,8 +456,6 @@ export function AICoachPage() {
       document.exitFullscreen().catch(console.error);
     }
   };
-
-  const hasPose = Boolean(result);
 
   const isSessionActive =
     sessionState !== "idle" &&
@@ -734,38 +871,60 @@ export function AICoachPage() {
                     {isPlayingIntro ? "Intro" : sessionLabel}
                   </span>
                   
-                  {/* Voice Status Indicator */}
-                  {voiceState.status !== "disconnected" && (
-                    <button
-                      onClick={voiceToggleMute}
-                      className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${
-                        voiceState.status === "error"
-                          ? "border-red-200 bg-red-50 text-red-600"
-                          : voiceState.isMuted
-                          ? "border-amber-200 bg-amber-50 text-amber-600"
-                          : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-                      }`}
-                    >
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${
+                  {/* Voice Status Indicator & Controls */}
+                  {voiceState.status !== "disconnected" ? (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={voiceToggleMute}
+                        title={voiceState.isMuted ? "Unmute Coach" : "Mute Coach"}
+                        className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition ${
                           voiceState.status === "error"
-                            ? "bg-red-500"
+                            ? "border-red-200 bg-red-50 text-red-600"
                             : voiceState.isMuted
-                            ? "bg-amber-500"
-                            : voiceState.status === "speaking"
-                            ? "bg-indigo-500 animate-pulse"
-                            : "bg-indigo-400"
+                            ? "border-amber-200 bg-amber-50 text-amber-600"
+                            : "border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
                         }`}
-                      />
-                      {voiceState.status === "error"
-                        ? "Voice Error"
-                        : voiceState.isMuted
-                        ? "Muted"
-                        : voiceState.status === "connecting"
-                        ? "Connecting..."
-                        : voiceState.status === "speaking"
-                        ? "Speaking..."
-                        : "Listening..."}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            voiceState.status === "error"
+                              ? "bg-red-500"
+                              : voiceState.isMuted
+                              ? "bg-amber-500"
+                              : voiceState.status === "speaking"
+                              ? "bg-indigo-500 animate-pulse"
+                              : "bg-emerald-400 animate-pulse"
+                          }`}
+                        />
+                        {voiceState.status === "error"
+                          ? "Voice unavailable"
+                          : voiceState.isMuted
+                          ? "Muted"
+                          : voiceState.status === "connecting"
+                          ? "Connecting..."
+                          : voiceState.status === "speaking"
+                          ? `${getCoachName(selectedCoach)} is speaking...`
+                          : "Listening..."}
+                      </button>
+                      {voiceState.status === "error" && (
+                        <button
+                          type="button"
+                          onClick={() => voiceConnect(selectedCoach)}
+                          className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:bg-slate-50 transition"
+                        >
+                          Retry
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => voiceConnect(selectedCoach)}
+                      className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                      Voice Ready
                     </button>
                   )}
                 </div>
@@ -785,6 +944,47 @@ export function AICoachPage() {
                 >
                   Start {currentAsana.name}
                 </button>
+              )}
+
+              {sessionState === "idle" && isPlayingIntro && (
+                <button
+                  type="button"
+                  onClick={handleIntroEnded}
+                  className="mt-4 w-full rounded-2xl bg-indigo-600 px-4 py-3.5 font-bold text-white transition hover:bg-indigo-700 shadow-md flex items-center justify-center gap-2"
+                >
+                  <span>Skip Intro & Begin</span> →
+                </button>
+              )}
+
+              {/* Lightweight Live Voice Dialogue / Posture Feed */}
+              {voiceState.transcripts.length > 0 && (
+                <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50/80 p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Live Voice Dialogue
+                    </p>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  </div>
+                  <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto pr-1">
+                    {voiceState.transcripts.slice(-4).map((t) => (
+                      <div
+                        key={t.id}
+                        className={`text-xs leading-relaxed rounded-xl px-2.5 py-1.5 ${
+                          t.role === "user"
+                            ? "bg-indigo-50 text-indigo-900 ml-4 self-end border border-indigo-100/60"
+                            : t.isCorrection
+                            ? "bg-amber-50 text-amber-900 mr-4 self-start border border-amber-200/60"
+                            : "bg-white text-slate-800 mr-4 self-start border border-slate-200/60"
+                        }`}
+                      >
+                        <span className="font-semibold text-[10px] block opacity-70 mb-0.5">
+                          {t.role === "user" ? "You" : t.isCorrection ? `${getCoachName(selectedCoach)} • Posture` : getCoachName(selectedCoach)}
+                        </span>
+                        {t.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 
@@ -961,7 +1161,7 @@ export function AICoachPage() {
                 {isSessionActive && (
                   <button
                     type="button"
-                    onClick={stopSession}
+                    onClick={handleStopSession}
                     className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
                   >
                     Stop Session
