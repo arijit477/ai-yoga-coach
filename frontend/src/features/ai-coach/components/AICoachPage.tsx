@@ -627,18 +627,28 @@ export function AICoachPage() {
               )}
             </div>
 
-            {/* Top-right: score ring & Exit Cinema mode */}
-            <div className="absolute right-5 top-5 flex items-center gap-3">
-              <CircularScoreRing score={stableScore} size={50} strokeWidth={5} compact />
+            {/* Top-Right: Target Pose Reference Card Overlaid on Fullscreen Camera */}
+            <div className="absolute right-4 top-4 sm:right-6 sm:top-6 z-20">
+              <AsanaReference
+                asana={currentAsana}
+                className="w-40 xs:w-44 sm:w-48 lg:w-52 shadow-2xl"
+              />
+            </div>
+
+            {/* Top-Right Controls: Exit Fullscreen Button & Compact Score Ring */}
+            <div className="absolute right-[180px] xs:right-[195px] sm:right-[220px] lg:right-[235px] top-4 sm:top-6 z-20 flex items-center gap-2.5">
+              {stableScore !== null && (
+                <CircularScoreRing score={stableScore} size={44} strokeWidth={4} compact />
+              )}
 
               <button
                 type="button"
                 onClick={toggleCinemaMode}
-                className="flex items-center gap-1.5 rounded-xl bg-white/20 border border-white/30 px-3.5 py-2 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/30 transition shadow-md active:scale-95"
+                className="flex items-center gap-1.5 rounded-full bg-slate-900/80 border border-white/25 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-md hover:bg-slate-800 hover:text-white transition shadow-md active:scale-95 cursor-pointer"
                 title="Exit Fullscreen (Esc)"
               >
-                <Minimize size={14} />
-                <span>Exit Fullscreen</span>
+                <Minimize size={13} />
+                <span className="hidden sm:inline">Exit Fullscreen</span>
               </button>
             </div>
 
@@ -876,8 +886,8 @@ export function AICoachPage() {
                   />
                 )}
 
-                {/* Top-Left: LIVE Status Indicator & Asana Name Pill */}
-                <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
+                {/* Top-Left: LIVE Status Indicator, Asana Name Pill & Score Ring */}
+                <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 flex items-center gap-2">
                   <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/95 text-white px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
                     <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
                     LIVE • {sessionLabel}
@@ -886,21 +896,29 @@ export function AICoachPage() {
                   <span className="rounded-full bg-slate-900/80 text-white/90 px-3 py-1 text-xs font-semibold backdrop-blur-md border border-white/10 hidden sm:inline-block">
                     {currentAsana.name}
                   </span>
+
+                  {stableScore !== null && (
+                    <CircularScoreRing score={stableScore} size={38} strokeWidth={4} compact />
+                  )}
                 </div>
 
-                {/* Top-Right: Clean Pose Match Score & Expand */}
-                <div className="absolute top-3.5 right-3.5 flex items-center gap-2">
-                  <CircularScoreRing score={stableScore} size={48} strokeWidth={5} compact />
-
-                  <button
-                    type="button"
-                    onClick={toggleCinemaMode}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/80 text-white/80 hover:text-white border border-white/15 backdrop-blur-md transition"
-                    title="Full screen view"
-                  >
-                    <Maximize size={14} />
-                  </button>
+                {/* Top-Right: Overlaid Target Pose Reference Card (Copy This Pose) */}
+                <div className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 z-20">
+                  <AsanaReference
+                    asana={currentAsana}
+                    className="w-36 xs:w-40 sm:w-44 md:w-48 shadow-xl"
+                  />
                 </div>
+
+                {/* Bottom-Right: Maximize to Fullscreen / Cinema Mode */}
+                <button
+                  type="button"
+                  onClick={toggleCinemaMode}
+                  className="absolute bottom-3 right-3 sm:bottom-3.5 sm:right-3.5 z-20 flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900/80 text-white/80 hover:text-white hover:bg-slate-800 border border-white/20 backdrop-blur-md transition shadow-md active:scale-95 cursor-pointer"
+                  title="Full screen view"
+                >
+                  <Maximize size={15} />
+                </button>
 
                 {/* Guide Video Overlay (First stage of session if video exists) */}
                 {sessionState === "guide_video" && currentAsana.videoUrl && (
@@ -1066,9 +1084,6 @@ export function AICoachPage() {
                   targetHoldSeconds={currentAsana.targetHoldSeconds}
                 />
               </div>
-
-              {/* Target Pose Reference Image */}
-              <AsanaReference asana={currentAsana} />
 
               {/* On-Device Privacy Guarantee Notice */}
               <PrivacyNotice />
