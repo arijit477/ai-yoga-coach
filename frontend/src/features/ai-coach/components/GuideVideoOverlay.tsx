@@ -3,15 +3,30 @@ import { Play, FastForward } from "lucide-react";
 import type { Asana } from "../types/asana";
 
 interface GuideVideoOverlayProps {
-  asana: Asana;
+  asana?: Asana;
+  videoUrl?: string;
+  title?: string;
+  subtitle?: string;
+  badge?: string;
   onSkip: () => void;
   onEnded: () => void;
 }
 
-export function GuideVideoOverlay({ asana, onSkip, onEnded }: GuideVideoOverlayProps) {
+export function GuideVideoOverlay({
+  asana,
+  videoUrl,
+  title,
+  subtitle,
+  badge = "AI Coach Intro",
+  onSkip,
+  onEnded,
+}: GuideVideoOverlayProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const src = videoUrl || asana?.videoUrl;
+  const displayTitle = title || asana?.name || "AI Yoga Coach";
+  const displaySubtitle = subtitle || asana?.sanskritName;
 
-  if (!asana.videoUrl) {
+  if (!src) {
     return null;
   }
 
@@ -21,13 +36,13 @@ export function GuideVideoOverlay({ asana, onSkip, onEnded }: GuideVideoOverlayP
       <div className="w-full max-w-lg flex items-center justify-between mb-3 text-white">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-            Asana Guide
+            {badge}
           </span>
           <h3 className="text-lg font-bold text-white leading-tight">
-            {asana.name}
+            {displayTitle}
           </h3>
-          {asana.sanskritName && (
-            <p className="text-xs text-slate-300 italic">{asana.sanskritName}</p>
+          {displaySubtitle && (
+            <p className="text-xs text-slate-300 italic">{displaySubtitle}</p>
           )}
         </div>
 
@@ -46,7 +61,7 @@ export function GuideVideoOverlay({ asana, onSkip, onEnded }: GuideVideoOverlayP
       <div className="relative w-full max-w-lg aspect-video rounded-2xl overflow-hidden border border-white/20 bg-black shadow-2xl">
         <video
           ref={videoRef}
-          src={asana.videoUrl}
+          src={src}
           autoPlay
           muted
           playsInline

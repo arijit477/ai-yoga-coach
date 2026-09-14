@@ -35,7 +35,7 @@ export function CoachPanel({
       </div>
 
       {/* Avatar Stage */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-emerald-100 bg-white shadow-inner">
         <AvatarPlayer
           coach={coach}
           state={avatarState}
@@ -43,21 +43,35 @@ export function CoachPanel({
           loop
           className="h-full w-full object-cover"
         />
+
+        {/* Dynamic Voice Soundwave Indicator Overlay */}
+        {isSpeaking && (
+          <div className="absolute bottom-2.5 right-2.5 flex items-end gap-0.5 rounded-full bg-white/95 px-2 py-1 shadow-md border border-emerald-200/80 backdrop-blur-sm">
+            <span className="h-3 w-0.5 rounded-full bg-emerald-600 animate-[bounce_0.8s_infinite_100ms]" />
+            <span className="h-4 w-0.5 rounded-full bg-emerald-700 animate-[bounce_0.8s_infinite_200ms]" />
+            <span className="h-2.5 w-0.5 rounded-full bg-emerald-500 animate-[bounce_0.8s_infinite_300ms]" />
+            <span className="h-4.5 w-0.5 rounded-full bg-emerald-800 animate-[bounce_0.8s_infinite_150ms]" />
+            <span className="ml-1 text-[9px] font-bold uppercase tracking-wider text-emerald-800">Live</span>
+          </div>
+        )}
       </div>
 
       {/* Guidance Message Bubble */}
-      <div className="rounded-xl border border-emerald-900/10 bg-emerald-50/50 p-3">
-        <div className="flex items-center gap-1.5 mb-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
-            Feedback
-          </span>
+      <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3 shadow-[0_2px_8px_rgba(16,185,129,0.04)]">
+        <div className="flex items-center justify-between gap-1.5 mb-1.5">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-600" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+              Guidance & Cues
+            </span>
+          </div>
           {isSpeaking && (
-            <span className="text-[10px] text-emerald-600 font-medium animate-pulse">
-              • Speaking
+            <span className="flex items-center gap-1 text-[10px] text-emerald-700 font-semibold animate-pulse">
+              Speaking...
             </span>
           )}
         </div>
-        <p className="text-xs font-medium text-slate-800 leading-relaxed italic">
+        <p className="text-xs font-semibold text-emerald-950 leading-relaxed italic">
           "{guidanceMessage}"
         </p>
       </div>

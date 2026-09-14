@@ -11,8 +11,10 @@ function App() {
   const { selectedCoach, clearCoach } = useCoachStore();
   const { selectedExercise } = useSessionStore();
 
-  // Temporary state for testing AI Coach
-  const [showAICoach, setShowAICoach] = useState(false);
+  // State for AI Coach view (checks URL hash or path, defaults to true so user lands directly on AI Coach page)
+  const [showAICoach, setShowAICoach] = useState<boolean>(() => {
+    return window.location.pathname.includes('ai-coach') || window.location.hash.includes('ai-coach') || true;
+  });
 
   const handleClearCoach = () => {
     clearCoach();
@@ -23,14 +25,14 @@ function App() {
   // --------------------------------------------------
   if (showAICoach) {
     return (
-      <div className="min-h-screen bg-black">
-        {/* Temporary back button */}
+      <div className="min-h-screen bg-[#f9fdfb]">
+        {/* Navigation back button */}
         <button
           onClick={() => setShowAICoach(false)}
-          className="fixed left-5 top-5 z-[100] flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-lg transition hover:bg-gray-100"
+          className="fixed left-5 top-5 z-[100] flex items-center gap-2 rounded-full bg-white/90 border border-emerald-200/80 px-4 py-2 text-sm font-semibold text-emerald-950 shadow-md backdrop-blur-md transition hover:bg-emerald-50 hover:border-emerald-300 active:scale-95"
         >
-          <ArrowLeft size={16} />
-          Back
+          <ArrowLeft size={16} className="text-emerald-700" />
+          <span>Home</span>
         </button>
 
         <AICoachPage />

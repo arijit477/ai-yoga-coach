@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 
 interface CameraViewProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
+  enabled?: boolean;
 }
 
-export function CameraView({ videoRef }: CameraViewProps) {
+export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
   const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
+    const videoEl = videoRef.current;
     let stream: MediaStream | null = null;
     let cancelled = false;
 
@@ -69,11 +75,11 @@ export function CameraView({ videoRef }: CameraViewProps) {
         track.stop();
       });
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
+      if (videoEl) {
+        videoEl.srcObject = null;
       }
     };
-  }, [videoRef]);
+  }, [videoRef, enabled]);
 
   return (
     <div className="relative aspect-video w-full overflow-hidden bg-black">

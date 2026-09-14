@@ -115,8 +115,21 @@ function getSessionLabel(
   }
 }
 
+const INTRO_GUIDE_VIDEO_URL = "/guide_videos/AI Yoga Coach.mp4";
+
 export function AICoachPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Introductory guide video state (plays inside camera stage on initial page load)
+  const [isIntroVideoActive, setIsIntroVideoActive] = useState(true);
+
+  const handleSkipIntroVideo = useCallback(() => {
+    setIsIntroVideoActive(false);
+  }, []);
+
+  const handleIntroVideoEnded = useCallback(() => {
+    setIsIntroVideoActive(false);
+  }, []);
 
   const {
     currentAsana,
@@ -588,10 +601,10 @@ export function AICoachPage() {
         <div className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col overflow-hidden">
           {/* Camera + skeleton fills entire viewport */}
           <div className="relative flex-1 overflow-hidden w-full h-full flex items-center justify-center">
-            <CameraView videoRef={videoRef} />
+            <CameraView videoRef={videoRef} enabled={!isIntroVideoActive} />
 
             {/* Neon glowing skeleton overlay */}
-            {result && showSkeleton && (
+            {!isIntroVideoActive && result && showSkeleton && (
               <PoseSkeleton
                 landmarks={result.landmarks}
                 videoWidth={videoSize.width}
@@ -601,7 +614,7 @@ export function AICoachPage() {
             )}
 
             {/* Joint angle labels tracking body joints */}
-            {result && (
+            {!isIntroVideoActive && result && (
               <JointAngleOverlay
                 landmarks={result.landmarks}
                 jointAngles={jointAngles}
@@ -615,12 +628,12 @@ export function AICoachPage() {
             <div className="absolute left-5 top-5 flex items-center gap-3">
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/90 text-white px-3 py-1 text-xs font-bold tracking-wider uppercase shadow-md backdrop-blur-md">
                 <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                LIVE • {sessionLabel}
+                {isIntroVideoActive ? "Intro Guide" : `LIVE • ${sessionLabel}`}
               </span>
               <span className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
-                {currentAsana.name}
+                {isIntroVideoActive ? "Welcome to AI Yoga Coach" : currentAsana.name}
               </span>
-              {currentAsana.sanskritName && (
+              {!isIntroVideoActive && currentAsana.sanskritName && (
                 <span className="hidden sm:inline text-xs text-white/70 italic">
                   ({currentAsana.sanskritName})
                 </span>
@@ -629,7 +642,9 @@ export function AICoachPage() {
 
             {/* Top-right: score ring & Exit Cinema mode */}
             <div className="absolute right-5 top-5 flex items-center gap-3">
-              <CircularScoreRing score={stableScore} size={50} strokeWidth={5} compact />
+              {!isIntroVideoActive && (
+                <CircularScoreRing score={stableScore} size={50} strokeWidth={5} compact />
+              )}
 
               <button
                 type="button"
@@ -669,8 +684,20 @@ export function AICoachPage() {
               </div>
             </div>
 
-            {/* Guide Video Overlay in Cinema Mode */}
-            {sessionState === "guide_video" && currentAsana.videoUrl && (
+            {/* Introductory Guide Video on Page Load (Cinema Mode) */}
+            {isIntroVideoActive && (
+              <GuideVideoOverlay
+                videoUrl={INTRO_GUIDE_VIDEO_URL}
+                title="AI Yoga Coach Guide"
+                subtitle="Watch how your AI coach guides your posture in real time"
+                badge="Intro Guide"
+                onSkip={handleSkipIntroVideo}
+                onEnded={handleIntroVideoEnded}
+              />
+            )}
+
+            {/* Guide Video Overlay in Cinema Mode (Per-Asana) */}
+            {!isIntroVideoActive && sessionState === "guide_video" && currentAsana.videoUrl && (
               <GuideVideoOverlay
                 asana={currentAsana}
                 onSkip={skipGuideVideo}
@@ -734,11 +761,28 @@ export function AICoachPage() {
 
             {/* Step-by-Step Guidance Banner in Cinema Mode */}
             {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
-              <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-white/95 text-slate-900 px-4 py-2.5 shadow-lg backdrop-blur-md border border-emerald-200 animate-in fade-in slide-in-from-top-2 duration-200 text-center">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
-                  Step {currentStepIndex + 1} of {currentAsana.instructions.length}
-                </span>
-                <p className="text-xs font-semibold leading-snug text-slate-800">
+              <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                    Step {currentStepIndex + 1} of {currentAsana.instructions.length}
+                  </span>
+                  {/* Step Timeline Progress Indicator */}
+                  <div className="flex items-center gap-1.5">
+                    {currentAsana.instructions.map((_, idx) => (
+                      <span
+                        key={idx}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          idx === currentStepIndex
+                            ? "w-5 bg-emerald-600 shadow-sm"
+                            : idx < currentStepIndex
+                            ? "w-2 bg-emerald-400"
+                            : "w-1.5 bg-emerald-100"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-xs font-semibold leading-snug text-emerald-950">
                   {currentAsana.instructions[currentStepIndex]}
                 </p>
               </div>
@@ -746,10 +790,13 @@ export function AICoachPage() {
 
             {/* Hold Timer Banner in Cinema Mode */}
             {sessionState === "holding" && (
-              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-full bg-white/95 text-emerald-900 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200 animate-in fade-in zoom-in-95 duration-200">
-                <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
-                <span className="text-sm font-bold">
-                  Hold steady: {holdTime.toFixed(1)}s / {currentAsana.targetHoldSeconds.toFixed(1)}s
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-white/95 text-emerald-950 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200/80 animate-in fade-in zoom-in-95 duration-200">
+                <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
+                </span>
+                <span className="text-sm font-bold tracking-tight text-emerald-950">
+                  Hold Steady: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
                 </span>
               </div>
             )}
@@ -852,11 +899,17 @@ export function AICoachPage() {
             {/* ------------------------------------------------ */}
             <main className="flex flex-col gap-4 min-w-0">
               {/* Camera Stage Card */}
-              <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-900 shadow-md aspect-[4/3] md:aspect-[16/10] xl:aspect-video w-full flex items-center justify-center">
-                {!isCinemaMode && <CameraView videoRef={videoRef} />}
+              <div
+                className={`relative overflow-hidden rounded-3xl border bg-slate-900 shadow-md aspect-[4/3] md:aspect-[16/10] xl:aspect-video w-full flex items-center justify-center transition-all duration-700 ${
+                  sessionState === "holding" || coachState === "good_form"
+                    ? "border-emerald-400/80 shadow-[0_0_40px_-5px_rgba(16,185,129,0.35)] ring-2 ring-emerald-400/40"
+                    : "border-slate-200/90 shadow-sm"
+                }`}
+              >
+                {!isCinemaMode && <CameraView videoRef={videoRef} enabled={!isIntroVideoActive} />}
 
                 {/* Body-Only MediaPipe Skeleton with Polished Neon Glow Tracer (face dots hidden) */}
-                {result && showSkeleton && (
+                {!isIntroVideoActive && result && showSkeleton && (
                   <PoseSkeleton
                     landmarks={result.landmarks}
                     videoWidth={videoSize.width}
@@ -866,7 +919,7 @@ export function AICoachPage() {
                 )}
 
                 {/* Live Joint Angles displayed directly beside joints */}
-                {result && (
+                {!isIntroVideoActive && result && (
                   <JointAngleOverlay
                     landmarks={result.landmarks}
                     jointAngles={jointAngles}
@@ -880,17 +933,19 @@ export function AICoachPage() {
                 <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
                   <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/95 text-white px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
                     <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                    LIVE • {sessionLabel}
+                    {isIntroVideoActive ? "Intro Guide" : `LIVE • ${sessionLabel}`}
                   </span>
 
                   <span className="rounded-full bg-slate-900/80 text-white/90 px-3 py-1 text-xs font-semibold backdrop-blur-md border border-white/10 hidden sm:inline-block">
-                    {currentAsana.name}
+                    {isIntroVideoActive ? "Welcome to AI Yoga Coach" : currentAsana.name}
                   </span>
                 </div>
 
                 {/* Top-Right: Clean Pose Match Score & Expand */}
                 <div className="absolute top-3.5 right-3.5 flex items-center gap-2">
-                  <CircularScoreRing score={stableScore} size={48} strokeWidth={5} compact />
+                  {!isIntroVideoActive && (
+                    <CircularScoreRing score={stableScore} size={48} strokeWidth={5} compact />
+                  )}
 
                   <button
                     type="button"
@@ -902,8 +957,20 @@ export function AICoachPage() {
                   </button>
                 </div>
 
+                {/* Introductory Guide Video on Page Load (Standard View) */}
+                {isIntroVideoActive && (
+                  <GuideVideoOverlay
+                    videoUrl={INTRO_GUIDE_VIDEO_URL}
+                    title="AI Yoga Coach Guide"
+                    subtitle="Watch how your AI coach guides your posture in real time"
+                    badge="Intro Guide"
+                    onSkip={handleSkipIntroVideo}
+                    onEnded={handleIntroVideoEnded}
+                  />
+                )}
+
                 {/* Guide Video Overlay (First stage of session if video exists) */}
-                {sessionState === "guide_video" && currentAsana.videoUrl && (
+                {!isIntroVideoActive && sessionState === "guide_video" && currentAsana.videoUrl && (
                   <GuideVideoOverlay
                     asana={currentAsana}
                     onSkip={skipGuideVideo}
@@ -969,11 +1036,28 @@ export function AICoachPage() {
 
                 {/* Step-by-Step Guidance Banner in Camera View */}
                 {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
-                  <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-white/95 text-slate-900 px-4 py-2.5 shadow-lg backdrop-blur-md border border-emerald-200 animate-in fade-in slide-in-from-top-2 duration-200 text-center">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
-                      Step {currentStepIndex + 1} of {currentAsana.instructions.length}
-                    </span>
-                    <p className="text-xs font-semibold leading-snug text-slate-800">
+                  <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                        Step {currentStepIndex + 1} of {currentAsana.instructions.length}
+                      </span>
+                      {/* Step Timeline Progress Indicator */}
+                      <div className="flex items-center gap-1.5">
+                        {currentAsana.instructions.map((_, idx) => (
+                          <span
+                            key={idx}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                              idx === currentStepIndex
+                                ? "w-5 bg-emerald-600 shadow-sm"
+                                : idx < currentStepIndex
+                                ? "w-2 bg-emerald-400"
+                                : "w-1.5 bg-emerald-100"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-xs font-semibold leading-snug text-emerald-950">
                       {currentAsana.instructions[currentStepIndex]}
                     </p>
                   </div>
@@ -981,10 +1065,13 @@ export function AICoachPage() {
 
                 {/* Bottom Center: Hold Progress Banner */}
                 {sessionState === "holding" && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-full bg-white/95 text-emerald-900 px-5 py-2 shadow-lg backdrop-blur-md border border-emerald-200 animate-in fade-in zoom-in-95 duration-200">
-                    <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
-                    <span className="text-xs font-bold">
-                      Hold steady: {holdTime.toFixed(1)}s / {currentAsana.targetHoldSeconds.toFixed(1)}s
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-white/95 text-emerald-950 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200/80 animate-in fade-in zoom-in-95 duration-200">
+                    <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
+                    </span>
+                    <span className="text-xs font-bold tracking-tight text-emerald-950">
+                      Hold Steady: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
                     </span>
                   </div>
                 )}
