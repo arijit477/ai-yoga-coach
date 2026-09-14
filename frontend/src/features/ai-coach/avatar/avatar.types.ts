@@ -3,6 +3,7 @@ export type CoachId = "alice" | "kevin";
 export type AvatarState =
   | "idle"
   | "intro"
+  | "listening"
   | "speaking"
   | "correction"
   | "good_form"

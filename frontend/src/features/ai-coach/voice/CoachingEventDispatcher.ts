@@ -3,9 +3,11 @@ import { RealtimeVoiceAgent } from "./RealtimeVoiceAgent";
 
 interface DispatcherConfig {
   cooldownMs: number;
+  repeatSameRuleCooldownMs: number;
 }
 
 const DEFAULT_COACHING_COOLDOWN_MS = 4000;
+const DEFAULT_REPEAT_RULE_COOLDOWN_MS = 10000;
 
 const SEVERITY_WEIGHT: Record<string, number> = {
   safety_warning: 5,
@@ -26,6 +28,8 @@ export class CoachingEventDispatcher {
   constructor(config?: Partial<DispatcherConfig>) {
     this.config = {
       cooldownMs: config?.cooldownMs ?? DEFAULT_COACHING_COOLDOWN_MS,
+      repeatSameRuleCooldownMs:
+        config?.repeatSameRuleCooldownMs ?? DEFAULT_REPEAT_RULE_COOLDOWN_MS,
     };
   }
 
@@ -43,56 +47,66 @@ export class CoachingEventDispatcher {
     }
 
     const now = Date.now();
-    const eventSeverity = event.type === "safety_warning" ? 5 : SEVERITY_WEIGHT[event.severity || "info"] || 1;
+    const eventSeverity =
+      event.type === "safety_warning" ? 5 : SEVERITY_WEIGHT[event.severity || "info"] || 1;
 
-    // 1. Safety warnings ALWAYS pass through immediately
+    // 1. Safety warnings ALWAYS pass through immediately with top priority
     if (event.type === "safety_warning") {
       this.send(event, now, eventSeverity);
       return true;
     }
 
     // 2. State-driven one-time lifecycle events (pose_started, pose_held, pose_completed)
-    if (event.type === "pose_started" || event.type === "pose_held" || event.type === "pose_completed") {
+    if (
+      event.type === "pose_started" ||
+      event.type === "pose_held" ||
+      event.type === "pose_completed"
+    ) {
       if (this.lastEventType === event.type) {
-        console.log(`[AI COACH] Coaching event suppressed by cooldown: identical lifecycle event ${event.type}`);
+        console.log(
+          `[AI COACH] Coaching event suppressed by cooldown: duplicate lifecycle event ${event.type}`
+        );
         return false;
       }
       this.send(event, now, eventSeverity);
       return true;
     }
 
-    // 3. Good form acknowledgment
+    // 3. Good form acknowledgment: only trigger on transition
     if (event.type === "good_form") {
       if (this.lastEventType === "good_form") {
-        console.log("[AI COACH] Coaching event suppressed by cooldown: already in good form");
+        console.log("[AI COACH] Coaching event suppressed: already acknowledged good form");
         return false;
       }
-      // Send good form acknowledgment if transitioning from a correction or entering good form
       this.send(event, now, eventSeverity);
       this.lastIssuedRuleId = null;
       return true;
     }
 
-    // 4. Higher-severity preempts an active cooldown of a lower-severity event
-    const isHigherSeverity = eventSeverity > this.lastIssuedSeverity;
+    // 4. Duplicate suppression: do not repeat the exact same rule within the repeat window
     const timeSinceLastEvent = now - this.lastEventTime;
-
-    if (!isHigherSeverity && timeSinceLastEvent < this.config.cooldownMs) {
-      console.log(
-        `[AI COACH] Coaching event suppressed by cooldown: active cooldown (${Math.round(timeSinceLastEvent)}ms / ${this.config.cooldownMs}ms)`
-      );
-      return false;
-    }
-
-    // 5. Duplicate suppression: do not repeat the exact same rule immediately
-    if (event.type === "pose_correction" && event.ruleId && event.ruleId === this.lastIssuedRuleId) {
-      // Must wait at least 2.5x cooldown before repeating the same correction to prevent voice nagging
-      if (timeSinceLastEvent < this.config.cooldownMs * 2.5) {
+    if (
+      event.type === "pose_correction" &&
+      event.ruleId &&
+      event.ruleId === this.lastIssuedRuleId
+    ) {
+      // If severity increased from medium/low to high, allow preemption
+      const isSeverityEscalation = eventSeverity > this.lastIssuedSeverity;
+      if (!isSeverityEscalation && timeSinceLastEvent < this.config.repeatSameRuleCooldownMs) {
         console.log(
-          `[AI COACH] Coaching event suppressed by cooldown: duplicate rule ${event.ruleId} within repeat window`
+          `[AI COACH] Coaching event suppressed by cooldown: duplicate rule '${event.ruleId}' within repeat window (${Math.round(timeSinceLastEvent)}ms / ${this.config.repeatSameRuleCooldownMs}ms)`
         );
         return false;
       }
+    }
+
+    // 5. Higher-severity preempts an active cooldown of a lower-severity event
+    const isHigherSeverity = eventSeverity > this.lastIssuedSeverity;
+    if (!isHigherSeverity && timeSinceLastEvent < this.config.cooldownMs) {
+      console.log(
+        `[AI COACH] Coaching event suppressed by cooldown: active baseline cooldown (${Math.round(timeSinceLastEvent)}ms / ${this.config.cooldownMs}ms)`
+      );
+      return false;
     }
 
     this.send(event, now, eventSeverity);
@@ -123,3 +137,4 @@ export class CoachingEventDispatcher {
     this.lastEventType = null;
   }
 }
+

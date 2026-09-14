@@ -298,6 +298,23 @@ function calculateRuleScore(value: number, rule: PoseRule): number {
   return 0;
 }
 
+function inferJointFromRule(rule: PoseRule): string | undefined {
+  const id = rule.id.toLowerCase();
+  const name = rule.name.toLowerCase();
+  if (id.includes("right-knee") || id.includes("rightknee") || name.includes("right knee")) return "rightKnee";
+  if (id.includes("left-knee") || id.includes("leftknee") || name.includes("left knee")) return "leftKnee";
+  if (id.includes("right-shoulder") || name.includes("right shoulder")) return "rightShoulder";
+  if (id.includes("left-shoulder") || name.includes("left shoulder")) return "leftShoulder";
+  if (id.includes("right-elbow") || name.includes("right elbow")) return "rightElbow";
+  if (id.includes("left-elbow") || name.includes("left elbow")) return "leftElbow";
+  if (id.includes("right-hip") || name.includes("right hip")) return "rightHip";
+  if (id.includes("left-hip") || name.includes("left hip")) return "leftHip";
+  if (id.includes("shoulder") || name.includes("shoulder")) return "shoulders";
+  if (id.includes("hip") || name.includes("hip")) return "hips";
+  if (id.includes("spine") || name.includes("spine")) return "spine";
+  return undefined;
+}
+
 /**
  * Create a structured pose issue.
  */
@@ -312,5 +329,8 @@ function createPoseIssue(rule: PoseRule, currentValue: number): PoseIssue {
     min: rule.min,
     max: rule.max,
     feedback: rule.feedback,
+    joint: inferJointFromRule(rule),
+    targetMin: rule.min,
+    targetMax: rule.max,
   };
 }

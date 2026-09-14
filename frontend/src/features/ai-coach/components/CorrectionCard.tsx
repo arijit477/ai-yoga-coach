@@ -31,31 +31,25 @@ function getSeverityClasses(severity: PoseIssue["severity"]): {
   switch (severity) {
     case "high":
       return {
-        container: "border-red-400/20 bg-red-400/5",
-        indicator: "bg-red-400",
-        label: "text-red-300",
+        container: "border-rose-200 bg-rose-50/70",
+        indicator: "bg-rose-500",
+        label: "text-rose-800",
       };
 
     case "medium":
       return {
-        container: "border-orange-400/20 bg-orange-400/5",
-        indicator: "bg-orange-400",
-        label: "text-orange-300",
+        container: "border-amber-200 bg-amber-50/70",
+        indicator: "bg-amber-500",
+        label: "text-amber-800",
       };
 
     case "low":
-      return {
-        container: "border-yellow-400/20 bg-yellow-400/5",
-        indicator: "bg-yellow-400",
-        label: "text-yellow-300",
-      };
-
     case "info":
     default:
       return {
-        container: "border-blue-400/20 bg-blue-400/5",
-        indicator: "bg-blue-400",
-        label: "text-blue-300",
+        container: "border-emerald-200 bg-emerald-50/70",
+        indicator: "bg-emerald-600",
+        label: "text-emerald-800",
       };
   }
 }
@@ -63,21 +57,20 @@ function getSeverityClasses(severity: PoseIssue["severity"]): {
 export function CorrectionCard({ issue }: CorrectionCardProps) {
   if (!issue) {
     return (
-      <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/5 p-5">
+      <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-4 shadow-sm">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" />
-
-          <p className="text-xs font-medium uppercase tracking-wider text-emerald-300">
-            Good Form
+          <span className="h-2 w-2 rounded-full bg-emerald-600" />
+          <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+            Good Alignment
           </p>
         </div>
 
-        <p className="mt-3 text-base font-medium leading-6">
+        <p className="mt-2 text-sm font-semibold text-slate-800">
           Great form. Hold your position.
         </p>
 
-        <p className="mt-2 text-sm leading-5 text-white/40">
-          Keep your alignment steady while you hold the pose.
+        <p className="mt-1 text-xs text-slate-500">
+          Maintain steady breathing while holding the pose.
         </p>
       </div>
     );
@@ -86,28 +79,17 @@ export function CorrectionCard({ issue }: CorrectionCardProps) {
   const styles = getSeverityClasses(issue.severity);
 
   return (
-    <div className={`rounded-2xl border p-5 ${styles.container}`}>
+    <div className={`rounded-2xl border p-4 shadow-sm ${styles.container}`}>
       <div className="flex items-center gap-2">
         <span className={`h-2 w-2 rounded-full ${styles.indicator}`} />
-
-        <p
-          className={`text-xs font-medium uppercase tracking-wider ${styles.label}`}
-        >
+        <p className={`text-[11px] font-bold uppercase tracking-wider ${styles.label}`}>
           {getSeverityLabel(issue.severity)}
         </p>
       </div>
 
-      <p className="mt-3 text-base font-medium leading-6 text-white">
+      <p className="mt-2 text-sm font-semibold text-slate-900 leading-snug">
         {issue.feedback}
       </p>
-
-      <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-xs text-white/30">{issue.ruleName}</p>
-
-        <span className="rounded-full bg-black/20 px-2.5 py-1 text-[10px] uppercase tracking-wider text-white/40">
-          {issue.severity}
-        </span>
-      </div>
     </div>
   );
 }

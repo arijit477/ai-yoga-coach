@@ -1,4 +1,4 @@
-import type { CoachingEvent, VoiceTranscriptItem } from "./voice.types";
+import type { CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 
 export interface SessionContextData {
   coach: string;
@@ -9,8 +9,12 @@ export interface SessionContextData {
   sessionState?: string;
   primaryIssue?: {
     ruleId: string;
+    joint?: string;
     severity: string;
     currentValue?: number;
+    currentAngle?: number;
+    targetMin?: number;
+    targetMax?: number;
     min?: number;
     max?: number;
     feedback?: string;
@@ -24,20 +28,18 @@ export class RealtimeVoiceAgent {
   private dc: RTCDataChannel | null = null;
   private audioEl: HTMLAudioElement | null = null;
   private stream: MediaStream | null = null;
-  private onStatusChange?: (
-    status: "disconnected" | "connecting" | "connected" | "listening" | "speaking" | "error",
-    error?: string,
-  ) => void;
+  private onStatusChange?: (status: VoiceConnectionState, error?: string) => void;
   private onTranscript?: (item: VoiceTranscriptItem) => void;
   private clientSecret: string | null = null;
   private isMuted: boolean = false;
   private isSpeaking: boolean = false;
+  private currentCoachId: string | null = null;
+  private isConnecting: boolean = false;
+  // Hook for future avatar lip-sync: returns incoming audio stream
+  private remoteAudioStream: MediaStream | null = null;
 
   constructor(
-    onStatusChange?: (
-      status: "disconnected" | "connecting" | "connected" | "listening" | "speaking" | "error",
-      error?: string,
-    ) => void,
+    onStatusChange?: (status: VoiceConnectionState, error?: string) => void,
     onTranscript?: (item: VoiceTranscriptItem) => void,
   ) {
     this.onStatusChange = onStatusChange;
@@ -46,10 +48,46 @@ export class RealtimeVoiceAgent {
     this.audioEl.autoplay = true;
   }
 
+  getRemoteAudioStream(): MediaStream | null {
+    return this.remoteAudioStream;
+  }
+
+  getCoachId(): string | null {
+    return this.currentCoachId;
+  }
+
   async connect(coachId: string) {
+    if (this.isConnecting) {
+      console.warn("[AI COACH] RealtimeVoiceAgent connection already in progress.");
+      return;
+    }
+
+    // Clean up any stale connection first
+    this.disconnect();
+
+    this.isConnecting = true;
+    this.currentCoachId = coachId;
+
+    // 1. Request microphone permission
+    this.updateStatus("requesting_permission");
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
+    } catch (micErr: any) {
+      console.warn("[AI COACH] Microphone permission denied or device unavailable:", micErr);
+      this.isConnecting = false;
+      this.updateStatus("error", "Microphone access denied or unavailable.");
+      return;
+    }
+
+    // 2. Connecting to backend session
     this.updateStatus("connecting");
     try {
-      // 1. Get ephemeral token from backend
       const resp = await fetch("http://localhost:8000/api/ai-coach/realtime/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -68,20 +106,32 @@ export class RealtimeVoiceAgent {
         throw new Error("No client secret returned from voice session backend.");
       }
 
-      // 2. Setup WebRTC Peer Connection
+      // 3. Setup WebRTC Peer Connection
       this.pc = new RTCPeerConnection();
 
       // Handle incoming audio stream from OpenAI
       this.pc.ontrack = (e) => {
-        if (this.audioEl && e.streams[0]) {
-          this.audioEl.srcObject = e.streams[0];
-          this.audioEl.play().catch((err) => {
-            console.warn("[AI COACH] Audio autoplay pending user interaction:", err);
-          });
+        if (e.streams[0]) {
+          this.remoteAudioStream = e.streams[0];
+          if (this.audioEl) {
+            this.audioEl.srcObject = e.streams[0];
+            this.audioEl.play().catch((err) => {
+              console.warn("[AI COACH] Audio autoplay pending user interaction:", err);
+            });
+          }
         }
       };
 
-      // 3. Set up data channel for bidirectional events
+      // Add local microphone tracks to PeerConnection
+      if (this.stream) {
+        this.stream.getTracks().forEach((track) => {
+          if (this.pc && this.stream) {
+            this.pc.addTrack(track, this.stream);
+          }
+        });
+      }
+
+      // 4. Set up data channel for bidirectional events
       this.dc = this.pc.createDataChannel("oai-events");
 
       this.dc.onopen = () => {
@@ -92,28 +142,34 @@ export class RealtimeVoiceAgent {
         try {
           const ev = JSON.parse(e.data);
 
-          // Track speaking state
+          // Track speaking and listening states
           if (ev.type === "response.audio.delta" || ev.type === "response.output_item.added") {
             if (!this.isSpeaking) {
               this.isSpeaking = true;
-              this.updateStatus("speaking");
+              this.updateStatus(this.isMuted ? "muted" : "speaking");
             }
-          } else if (ev.type === "response.done" || ev.type === "response.audio.done") {
+          } else if (
+            ev.type === "response.done" ||
+            ev.type === "response.audio.done" ||
+            ev.type === "response.cancelled"
+          ) {
             if (this.isSpeaking) {
               this.isSpeaking = false;
-              this.updateStatus("connected");
+              this.updateStatus(this.isMuted ? "muted" : "connected");
             }
           } else if (ev.type === "input_audio_buffer.speech_started") {
-            // User interruption detected by OpenAI VAD
-            console.log("[AI COACH] User started speaking (interruption)");
+            // User interruption detected by OpenAI Server VAD
+            console.log("[AI COACH] User interruption detected");
             this.isSpeaking = false;
-            this.updateStatus("listening");
+            this.updateStatus(this.isMuted ? "muted" : "listening");
           } else if (ev.type === "input_audio_buffer.speech_stopped") {
-            this.updateStatus("connected");
+            if (!this.isSpeaking) {
+              this.updateStatus(this.isMuted ? "muted" : "connected");
+            }
           }
 
           // Optional transcript capturing:
-          // User input audio transcription completed
+          // User speech transcription
           if (ev.type === "conversation.item.input_audio_transcription.completed" && ev.transcript) {
             this.onTranscript?.({
               id: ev.item_id || `user_${Date.now()}`,
@@ -123,7 +179,7 @@ export class RealtimeVoiceAgent {
             });
           }
 
-          // Coach spoken response transcript completed
+          // Coach spoken response transcript
           if (ev.type === "response.audio_transcript.done" && ev.transcript) {
             this.onTranscript?.({
               id: ev.item_id || `coach_${Date.now()}`,
@@ -140,18 +196,6 @@ export class RealtimeVoiceAgent {
           // ignore non-json messages
         }
       };
-
-      // 4. Request local microphone stream (graceful fallback if denied)
-      try {
-        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        this.stream.getTracks().forEach((track) => {
-          if (this.pc && this.stream) {
-            this.pc.addTrack(track, this.stream);
-          }
-        });
-      } catch (micErr: any) {
-        console.warn("[AI COACH] Microphone not granted or available; proceeding with audio output only.", micErr);
-      }
 
       // 5. Create local SDP offer
       const offer = await this.pc.createOffer();
@@ -188,11 +232,13 @@ export class RealtimeVoiceAgent {
       const answer = { type: "answer" as RTCSdpType, sdp: answerSdp };
       await this.pc.setRemoteDescription(answer);
 
-      this.updateStatus("connected");
+      this.isConnecting = false;
+      this.updateStatus(this.isMuted ? "muted" : "connected");
       this.syncMuteState();
     } catch (e: any) {
       console.error("[AI COACH] RealtimeVoiceAgent Connect Error:", e);
-      this.updateStatus("error", e.message);
+      this.isConnecting = false;
+      this.updateStatus("error", e.message || "Failed to establish WebRTC connection.");
       this.disconnect();
     }
   }
@@ -222,13 +268,16 @@ export class RealtimeVoiceAgent {
     const eventContent = [
       `[SYSTEM POSTURE EVENT]`,
       `Type: ${event.type}`,
-      `Asana: ${event.asanaName}`,
-      `Rule: ${event.ruleId || "N/A"}`,
-      `Issue: ${event.issue || "None"}`,
-      `Severity: ${event.severity || "normal"}`,
-      event.currentValue !== undefined ? `Current Value: ${event.currentValue}` : null,
-      event.targetValue !== undefined ? `Target: ${event.targetValue}` : null,
-      event.min !== undefined && event.max !== undefined ? `Acceptable Range: ${event.min} - ${event.max}` : null,
+      `Asana: ${event.asanaName} (${event.asanaId})`,
+      event.ruleId ? `Rule: ${event.ruleId}` : null,
+      event.joint ? `Joint / Body Part: ${event.joint}` : null,
+      event.issue ? `Issue: ${event.issue}` : null,
+      event.severity ? `Severity: ${event.severity}` : null,
+      event.currentValue !== undefined ? `Current Angle/Value: ${event.currentValue}°` : null,
+      event.targetValue !== undefined ? `Target Value: ${event.targetValue}°` : null,
+      (event.min !== undefined || event.targetMin !== undefined) && (event.max !== undefined || event.targetMax !== undefined)
+        ? `Target Angle Range: ${event.targetMin ?? event.min}° - ${event.targetMax ?? event.max}°`
+        : null,
       event.feedback ? `Instruction: ${event.feedback}` : null,
       event.score !== undefined ? `Current Score: ${event.score}` : null,
     ]
@@ -267,6 +316,21 @@ export class RealtimeVoiceAgent {
       return;
     }
 
+    const primaryIssueText = context.primaryIssue
+      ? [
+          `Rule: ${context.primaryIssue.ruleId}`,
+          context.primaryIssue.joint ? `Joint: ${context.primaryIssue.joint}` : null,
+          `Severity: ${context.primaryIssue.severity}`,
+          (context.primaryIssue.currentAngle !== undefined || context.primaryIssue.currentValue !== undefined)
+            ? `Current Angle: ${context.primaryIssue.currentAngle ?? context.primaryIssue.currentValue}°`
+            : null,
+          (context.primaryIssue.targetMin !== undefined || context.primaryIssue.min !== undefined) && (context.primaryIssue.targetMax !== undefined || context.primaryIssue.max !== undefined)
+            ? `Target Range: ${context.primaryIssue.targetMin ?? context.primaryIssue.min}° - ${context.primaryIssue.targetMax ?? context.primaryIssue.max}°`
+            : null,
+          context.primaryIssue.feedback ? `Feedback: ${context.primaryIssue.feedback}` : null,
+        ].filter(Boolean).join(", ")
+      : "Alignment in good standing";
+
     const contextText = [
       `[ACTIVE SESSION CONTEXT UPDATE]`,
       `Coach: ${context.coach}`,
@@ -276,9 +340,7 @@ export class RealtimeVoiceAgent {
       context.sessionState ? `Session State: ${context.sessionState}` : null,
       context.isHolding ? `Status: Holding target pose` : null,
       context.isCompleted ? `Status: Asana completed successfully` : null,
-      context.primaryIssue
-        ? `Primary Form Focus: ${context.primaryIssue.feedback || context.primaryIssue.ruleId} (Severity: ${context.primaryIssue.severity})`
-        : `Primary Form Focus: Alignment in good standing`,
+      `Primary Posture Issue Context: [${primaryIssueText}]`,
     ]
       .filter(Boolean)
       .join("\n");
@@ -304,6 +366,9 @@ export class RealtimeVoiceAgent {
   setMuted(isMuted: boolean) {
     this.isMuted = isMuted;
     this.syncMuteState();
+    if (this.pc && this.pc.connectionState === "connected") {
+      this.updateStatus(isMuted ? "muted" : "connected");
+    }
   }
 
   private syncMuteState() {
@@ -319,29 +384,39 @@ export class RealtimeVoiceAgent {
 
   disconnect() {
     this.isSpeaking = false;
+    this.isConnecting = false;
     if (this.stream) {
-      this.stream.getTracks().forEach((track) => track.stop());
+      this.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
       this.stream = null;
     }
     if (this.dc) {
-      this.dc.close();
+      try {
+        this.dc.close();
+      } catch (err) {
+        // ignore
+      }
       this.dc = null;
     }
     if (this.pc) {
-      this.pc.close();
+      try {
+        this.pc.close();
+      } catch (err) {
+        // ignore
+      }
       this.pc = null;
     }
     if (this.audioEl) {
       this.audioEl.srcObject = null;
     }
+    this.remoteAudioStream = null;
     this.clientSecret = null;
+    this.currentCoachId = null;
     this.updateStatus("disconnected");
   }
 
-  private updateStatus(
-    status: "disconnected" | "connecting" | "connected" | "listening" | "speaking" | "error",
-    error?: string,
-  ) {
+  private updateStatus(status: VoiceConnectionState, error?: string) {
     if (this.onStatusChange) {
       this.onStatusChange(status, error);
     }

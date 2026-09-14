@@ -39,10 +39,10 @@ export function AsanaProgress({
   const canGoBack = !isSessionActive && currentIndex > 0;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm backdrop-blur-md">
+    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-indigo-500/20 text-xs font-bold text-indigo-700">
+          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-100 text-xs font-bold text-emerald-800">
             {currentIndex + 1}
           </span>
           <div>
@@ -50,7 +50,7 @@ export function AsanaProgress({
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                 Session Progress
               </span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+              <span className="rounded-full bg-emerald-50 border border-emerald-200/50 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
                 {totalAsanas} Asanas Flow
               </span>
             </div>

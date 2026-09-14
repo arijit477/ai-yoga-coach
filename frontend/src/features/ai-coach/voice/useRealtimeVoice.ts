@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { RealtimeVoiceAgent, type SessionContextData } from "./RealtimeVoiceAgent";
 import { CoachingEventDispatcher } from "./CoachingEventDispatcher";
-import type { VoiceState, CoachingEvent, VoiceTranscriptItem } from "./voice.types";
+import type { VoiceState, CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 
 export function useRealtimeVoice() {
   const agentRef = useRef<RealtimeVoiceAgent | null>(null);
   const dispatcherRef = useRef<CoachingEventDispatcher | null>(null);
   // Store latest status in a ref so dispatchEvent never re-creates due to status changes
-  const statusRef = useRef<VoiceState["status"]>("disconnected");
+  const statusRef = useRef<VoiceConnectionState>("disconnected");
+  const lastActiveCoachRef = useRef<string>("kevin");
 
   const [state, setState] = useState<VoiceState>({
     status: "disconnected",
@@ -19,30 +20,32 @@ export function useRealtimeVoice() {
   // Initialize refs once on first render (never re-runs)
   if (!agentRef.current) {
     agentRef.current = new RealtimeVoiceAgent(
-      (status, error) => {
+      (status: VoiceConnectionState, error?: string) => {
         statusRef.current = status;
         setState((prev) => ({
           ...prev,
           status,
-          error: error || prev.error,
+          error: error ?? (status === "error" ? prev.error : null),
         }));
       },
       (item: VoiceTranscriptItem) => {
         setState((prev) => ({
           ...prev,
-          // Keep last 8 transcript items to avoid unbounded memory growth
-          transcripts: [...prev.transcripts.slice(-7), item],
+          // Keep last 10 transcript items for lightweight dialogue
+          transcripts: [...prev.transcripts.slice(-9), item],
         }));
       },
     );
 
     dispatcherRef.current = new CoachingEventDispatcher({
       cooldownMs: 4000, // 4 seconds default cooldown
+      repeatSameRuleCooldownMs: 10000, // 10 seconds for repeating identical rule
     });
     dispatcherRef.current.setAgent(agentRef.current);
   }
 
-  const connect = useCallback(async (coachId: string) => {
+  const start = useCallback(async (coachId: string) => {
+    lastActiveCoachRef.current = coachId;
     statusRef.current = "connecting";
     setState((prev) => ({ ...prev, error: null, status: "connecting" }));
     if (agentRef.current) {
@@ -51,11 +54,29 @@ export function useRealtimeVoice() {
     }
   }, []);
 
-  const disconnect = useCallback(() => {
+  const stop = useCallback(() => {
     if (agentRef.current) {
       agentRef.current.disconnect();
     }
     dispatcherRef.current?.reset();
+  }, []);
+
+  const mute = useCallback(() => {
+    setState((prev) => {
+      if (agentRef.current) {
+        agentRef.current.setMuted(true);
+      }
+      return { ...prev, isMuted: true };
+    });
+  }, []);
+
+  const unmute = useCallback(() => {
+    setState((prev) => {
+      if (agentRef.current) {
+        agentRef.current.setMuted(false);
+      }
+      return { ...prev, isMuted: false };
+    });
   }, []);
 
   const toggleMute = useCallback(() => {
@@ -68,12 +89,17 @@ export function useRealtimeVoice() {
     });
   }, []);
 
+  const retry = useCallback(async (coachId?: string) => {
+    const coach = coachId || lastActiveCoachRef.current;
+    await start(coach);
+  }, [start]);
+
   /**
    * Stable dispatchEvent that NEVER changes identity.
    */
   const dispatchEvent = useCallback((event: CoachingEvent) => {
     const s = statusRef.current;
-    if (s === "connected" || s === "speaking" || s === "listening") {
+    if (s === "connected" || s === "speaking" || s === "listening" || s === "muted") {
       dispatcherRef.current?.dispatch(event);
     }
   }, []);
@@ -83,7 +109,7 @@ export function useRealtimeVoice() {
    */
   const updateSessionContext = useCallback((context: SessionContextData) => {
     const s = statusRef.current;
-    if (s === "connected" || s === "speaking" || s === "listening") {
+    if (s === "connected" || s === "speaking" || s === "listening" || s === "muted") {
       agentRef.current?.updateSessionContext(context);
     }
   }, []);
@@ -99,10 +125,17 @@ export function useRealtimeVoice() {
 
   return {
     state,
-    connect,
-    disconnect,
+    start,
+    stop,
+    mute,
+    unmute,
+    retry,
+    connect: start, // backwards compatibility alias
+    disconnect: stop, // backwards compatibility alias
     toggleMute,
     dispatchEvent,
     updateSessionContext,
+    getRemoteAudioStream: () => agentRef.current?.getRemoteAudioStream() ?? null,
   };
 }
+

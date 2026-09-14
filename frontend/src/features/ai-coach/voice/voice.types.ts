@@ -13,6 +13,7 @@ export interface CoachingEvent {
 
   ruleId?: string;
   issue?: string;
+  joint?: string;
 
   severity?: "info" | "low" | "medium" | "high";
 
@@ -20,6 +21,8 @@ export interface CoachingEvent {
   targetValue?: number;
   min?: number;
   max?: number;
+  targetMin?: number;
+  targetMax?: number;
 
   feedback?: string;
   score?: number;
@@ -27,14 +30,24 @@ export interface CoachingEvent {
   timestamp: number;
 }
 
-export type VoiceStatus = 
-  | "disconnected"
+/**
+ * Dedicated WebRTC connection state machine.
+ * Decoupled from yoga posture CoachState.
+ */
+export type VoiceConnectionState =
+  | "idle"
+  | "requesting_permission"
   | "connecting"
   | "connected"
   | "listening"
   | "speaking"
   | "muted"
-  | "error";
+  | "reconnecting"
+  | "error"
+  | "disconnected";
+
+// Backwards compatibility alias
+export type VoiceStatus = VoiceConnectionState;
 
 export interface VoiceTranscriptItem {
   id: string;
@@ -45,8 +58,9 @@ export interface VoiceTranscriptItem {
 }
 
 export interface VoiceState {
-  status: VoiceStatus;
+  status: VoiceConnectionState;
   isMuted: boolean;
   error: string | null;
   transcripts: VoiceTranscriptItem[];
 }
+

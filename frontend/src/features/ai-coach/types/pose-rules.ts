@@ -61,6 +61,12 @@ export interface PoseIssue {
   max?: number;
 
   feedback: string;
+
+  joint?: string;
+
+  targetMin?: number;
+
+  targetMax?: number;
 }
 
 export interface PoseEvaluation {

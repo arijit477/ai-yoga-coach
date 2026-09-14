@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -14,63 +13,47 @@ import type { PoseTrackingResult } from "../features/ai-coach/types/landmarks";
 export function usePoseTracking(
   videoRef: React.RefObject<HTMLVideoElement | null>,
 ) {
-  const serviceRef =
-    useRef<PoseLandmarkerService | null>(null);
+  const serviceRef = useRef<PoseLandmarkerService | null>(null);
+  const processorRef = useRef<MotionFrameProcessor | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const isRunningRef = useRef(false);
 
-  const processorRef =
-    useRef<MotionFrameProcessor | null>(null);
-
-  const animationFrameRef =
-    useRef<number | null>(null);
-
-  const [result, setResult] =
-    useState<PoseTrackingResult | null>(null);
-
-  const [isInitialized, setIsInitialized] =
-    useState(false);
-
-  const [error, setError] =
-    useState<string | null>(null);
-
-  const processFrame = useCallback(() => {
-    const video = videoRef.current;
-    const processor = processorRef.current;
-
-    if (!video || !processor) {
-      animationFrameRef.current =
-        requestAnimationFrame(processFrame);
-
-      return;
-    }
-
-    try {
-      const detection =
-        processor.processFrame(video);
-
-      if (detection) {
-        setResult(detection);
-      }
-    } catch (err) {
-      console.error(
-        "Pose detection error:",
-        err,
-      );
-    }
-
-    animationFrameRef.current =
-      requestAnimationFrame(processFrame);
-  }, [videoRef]);
+  const [result, setResult] = useState<PoseTrackingResult | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+
+    const loop = () => {
+      if (cancelled || !isRunningRef.current) {
+        return;
+      }
+
+      const video = videoRef.current;
+      const processor = processorRef.current;
+
+      if (video && processor) {
+        try {
+          const detection = processor.processFrame(video);
+          if (detection && !cancelled) {
+            setResult(detection);
+          }
+        } catch (err) {
+          console.error("Pose detection error:", err);
+        }
+      }
+
+      if (!cancelled && isRunningRef.current) {
+        animationFrameRef.current = requestAnimationFrame(loop);
+      }
+    };
 
     const initialize = async () => {
       try {
         setError(null);
 
-        const service =
-          new PoseLandmarkerService();
-
+        const service = new PoseLandmarkerService();
         await service.initialize();
 
         if (cancelled) {
@@ -78,22 +61,23 @@ export function usePoseTracking(
           return;
         }
 
-        const processor =
-          new MotionFrameProcessor(service);
+        const processor = new MotionFrameProcessor(service);
 
         serviceRef.current = service;
         processorRef.current = processor;
 
         setIsInitialized(true);
-      } catch (err) {
-        console.error(
-          "Failed to initialize MediaPipe:",
-          err,
-        );
 
-        setError(
-          "Unable to initialize pose detection.",
-        );
+        // Start the single RAF processing loop
+        if (!isRunningRef.current && !cancelled) {
+          isRunningRef.current = true;
+          animationFrameRef.current = requestAnimationFrame(loop);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error("Failed to initialize MediaPipe:", err);
+          setError("Unable to initialize pose detection.");
+        }
       }
     };
 
@@ -101,50 +85,23 @@ export function usePoseTracking(
 
     return () => {
       cancelled = true;
+      isRunningRef.current = false;
 
-      if (
-        animationFrameRef.current !== null
-      ) {
-        cancelAnimationFrame(
-          animationFrameRef.current,
-        );
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
       }
 
       processorRef.current?.reset();
-
       processorRef.current = null;
 
       serviceRef.current?.close();
-
       serviceRef.current = null;
 
       setIsInitialized(false);
+      setResult(null);
     };
-  }, []);
-
-  useEffect(() => {
-    if (!isInitialized) {
-      return;
-    }
-
-    animationFrameRef.current =
-      requestAnimationFrame(processFrame);
-
-    return () => {
-      if (
-        animationFrameRef.current !== null
-      ) {
-        cancelAnimationFrame(
-          animationFrameRef.current,
-        );
-
-        animationFrameRef.current = null;
-      }
-    };
-  }, [
-    isInitialized,
-    processFrame,
-  ]);
+  }, []); // Run ONCE on mount, teardown on unmount
 
   return {
     result,

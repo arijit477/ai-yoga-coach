@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import type { PoseLandmarks } from "../types/landmarks";
-import { PoseLandmarkIndex as P } from "../types/pose-landmarks";
+import {
+  VISIBLE_BODY_LANDMARKS,
+  VISIBLE_SKELETON_CONNECTIONS,
+} from "../types/pose-landmarks";
 import type { CoachPersona } from "../types/coach-session";
 
 interface PoseSkeletonProps {
@@ -9,45 +12,6 @@ interface PoseSkeletonProps {
   videoHeight: number;
   coach?: CoachPersona;
 }
-
-const CONNECTIONS: [number, number][] = [
-  // Face
-  [P.NOSE, P.LEFT_EYE_INNER],
-  [P.LEFT_EYE_INNER, P.LEFT_EYE],
-  [P.LEFT_EYE, P.LEFT_EYE_OUTER],
-  [P.LEFT_EYE_OUTER, P.LEFT_EAR],
-
-  [P.NOSE, P.RIGHT_EYE_INNER],
-  [P.RIGHT_EYE_INNER, P.RIGHT_EYE],
-  [P.RIGHT_EYE, P.RIGHT_EYE_OUTER],
-  [P.RIGHT_EYE_OUTER, P.RIGHT_EAR],
-
-  // Upper body
-  [P.LEFT_SHOULDER, P.RIGHT_SHOULDER],
-
-  [P.LEFT_SHOULDER, P.LEFT_ELBOW],
-  [P.LEFT_ELBOW, P.LEFT_WRIST],
-
-  [P.RIGHT_SHOULDER, P.RIGHT_ELBOW],
-  [P.RIGHT_ELBOW, P.RIGHT_WRIST],
-
-  // Torso
-  [P.LEFT_SHOULDER, P.LEFT_HIP],
-  [P.RIGHT_SHOULDER, P.RIGHT_HIP],
-  [P.LEFT_HIP, P.RIGHT_HIP],
-
-  // Left leg
-  [P.LEFT_HIP, P.LEFT_KNEE],
-  [P.LEFT_KNEE, P.LEFT_ANKLE],
-  [P.LEFT_ANKLE, P.LEFT_HEEL],
-  [P.LEFT_HEEL, P.LEFT_FOOT_INDEX],
-
-  // Right leg
-  [P.RIGHT_HIP, P.RIGHT_KNEE],
-  [P.RIGHT_KNEE, P.RIGHT_ANKLE],
-  [P.RIGHT_ANKLE, P.RIGHT_HEEL],
-  [P.RIGHT_HEEL, P.RIGHT_FOOT_INDEX],
-];
 
 const VISIBILITY_THRESHOLD = 0.5;
 
@@ -82,59 +46,49 @@ export function PoseSkeleton({
     }
 
     /*
-     * Draw skeleton connections.
+     * Draw clean body-only skeleton connections (no face lines).
+     * Yogaverse wellness aesthetic: calm sage/mint lines with soft white joint markers
      */
     const isKevin = coach === "kevin";
-    const neonColor = isKevin ? "#39ff14" : "#00f3ff";
-    const neonHighlight = isKevin ? "rgba(57, 255, 20, 0.5)" : "rgba(0, 243, 255, 0.5)";
+    // Yogaverse brand sage & mint accents
+    const strokeColor = isKevin ? "#2f8055" : "#3aab74"; // Yogaverse sage-dk / violet
+    const strokeHighlight = "rgba(78, 184, 122, 0.4)";
 
-    ctx.lineWidth = 3;
+    // Subtle, clean skeleton lines (thin & sleek for professional wellness look)
+    ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = neonColor;
-    ctx.shadowColor = neonColor;
-    ctx.shadowBlur = 10;
+    ctx.strokeStyle = strokeColor;
+    ctx.shadowColor = strokeHighlight;
+    ctx.shadowBlur = 4;
 
-    for (const [startIndex, endIndex] of CONNECTIONS) {
-      const start = landmarks[startIndex];
-      const end = landmarks[endIndex];
-
-      if (!start || !end) {
-        continue;
-      }
+    VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
+      const start = landmarks[startIdx];
+      const end = landmarks[endIdx];
 
       if (
-        start.visibility !== undefined &&
-        start.visibility < VISIBILITY_THRESHOLD
+        !start ||
+        !end ||
+        (start.visibility ?? 1) < VISIBILITY_THRESHOLD ||
+        (end.visibility ?? 1) < VISIBILITY_THRESHOLD
       ) {
-        continue;
+        return;
       }
-
-      if (
-        end.visibility !== undefined &&
-        end.visibility < VISIBILITY_THRESHOLD
-      ) {
-        continue;
-      }
-
-      const startX = start.x * videoWidth;
-      const startY = start.y * videoHeight;
-
-      const endX = end.x * videoWidth;
-      const endY = end.y * videoHeight;
 
       ctx.beginPath();
-
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-
+      ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
+      ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
       ctx.stroke();
-    }
+    });
 
     /*
-     * Draw landmarks.
+     * Draw body joints (11–32: shoulders, elbows, wrists, hips, knees, ankles, feet) as crisp 4px white dots with a sage border.
+     * Strictly hides face dots (indices 0-10: nose, eyes, ears, mouth) to keep user face unobstructed.
      */
-    for (const landmark of landmarks) {
+    for (const landmarkIndex of VISIBLE_BODY_LANDMARKS) {
+      const landmark = landmarks[landmarkIndex];
+      if (!landmark) continue;
+
       if (
         landmark.visibility !== undefined &&
         landmark.visibility < VISIBILITY_THRESHOLD
@@ -145,25 +99,21 @@ export function PoseSkeleton({
       const x = landmark.x * videoWidth;
       const y = landmark.y * videoHeight;
 
+      // Inner crisp joint point (small & neat)
       ctx.beginPath();
-
-      ctx.arc(x, y, 5, 0, Math.PI * 2);
-
-      ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = neonColor;
+      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
       ctx.fill();
 
+      // Outer delicate sage halo
       ctx.beginPath();
-
-      ctx.arc(x, y, 8, 0, Math.PI * 2);
-
-      ctx.strokeStyle = neonHighlight;
+      ctx.arc(x, y, 5.5, 0, Math.PI * 2);
+      ctx.strokeStyle = strokeColor;
       ctx.lineWidth = 1.5;
       ctx.stroke();
     }
     
-    // Reset shadow for next frame just in case
+    // Reset shadow for next frame
     ctx.shadowBlur = 0;
   }, [landmarks, videoWidth, videoHeight, coach]);
 

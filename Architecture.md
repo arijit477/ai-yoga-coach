@@ -152,3 +152,37 @@ UI Flow ------------------->>
                              ▼
                   🔒 174+ More Asanas
                     Unlock Premium
+
+
+
+
+
+
+                    AI Yoga Coach Voice Agent v1.0 Walkthrough
+We have upgraded the voice implementation of AI Yoga Coach from a prototype integration to a production-grade, real-time conversational voice agent (v1.0).
+
+1. Current Voice Architecture
+
+                     AI COACH SESSION
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+          CAMERA                          MIC
+             │                             │
+             ▼                             ▼
+        MediaPipe                   OpenAI Realtime WebRTC
+             │                             │
+             ▼                             │
+       Pose Evaluation                     │
+             │                             │
+             ▼                             │
+   Feedback Stabilization                  │
+             │                             │
+             ▼                             │
+      Coaching Event ──────────────────────┤
+                                           │
+                                           ▼
+                                   Alice / Kevin
+                                           │
+                                           ▼
+                                    AUDIO OUTPUT
