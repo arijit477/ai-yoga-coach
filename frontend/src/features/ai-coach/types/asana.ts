@@ -27,6 +27,7 @@ export interface Asana {
   imageUrl: string;
   storagePath: string;
   thumbnailUrl?: string;
+  videoUrl?: string;
   description: string;
   benefits: string[];
   instructions: string[];

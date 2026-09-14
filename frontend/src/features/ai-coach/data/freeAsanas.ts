@@ -20,6 +20,7 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/warrior-ii-virabhadrasana-ii.webp`,
     imageUrl: getAsanaImageUrl("warrior-ii-virabhadrasana-ii.webp"),
+    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     description: "A powerful, grounding standing posture that builds endurance, opens the hips, and focuses intention.",
     benefits: [
       "Strengthens legs, ankles, and core muscles",

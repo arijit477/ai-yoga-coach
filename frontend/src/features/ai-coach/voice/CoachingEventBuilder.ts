@@ -20,6 +20,48 @@ export class CoachingEventBuilder {
   }
 
   /**
+   * Generates a calibration_prompt event asking the user to hold still.
+   */
+  static buildCalibrationPromptEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("calib_prompt"),
+      type: "calibration_prompt",
+      asanaId,
+      asanaName,
+      feedback: "Hold still for a moment while I check your position.",
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Generates a calibration_complete event once the user is stable.
+   */
+  static buildCalibrationCompleteEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("calib_done"),
+      type: "calibration_complete",
+      asanaId,
+      asanaName,
+      feedback: `Perfect. I can see you clearly. Let's begin ${asanaName}.`,
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Generates a step_guidance event for step-by-step posture instruction.
+   */
+  static buildStepGuidanceEvent(asanaId: string, asanaName: string, stepText: string): CoachingEvent {
+    return {
+      id: generateEventId("step"),
+      type: "step_guidance",
+      asanaId,
+      asanaName,
+      feedback: stepText,
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
    * Generates a pose_correction event from a prioritized, stabilized posture issue.
    */
   static buildPoseCorrectionEvent(

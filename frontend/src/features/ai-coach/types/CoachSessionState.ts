@@ -1,10 +1,15 @@
 export type CoachSessionState =
   | "idle"
+  | "guide_video"
   | "countdown"
+  | "hold_still"
+  | "calibrating"
   | "detecting"
   | "analyzing"
+  | "coaching"
   | "correcting"
   | "holding"
+  | "pose_review"
   | "completed"
   | "transition"
   | "session_completed";

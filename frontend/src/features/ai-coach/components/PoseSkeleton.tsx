@@ -47,19 +47,49 @@ export function PoseSkeleton({
 
     /*
      * Draw clean body-only skeleton connections (no face lines).
-     * Yogaverse wellness aesthetic: calm sage/mint lines with soft white joint markers
+     * Polished neon tracer with subtle luminous glow around body landmarks.
      */
     const isKevin = coach === "kevin";
-    // Yogaverse brand sage & mint accents
-    const strokeColor = isKevin ? "#2f8055" : "#3aab74"; // Yogaverse sage-dk / violet
-    const strokeHighlight = "rgba(78, 184, 122, 0.4)";
+    // Sleek emerald/cyan/mint neon tones
+    const strokeColor = isKevin ? "#10b981" : "#06b6d4";
+    const neonGlowColor = isKevin ? "rgba(16, 185, 129, 0.45)" : "rgba(6, 182, 212, 0.45)";
 
-    // Subtle, clean skeleton lines (thin & sleek for professional wellness look)
-    ctx.lineWidth = 2.5;
+    // 1. Outer subtle neon glow pass
+    ctx.save();
+    ctx.lineWidth = 4;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.strokeStyle = strokeColor;
-    ctx.shadowColor = strokeHighlight;
+    ctx.strokeStyle = neonGlowColor;
+    ctx.shadowColor = strokeColor;
+    ctx.shadowBlur = 10;
+
+    VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
+      const start = landmarks[startIdx];
+      const end = landmarks[endIdx];
+
+      if (
+        !start ||
+        !end ||
+        (start.visibility ?? 1) < VISIBILITY_THRESHOLD ||
+        (end.visibility ?? 1) < VISIBILITY_THRESHOLD
+      ) {
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
+      ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // 2. Inner crisp neon tracer core line (thin & elegant)
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.shadowColor = strokeColor;
     ctx.shadowBlur = 4;
 
     VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
@@ -80,10 +110,11 @@ export function PoseSkeleton({
       ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
       ctx.stroke();
     });
+    ctx.restore();
 
     /*
-     * Draw body joints (11–32: shoulders, elbows, wrists, hips, knees, ankles, feet) as crisp 4px white dots with a sage border.
-     * Strictly hides face dots (indices 0-10: nose, eyes, ears, mouth) to keep user face unobstructed.
+     * Draw body joints (11–32: shoulders, elbows, wrists, hips, knees, ankles, feet)
+     * Crisp white points with luminous neon halos. Strictly hides face dots (0-10).
      */
     for (const landmarkIndex of VISIBLE_BODY_LANDMARKS) {
       const landmark = landmarks[landmarkIndex];
@@ -99,18 +130,22 @@ export function PoseSkeleton({
       const x = landmark.x * videoWidth;
       const y = landmark.y * videoHeight;
 
-      // Inner crisp joint point (small & neat)
+      // Outer delicate neon halo
+      ctx.save();
       ctx.beginPath();
-      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.strokeStyle = strokeColor;
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = strokeColor;
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.restore();
+
+      // Inner crisp joint point
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
-
-      // Outer delicate sage halo
-      ctx.beginPath();
-      ctx.arc(x, y, 5.5, 0, Math.PI * 2);
-      ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
     }
     
     // Reset shadow for next frame

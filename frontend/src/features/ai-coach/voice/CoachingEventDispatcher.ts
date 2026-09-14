@@ -56,13 +56,16 @@ export class CoachingEventDispatcher {
       return true;
     }
 
-    // 2. State-driven one-time lifecycle events (pose_started, pose_held, pose_completed)
+    // 2. State-driven one-time lifecycle events (pose_started, calibration_prompt, calibration_complete, step_guidance, pose_held, pose_completed)
     if (
       event.type === "pose_started" ||
+      event.type === "calibration_prompt" ||
+      event.type === "calibration_complete" ||
+      event.type === "step_guidance" ||
       event.type === "pose_held" ||
       event.type === "pose_completed"
     ) {
-      if (this.lastEventType === event.type) {
+      if (this.lastEventType === event.type && event.type !== "step_guidance") {
         console.log(
           `[AI COACH] Coaching event suppressed by cooldown: duplicate lifecycle event ${event.type}`
         );

@@ -2,6 +2,9 @@ export interface CoachingEvent {
   id: string;
   type:
     | "pose_started"
+    | "calibration_prompt"
+    | "calibration_complete"
+    | "step_guidance"
     | "pose_correction"
     | "good_form"
     | "pose_held"

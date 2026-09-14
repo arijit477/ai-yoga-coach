@@ -15,6 +15,9 @@ import { useStableScore } from "../../../hooks/useStableScore";
 import { useCoachState } from "../../../hooks/useCoachState";
 import { useCoachSession } from "../../../hooks/useCoachSession";
 import { AsanaProgress } from "./AsanaProgress";
+import { AsanaSelector } from "./AsanaSelector";
+import { GuideVideoOverlay } from "./GuideVideoOverlay";
+import { PoseReviewModal } from "./PoseReviewModal";
 import { useAICoachStore } from "../store/aiCoachStore";
 import type { CoachPersona } from "../types/coach-session";
 import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
@@ -72,20 +75,31 @@ function getSessionLabel(
     case "idle":
       return "Ready";
 
+    case "guide_video":
+      return "Guide Video";
+
     case "countdown":
       return "Get Ready";
+
+    case "hold_still":
+    case "calibrating":
+      return "Calibrating";
 
     case "detecting":
       return "Detecting";
 
+    case "coaching":
     case "analyzing":
-      return "Analyzing";
+      return "Coaching";
 
     case "correcting":
       return "Correction Needed";
 
     case "holding":
       return "Hold Position";
+
+    case "pose_review":
+      return "Target Form Reached";
 
     case "completed":
       return "Pose Completed";
@@ -113,6 +127,7 @@ export function AICoachPage() {
     setSelectedCoach,
     markAsanaCompleted,
     canAccessAsanaIndex,
+    setCurrentAsana,
     setCurrentAsanaIndex,
     skipToAsanaIndex,
     goBackToAsanaIndex,
@@ -160,40 +175,6 @@ export function AICoachPage() {
     );
   }, [result?.worldLandmarks, activeRules, stableEvaluation?.issues, currentAsana.id]);
 
-  /*
-   * Multi-asana session state configured dynamically
-   */
-  const {
-    state: sessionState,
-    countdown,
-    holdTime,
-    startSession,
-    stopSession,
-    resetSession,
-  } = useCoachSession({
-    evaluation: stableEvaluation,
-    isInitialized,
-    hasPose: Boolean(result),
-    targetHoldSeconds: currentAsana.targetHoldSeconds,
-    currentAsanaIndex,
-    totalAsanas: activeAsanas.length,
-    onAsanaComplete: useCallback((idx: number) => {
-      markAsanaCompleted(activeAsanas[idx].id);
-    }, [activeAsanas, markAsanaCompleted]),
-    onAdvanceAsana: useCallback((nextIdx: number) => {
-      setCurrentAsanaIndex(nextIdx);
-    }, [setCurrentAsanaIndex]),
-  });
-
-  /*
-   * High-level coaching state
-   */
-  const coachState = useCoachState({
-    isInitialized,
-    hasPose: Boolean(result),
-    evaluation: stableEvaluation,
-  });
-
   const {
     state: voiceState,
     start: voiceStart,
@@ -208,6 +189,8 @@ export function AICoachPage() {
   const hasDispatchedStartRef = useRef<string | null>(null);
   const hasDispatchedHeldRef = useRef<string | null>(null);
   const hasDispatchedCompletedRef = useRef<string | null>(null);
+  const hasDispatchedCalibrationPromptRef = useRef<string | null>(null);
+  const hasDispatchedCalibrationCompleteRef = useRef<string | null>(null);
   // Track last sent session context to avoid spamming OpenAI with per-frame updates
   const lastSentContextRef = useRef<{
     coach: string;
@@ -218,10 +201,90 @@ export function AICoachPage() {
     primaryIssueRuleId: string | null;
   } | null>(null);
 
+  /*
+   * Multi-asana session state configured dynamically
+   */
+  const {
+    state: sessionState,
+    countdown,
+    holdTime,
+    calibrationProgress,
+    visibilityWarning,
+    currentStepIndex,
+    startSession,
+    skipGuideVideo,
+    finishGuideVideo,
+    stopSession,
+    resetSession,
+    doItAgain,
+    moveToNextAsana,
+  } = useCoachSession({
+    evaluation: stableEvaluation,
+    landmarks: result?.landmarks ?? null,
+    isInitialized,
+    hasPose: Boolean(result),
+    targetHoldSeconds: currentAsana.targetHoldSeconds,
+    currentAsanaIndex,
+    totalAsanas: activeAsanas.length,
+    hasGuideVideo: Boolean(currentAsana.videoUrl),
+    instructionsCount: currentAsana.instructions.length,
+    onAsanaComplete: useCallback((idx: number) => {
+      markAsanaCompleted(activeAsanas[idx].id);
+    }, [activeAsanas, markAsanaCompleted]),
+    onAdvanceAsana: useCallback((nextIdx: number) => {
+      setCurrentAsanaIndex(nextIdx);
+    }, [setCurrentAsanaIndex]),
+    onCalibrationPrompt: useCallback(() => {
+      if (hasDispatchedCalibrationPromptRef.current !== currentAsana.id) {
+        hasDispatchedCalibrationPromptRef.current = currentAsana.id;
+        voiceDispatch(
+          CoachingEventBuilder.buildCalibrationPromptEvent(
+            currentAsana.id,
+            currentAsana.name,
+          ),
+        );
+      }
+    }, [currentAsana.id, currentAsana.name, voiceDispatch]),
+    onCalibrationComplete: useCallback(() => {
+      if (hasDispatchedCalibrationCompleteRef.current !== currentAsana.id) {
+        hasDispatchedCalibrationCompleteRef.current = currentAsana.id;
+        voiceDispatch(
+          CoachingEventBuilder.buildCalibrationCompleteEvent(
+            currentAsana.id,
+            currentAsana.name,
+          ),
+        );
+      }
+    }, [currentAsana.id, currentAsana.name, voiceDispatch]),
+    onStepChange: useCallback((stepIdx: number) => {
+      const stepInstruction = currentAsana.instructions[stepIdx];
+      if (stepInstruction) {
+        voiceDispatch(
+          CoachingEventBuilder.buildStepGuidanceEvent(
+            currentAsana.id,
+            currentAsana.name,
+            stepInstruction,
+          ),
+        );
+      }
+    }, [currentAsana.id, currentAsana.name, currentAsana.instructions, voiceDispatch]),
+  });
+
+  /*
+   * High-level coaching state
+   */
+  const coachState = useCoachState({
+    isInitialized,
+    hasPose: Boolean(result),
+    evaluation: stableEvaluation,
+  });
+
   const handleStartSession = useCallback(() => {
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
+    hasDispatchedCalibrationPromptRef.current = null;
+    hasDispatchedCalibrationCompleteRef.current = null;
     startSession();
     voiceStart(selectedCoach);
   }, [selectedCoach, startSession, voiceStart]);
@@ -232,6 +295,8 @@ export function AICoachPage() {
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
+    hasDispatchedCalibrationPromptRef.current = null;
+    hasDispatchedCalibrationCompleteRef.current = null;
     lastSentContextRef.current = null;
   }, [stopSession, voiceStop]);
 
@@ -517,14 +582,15 @@ export function AICoachPage() {
   return (
     <>
       {/* ====================================================== */}
-      {/* CINEMA MODE OVERLAY */}
+      {/* CINEMA MODE OVERLAY (PERSISTENT 100% VIEWPORT EXPERIENCE) */}
       {/* ====================================================== */}
       {isCinemaMode && (
-        <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
+        <div className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col overflow-hidden">
           {/* Camera + skeleton fills entire viewport */}
-          <div className="relative flex-1 overflow-hidden">
+          <div className="relative flex-1 overflow-hidden w-full h-full flex items-center justify-center">
             <CameraView videoRef={videoRef} />
 
+            {/* Neon glowing skeleton overlay */}
             {result && showSkeleton && (
               <PoseSkeleton
                 landmarks={result.landmarks}
@@ -534,6 +600,7 @@ export function AICoachPage() {
               />
             )}
 
+            {/* Joint angle labels tracking body joints */}
             {result && (
               <JointAngleOverlay
                 landmarks={result.landmarks}
@@ -544,32 +611,159 @@ export function AICoachPage() {
               />
             )}
 
-            {/* Top-left: pose name */}
+            {/* Top-left: LIVE status & asana title */}
             <div className="absolute left-5 top-5 flex items-center gap-3">
-              <span className="text-2xl">🧘</span>
-              <span className="text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
+              <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/90 text-white px-3 py-1 text-xs font-bold tracking-wider uppercase shadow-md backdrop-blur-md">
+                <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                LIVE • {sessionLabel}
+              </span>
+              <span className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
                 {currentAsana.name}
               </span>
+              {currentAsana.sanskritName && (
+                <span className="hidden sm:inline text-xs text-white/70 italic">
+                  ({currentAsana.sanskritName})
+                </span>
+              )}
             </div>
 
-            {/* Top-right: score */}
-            {stableEvaluation && (
-              <div className="absolute right-5 top-5">
-                <span className="text-2xl font-extrabold text-emerald-400 drop-shadow-lg">
-                  {stableScore ?? 0}%
+            {/* Top-right: score ring & Exit Cinema mode */}
+            <div className="absolute right-5 top-5 flex items-center gap-3">
+              <CircularScoreRing score={stableScore} size={50} strokeWidth={5} compact />
+
+              <button
+                type="button"
+                onClick={toggleCinemaMode}
+                className="flex items-center gap-1.5 rounded-xl bg-white/20 border border-white/30 px-3.5 py-2 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/30 transition shadow-md active:scale-95"
+                title="Exit Fullscreen (Esc)"
+              >
+                <Minimize size={14} />
+                <span>Exit Fullscreen</span>
+              </button>
+            </div>
+
+            {/* Floating Mini Coach Presence Card */}
+            <div className="absolute bottom-5 right-5 w-48 sm:w-56 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2">
+              <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10">
+                <CoachPanel
+                  coach={selectedCoach}
+                  coachName={getCoachName(selectedCoach)}
+                  avatarState={avatarState}
+                  guidanceMessage={latestCoachMessage}
+                  isSpeaking={voiceState.status === "speaking"}
+                  className="!border-0 !p-0 !shadow-none !bg-transparent"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                    Coach {getCoachName(selectedCoach)}
+                  </span>
+                  {voiceState.status === "speaking" && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  )}
+                </div>
+                <p className="text-[11px] text-white/90 truncate font-medium mt-0.5">
+                  {latestCoachMessage}
+                </p>
+              </div>
+            </div>
+
+            {/* Guide Video Overlay in Cinema Mode */}
+            {sessionState === "guide_video" && currentAsana.videoUrl && (
+              <GuideVideoOverlay
+                asana={currentAsana}
+                onSkip={skipGuideVideo}
+                onEnded={finishGuideVideo}
+              />
+            )}
+
+            {/* Countdown Overlay in Cinema Mode */}
+            {sessionState === "countdown" && countdown !== null && (
+              <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/40 backdrop-blur-[2px]">
+                <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-100 max-w-xs">
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-800">
+                    Get Ready
+                  </p>
+                  <p
+                    className="my-2 text-6xl font-bold tabular-nums text-emerald-950"
+                    style={{ fontFamily: "'Fraunces', Georgia, serif" }}
+                  >
+                    {countdown}
+                  </p>
+                  <p className="text-xs text-slate-600 font-medium">
+                    Prepare for {currentAsana.name}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Hold Still / Calibration Overlay in Cinema Mode */}
+            {(sessionState === "hold_still" || sessionState === "calibrating") && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-4">
+                <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-200 max-w-sm w-full animate-in fade-in zoom-in-95 duration-200">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 mb-1">
+                    Body Position Check
+                  </p>
+                  <h4 className="text-xl font-bold text-slate-900">
+                    Hold still for a moment
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-1 mb-4">
+                    Stay steady while your coach checks your alignment points.
+                  </p>
+
+                  {visibilityWarning && (
+                    <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs font-semibold text-amber-900">
+                      {visibilityWarning}
+                    </div>
+                  )}
+
+                  <div className="w-full bg-slate-100 rounded-full h-3.5 p-0.5 border border-slate-200 overflow-hidden">
+                    <div
+                      className="bg-emerald-600 h-full rounded-full transition-all duration-200 ease-out"
+                      style={{ width: `${calibrationProgress}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center mt-2 text-[11px] font-semibold text-slate-500">
+                    <span>Stabilizing...</span>
+                    <span className="font-mono text-emerald-800">{calibrationProgress}%</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step-by-Step Guidance Banner in Cinema Mode */}
+            {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
+              <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-white/95 text-slate-900 px-4 py-2.5 shadow-lg backdrop-blur-md border border-emerald-200 animate-in fade-in slide-in-from-top-2 duration-200 text-center">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
+                  Step {currentStepIndex + 1} of {currentAsana.instructions.length}
+                </span>
+                <p className="text-xs font-semibold leading-snug text-slate-800">
+                  {currentAsana.instructions[currentStepIndex]}
+                </p>
+              </div>
+            )}
+
+            {/* Hold Timer Banner in Cinema Mode */}
+            {sessionState === "holding" && (
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-full bg-white/95 text-emerald-900 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200 animate-in fade-in zoom-in-95 duration-200">
+                <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+                <span className="text-sm font-bold">
+                  Hold steady: {holdTime.toFixed(1)}s / {currentAsana.targetHoldSeconds.toFixed(1)}s
                 </span>
               </div>
             )}
 
-            {/* Exit cinema mode button */}
-            <button
-              type="button"
-              onClick={toggleCinemaMode}
-              className="absolute right-5 top-16 flex items-center gap-1.5 rounded-xl bg-white/20 border border-white/30 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/30 transition"
-            >
-              <Minimize size={13} />
-              Exit
-            </button>
+            {/* Pose Review Choice Modal in Cinema Mode */}
+            {sessionState === "pose_review" && (
+              <PoseReviewModal
+                asana={currentAsana}
+                score={stableScore ?? 80}
+                onDoItAgain={doItAgain}
+                onMoveToNext={moveToNextAsana}
+                isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
+              />
+            )}
           </div>
         </div>
       )}
@@ -598,8 +792,18 @@ export function AICoachPage() {
               </p>
             </div>
 
-            {/* Coach Quick Persona Switcher */}
-            <div className="shrink-0 flex items-center gap-3">
+            {/* Asana Selector & Coach Quick Persona Switcher */}
+            <div className="shrink-0 flex flex-wrap items-center gap-3">
+              <AsanaSelector
+                asanas={sessionAsanas}
+                currentAsana={currentAsana}
+                onSelectAsana={(asana) => {
+                  resetSession();
+                  setCurrentAsana(asana);
+                }}
+                disabled={isSessionActive}
+              />
+
               <CoachSelector
                 selectedCoach={selectedCoach}
                 onSelectCoach={setSelectedCoach}
@@ -651,7 +855,7 @@ export function AICoachPage() {
               <div className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-slate-900 shadow-md aspect-[4/3] md:aspect-[16/10] xl:aspect-video w-full flex items-center justify-center">
                 {!isCinemaMode && <CameraView videoRef={videoRef} />}
 
-                {/* Body-Only MediaPipe Skeleton (face dots hidden) */}
+                {/* Body-Only MediaPipe Skeleton with Polished Neon Glow Tracer (face dots hidden) */}
                 {result && showSkeleton && (
                   <PoseSkeleton
                     landmarks={result.landmarks}
@@ -698,6 +902,15 @@ export function AICoachPage() {
                   </button>
                 </div>
 
+                {/* Guide Video Overlay (First stage of session if video exists) */}
+                {sessionState === "guide_video" && currentAsana.videoUrl && (
+                  <GuideVideoOverlay
+                    asana={currentAsana}
+                    onSkip={skipGuideVideo}
+                    onEnded={finishGuideVideo}
+                  />
+                )}
+
                 {/* Center / Countdown Overlay */}
                 {sessionState === "countdown" && countdown !== null && (
                   <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/40 backdrop-blur-[2px]">
@@ -718,6 +931,54 @@ export function AICoachPage() {
                   </div>
                 )}
 
+                {/* Hold Still / Calibration Overlay */}
+                {(sessionState === "hold_still" || sessionState === "calibrating") && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-4">
+                    <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-200 max-w-sm w-full animate-in fade-in zoom-in-95 duration-200">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 mb-1">
+                        Body Position Check
+                      </p>
+                      <h4 className="text-xl font-bold text-slate-900">
+                        Hold still for a moment
+                      </h4>
+                      <p className="text-xs text-slate-600 mt-1 mb-4">
+                        Stay steady while your coach checks your alignment points.
+                      </p>
+
+                      {/* Visibility Warning Prompt */}
+                      {visibilityWarning && (
+                        <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs font-semibold text-amber-900">
+                          {visibilityWarning}
+                        </div>
+                      )}
+
+                      {/* Stability Progress Bar */}
+                      <div className="w-full bg-slate-100 rounded-full h-3.5 p-0.5 border border-slate-200 overflow-hidden">
+                        <div
+                          className="bg-emerald-600 h-full rounded-full transition-all duration-200 ease-out"
+                          style={{ width: `${calibrationProgress}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between items-center mt-2 text-[11px] font-semibold text-slate-500">
+                        <span>Stabilizing...</span>
+                        <span className="font-mono text-emerald-800">{calibrationProgress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step-by-Step Guidance Banner in Camera View */}
+                {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
+                  <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-white/95 text-slate-900 px-4 py-2.5 shadow-lg backdrop-blur-md border border-emerald-200 animate-in fade-in slide-in-from-top-2 duration-200 text-center">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block mb-0.5">
+                      Step {currentStepIndex + 1} of {currentAsana.instructions.length}
+                    </span>
+                    <p className="text-xs font-semibold leading-snug text-slate-800">
+                      {currentAsana.instructions[currentStepIndex]}
+                    </p>
+                  </div>
+                )}
+
                 {/* Bottom Center: Hold Progress Banner */}
                 {sessionState === "holding" && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2.5 rounded-full bg-white/95 text-emerald-900 px-5 py-2 shadow-lg backdrop-blur-md border border-emerald-200 animate-in fade-in zoom-in-95 duration-200">
@@ -726,6 +987,17 @@ export function AICoachPage() {
                       Hold steady: {holdTime.toFixed(1)}s / {currentAsana.targetHoldSeconds.toFixed(1)}s
                     </span>
                   </div>
+                )}
+
+                {/* Pose Review Choice Modal (>= 75% accuracy threshold achieved) */}
+                {sessionState === "pose_review" && (
+                  <PoseReviewModal
+                    asana={currentAsana}
+                    score={stableScore ?? 80}
+                    onDoItAgain={doItAgain}
+                    onMoveToNext={moveToNextAsana}
+                    isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
+                  />
                 )}
               </div>
 
