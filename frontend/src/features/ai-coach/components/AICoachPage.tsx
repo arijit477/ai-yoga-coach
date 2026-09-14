@@ -123,12 +123,26 @@ export function AICoachPage() {
   // Introductory guide video state (plays inside camera stage on initial page load)
   const [isIntroVideoActive, setIsIntroVideoActive] = useState(true);
 
+  // Dedicated manual camera power state (defaults to false until user presses 'Start camera' or finishes/skips intro)
+  const [isCameraActive, setIsCameraActive] = useState(false);
+
+  const handleStartCamera = useCallback(() => {
+    setIsIntroVideoActive(false);
+    setIsCameraActive(true);
+  }, []);
+
+  const handleStopCamera = useCallback(() => {
+    setIsCameraActive(false);
+  }, []);
+
   const handleSkipIntroVideo = useCallback(() => {
     setIsIntroVideoActive(false);
+    setIsCameraActive(true);
   }, []);
 
   const handleIntroVideoEnded = useCallback(() => {
     setIsIntroVideoActive(false);
+    setIsCameraActive(true);
   }, []);
 
   const {
@@ -601,10 +615,10 @@ export function AICoachPage() {
         <div className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col overflow-hidden">
           {/* Camera + skeleton fills entire viewport */}
           <div className="relative flex-1 overflow-hidden w-full h-full flex items-center justify-center">
-            <CameraView videoRef={videoRef} enabled={!isIntroVideoActive} />
+            <CameraView videoRef={videoRef} enabled={!isIntroVideoActive && isCameraActive} />
 
             {/* Neon glowing skeleton overlay */}
-            {!isIntroVideoActive && result && showSkeleton && (
+            {!isIntroVideoActive && isCameraActive && result && showSkeleton && (
               <PoseSkeleton
                 landmarks={result.landmarks}
                 videoWidth={videoSize.width}
@@ -614,7 +628,7 @@ export function AICoachPage() {
             )}
 
             {/* Joint angle labels tracking body joints */}
-            {!isIntroVideoActive && result && (
+            {!isIntroVideoActive && isCameraActive && result && (
               <JointAngleOverlay
                 landmarks={result.landmarks}
                 jointAngles={jointAngles}
@@ -914,10 +928,15 @@ export function AICoachPage() {
                     : "border-slate-200/90 shadow-sm"
                 }`}
               >
-                {!isCinemaMode && <CameraView videoRef={videoRef} enabled={!isIntroVideoActive} />}
+                {!isCinemaMode && (
+                  <CameraView
+                    videoRef={videoRef}
+                    enabled={!isIntroVideoActive && isCameraActive}
+                  />
+                )}
 
                 {/* Body-Only MediaPipe Skeleton with Polished Neon Glow Tracer (face dots hidden) */}
-                {!isIntroVideoActive && result && showSkeleton && (
+                {!isIntroVideoActive && isCameraActive && result && showSkeleton && (
                   <PoseSkeleton
                     landmarks={result.landmarks}
                     videoWidth={videoSize.width}
@@ -927,7 +946,7 @@ export function AICoachPage() {
                 )}
 
                 {/* Live Joint Angles displayed directly beside joints */}
-                {!isIntroVideoActive && result && (
+                {!isIntroVideoActive && isCameraActive && result && (
                   <JointAngleOverlay
                     landmarks={result.landmarks}
                     jointAngles={jointAngles}
@@ -941,14 +960,18 @@ export function AICoachPage() {
                 <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 flex items-center gap-2">
                   <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/95 text-white px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
                     <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                    {isIntroVideoActive ? "Intro Guide" : `LIVE • ${sessionLabel}`}
+                    {isIntroVideoActive
+                      ? "Intro Guide"
+                      : !isCameraActive
+                      ? "Camera Standby"
+                      : `LIVE • ${sessionLabel}`}
                   </span>
 
                   <span className="rounded-full bg-slate-900/80 text-white/90 px-3 py-1 text-xs font-semibold backdrop-blur-md border border-white/10 hidden sm:inline-block">
                     {isIntroVideoActive ? "Welcome to AI Yoga Coach" : currentAsana.name}
                   </span>
 
-                  {stableScore !== null && (
+                  {isCameraActive && stableScore !== null && (
                     <CircularScoreRing score={stableScore} size={38} strokeWidth={4} compact />
                   )}
                 </div>
@@ -970,6 +993,18 @@ export function AICoachPage() {
                 >
                   <Maximize size={15} />
                 </button>
+
+                {/* Introductory Guide Video on Page Load (Standard View) */}
+                {isIntroVideoActive && (
+                  <GuideVideoOverlay
+                    videoUrl={INTRO_GUIDE_VIDEO_URL}
+                    title="AI Yoga Coach Guide"
+                    subtitle="Watch how your AI coach guides your posture in real time"
+                    badge="Intro Guide"
+                    onSkip={handleSkipIntroVideo}
+                    onEnded={handleIntroVideoEnded}
+                  />
+                )}
 
                 {/* Guide Video Overlay (First stage of session if video exists) */}
                 {!isIntroVideoActive && sessionState === "guide_video" && currentAsana.videoUrl && (
@@ -1090,11 +1125,15 @@ export function AICoachPage() {
                 )}
               </div>
 
-              {/* Clean Session Controls Bar (Start/Stop, Mirror, Skeleton, Voice) */}
+              {/* Clean Session Controls Bar (Start/Stop Camera, Record, Stop & Save, Mirror, Skeleton, Voice) */}
               <SessionControls
                 isSessionActive={isSessionActive}
                 onStartSession={handleStartSession}
                 onStopSession={handleStopSession}
+                isCameraActive={isCameraActive}
+                onStartCamera={handleStartCamera}
+                onStopCamera={handleStopCamera}
+                videoRef={videoRef}
                 isMirrored={isMirrored}
                 onToggleMirror={() => setIsMirrored((v) => !v)}
                 showSkeleton={showSkeleton}

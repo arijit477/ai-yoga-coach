@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Asana } from "../types/asana";
 import type { CoachPersona } from "../types/coach-session";
-import { FREE_ASANAS } from "../data/freeAsanas";
+import { SURYA_NAMASKAR_ASANAS } from "../data/suryaNamaskarAsanas";
 import { ensureAsanaRules } from "../analysis/rules/poseRulesRegistry";
 
 interface AICoachState {
@@ -30,7 +30,8 @@ interface AICoachState {
   resetSession: () => void;
 }
 
-const initialAsanas = FREE_ASANAS;
+// Default session starts with the Surya Namaskar beach flow placed in supabase 'yogaverse-model-surya-beach'
+const initialAsanas = SURYA_NAMASKAR_ASANAS;
 const initialAsana = initialAsanas[0];
 
 // Register initial asana rules

@@ -11,6 +11,7 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
 
   useEffect(() => {
     if (!enabled) {
+      setCameraReady(false);
       return;
     }
 
@@ -60,7 +61,7 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
         if (!cancelled) {
           setCameraReady(false);
           setError(
-            "Unable to access your camera. Please allow camera permission.",
+            err instanceof Error ? err.message : "Failed to access camera.",
           );
         }
       }
@@ -82,7 +83,7 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
   }, [videoRef, enabled]);
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden bg-black">
+    <div className="relative aspect-video w-full overflow-hidden bg-[#0e131f]">
       <video
         ref={videoRef}
         autoPlay
@@ -91,12 +92,21 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
         className="h-full w-full object-contain scale-x-[-1]"
       />
 
-      {/* Camera loading */}
-      {!cameraReady && !error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-white">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+      {/* Standby state when camera is explicitly turned off */}
+      {!enabled && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0e131f] text-white select-none">
+          <p className="text-sm font-medium text-slate-400">
+            Press &ldquo;Start camera&rdquo; to begin
+          </p>
+        </div>
+      )}
 
-          <p className="mt-4 text-sm text-white/60">
+      {/* Camera loading when enabled */}
+      {enabled && !cameraReady && !error && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0e131f] text-white">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400/20 border-t-emerald-400" />
+
+          <p className="mt-4 text-sm text-slate-300">
             Starting camera...
           </p>
         </div>
