@@ -33,6 +33,7 @@ import { VoiceControls } from "./VoiceControls";
 import { HoldTimer } from "./HoldTimer";
 import { CorrectionCard } from "./CorrectionCard";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
+import { getAsanaVideoUrl } from "../data/freeAsanas";
 
 
 function getCoachStateMessage(
@@ -116,7 +117,7 @@ function getSessionLabel(
   }
 }
 
-const INTRO_GUIDE_VIDEO_URL = "/guide_videos/AI Yoga Coach.mp4";
+const INTRO_GUIDE_VIDEO_URL = getAsanaVideoUrl("guide-videos/AI%20Yoga%20Coach.mp4");
 
 export function AICoachPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);

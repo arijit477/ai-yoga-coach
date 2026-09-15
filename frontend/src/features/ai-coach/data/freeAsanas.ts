@@ -1,14 +1,21 @@
 import type { Asana } from "../types/asana";
 
 const SUPABASE_BASE_URL =
-  import.meta.env.VITE_SUPABASE_URL || "https://gelmugbsyhgcluqigrad.supabase.co";
+  import.meta.env.VITE_SUPABASE_URL ||
+  "https://gelmugbsyhgcluqigrad.supabase.co";
 
 const BUCKET_NAME = "asana-images";
+const VIDEO_BUCKET = "videos";
 const STORAGE_FOLDER = "yogaverse-model-asanas";
 
 export function getAsanaImageUrl(filename: string): string {
   return `${SUPABASE_BASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${STORAGE_FOLDER}/${filename}`;
 }
+
+export function getAsanaVideoUrl(filename: string): string {
+  return `${SUPABASE_BASE_URL}/storage/v1/object/public/${VIDEO_BUCKET}/${filename}`;
+}
+
 
 export const FREE_ASANAS: Asana[] = [
   {
@@ -20,8 +27,10 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/warrior-ii-virabhadrasana-ii.webp`,
     imageUrl: getAsanaImageUrl("warrior-ii-virabhadrasana-ii.webp"),
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    description: "A powerful, grounding standing posture that builds endurance, opens the hips, and focuses intention.",
+    videoUrl:
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    description:
+      "A powerful, grounding standing posture that builds endurance, opens the hips, and focuses intention.",
     benefits: [
       "Strengthens legs, ankles, and core muscles",
       "Stretches groins, chest, lungs, and shoulders",
@@ -67,7 +76,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/mountain-tadasana.webp`,
     imageUrl: getAsanaImageUrl("mountain-tadasana.webp"),
-    description: "The foundational standing posture that promotes balance, body awareness, and spinal alignment.",
+    description:
+      "The foundational standing posture that promotes balance, body awareness, and spinal alignment.",
     benefits: [
       "Improves posture and body awareness",
       "Strengthens thighs, knees, and ankles",
@@ -108,7 +118,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/tree-vrksasana.webp`,
     imageUrl: getAsanaImageUrl("tree-vrksasana.webp"),
-    description: "A balancing asana that instills grace, poise, and mental focus while strengthening leg stabilizers.",
+    description:
+      "A balancing asana that instills grace, poise, and mental focus while strengthening leg stabilizers.",
     benefits: [
       "Develops neuromuscular coordination and balance",
       "Strengthens ankles, calves, and inner thighs",
@@ -149,7 +160,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/triangle-trikonasana.webp`,
     imageUrl: getAsanaImageUrl("triangle-trikonasana.webp"),
-    description: "An energizing lateral stretch that expands the chest, strengthens the spine, and tones the legs.",
+    description:
+      "An energizing lateral stretch that expands the chest, strengthens the spine, and tones the legs.",
     benefits: [
       "Stretches hips, groins, hamstrings, and calves",
       "Opens chest and shoulders",
@@ -190,7 +202,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/downward-dog-adho-mukha-svanasana.webp`,
     imageUrl: getAsanaImageUrl("downward-dog-adho-mukha-svanasana.webp"),
-    description: "An all-over rejuvenation posture that decompresses the spine and builds upper body resilience.",
+    description:
+      "An all-over rejuvenation posture that decompresses the spine and builds upper body resilience.",
     benefits: [
       "Decompresses vertebral columns and stretches hamstrings",
       "Strengthens hands, wrists, arms, and upper back",
@@ -231,7 +244,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/cobra-bhujangasana.webp`,
     imageUrl: getAsanaImageUrl("cobra-bhujangasana.webp"),
-    description: "A restorative backbend that strengthens the spine, expands the lungs, and stimulates vitality.",
+    description:
+      "A restorative backbend that strengthens the spine, expands the lungs, and stimulates vitality.",
     benefits: [
       "Strengthens back muscles and spinal erectors",
       "Expands chest and invigorates heart center",
@@ -272,7 +286,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/childs-pose-balasana.webp`,
     imageUrl: getAsanaImageUrl("childs-pose-balasana.webp"),
-    description: "A calming resting pose that gently releases the hips, thighs, and entire back.",
+    description:
+      "A calming resting pose that gently releases the hips, thighs, and entire back.",
     benefits: [
       "Releases tension in the back, shoulders, and chest",
       "Gently stretches hips, thighs, and ankles",
@@ -313,7 +328,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/cat-marjariasana.webp`,
     imageUrl: getAsanaImageUrl("cat-marjariasana.webp"),
-    description: "A gentle spinal movement that improves flexibility, releases spinal tension, and calms the mind.",
+    description:
+      "A gentle spinal movement that improves flexibility, releases spinal tension, and calms the mind.",
     benefits: [
       "Improves spinal flexibility and posture",
       "Coordinates breath with physical movement",
@@ -354,7 +370,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/bridge-setu-bandha-sarvangasana.webp`,
     imageUrl: getAsanaImageUrl("bridge-setu-bandha-sarvangasana.webp"),
-    description: "A revitalizing backbend that strengthens the posterior chain and opens the chest.",
+    description:
+      "A revitalizing backbend that strengthens the posterior chain and opens the chest.",
     benefits: [
       "Strengthens glutes, hamstrings, and lower back",
       "Opens chest, neck, and spine",
@@ -395,7 +412,8 @@ export const FREE_ASANAS: Asana[] = [
     difficulty: "beginner",
     storagePath: `${STORAGE_FOLDER}/corpse-savasana.webp`,
     imageUrl: getAsanaImageUrl("corpse-savasana.webp"),
-    description: "The supreme posture of conscious relaxation, integrating all the benefits of the session.",
+    description:
+      "The supreme posture of conscious relaxation, integrating all the benefits of the session.",
     benefits: [
       "Induces deep physiological relaxation and reduces cortisol",
       "Integrates nervous system benefits of the yoga practice",
