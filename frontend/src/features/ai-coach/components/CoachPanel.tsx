@@ -35,13 +35,13 @@ export function CoachPanel({
       </div>
 
       {/* Avatar Stage */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-emerald-100 bg-white shadow-inner">
+      <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-inner">
         <AvatarPlayer
           coach={coach}
           state={avatarState}
           autoPlay
           loop
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-top"
         />
 
         {/* Dynamic Voice Soundwave Indicator Overlay */}

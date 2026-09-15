@@ -96,7 +96,7 @@ export function AvatarPlayer({
           <img
             src={fallbackImageSrc}
             alt={`AI Coach ${COACHES[coach]?.name}`}
-            className={`h-full w-full object-cover transition-transform duration-700 ${
+            className={`h-full w-full object-cover object-top transition-transform duration-700 ${
               state === "speaking" ? "scale-105" : "scale-100"
             }`}
           />
@@ -107,7 +107,7 @@ export function AvatarPlayer({
           <video
             ref={videoRef}
             src={videoSrc}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-top"
             playsInline
             preload="metadata"
             autoPlay={autoPlay}

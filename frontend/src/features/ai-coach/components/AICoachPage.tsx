@@ -116,7 +116,7 @@ function getSessionLabel(
       return "Ready";
   }
 }
-
+//guide video url from supabase
 const INTRO_GUIDE_VIDEO_URL = getAsanaVideoUrl("guide-videos/AI%20Yoga%20Coach.mp4");
 
 export function AICoachPage() {
