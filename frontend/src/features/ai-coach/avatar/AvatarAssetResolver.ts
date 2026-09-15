@@ -14,12 +14,13 @@ export class AvatarAssetResolver {
       return null;
     }
 
-    if (state === "intro") {
-      return coach.introVideo;
+    // When the coach is idle or not in session, show the serene portrait image
+    if (state === "idle") {
+      return null;
     }
 
-    // Fallbacks can be implemented here in the future
-    // For now, only intro has a dedicated video.
-    return null;
+    // For all active session lifecycle states (guide, listening, analyzing, speaking, correction, good_form, complete, intro)
+    // resolve to the coach's video asset
+    return coach.introVideo;
   }
 }

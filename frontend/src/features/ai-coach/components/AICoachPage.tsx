@@ -29,7 +29,6 @@ import { CoachPanel } from "./CoachPanel";
 import { SessionControls } from "./SessionControls";
 import { AsanaReference } from "./AsanaReference";
 import { PrivacyNotice } from "./PrivacyNotice";
-import { VoiceControls } from "./VoiceControls";
 import { HoldTimer } from "./HoldTimer";
 import { CorrectionCard } from "./CorrectionCard";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
@@ -572,15 +571,38 @@ export function AICoachPage() {
 
   const sessionLabel = getSessionLabel(sessionState);
 
-  // Derive AvatarState for AvatarPlayer
+  // Derive AvatarState for AvatarPlayer based on voice, session lifecycle & posture engine
   const avatarState: AvatarState = useMemo(() => {
+    // 1. Voice is the authoritative source of truth for speaking
     if (voiceState.status === "speaking") return "speaking";
-    if (voiceState.status === "listening") return "listening";
+
+    // 2. Guide video phase
+    if (sessionState === "guide_video") return "guide";
+
+    // 3. Calibration / hold still phase
+    if (sessionState === "hold_still" || sessionState === "calibrating") return "analyzing";
+
+    // 4. Routine / pose completed
     if (sessionState === "completed" || sessionState === "session_completed") return "complete";
-    if (coachState === "correcting" || (stableEvaluation && stableEvaluation.issues.length > 0)) return "correction";
-    if (coachState === "good_form" || sessionState === "holding") return "good_form";
+
+    // 5. Posture correction needed
+    if (coachState === "correcting" || (stableEvaluation && stableEvaluation.issues.length > 0)) {
+      return "correction";
+    }
+
+    // 6. Good form / holding target posture
+    if (coachState === "good_form" || sessionState === "holding") {
+      return "good_form";
+    }
+
+    // 7. Active session waiting/listening for user movement
+    if (isSessionActive || voiceState.status === "listening" || voiceState.status === "connected") {
+      return "listening";
+    }
+
     return "idle";
-  }, [voiceState.status, sessionState, coachState, stableEvaluation]);
+  }, [voiceState.status, sessionState, coachState, stableEvaluation, isSessionActive]);
+
 
   // Derive latest coach spoken message or text guidance
   const latestCoachMessage = useMemo(() => {
@@ -688,26 +710,32 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Floating Mini Coach Presence Card */}
-            <div className="absolute bottom-5 right-5 w-48 sm:w-56 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2">
-              <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10">
-                <CoachPanel
-                  coach={selectedCoach}
-                  coachName={getCoachName(selectedCoach)}
-                  avatarState={avatarState}
-                  guidanceMessage={latestCoachMessage}
-                  isSpeaking={voiceState.status === "speaking"}
-                  className="!border-0 !p-0 !shadow-none !bg-transparent"
+            {/* Floating Mini Coach Presence Card (Cinema Mode: uses lightweight presence badge to avoid duplicate video conflict) */}
+            <div className="absolute bottom-5 right-5 w-48 sm:w-56 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 z-20">
+              <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10 relative">
+                <img
+                  src={selectedCoach === "alice" ? "/images/alice.png" : "/images/kevin.jpg"}
+                  alt={`Coach ${getCoachName(selectedCoach)}`}
+                  className="w-full h-full object-cover object-top"
                 />
+                {voiceState.status === "speaking" && (
+                  <div className="absolute inset-0 bg-emerald-500/20 ring-2 ring-emerald-400/50 rounded-xl" />
+                )}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                     Coach {getCoachName(selectedCoach)}
                   </span>
-                  {voiceState.status === "speaking" && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  )}
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      voiceState.status === "speaking"
+                        ? "bg-emerald-400 animate-ping"
+                        : voiceState.status === "listening"
+                        ? "bg-teal-400 animate-pulse"
+                        : "bg-emerald-500"
+                    }`}
+                  />
                 </div>
                 <p className="text-[11px] text-white/90 truncate font-medium mt-0.5">
                   {latestCoachMessage}
@@ -1178,25 +1206,21 @@ export function AICoachPage() {
             {/* RIGHT: COACH PRESENCE, CORRECTIONS & TARGET POSE */}
             {/* ------------------------------------------------ */}
             <aside className="flex flex-col gap-4">
-              {/* Dedicated Coach Presence with Alice/Kevin */}
+              {/* Dedicated Coach Presence with Alice/Kevin & Integrated Voice Assistant Control */}
               <CoachPanel
                 coach={selectedCoach}
                 coachName={`Coach ${getCoachName(selectedCoach)}`}
                 avatarState={avatarState}
                 guidanceMessage={latestCoachMessage}
                 isSpeaking={voiceState.status === "speaking"}
+                voiceState={voiceState}
+                isSessionActive={isSessionActive}
+                onToggleMute={voiceToggleMute}
+                onRetryVoice={() => voiceRetry(selectedCoach)}
               />
 
               {/* Active Posture Correction Card (Synchronized with Voice & Joint Overlay) */}
               <CorrectionCard issue={stableEvaluation?.issues[0] ?? null} />
-
-              {/* Voice Coach Connection Widget */}
-              <VoiceControls
-                voiceState={voiceState}
-                isSessionActive={isSessionActive}
-                onToggleMute={voiceToggleMute}
-                onRetry={() => voiceRetry(selectedCoach)}
-              />
 
               {/* Steady Hold Tracker Progress Bar */}
               <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">

@@ -2,12 +2,14 @@ export type CoachId = "alice" | "kevin";
 
 export type AvatarState =
   | "idle"
-  | "intro"
+  | "guide"
   | "listening"
+  | "analyzing"
   | "speaking"
   | "correction"
   | "good_form"
-  | "complete";
+  | "complete"
+  | "intro";
 
 export interface Coach {
   id: CoachId;
