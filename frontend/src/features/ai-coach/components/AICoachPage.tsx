@@ -32,6 +32,7 @@ import { PrivacyNotice } from "./PrivacyNotice";
 import { VoiceControls } from "./VoiceControls";
 import { HoldTimer } from "./HoldTimer";
 import { CorrectionCard } from "./CorrectionCard";
+import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 
 
 function getCoachStateMessage(
@@ -679,6 +680,13 @@ export function AICoachPage() {
               </button>
             </div>
 
+            {/* Bottom-Left: Asana Instructions Card in Fullscreen / Cinema Mode */}
+            {!isIntroVideoActive && (
+              <div className="absolute bottom-5 left-5 z-20 max-w-xs sm:max-w-sm">
+                <AsanaInstructionsCard asana={currentAsana} isDark />
+              </div>
+            )}
+
             {/* Floating Mini Coach Presence Card */}
             <div className="absolute bottom-5 right-5 w-48 sm:w-56 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2">
               <div className="w-14 h-14 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10">
@@ -1142,6 +1150,9 @@ export function AICoachPage() {
                 onToggleVoice={() => setShowVoiceCues((v) => !v)}
                 coachName={getCoachName(selectedCoach)}
               />
+
+              {/* Concise Asana Instructions Card (🧘 Pose · Sanskrit + 3 concise steps) */}
+              <AsanaInstructionsCard asana={currentAsana} />
 
               {/* Compact Key Angles Summary (Body overlay is primary) */}
               <KeyAnglesPanel jointAngles={jointAngles} compact />
