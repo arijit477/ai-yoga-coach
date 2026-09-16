@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { Maximize, Minimize, Camera, CameraOff, Play, Square } from "lucide-react";
+import { Maximize, Minimize, Camera, CameraOff } from "lucide-react";
 
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
@@ -235,8 +235,6 @@ export function AICoachPage() {
     state: sessionState,
     countdown,
     holdTime,
-    calibrationProgress,
-    visibilityWarning,
     currentStepIndex,
     startSession,
     skipGuideVideo,
