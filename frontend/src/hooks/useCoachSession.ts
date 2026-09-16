@@ -18,7 +18,7 @@ interface UseCoachSessionOptions {
   onAsanaComplete?: (index: number) => void;
   onAdvanceAsana?: (nextIndex: number) => void;
   onSessionComplete?: () => void;
-  onCalibrationPrompt?: () => void;
+  onCalibrationPrompt?: (warning?: string) => void;
   onCalibrationComplete?: () => void;
   onStepChange?: (stepIndex: number) => void;
   onPoseReviewReady?: (score: number) => void;
@@ -78,6 +78,7 @@ export function useCoachSession({
   const transitionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stabilityDetectorRef = useRef<PoseStabilityDetector>(new PoseStabilityDetector(25, 0.035));
   const hasPromptedCalibrationRef = useRef(false);
+  const lastPromptedWarningRef = useRef<string | null>(null);
 
   const clearTimers = useCallback(() => {
     if (countdownTimerRef.current) {
@@ -105,6 +106,7 @@ export function useCoachSession({
     setVisibilityWarning(null);
     setCurrentStepIndex(0);
     hasPromptedCalibrationRef.current = false;
+    lastPromptedWarningRef.current = null;
   }, [clearTimers]);
 
   const stopSession = useCallback(() => {
@@ -120,6 +122,7 @@ export function useCoachSession({
     setCalibrationProgress(0);
     setVisibilityWarning(null);
     hasPromptedCalibrationRef.current = false;
+    lastPromptedWarningRef.current = null;
     setState("hold_still");
   }, [clearTimers]);
 
@@ -187,14 +190,24 @@ export function useCoachSession({
       return;
     }
 
-    if (!hasPromptedCalibrationRef.current) {
-      hasPromptedCalibrationRef.current = true;
-      onCalibrationPrompt?.();
-    }
-
     const stability = stabilityDetectorRef.current.evaluate(landmarks ?? null);
     setVisibilityWarning(stability.visibilityWarning);
     setCalibrationProgress(stability.stabilityProgress);
+
+    // If there is a visibility warning (e.g. "Move back so I can see your full body.")
+    if (stability.visibilityWarning) {
+      if (lastPromptedWarningRef.current !== stability.visibilityWarning) {
+        lastPromptedWarningRef.current = stability.visibilityWarning;
+        onCalibrationPrompt?.(stability.visibilityWarning);
+      }
+    } else {
+      // Body is visible; prompt to hold still if not yet prompted or after moving back into view
+      if (!hasPromptedCalibrationRef.current || lastPromptedWarningRef.current !== null) {
+        hasPromptedCalibrationRef.current = true;
+        lastPromptedWarningRef.current = null;
+        onCalibrationPrompt?.("Hold still for a moment while I check your position.");
+      }
+    }
 
     if (stability.stabilityProgress > 10 && state === "hold_still") {
       setState("calibrating");

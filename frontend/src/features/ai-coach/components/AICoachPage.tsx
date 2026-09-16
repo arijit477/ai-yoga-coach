@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { Maximize, Minimize } from "lucide-react";
+import { Maximize, Minimize, Camera, CameraOff, Play, Square } from "lucide-react";
 
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
@@ -29,7 +29,6 @@ import { CoachPanel } from "./CoachPanel";
 import { SessionControls } from "./SessionControls";
 import { AsanaReference } from "./AsanaReference";
 import { PrivacyNotice } from "./PrivacyNotice";
-import { HoldTimer } from "./HoldTimer";
 import { CorrectionCard } from "./CorrectionCard";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
@@ -58,7 +57,7 @@ function getCoachStateMessage(
       return "Good form. Keep going.";
 
     case "holding":
-      return "Excellent. Hold your position.";
+      return "Posture scanned & aligned. Hold this position.";
 
     default:
       return "Ready.";
@@ -262,13 +261,16 @@ export function AICoachPage() {
     onAdvanceAsana: useCallback((nextIdx: number) => {
       setCurrentAsanaIndex(nextIdx);
     }, [setCurrentAsanaIndex]),
-    onCalibrationPrompt: useCallback(() => {
-      if (hasDispatchedCalibrationPromptRef.current !== currentAsana.id) {
-        hasDispatchedCalibrationPromptRef.current = currentAsana.id;
+    onCalibrationPrompt: useCallback((promptMessage?: string) => {
+      const msg = promptMessage || "Hold still for a moment while I check your position.";
+      const key = `${currentAsana.id}_${msg}`;
+      if (hasDispatchedCalibrationPromptRef.current !== key) {
+        hasDispatchedCalibrationPromptRef.current = key;
         voiceDispatch(
           CoachingEventBuilder.buildCalibrationPromptEvent(
             currentAsana.id,
             currentAsana.name,
+            msg,
           ),
         );
       }
@@ -662,18 +664,30 @@ export function AICoachPage() {
               />
             )}
 
-            {/* Top-left: LIVE status & asana title */}
-            <div className="absolute left-5 top-5 flex items-center gap-3">
+            {/* Top-left: LIVE status, Asana Title & Asana Selector in Cinema Mode */}
+            <div className="absolute left-5 top-5 z-20 flex items-center gap-3">
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/90 text-white px-3 py-1 text-xs font-bold tracking-wider uppercase shadow-md backdrop-blur-md">
                 <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
                 {isIntroVideoActive ? "Intro Guide" : `LIVE • ${sessionLabel}`}
               </span>
-              <span className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
-                {isIntroVideoActive ? "Welcome to AI Yoga Coach" : currentAsana.name}
-              </span>
-              {!isIntroVideoActive && currentAsana.sanskritName && (
-                <span className="hidden sm:inline text-xs text-white/70 italic">
-                  ({currentAsana.sanskritName})
+
+              {!isIntroVideoActive && (
+                <AsanaSelector
+                  asanas={sessionAsanas}
+                  currentAsana={currentAsana}
+                  onSelectAsana={(asana) => {
+                    resetSession();
+                    setCurrentAsana(asana);
+                  }}
+                  disabled={isSessionActive}
+                  isDark
+                  align="left"
+                />
+              )}
+
+              {isIntroVideoActive && (
+                <span className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-lg tracking-tight">
+                  Welcome to AI Yoga Coach
                 </span>
               )}
             </div>
@@ -686,8 +700,31 @@ export function AICoachPage() {
               />
             </div>
 
-            {/* Top-Right Controls: Exit Fullscreen Button & Compact Score Ring */}
+            {/* Top-Right Controls: Start/Stop Camera, Exit Fullscreen Button & Compact Score Ring */}
             <div className="absolute right-[180px] xs:right-[195px] sm:right-[220px] lg:right-[235px] top-4 sm:top-6 z-20 flex items-center gap-2.5">
+              {/* Start / Stop Camera Toggle Button in Cinema Mode */}
+              {!isCameraActive ? (
+                <button
+                  type="button"
+                  onClick={handleStartCamera}
+                  className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
+                  title="Start camera"
+                >
+                  <Camera size={13} className="fill-white" />
+                  <span className="hidden sm:inline">Start camera</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleStopCamera}
+                  className="flex items-center gap-1.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-white border border-white/20 px-3 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
+                  title="Stop camera"
+                >
+                  <CameraOff size={13} />
+                  <span className="hidden sm:inline">Stop camera</span>
+                </button>
+              )}
+
               {stableScore !== null && (
                 <CircularScoreRing score={stableScore} size={44} strokeWidth={4} compact />
               )}
@@ -784,39 +821,7 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Hold Still / Calibration Overlay in Cinema Mode */}
-            {(sessionState === "hold_still" || sessionState === "calibrating") && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-4">
-                <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-200 max-w-sm w-full animate-in fade-in zoom-in-95 duration-200">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 mb-1">
-                    Body Position Check
-                  </p>
-                  <h4 className="text-xl font-bold text-slate-900">
-                    Hold still for a moment
-                  </h4>
-                  <p className="text-xs text-slate-600 mt-1 mb-4">
-                    Stay steady while your coach checks your alignment points.
-                  </p>
 
-                  {visibilityWarning && (
-                    <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs font-semibold text-amber-900">
-                      {visibilityWarning}
-                    </div>
-                  )}
-
-                  <div className="w-full bg-slate-100 rounded-full h-3.5 p-0.5 border border-slate-200 overflow-hidden">
-                    <div
-                      className="bg-emerald-600 h-full rounded-full transition-all duration-200 ease-out"
-                      style={{ width: `${calibrationProgress}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between items-center mt-2 text-[11px] font-semibold text-slate-500">
-                    <span>Stabilizing...</span>
-                    <span className="font-mono text-emerald-800">{calibrationProgress}%</span>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Step-by-Step Guidance Banner in Cinema Mode */}
             {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
@@ -855,7 +860,7 @@ export function AICoachPage() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
                 </span>
                 <span className="text-sm font-bold tracking-tight text-emerald-950">
-                  Hold Steady: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
+                  Posture Scanned • Hold this position: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
                 </span>
               </div>
             )}
@@ -898,18 +903,8 @@ export function AICoachPage() {
               </p>
             </div>
 
-            {/* Asana Selector & Coach Quick Persona Switcher */}
+            {/* Coach Quick Persona Switcher */}
             <div className="shrink-0 flex flex-wrap items-center gap-3">
-              <AsanaSelector
-                asanas={sessionAsanas}
-                currentAsana={currentAsana}
-                onSelectAsana={(asana) => {
-                  resetSession();
-                  setCurrentAsana(asana);
-                }}
-                disabled={isSessionActive}
-              />
-
               <CoachSelector
                 selectedCoach={selectedCoach}
                 onSelectCoach={setSelectedCoach}
@@ -1021,6 +1016,31 @@ export function AICoachPage() {
                   />
                 </div>
 
+                {/* Bottom-Left Controls inside Camera View: Start & Stop Camera */}
+                <div className="absolute bottom-3 left-3 sm:bottom-3.5 sm:left-3.5 z-20 flex items-center gap-2">
+                  {!isCameraActive ? (
+                    <button
+                      type="button"
+                      onClick={handleStartCamera}
+                      className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 text-xs font-bold transition shadow-lg active:scale-95 cursor-pointer backdrop-blur-md"
+                      title="Start Camera"
+                    >
+                      <Camera size={13} className="fill-white" />
+                      <span>Start camera</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleStopCamera}
+                      className="flex items-center gap-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-white border border-white/20 px-3.5 py-1.5 text-xs font-bold transition shadow-lg active:scale-95 cursor-pointer backdrop-blur-md"
+                      title="Stop Camera"
+                    >
+                      <CameraOff size={13} />
+                      <span>Stop camera</span>
+                    </button>
+                  )}
+                </div>
+
                 {/* Bottom-Right: Maximize to Fullscreen / Cinema Mode */}
                 <button
                   type="button"
@@ -1072,41 +1092,7 @@ export function AICoachPage() {
                   </div>
                 )}
 
-                {/* Hold Still / Calibration Overlay */}
-                {(sessionState === "hold_still" || sessionState === "calibrating") && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-4">
-                    <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-200 max-w-sm w-full animate-in fade-in zoom-in-95 duration-200">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 mb-1">
-                        Body Position Check
-                      </p>
-                      <h4 className="text-xl font-bold text-slate-900">
-                        Hold still for a moment
-                      </h4>
-                      <p className="text-xs text-slate-600 mt-1 mb-4">
-                        Stay steady while your coach checks your alignment points.
-                      </p>
 
-                      {/* Visibility Warning Prompt */}
-                      {visibilityWarning && (
-                        <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs font-semibold text-amber-900">
-                          {visibilityWarning}
-                        </div>
-                      )}
-
-                      {/* Stability Progress Bar */}
-                      <div className="w-full bg-slate-100 rounded-full h-3.5 p-0.5 border border-slate-200 overflow-hidden">
-                        <div
-                          className="bg-emerald-600 h-full rounded-full transition-all duration-200 ease-out"
-                          style={{ width: `${calibrationProgress}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between items-center mt-2 text-[11px] font-semibold text-slate-500">
-                        <span>Stabilizing...</span>
-                        <span className="font-mono text-emerald-800">{calibrationProgress}%</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Step-by-Step Guidance Banner in Camera View */}
                 {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
@@ -1145,7 +1131,7 @@ export function AICoachPage() {
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
                     </span>
                     <span className="text-xs font-bold tracking-tight text-emerald-950">
-                      Hold Steady: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
+                      Posture Scanned • Hold this position: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
                     </span>
                   </div>
                 )}
@@ -1162,7 +1148,7 @@ export function AICoachPage() {
                 )}
               </div>
 
-              {/* Clean Session Controls Bar (Start/Stop Camera, Record, Stop & Save, Mirror, Skeleton, Voice) */}
+              {/* Clean Session Controls Bar (Start/Stop Camera, Practice/End, Skeleton, Asana Selection) */}
               <SessionControls
                 isSessionActive={isSessionActive}
                 onStartSession={handleStartSession}
@@ -1178,7 +1164,18 @@ export function AICoachPage() {
                 showVoice={showVoiceCues}
                 onToggleVoice={() => setShowVoiceCues((v) => !v)}
                 coachName={getCoachName(selectedCoach)}
-              />
+              >
+                <AsanaSelector
+                  asanas={sessionAsanas}
+                  currentAsana={currentAsana}
+                  onSelectAsana={(asana) => {
+                    resetSession();
+                    setCurrentAsana(asana);
+                  }}
+                  disabled={isSessionActive}
+                  align="right"
+                />
+              </SessionControls>
 
               {/* Concise Asana Instructions Card (🧘 Pose · Sanskrit + 3 concise steps) */}
               <AsanaInstructionsCard asana={currentAsana} />
@@ -1221,15 +1218,6 @@ export function AICoachPage() {
 
               {/* Active Posture Correction Card (Synchronized with Voice & Joint Overlay) */}
               <CorrectionCard issue={stableEvaluation?.issues[0] ?? null} />
-
-              {/* Steady Hold Tracker Progress Bar */}
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
-                <HoldTimer
-                  isHolding={sessionState === "holding"}
-                  holdTime={holdTime}
-                  targetHoldSeconds={currentAsana.targetHoldSeconds}
-                />
-              </div>
 
               {/* On-Device Privacy Guarantee Notice */}
               <PrivacyNotice />

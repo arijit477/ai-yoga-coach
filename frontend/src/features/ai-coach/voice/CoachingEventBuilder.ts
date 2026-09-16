@@ -20,15 +20,19 @@ export class CoachingEventBuilder {
   }
 
   /**
-   * Generates a calibration_prompt event asking the user to hold still.
+   * Generates a calibration_prompt event asking the user to hold still or adjust position (e.g. move back).
    */
-  static buildCalibrationPromptEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildCalibrationPromptEvent(
+    asanaId: string,
+    asanaName: string,
+    message: string = "Hold still for a moment while I check your position.",
+  ): CoachingEvent {
     return {
       id: generateEventId("calib_prompt"),
       type: "calibration_prompt",
       asanaId,
       asanaName,
-      feedback: "Hold still for a moment while I check your position.",
+      feedback: message,
       timestamp: Date.now(),
     };
   }
@@ -116,7 +120,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       score: score !== undefined ? Math.round(score) : undefined,
-      feedback: "Great hold. Keep breathing and stay steady.",
+      feedback: `Posture scanned and aligned. Now hold this position and breathe steadily.`,
       timestamp: Date.now(),
     };
   }
