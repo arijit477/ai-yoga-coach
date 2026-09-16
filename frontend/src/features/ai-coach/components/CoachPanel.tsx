@@ -8,7 +8,7 @@ interface CoachPanelProps {
   coach: CoachId;
   coachName: string;
   avatarState: AvatarState;
-  guidanceMessage: string;
+  guidanceMessage?: string;
   isSpeaking: boolean;
   voiceState?: VoiceState;
   isSessionActive?: boolean;
@@ -21,7 +21,6 @@ export const CoachPanel = React.memo(function CoachPanel({
   coach,
   coachName,
   avatarState,
-  guidanceMessage,
   isSpeaking,
   voiceState,
   isSessionActive = false,
@@ -68,26 +67,6 @@ export const CoachPanel = React.memo(function CoachPanel({
             </span>
           </div>
         )}
-      </div>
-
-      {/* Spoken Guidance Cue Bubble */}
-      <div className="rounded-xl border border-emerald-100/90 bg-emerald-50/60 p-3 shadow-xs">
-        <div className="flex items-center justify-between gap-1.5 mb-1">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-600" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
-              Guidance & Cues
-            </span>
-          </div>
-          {isSpeaking && (
-            <span className="flex items-center gap-1 text-[10px] text-emerald-700 font-semibold animate-pulse">
-              Speaking...
-            </span>
-          )}
-        </div>
-        <p className="text-xs font-semibold text-emerald-950 leading-relaxed italic">
-          "{guidanceMessage}"
-        </p>
       </div>
 
       {/* Embedded Professional Voice Assistant Control */}

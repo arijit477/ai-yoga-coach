@@ -29,7 +29,6 @@ import { CoachPanel } from "./CoachPanel";
 import { SessionControls } from "./SessionControls";
 import { AsanaReference } from "./AsanaReference";
 import { PrivacyNotice } from "./PrivacyNotice";
-import { CorrectionCard } from "./CorrectionCard";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
 
@@ -772,9 +771,6 @@ export function AICoachPage() {
                     }`}
                   />
                 </div>
-                <p className="text-[11px] text-white/90 truncate font-medium mt-0.5">
-                  {latestCoachMessage}
-                </p>
               </div>
             </div>
 
@@ -1213,9 +1209,6 @@ export function AICoachPage() {
                 onToggleMute={voiceToggleMute}
                 onRetryVoice={() => voiceRetry(selectedCoach)}
               />
-
-              {/* Active Posture Correction Card (Synchronized with Voice & Joint Overlay) */}
-              <CorrectionCard issue={stableEvaluation?.issues[0] ?? null} />
 
               {/* On-Device Privacy Guarantee Notice */}
               <PrivacyNotice />

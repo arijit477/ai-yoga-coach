@@ -54,67 +54,9 @@ export function PoseSkeleton({
     const strokeColor = isKevin ? "#10b981" : "#06b6d4";
     const neonGlowColor = isKevin ? "rgba(16, 185, 129, 0.45)" : "rgba(6, 182, 212, 0.45)";
 
-    // 1. Outer subtle neon glow pass
-    ctx.save();
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = neonGlowColor;
-    ctx.shadowColor = strokeColor;
-    ctx.shadowBlur = 10;
-
-    VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
-      const start = landmarks[startIdx];
-      const end = landmarks[endIdx];
-
-      if (
-        !start ||
-        !end ||
-        (start.visibility ?? 1) < VISIBILITY_THRESHOLD ||
-        (end.visibility ?? 1) < VISIBILITY_THRESHOLD
-      ) {
-        return;
-      }
-
-      ctx.beginPath();
-      ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
-      ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
-      ctx.stroke();
-    });
-    ctx.restore();
-
-    // 2. Inner crisp neon tracer core line (thin & elegant)
-    ctx.save();
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.strokeStyle = "#ffffff";
-    ctx.shadowColor = strokeColor;
-    ctx.shadowBlur = 4;
-
-    VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
-      const start = landmarks[startIdx];
-      const end = landmarks[endIdx];
-
-      if (
-        !start ||
-        !end ||
-        (start.visibility ?? 1) < VISIBILITY_THRESHOLD ||
-        (end.visibility ?? 1) < VISIBILITY_THRESHOLD
-      ) {
-        return;
-      }
-
-      ctx.beginPath();
-      ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
-      ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
-      ctx.stroke();
-    });
-    ctx.restore();
-
     /*
-     * Draw body joints (11–32: shoulders, elbows, wrists, hips, knees, ankles, feet)
-     * Crisp white points with luminous neon halos. Strictly hides face dots (0-10).
+     * 1. Draw body joints (11–32: shoulders, elbows, wrists, hips, knees, ankles, feet)
+     * Crisp points with luminous neon halos underneath the tracking lines.
      */
     for (const landmarkIndex of VISIBLE_BODY_LANDMARKS) {
       const landmark = landmarks[landmarkIndex];
@@ -133,20 +75,82 @@ export function PoseSkeleton({
       // Outer delicate neon halo
       ctx.save();
       ctx.beginPath();
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
       ctx.strokeStyle = strokeColor;
-      ctx.lineWidth = 1.8;
+      ctx.lineWidth = 2.2;
       ctx.shadowColor = strokeColor;
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur = 10;
       ctx.stroke();
       ctx.restore();
 
       // Inner crisp joint point
       ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fillStyle = "#ffffff";
       ctx.fill();
     }
+
+    /*
+     * 2. Draw skeleton connections ON TOP of the joints with increased thickness.
+     * Glow pass + sharp bright core line.
+     */
+    // Outer prominent neon glow pass
+    ctx.save();
+    ctx.lineWidth = 7;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = neonGlowColor;
+    ctx.shadowColor = strokeColor;
+    ctx.shadowBlur = 14;
+
+    VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
+      const start = landmarks[startIdx];
+      const end = landmarks[endIdx];
+
+      if (
+        !start ||
+        !end ||
+        (start.visibility ?? 1) < VISIBILITY_THRESHOLD ||
+        (end.visibility ?? 1) < VISIBILITY_THRESHOLD
+      ) {
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
+      ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // Inner crisp neon tracer core line (bolder and vibrant)
+    ctx.save();
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#ffffff";
+    ctx.shadowColor = strokeColor;
+    ctx.shadowBlur = 6;
+
+    VISIBLE_SKELETON_CONNECTIONS.forEach(([startIdx, endIdx]) => {
+      const start = landmarks[startIdx];
+      const end = landmarks[endIdx];
+
+      if (
+        !start ||
+        !end ||
+        (start.visibility ?? 1) < VISIBILITY_THRESHOLD ||
+        (end.visibility ?? 1) < VISIBILITY_THRESHOLD
+      ) {
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(start.x * videoWidth, start.y * videoHeight);
+      ctx.lineTo(end.x * videoWidth, end.y * videoHeight);
+      ctx.stroke();
+    });
+    ctx.restore();
     
     // Reset shadow for next frame
     ctx.shadowBlur = 0;
