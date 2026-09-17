@@ -23,4 +23,11 @@ export class AvatarAssetResolver {
     // resolve to the coach's video asset
     return coach.introVideo;
   }
+
+  /**
+   * Directly returns the lipsync video asset URL for a given coach.
+   */
+  static getVideoSrc(coachId: CoachId): string | null {
+    return COACHES[coachId]?.introVideo ?? null;
+  }
 }

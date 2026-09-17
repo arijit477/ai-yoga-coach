@@ -19,11 +19,7 @@ interface AvatarPlayerProps {
 export const AvatarPlayer = React.memo(function AvatarPlayer({
   coach,
   state = "idle",
-  autoPlay = false,
-  muted = true,
-  loop = false,
   className = "",
-  onEnded,
   onError,
   controllerRef,
 }: AvatarPlayerProps) {
@@ -31,16 +27,12 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
   const [internalController] = useState(() => new AvatarController());
   const [hasError, setHasError] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
-
-  // Debounced/smoothed state to prevent rapid flickering on fast voice/pose transitions
   const [smoothedState, setSmoothedState] = useState<AvatarState>(state);
   const stateTimerRef = useRef<number | null>(null);
   const lastCoachRef = useRef<CoachId>(coach);
+  const videoSrc = AvatarAssetResolver.getVideoSrc(coach);
 
-  // Resolve asset for the coach
-  const videoSrc = AvatarAssetResolver.getCoachAsset(coach, state);
-
-  // Debounce state updates slightly (~300ms min display time for speaking/correction)
+  // Debounced/smoothed state to prevent rapid flickering on fast voice/pose transitions
   useEffect(() => {
     if (stateTimerRef.current !== null) {
       window.clearTimeout(stateTimerRef.current);
@@ -88,26 +80,29 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
     }
   }, [coach, videoSrc, internalController]);
 
-  // Sync muted state
+  // Permanent video mute to ensure only the LLM voice agent voice is heard
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.muted = muted;
+      videoRef.current.muted = true;
     }
-  }, [muted]);
+  }, []);
 
-  // Safe playback: play ONLY when video is loaded, autoplay requested, and not already playing
+  // Synchronize avatar lipsync animation:
+  // Play the lipsync video ONLY while the voice agent is actually speaking!
   useEffect(() => {
-    if (!videoRef.current || !autoPlay || !videoSrc || !isVideoReady) return;
+    const video = videoRef.current;
+    if (!video || !videoSrc || !isVideoReady) return;
 
-    if (videoRef.current.paused) {
-      videoRef.current.play().catch((err) => {
+    if (smoothedState === "speaking") {
+      video.play().catch((err) => {
         if ((err as Error).name !== "AbortError") {
-          console.warn("[AI Coach] Avatar autoplay pending interaction", err);
-          onError?.();
+          console.warn("[AI Coach] Avatar speech play error:", err);
         }
       });
+    } else {
+      video.pause();
     }
-  }, [autoPlay, videoSrc, isVideoReady, onError]);
+  }, [smoothedState, videoSrc, isVideoReady]);
 
   // State-specific aura / border styling matching Yogaverse calm wellness aesthetic
   const stateBorderClass =
@@ -137,41 +132,43 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
       style={{ minHeight: "100%", contain: "paint" }}
     >
       {/* 
-        Persistent Video Element:
-        Always mounted in DOM when videoSrc is valid.
-        Never unmounts or resets currentTime on posture/score/angle updates.
+        High-Resolution Resting Portrait:
+        Displays when coach is listening, analyzing, or idle (serene expression, mouth closed).
+      */}
+      <img
+        src={fallbackImageSrc}
+        alt={`AI Coach ${COACHES[coach]?.name}`}
+        className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-300 ${
+          smoothedState === "speaking" && isVideoReady ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      />
+
+      {/* 
+        Lipsync Video Element:
+        Muted = true so only the LLM voice agent voice is heard.
+        Fades in and plays lipsync movement strictly while speaking.
       */}
       {videoSrc && !hasError && (
         <video
           ref={videoRef}
           src={videoSrc}
-          className={`h-full w-full object-cover object-top transition-opacity duration-500 ${
-            isVideoReady ? "opacity-100" : "opacity-0"
+          className={`h-full w-full object-cover object-top transition-opacity duration-300 ${
+            isVideoReady && smoothedState === "speaking"
+              ? "opacity-100 z-10"
+              : "opacity-0 pointer-events-none z-0"
           }`}
           playsInline
           preload="auto"
-          autoPlay={autoPlay}
-          muted={muted}
-          loop={loop}
+          autoPlay={false}
+          muted={true}
+          loop={true}
           onCanPlay={() => setIsVideoReady(true)}
-          onEnded={onEnded}
           onError={(e) => {
             console.warn(`[AI Coach] Avatar video failed to load for ${coach}`, e);
             setHasError(true);
             onError?.();
           }}
-          aria-label={`AI Coach ${COACHES[coach]?.name}`}
-        />
-      )}
-
-      {/* Fallback Image when idle, loading, or video error */}
-      {(!videoSrc || hasError || !isVideoReady) && (
-        <img
-          src={fallbackImageSrc}
-          alt={`AI Coach ${COACHES[coach]?.name}`}
-          className={`absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 ${
-            smoothedState === "speaking" ? "scale-105" : "scale-100"
-          }`}
+          aria-label={`AI Coach ${COACHES[coach]?.name} Speaking`}
         />
       )}
 

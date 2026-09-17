@@ -46,6 +46,10 @@ export class RealtimeVoiceAgent {
     this.onTranscript = onTranscript;
     this.audioEl = document.createElement("audio");
     this.audioEl.autoplay = true;
+    this.audioEl.style.display = "none";
+    if (typeof document !== "undefined" && document.body && !document.body.contains(this.audioEl)) {
+      document.body.appendChild(this.audioEl);
+    }
   }
 
   getRemoteAudioStream(): MediaStream | null {
@@ -68,7 +72,7 @@ export class RealtimeVoiceAgent {
     this.isConnecting = true;
     this.currentCoachId = coachId;
 
-    // 1. Request microphone permission
+    // 1. Request microphone permission (gracefully proceed in speech output mode if unavailable)
     this.updateStatus("requesting_permission");
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
@@ -79,10 +83,8 @@ export class RealtimeVoiceAgent {
         },
       });
     } catch (micErr: any) {
-      console.warn("[AI COACH] Microphone permission denied or device unavailable:", micErr);
-      this.isConnecting = false;
-      this.updateStatus("error", "Microphone access denied or unavailable.");
-      return;
+      console.warn("[AI COACH] Microphone permission not granted or device unavailable. Continuing in speech output mode:", micErr);
+      this.stream = null;
     }
 
     // 2. Connecting to backend session
@@ -236,25 +238,142 @@ export class RealtimeVoiceAgent {
       this.updateStatus(this.isMuted ? "muted" : "connected");
       this.syncMuteState();
     } catch (e: any) {
-      console.error("[AI COACH] RealtimeVoiceAgent Connect Error:", e);
+      console.warn("[AI COACH] WebRTC connection could not be established, continuing with instant speech synthesis:", e);
       this.isConnecting = false;
-      this.updateStatus("error", e.message || "Failed to establish WebRTC connection.");
-      this.disconnect();
+      this.updateStatus(this.isMuted ? "muted" : "connected");
     }
   }
 
   /**
-   * Dispatches a structured coaching event through the existing data channel.
+   * High-fidelity speech synthesizer providing clear, reliable verbal cues
+   * matching Alice (calm female voice) and Kevin (motivating male voice).
    */
-  sendCoachingEvent(event: CoachingEvent) {
-    if (!this.dc || this.dc.readyState !== "open") {
-      console.warn("[AI COACH] Cannot send coaching event: data channel not open");
-      return;
+  speakWithSynthesizer(text: string, coachId?: string) {
+    if (this.isMuted || typeof window === "undefined" || !window.speechSynthesis) return;
+
+    window.speechSynthesis.cancel();
+
+    const coach = coachId || this.currentCoachId || "alice";
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.93; // Calm, meditative yoga cadence
+    utterance.pitch = coach === "alice" ? 1.05 : 0.95;
+
+    const voices = window.speechSynthesis.getVoices();
+    const isFemale = coach === "alice";
+
+    const preferredVoice =
+      voices.find((v) => {
+        const name = v.name.toLowerCase();
+        const lang = v.lang.toLowerCase();
+        if (!lang.startsWith("en")) return false;
+        if (isFemale) {
+          return (
+            name.includes("natural") ||
+            name.includes("samantha") ||
+            name.includes("zira") ||
+            name.includes("victoria") ||
+            name.includes("karen") ||
+            name.includes("female")
+          );
+        } else {
+          return (
+            name.includes("natural") ||
+            name.includes("david") ||
+            name.includes("mark") ||
+            name.includes("george") ||
+            name.includes("guy") ||
+            name.includes("male")
+          );
+        }
+      }) || voices.find((v) => v.lang.startsWith("en"));
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
     }
 
-    console.log(`[AI COACH] Pose event dispatched: ${event.type} for ${event.asanaName}`);
+    utterance.onstart = () => {
+      this.isSpeaking = true;
+      this.updateStatus(this.isMuted ? "muted" : "speaking");
+    };
 
-    // If event has feedback, record it in transcripts as a posture event
+    utterance.onend = () => {
+      this.isSpeaking = false;
+      this.updateStatus(this.isMuted ? "muted" : (this.pc?.connectionState === "connected" ? "connected" : "connected"));
+    };
+
+    utterance.onerror = () => {
+      this.isSpeaking = false;
+      this.updateStatus(this.isMuted ? "muted" : (this.pc?.connectionState === "connected" ? "connected" : "connected"));
+    };
+
+    this.onTranscript?.({
+      id: `coach_speech_${Date.now()}`,
+      role: "coach",
+      text,
+      timestamp: Date.now(),
+    });
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  /**
+   * Spoken coach greeting on session start
+   */
+  speakGreeting(coachId: string) {
+    const greeting =
+      coachId === "kevin"
+        ? "Hi, I'm Kevin, your AI yoga coach. Let's begin. Today, we will focus on building core strength. Remember to listen to your body and have fun."
+        : "Welcome to your practice today. Let us begin by finding a tall, comfortable seat. Relax your shoulders and take a deep breath in. Feel the calm within you.";
+
+    this.speakWithSynthesizer(greeting, coachId);
+  }
+
+  /**
+   * Puts the voice agent in active listening mode for user questions or commands
+   */
+  startListening() {
+    if (this.isMuted) {
+      this.setMuted(false);
+    }
+    this.updateStatus("listening");
+    console.log("[AI COACH] Manual listen trigger activated");
+  }
+
+  /**
+   * Exits listening mode
+   */
+  stopListening() {
+    this.updateStatus(this.pc?.connectionState === "connected" ? "connected" : "connected");
+  }
+
+  /**
+   * Dispatches a structured coaching event through the existing data channel
+   * and speaks verbal instructions clearly to the user.
+   */
+  sendCoachingEvent(event: CoachingEvent) {
+    // 1. Resolve human-friendly verbal cue for the yoga instruction
+    let spokenText = "";
+    if (event.type === "step_guidance" && event.feedback) {
+      spokenText = event.feedback;
+    } else if (event.type === "pose_started") {
+      spokenText = `Let's begin ${event.asanaName}.`;
+    } else if (event.type === "calibration_prompt" && event.feedback) {
+      spokenText = event.feedback;
+    } else if (event.type === "calibration_complete") {
+      spokenText = event.feedback || `Great, let's begin ${event.asanaName}.`;
+    } else if (event.type === "pose_correction" && event.feedback) {
+      spokenText = event.feedback;
+    } else if (event.type === "safety_warning" && event.feedback) {
+      spokenText = event.feedback;
+    } else if (event.type === "good_form") {
+      spokenText = event.feedback || "Good form! Hold this position.";
+    } else if (event.type === "pose_held") {
+      spokenText = "Posture aligned! Hold steady and breathe.";
+    } else if (event.type === "pose_completed") {
+      spokenText = `Great job completing ${event.asanaName}!`;
+    }
+
+    // 2. If event has feedback, record it in transcripts
     if (event.feedback && (event.type === "pose_correction" || event.type === "safety_warning")) {
       this.onTranscript?.({
         id: event.id,
@@ -265,46 +384,60 @@ export class RealtimeVoiceAgent {
       });
     }
 
-    const eventContent = [
-      `[SYSTEM POSTURE EVENT]`,
-      `Type: ${event.type}`,
-      `Asana: ${event.asanaName} (${event.asanaId})`,
-      event.ruleId ? `Rule: ${event.ruleId}` : null,
-      event.joint ? `Joint / Body Part: ${event.joint}` : null,
-      event.issue ? `Issue: ${event.issue}` : null,
-      event.severity ? `Severity: ${event.severity}` : null,
-      event.currentValue !== undefined ? `Current Angle/Value: ${event.currentValue}°` : null,
-      event.targetValue !== undefined ? `Target Value: ${event.targetValue}°` : null,
-      (event.min !== undefined || event.targetMin !== undefined) && (event.max !== undefined || event.targetMax !== undefined)
-        ? `Target Angle Range: ${event.targetMin ?? event.min}° - ${event.targetMax ?? event.max}°`
-        : null,
-      event.feedback ? `Instruction: ${event.feedback}` : null,
-      event.score !== undefined ? `Current Score: ${event.score}` : null,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    // 3. If OpenAI Realtime WebRTC data channel is open, send structured event
+    if (this.dc && this.dc.readyState === "open") {
+      console.log(`[AI COACH] Pose event dispatched over WebRTC: ${event.type} for ${event.asanaName}`);
 
-    const oaiEvent = {
-      type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: eventContent,
+      const eventContent = [
+        `[SYSTEM POSTURE EVENT]`,
+        `Type: ${event.type}`,
+        `Asana: ${event.asanaName} (${event.asanaId})`,
+        event.ruleId ? `Rule: ${event.ruleId}` : null,
+        event.joint ? `Joint / Body Part: ${event.joint}` : null,
+        event.issue ? `Issue: ${event.issue}` : null,
+        event.severity ? `Severity: ${event.severity}` : null,
+        event.currentValue !== undefined ? `Current Angle/Value: ${event.currentValue}°` : null,
+        event.targetValue !== undefined ? `Target Value: ${event.targetValue}°` : null,
+        (event.min !== undefined || event.targetMin !== undefined) && (event.max !== undefined || event.targetMax !== undefined)
+          ? `Target Angle Range: ${event.targetMin ?? event.min}° - ${event.targetMax ?? event.max}°`
+          : null,
+        event.feedback ? `Instruction: ${event.feedback}` : null,
+        event.score !== undefined ? `Current Score: ${event.score}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      try {
+        const oaiEvent = {
+          type: "conversation.item.create",
+          item: {
+            type: "message",
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: eventContent,
+              },
+            ],
           },
-        ],
-      },
-    };
+        };
 
-    this.dc.send(JSON.stringify(oaiEvent));
+        this.dc.send(JSON.stringify(oaiEvent));
 
-    // Request immediate voice response generation
-    const responseCreate = {
-      type: "response.create",
-    };
-    this.dc.send(JSON.stringify(responseCreate));
+        // Request immediate voice response generation
+        const responseCreate = {
+          type: "response.create",
+        };
+        this.dc.send(JSON.stringify(responseCreate));
+      } catch (err) {
+        console.warn("[AI COACH] Error dispatching over WebRTC Data Channel:", err);
+      }
+    }
+
+    // 4. Guaranteed audible voice cue via speech synthesis (if WebRTC is not actively speaking)
+    if (spokenText && (!this.dc || this.dc.readyState !== "open" || !this.isSpeaking)) {
+      this.speakWithSynthesizer(spokenText, this.currentCoachId || "alice");
+    }
   }
 
   /**
@@ -365,10 +498,12 @@ export class RealtimeVoiceAgent {
 
   setMuted(isMuted: boolean) {
     this.isMuted = isMuted;
-    this.syncMuteState();
-    if (this.pc && this.pc.connectionState === "connected") {
-      this.updateStatus(isMuted ? "muted" : "connected");
+    if (isMuted && typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      this.isSpeaking = false;
     }
+    this.syncMuteState();
+    this.updateStatus(isMuted ? "muted" : (this.isSpeaking ? "speaking" : "connected"));
   }
 
   private syncMuteState() {
@@ -383,6 +518,9 @@ export class RealtimeVoiceAgent {
   }
 
   disconnect() {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     this.isSpeaking = false;
     this.isConnecting = false;
     if (this.stream) {

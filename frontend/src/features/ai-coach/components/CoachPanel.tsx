@@ -12,6 +12,10 @@ interface CoachPanelProps {
   isSpeaking: boolean;
   voiceState?: VoiceState;
   isSessionActive?: boolean;
+  onStartVoice?: () => void;
+  onStartListening?: () => void;
+  onStopListening?: () => void;
+  onStopVoice?: () => void;
   onToggleMute?: () => void;
   onRetryVoice?: () => void;
   className?: string;
@@ -24,6 +28,10 @@ export const CoachPanel = React.memo(function CoachPanel({
   isSpeaking,
   voiceState,
   isSessionActive = false,
+  onStartVoice,
+  onStartListening,
+  onStopListening,
+  onStopVoice,
   onToggleMute,
   onRetryVoice,
   className = "",
@@ -51,6 +59,7 @@ export const CoachPanel = React.memo(function CoachPanel({
           coach={coach}
           state={avatarState}
           autoPlay
+          muted={voiceState?.isMuted ?? false}
           loop
           className="h-full w-full object-cover object-top"
         />
@@ -69,12 +78,16 @@ export const CoachPanel = React.memo(function CoachPanel({
         )}
       </div>
 
-      {/* Embedded Professional Voice Assistant Control */}
+      {/* Embedded Multi-Button Voice Assistant Control */}
       {voiceState && onToggleMute && onRetryVoice && (
         <VoiceControls
           voiceState={voiceState}
           isSessionActive={isSessionActive}
           coachName={coach === "alice" ? "Alice" : "Kevin"}
+          onStartVoice={onStartVoice}
+          onStartListening={onStartListening}
+          onStopListening={onStopListening}
+          onStopVoice={onStopVoice}
           onToggleMute={onToggleMute}
           onRetry={onRetryVoice}
         />

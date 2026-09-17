@@ -14,7 +14,6 @@ import { useStablePoseEvaluation } from "../../../hooks/useStablePoseEvaluation"
 import { useStableScore } from "../../../hooks/useStableScore";
 import { useCoachState } from "../../../hooks/useCoachState";
 import { useCoachSession } from "../../../hooks/useCoachSession";
-import { AsanaProgress } from "./AsanaProgress";
 import { AsanaSelector } from "./AsanaSelector";
 import { GuideVideoOverlay } from "./GuideVideoOverlay";
 import { PoseReviewModal } from "./PoseReviewModal";
@@ -29,6 +28,7 @@ import { CoachPanel } from "./CoachPanel";
 import { SessionControls } from "./SessionControls";
 import { AsanaReference } from "./AsanaReference";
 import { PrivacyNotice } from "./PrivacyNotice";
+import { SafetyGuideBanner } from "./SafetyGuideBanner";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
 
@@ -152,12 +152,8 @@ export function AICoachPage() {
     selectedCoach,
     setSelectedCoach,
     markAsanaCompleted,
-    canAccessAsanaIndex,
     setCurrentAsana,
     setCurrentAsanaIndex,
-    skipToAsanaIndex,
-    goBackToAsanaIndex,
-    skippedAsanaIds,
   } = useAICoachStore();
 
   const activeAsanas = useMemo(() => {
@@ -209,6 +205,9 @@ export function AICoachPage() {
     retry: voiceRetry,
     dispatchEvent: voiceDispatch,
     updateSessionContext: voiceUpdateContext,
+    speakGreeting: voiceSpeakGreeting,
+    startListening: voiceStartListening,
+    stopListening: voiceStopListening,
   } = useRealtimeVoice();
 
   // Track one-shot events per asana to avoid redundant dispatching
@@ -312,9 +311,14 @@ export function AICoachPage() {
     hasDispatchedCompletedRef.current = null;
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
+
+    if (!isCameraActive) {
+      handleStartCamera();
+    }
     startSession();
     voiceStart(selectedCoach);
-  }, [selectedCoach, startSession, voiceStart]);
+    voiceSpeakGreeting(selectedCoach);
+  }, [isCameraActive, handleStartCamera, selectedCoach, startSession, voiceStart, voiceSpeakGreeting]);
 
   const handleStopSession = useCallback(() => {
     stopSession();
@@ -429,11 +433,9 @@ export function AICoachPage() {
       return;
     }
 
-    // 2. POSE STARTED (User enters active detection with valid landmarks)
+    // 2. POSE STARTED (Announce pose as coaching begins)
     if (
-      sessionState !== "countdown" &&
-      sessionState !== "transition" &&
-      hasPose &&
+      (sessionState === "coaching" || (sessionState !== "countdown" && sessionState !== "transition" && hasPose)) &&
       hasDispatchedStartRef.current !== currentAsana.id
     ) {
       hasDispatchedStartRef.current = currentAsana.id;
@@ -878,6 +880,9 @@ export function AICoachPage() {
       {/* ====================================================== */}
       <div className="min-h-screen bg-[#f9fdfb] px-4 py-8 text-slate-800 md:px-8 font-sans selection:bg-emerald-100">
         <div className="mx-auto max-w-[1440px]">
+          {/* Top Safety Guide Disclaimer Banner */}
+          <SafetyGuideBanner className="mb-6" />
+
           {/* ================================================== */}
           {/* 1. YOGAVERSE HEADER & BRAND POSITIONING           */}
           {/* ================================================== */}
@@ -908,38 +913,7 @@ export function AICoachPage() {
           </header>
 
           {/* ================================================== */}
-          {/* 2. SESSION PROGRESS FLOW                           */}
-          {/* ================================================== */}
-          <div className="mb-6">
-            <AsanaProgress
-              currentIndex={currentAsanaIndex}
-              totalAsanas={activeAsanas.length}
-              asanas={activeAsanas}
-              currentAsana={currentAsana}
-              isHolding={sessionState === "holding"}
-              holdTime={holdTime}
-              targetHoldSeconds={currentAsana.targetHoldSeconds}
-              isSessionActive={isSessionActive}
-              canAccessIndex={canAccessAsanaIndex}
-              skippedAsanaIds={skippedAsanaIds}
-              onSelectIndex={(idx) => {
-                resetSession();
-                setCurrentAsanaIndex(idx);
-              }}
-              onSkipToIndex={(idx) => {
-                resetSession();
-                skipToAsanaIndex(idx);
-              }}
-              onGoBackToIndex={(idx) => {
-                resetSession();
-                goBackToAsanaIndex(idx);
-              }}
-              disabled={isSessionActive}
-            />
-          </div>
-
-          {/* ================================================== */}
-          {/* 3. MAIN EXPERIENCE (CAMERA-CENTERED + COACH PANEL) */}
+          {/* MAIN EXPERIENCE (CAMERA-CENTERED + COACH PANEL)    */}
           {/* ================================================== */}
           <div className="grid gap-6 lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_400px] items-start">
             {/* ------------------------------------------------ */}
@@ -1197,7 +1171,7 @@ export function AICoachPage() {
             {/* RIGHT: COACH PRESENCE, CORRECTIONS & TARGET POSE */}
             {/* ------------------------------------------------ */}
             <aside className="flex flex-col gap-4">
-              {/* Dedicated Coach Presence with Alice/Kevin & Integrated Voice Assistant Control */}
+              {/* Dedicated Coach Presence with Alice/Kevin & Integrated Multi-Button Voice Control */}
               <CoachPanel
                 coach={selectedCoach}
                 coachName={`Coach ${getCoachName(selectedCoach)}`}
@@ -1206,6 +1180,13 @@ export function AICoachPage() {
                 isSpeaking={voiceState.status === "speaking"}
                 voiceState={voiceState}
                 isSessionActive={isSessionActive}
+                onStartVoice={() => {
+                  voiceStart(selectedCoach);
+                  voiceSpeakGreeting(selectedCoach);
+                }}
+                onStartListening={voiceStartListening}
+                onStopListening={voiceStopListening}
+                onStopVoice={voiceStop}
                 onToggleMute={voiceToggleMute}
                 onRetryVoice={() => voiceRetry(selectedCoach)}
               />

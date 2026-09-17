@@ -50,7 +50,7 @@ const COMPLETION_ACCURACY_THRESHOLD = 75;
 export function useCoachSession({
   evaluation,
   landmarks,
-  isInitialized,
+  isInitialized: _isInitialized,
   hasPose,
   targetHoldSeconds = DEFAULT_REQUIRED_HOLD_SECONDS,
   currentAsanaIndex,
@@ -161,17 +161,13 @@ export function useCoachSession({
    */
   const startSession = useCallback(
     (options?: { skipVideo?: boolean }) => {
-      if (!isInitialized) {
-        return;
-      }
-
       if (hasGuideVideo && !options?.skipVideo) {
         setState("guide_video");
       } else {
         startCountdown();
       }
     },
-    [isInitialized, hasGuideVideo, startCountdown],
+    [hasGuideVideo, startCountdown],
   );
 
   const skipGuideVideo = useCallback(() => {

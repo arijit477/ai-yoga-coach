@@ -96,22 +96,35 @@ export function useRealtimeVoice() {
 
   /**
    * Stable dispatchEvent that NEVER changes identity.
+   * Dispatches coaching events to provide immediate spoken verbal cues.
    */
   const dispatchEvent = useCallback((event: CoachingEvent) => {
-    const s = statusRef.current;
-    if (s === "connected" || s === "speaking" || s === "listening" || s === "muted") {
-      dispatcherRef.current?.dispatch(event);
-    }
+    dispatcherRef.current?.dispatch(event);
+  }, []);
+
+  const speakGreeting = useCallback((coachId: string) => {
+    agentRef.current?.speakGreeting(coachId);
+  }, []);
+
+  const speak = useCallback((text: string) => {
+    agentRef.current?.speakWithSynthesizer(text);
+  }, []);
+
+  const startListening = useCallback(() => {
+    agentRef.current?.startListening();
+    setState((prev) => ({ ...prev, status: "listening" }));
+  }, []);
+
+  const stopListening = useCallback(() => {
+    agentRef.current?.stopListening();
+    setState((prev) => ({ ...prev, status: "connected" }));
   }, []);
 
   /**
    * Sends session context updates to the realtime voice agent.
    */
   const updateSessionContext = useCallback((context: SessionContextData) => {
-    const s = statusRef.current;
-    if (s === "connected" || s === "speaking" || s === "listening" || s === "muted") {
-      agentRef.current?.updateSessionContext(context);
-    }
+    agentRef.current?.updateSessionContext(context);
   }, []);
 
   // Cleanup on unmount
@@ -135,6 +148,10 @@ export function useRealtimeVoice() {
     toggleMute,
     dispatchEvent,
     updateSessionContext,
+    speakGreeting,
+    speak,
+    startListening,
+    stopListening,
     getRemoteAudioStream: () => agentRef.current?.getRemoteAudioStream() ?? null,
   };
 }
