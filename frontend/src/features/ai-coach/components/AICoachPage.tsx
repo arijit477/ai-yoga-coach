@@ -317,7 +317,7 @@ export function AICoachPage() {
     }
     startSession();
     voiceStart(selectedCoach);
-    voiceSpeakGreeting(selectedCoach);
+    voiceSpeakGreeting();
   }, [isCameraActive, handleStartCamera, selectedCoach, startSession, voiceStart, voiceSpeakGreeting]);
 
   const handleStopSession = useCallback(() => {
@@ -1182,7 +1182,7 @@ export function AICoachPage() {
                 isSessionActive={isSessionActive}
                 onStartVoice={() => {
                   voiceStart(selectedCoach);
-                  voiceSpeakGreeting(selectedCoach);
+                  voiceSpeakGreeting();
                 }}
                 onStartListening={voiceStartListening}
                 onStopListening={voiceStopListening}

@@ -7,6 +7,7 @@ from app.api.routes import chat
 from app.api.routes.asanas import router as asana_router
 from app.api.routes.temp import router as temp_router
 from app.api.routes import realtime
+from app.api.routes import elevenlabs
 
 app = FastAPI(title="AI Yoga Coach API", version="0.1.0")
 
@@ -23,6 +24,7 @@ app.include_router(chat.router, prefix="/api")
 app.include_router(asana_router)
 app.include_router(temp_router)
 app.include_router(realtime.router)
+app.include_router(elevenlabs.router)
 
 
 @app.get("/api/health")

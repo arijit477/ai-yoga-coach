@@ -102,12 +102,12 @@ export function useRealtimeVoice() {
     dispatcherRef.current?.dispatch(event);
   }, []);
 
-  const speakGreeting = useCallback((coachId: string) => {
-    agentRef.current?.speakGreeting(coachId);
+  const speakGreeting = useCallback(() => {
+    agentRef.current?.speakGreeting();
   }, []);
 
   const speak = useCallback((text: string) => {
-    agentRef.current?.speakWithSynthesizer(text);
+    agentRef.current?.speak(text);
   }, []);
 
   const startListening = useCallback(() => {

@@ -38,7 +38,7 @@ export const CoachPanel = React.memo(function CoachPanel({
 }: CoachPanelProps) {
   return (
     <div
-      className={`rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm flex flex-col gap-3.5 ${className}`}
+      className={`relative rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm flex flex-col gap-3.5 ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
@@ -80,17 +80,19 @@ export const CoachPanel = React.memo(function CoachPanel({
 
       {/* Embedded Multi-Button Voice Assistant Control */}
       {voiceState && onToggleMute && onRetryVoice && (
-        <VoiceControls
-          voiceState={voiceState}
-          isSessionActive={isSessionActive}
-          coachName={coach === "alice" ? "Alice" : "Kevin"}
-          onStartVoice={onStartVoice}
-          onStartListening={onStartListening}
-          onStopListening={onStopListening}
-          onStopVoice={onStopVoice}
-          onToggleMute={onToggleMute}
-          onRetry={onRetryVoice}
-        />
+        <div className={!isSessionActive ? "opacity-60 pointer-events-none grayscale-[0.5]" : ""}>
+          <VoiceControls
+            voiceState={voiceState}
+            isSessionActive={isSessionActive}
+            coachName={coach === "alice" ? "Alice" : "Kevin"}
+            onStartVoice={onStartVoice}
+            onStartListening={onStartListening}
+            onStopListening={onStopListening}
+            onStopVoice={onStopVoice}
+            onToggleMute={onToggleMute}
+            onRetry={onRetryVoice}
+          />
+        </div>
       )}
     </div>
   );

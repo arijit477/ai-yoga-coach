@@ -1,4 +1,6 @@
 import type { CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
+import type { VoiceProvider } from "./providers/VoiceProvider";
+import { ElevenLabsVoiceProvider } from "./providers/ElevenLabsVoiceProvider";
 
 export interface SessionContextData {
   coach: string;
@@ -35,6 +37,9 @@ export class RealtimeVoiceAgent {
   private isSpeaking: boolean = false;
   private currentCoachId: string | null = null;
   private isConnecting: boolean = false;
+  
+  // ElevenLabs Voice Provider for streaming text-to-speech
+  private voiceProvider: VoiceProvider | null = null;
   // Hook for future avatar lip-sync: returns incoming audio stream
   private remoteAudioStream: MediaStream | null = null;
 
@@ -53,6 +58,9 @@ export class RealtimeVoiceAgent {
   }
 
   getRemoteAudioStream(): MediaStream | null {
+    if (this.voiceProvider && this.voiceProvider instanceof ElevenLabsVoiceProvider) {
+      return this.voiceProvider.getMediaStream();
+    }
     return this.remoteAudioStream;
   }
 
@@ -71,6 +79,13 @@ export class RealtimeVoiceAgent {
 
     this.isConnecting = true;
     this.currentCoachId = coachId;
+
+    try {
+      this.voiceProvider = new ElevenLabsVoiceProvider();
+      await this.voiceProvider.initialize(coachId);
+    } catch (err) {
+      console.warn("[AI COACH] ElevenLabs Voice Provider failed to initialize", err);
+    }
 
     // 1. Request microphone permission (gracefully proceed in speech output mode if unavailable)
     this.updateStatus("requesting_permission");
@@ -111,17 +126,10 @@ export class RealtimeVoiceAgent {
       // 3. Setup WebRTC Peer Connection
       this.pc = new RTCPeerConnection();
 
-      // Handle incoming audio stream from OpenAI
-      this.pc.ontrack = (e) => {
-        if (e.streams[0]) {
-          this.remoteAudioStream = e.streams[0];
-          if (this.audioEl) {
-            this.audioEl.srcObject = e.streams[0];
-            this.audioEl.play().catch((err) => {
-              console.warn("[AI COACH] Audio autoplay pending user interaction:", err);
-            });
-          }
-        }
+      // Handle incoming audio stream from OpenAI - intentionally ignored to use ElevenLabs instead
+      this.pc.ontrack = () => {
+        // We drop the OpenAI audio because we stream text to ElevenLabs for TTS.
+        // The Lipsync engine gets its stream from ElevenLabsVoiceProvider.
       };
 
       // Add local microphone tracks to PeerConnection
@@ -164,6 +172,10 @@ export class RealtimeVoiceAgent {
             console.log("[AI COACH] User interruption detected");
             this.isSpeaking = false;
             this.updateStatus(this.isMuted ? "muted" : "listening");
+            // Instantly stop coach audio playback
+            if (this.voiceProvider) {
+              this.voiceProvider.stop();
+            }
           } else if (ev.type === "input_audio_buffer.speech_stopped") {
             if (!this.isSpeaking) {
               this.updateStatus(this.isMuted ? "muted" : "connected");
@@ -179,6 +191,13 @@ export class RealtimeVoiceAgent {
               text: ev.transcript.trim(),
               timestamp: Date.now(),
             });
+          }
+
+          // Coach spoken response text chunk for ElevenLabs streaming
+          if (ev.type === "response.audio_transcript.delta" || ev.type === "response.text.delta") {
+            if (ev.delta && this.voiceProvider) {
+              this.voiceProvider.streamText(ev.delta);
+            }
           }
 
           // Coach spoken response transcript
@@ -245,66 +264,14 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * High-fidelity speech synthesizer providing clear, reliable verbal cues
-   * matching Alice (calm female voice) and Kevin (motivating male voice).
+   * High-fidelity speech synthesis using ElevenLabs Voice Provider
    */
-  speakWithSynthesizer(text: string, coachId?: string) {
-    if (this.isMuted || typeof window === "undefined" || !window.speechSynthesis) return;
+  speak(text: string) {
+    if (this.isMuted) return;
 
-    window.speechSynthesis.cancel();
-
-    const coach = coachId || this.currentCoachId || "alice";
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.93; // Calm, meditative yoga cadence
-    utterance.pitch = coach === "alice" ? 1.05 : 0.95;
-
-    const voices = window.speechSynthesis.getVoices();
-    const isFemale = coach === "alice";
-
-    const preferredVoice =
-      voices.find((v) => {
-        const name = v.name.toLowerCase();
-        const lang = v.lang.toLowerCase();
-        if (!lang.startsWith("en")) return false;
-        if (isFemale) {
-          return (
-            name.includes("natural") ||
-            name.includes("samantha") ||
-            name.includes("zira") ||
-            name.includes("victoria") ||
-            name.includes("karen") ||
-            name.includes("female")
-          );
-        } else {
-          return (
-            name.includes("natural") ||
-            name.includes("david") ||
-            name.includes("mark") ||
-            name.includes("george") ||
-            name.includes("guy") ||
-            name.includes("male")
-          );
-        }
-      }) || voices.find((v) => v.lang.startsWith("en"));
-
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    if (this.voiceProvider) {
+      this.voiceProvider.streamText(text);
     }
-
-    utterance.onstart = () => {
-      this.isSpeaking = true;
-      this.updateStatus(this.isMuted ? "muted" : "speaking");
-    };
-
-    utterance.onend = () => {
-      this.isSpeaking = false;
-      this.updateStatus(this.isMuted ? "muted" : (this.pc?.connectionState === "connected" ? "connected" : "connected"));
-    };
-
-    utterance.onerror = () => {
-      this.isSpeaking = false;
-      this.updateStatus(this.isMuted ? "muted" : (this.pc?.connectionState === "connected" ? "connected" : "connected"));
-    };
 
     this.onTranscript?.({
       id: `coach_speech_${Date.now()}`,
@@ -312,20 +279,18 @@ export class RealtimeVoiceAgent {
       text,
       timestamp: Date.now(),
     });
-
-    window.speechSynthesis.speak(utterance);
   }
 
   /**
-   * Spoken coach greeting on session start
+   * Speak a greeting when the session connects.
    */
-  speakGreeting(coachId: string) {
+  speakGreeting() {
     const greeting =
-      coachId === "kevin"
+      this.currentCoachId === "kevin"
         ? "Hi, I'm Kevin, your AI yoga coach. Let's begin. Today, we will focus on building core strength. Remember to listen to your body and have fun."
         : "Welcome to your practice today. Let us begin by finding a tall, comfortable seat. Relax your shoulders and take a deep breath in. Feel the calm within you.";
 
-    this.speakWithSynthesizer(greeting, coachId);
+    this.speak(greeting);
   }
 
   /**
@@ -434,9 +399,9 @@ export class RealtimeVoiceAgent {
       }
     }
 
-    // 4. Guaranteed audible voice cue via speech synthesis (if WebRTC is not actively speaking)
+    // 4. Guaranteed audible voice cue via ElevenLabs Voice Provider
     if (spokenText && (!this.dc || this.dc.readyState !== "open" || !this.isSpeaking)) {
-      this.speakWithSynthesizer(spokenText, this.currentCoachId || "alice");
+      this.speak(spokenText);
     }
   }
 
@@ -498,8 +463,8 @@ export class RealtimeVoiceAgent {
 
   setMuted(isMuted: boolean) {
     this.isMuted = isMuted;
-    if (isMuted && typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
+    if (isMuted && this.voiceProvider) {
+      this.voiceProvider.stop();
       this.isSpeaking = false;
     }
     this.syncMuteState();
@@ -518,8 +483,9 @@ export class RealtimeVoiceAgent {
   }
 
   disconnect() {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
+    if (this.voiceProvider) {
+      this.voiceProvider.dispose();
+      this.voiceProvider = null;
     }
     this.isSpeaking = false;
     this.isConnecting = false;
