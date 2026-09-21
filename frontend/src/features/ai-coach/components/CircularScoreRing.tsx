@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 interface CircularScoreRingProps {
   score: number | null;
   size?: number;
@@ -13,24 +15,42 @@ export function CircularScoreRing({
   compact = false,
   className = "",
 }: CircularScoreRingProps) {
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 50);
+    return () => clearTimeout(timer);
+  }, []);
+
   const normalizedScore = score !== null ? Math.max(0, Math.min(100, Math.round(score))) : null;
 
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset =
-    normalizedScore !== null
+    normalizedScore !== null && isMounted
       ? circumference - (normalizedScore / 100) * circumference
       : circumference;
 
-  // Yogaverse color palette: sage green (good), warm honey gold (adjusting), terracotta coral (needs work)
   const color =
     normalizedScore === null
       ? "#94a3b8"
       : normalizedScore >= 80
-      ? "#2f8055" // Yogaverse sage-dk
-      : normalizedScore >= 50
-      ? "#d4a017" // Yogaverse gold
-      : "#e07b5f"; // Yogaverse coral
+      ? "#eab308" // Gold
+      : normalizedScore >= 60
+      ? "#22c55e" // Green
+      : normalizedScore >= 40
+      ? "#f97316" // Orange
+      : "#ef4444"; // Red
+
+  const getLabel = () => {
+    if (normalizedScore === null) return "Standby";
+    if (normalizedScore === 100) return "Perfect Hold";
+    if (normalizedScore >= 90) return "Excellent Form";
+    if (normalizedScore >= 75) return "Excellent Alignment";
+    if (normalizedScore >= 60) return "Almost There";
+    if (normalizedScore >= 40) return "Looking Better";
+    return "Getting Started";
+  };
 
   const ringElement = (
     <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
@@ -73,7 +93,7 @@ export function CircularScoreRing({
             size < 70 ? "text-[8px]" : "text-[10px]"
           }`}
         >
-          match %
+          accuracy
         </span>
       </div>
     </div>
@@ -85,19 +105,13 @@ export function CircularScoreRing({
         {ringElement}
         <div className="flex flex-col pr-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-            Pose Form
+            Alignment
           </span>
           <span
             className="text-xs font-bold"
             style={{ color }}
           >
-            {normalizedScore === null
-              ? "Standby"
-              : normalizedScore >= 80
-              ? "Good Form"
-              : normalizedScore >= 50
-              ? "Adjusting"
-              : "Adjust"}
+            {getLabel()}
           </span>
         </div>
       </div>
@@ -108,7 +122,7 @@ export function CircularScoreRing({
     <div className={`rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm flex flex-col items-center ${className}`}>
       <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-          Pose Match
+          Alignment
         </span>
         <span
           className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
@@ -117,13 +131,7 @@ export function CircularScoreRing({
             color: color,
           }}
         >
-          {normalizedScore === null
-            ? "Standby"
-            : normalizedScore >= 80
-            ? "Good Form"
-            : normalizedScore >= 50
-            ? "Adjusting"
-            : "Adjust"}
+          {getLabel()}
         </span>
       </div>
 

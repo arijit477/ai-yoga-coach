@@ -11,17 +11,23 @@ export interface StabilityResult {
 export class PoseStabilityDetector {
   private lastLandmarks: PoseLandmarks | null = null;
   private stableFramesCount = 0;
+  private unstableFramesCount = 0;
+  private isCurrentlyStable = false;
   private readonly requiredStableFrames: number;
+  private readonly requiredUnstableFrames: number;
   private readonly motionThreshold: number;
 
-  constructor(requiredStableFrames: number = 30, motionThreshold: number = 0.035) {
+  constructor(requiredStableFrames: number = 20, motionThreshold: number = 0.02) {
     this.requiredStableFrames = requiredStableFrames;
+    this.requiredUnstableFrames = Math.max(10, Math.floor(requiredStableFrames * 0.5));
     this.motionThreshold = motionThreshold;
   }
 
   reset(): void {
     this.lastLandmarks = null;
     this.stableFramesCount = 0;
+    this.unstableFramesCount = 0;
+    this.isCurrentlyStable = false;
   }
 
   evaluate(landmarks: PoseLandmarks | null): StabilityResult {
@@ -81,19 +87,31 @@ export class PoseStabilityDetector {
 
     const avgDisplacement = countedJoints > 0 ? totalDisplacement / countedJoints : 1.0;
 
-    // Check if movement is under the still threshold
+    // Hysteresis debouncing
     if (avgDisplacement < this.motionThreshold) {
-      this.stableFramesCount++;
+      this.stableFramesCount = Math.min(this.requiredStableFrames, this.stableFramesCount + 1);
+      this.unstableFramesCount = Math.max(0, this.unstableFramesCount - 2);
     } else {
-      // Gentle penalty for jitter rather than hard reset to 0
-      this.stableFramesCount = Math.max(0, this.stableFramesCount - 3);
+      this.unstableFramesCount = Math.min(this.requiredUnstableFrames, this.unstableFramesCount + 1);
+      this.stableFramesCount = Math.max(0, this.stableFramesCount - 2);
+    }
+
+    if (this.isCurrentlyStable) {
+      // It takes multiple unstable frames to break stability
+      if (this.unstableFramesCount >= this.requiredUnstableFrames) {
+        this.isCurrentlyStable = false;
+      }
+    } else {
+      // It takes multiple stable frames to gain stability
+      if (this.stableFramesCount >= this.requiredStableFrames) {
+        this.isCurrentlyStable = true;
+      }
     }
 
     const progress = Math.min(100, Math.round((this.stableFramesCount / this.requiredStableFrames) * 100));
-    const isStable = this.stableFramesCount >= this.requiredStableFrames;
 
     return {
-      isStable,
+      isStable: this.isCurrentlyStable,
       stabilityProgress: progress,
       isFullBodyVisible: true,
       visibilityWarning: null,

@@ -4,9 +4,8 @@ import { Maximize, Minimize, Camera, CameraOff } from "lucide-react";
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
 import { AngleDebugPanel } from "./AngleDebugPanel";
-import { JointAngleOverlay } from "./JointAngleOverlay";
-import { KeyAnglesPanel } from "./KeyAnglesPanel";
 import { CircularScoreRing } from "./CircularScoreRing";
+import { HoldTimer } from "./HoldTimer";
 
 import { usePoseTracking } from "../../../hooks/usePoseTracking";
 import { usePoseEvaluation } from "../../../hooks/usePoseEvaluation";
@@ -17,6 +16,7 @@ import { useCoachSession } from "../../../hooks/useCoachSession";
 import { AsanaSelector } from "./AsanaSelector";
 import { GuideVideoOverlay } from "./GuideVideoOverlay";
 import { PoseReviewModal } from "./PoseReviewModal";
+import { SessionReportModal } from "./SessionReportModal";
 import { useAICoachStore } from "../store/aiCoachStore";
 import type { CoachPersona } from "../types/coach-session";
 import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
@@ -154,16 +154,27 @@ export function AICoachPage() {
     markAsanaCompleted,
     setCurrentAsana,
     setCurrentAsanaIndex,
+    completedAsanaIds,
+    completedAsanaScores,
   } = useAICoachStore();
 
   const activeAsanas = useMemo(() => {
     return sessionAsanas.slice(0, sessionLength);
   }, [sessionAsanas, sessionLength]);
 
+  const completedAsanasForReport = useMemo(() => {
+    return activeAsanas
+      .filter((a) => completedAsanaIds.includes(a.id))
+      .map((a) => ({
+        asana: a,
+        score: completedAsanaScores[a.id] ?? 80,
+      }));
+  }, [activeAsanas, completedAsanaIds, completedAsanaScores]);
+
   /*
    * Pose tracking
    */
-  const { result, isInitialized, error } = usePoseTracking(videoRef);
+  const { result, isInitialized, error } = usePoseTracking(videoRef, isCameraActive);
   const hasPose = Boolean(result);
 
   /*
@@ -214,6 +225,8 @@ export function AICoachPage() {
   const hasDispatchedStartRef = useRef<string | null>(null);
   const hasDispatchedHeldRef = useRef<string | null>(null);
   const hasDispatchedCompletedRef = useRef<string | null>(null);
+  const hasDispatchedThresholdRef = useRef<string | null>(null);
+  const lastAnnouncedCountdownRef = useRef<number | null>(null);
   const hasDispatchedCalibrationPromptRef = useRef<string | null>(null);
   const hasDispatchedCalibrationCompleteRef = useRef<string | null>(null);
   // Track last sent session context to avoid spamming OpenAI with per-frame updates
@@ -241,8 +254,9 @@ export function AICoachPage() {
     resetSession,
     doItAgain,
     moveToNextAsana,
+    stayHere,
   } = useCoachSession({
-    evaluation: stableEvaluation,
+    evaluation: stableEvaluation ? { ...stableEvaluation, score: stableScore ?? stableEvaluation.score } : null,
     landmarks: result?.landmarks ?? null,
     isInitialized,
     hasPose: Boolean(result),
@@ -251,8 +265,8 @@ export function AICoachPage() {
     totalAsanas: activeAsanas.length,
     hasGuideVideo: Boolean(currentAsana.videoUrl),
     instructionsCount: currentAsana.instructions.length,
-    onAsanaComplete: useCallback((idx: number) => {
-      markAsanaCompleted(activeAsanas[idx].id);
+    onAsanaComplete: useCallback((idx: number, score?: number) => {
+      markAsanaCompleted(activeAsanas[idx].id, score ?? 80);
     }, [activeAsanas, markAsanaCompleted]),
     onAdvanceAsana: useCallback((nextIdx: number) => {
       setCurrentAsanaIndex(nextIdx);
@@ -309,6 +323,8 @@ export function AICoachPage() {
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
+    hasDispatchedThresholdRef.current = null;
+    lastAnnouncedCountdownRef.current = null;
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
 
@@ -317,8 +333,7 @@ export function AICoachPage() {
     }
     startSession();
     voiceStart(selectedCoach);
-    voiceSpeakGreeting();
-  }, [isCameraActive, handleStartCamera, selectedCoach, startSession, voiceStart, voiceSpeakGreeting]);
+  }, [isCameraActive, handleStartCamera, selectedCoach, startSession, voiceStart]);
 
   const handleStopSession = useCallback(() => {
     stopSession();
@@ -326,6 +341,8 @@ export function AICoachPage() {
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
+    hasDispatchedThresholdRef.current = null;
+    lastAnnouncedCountdownRef.current = null;
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
     lastSentContextRef.current = null;
@@ -337,6 +354,8 @@ export function AICoachPage() {
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
+    hasDispatchedThresholdRef.current = null;
+    lastAnnouncedCountdownRef.current = null;
     lastSentContextRef.current = null;
   }, [selectedCoach, voiceStop]);
 
@@ -345,6 +364,8 @@ export function AICoachPage() {
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
+    hasDispatchedThresholdRef.current = null;
+    lastAnnouncedCountdownRef.current = null;
   }, [currentAsana.id]);
 
   // Throttled session context synchronization to OpenAI Realtime
@@ -519,6 +540,29 @@ export function AICoachPage() {
     voiceDispatch,
   ]);
 
+  // Voice Countdown Effect based on holdTime
+  useEffect(() => {
+    if (sessionState === "holding" && holdTime > 0) {
+      const remainingSeconds = Math.ceil(currentAsana.targetHoldSeconds - holdTime);
+      if (
+        remainingSeconds > 0 &&
+        remainingSeconds <= 10 &&
+        lastAnnouncedCountdownRef.current !== remainingSeconds
+      ) {
+        lastAnnouncedCountdownRef.current = remainingSeconds;
+        voiceDispatch(
+          CoachingEventBuilder.buildHoldCountdownEvent(
+            currentAsana.id,
+            currentAsana.name,
+            remainingSeconds
+          )
+        );
+      }
+    } else if (sessionState !== "holding") {
+      lastAnnouncedCountdownRef.current = null;
+    }
+  }, [holdTime, sessionState, currentAsana, voiceDispatch]);
+
   /*
    * Camera/video dimensions
    */
@@ -649,17 +693,7 @@ export function AICoachPage() {
                 videoWidth={videoSize.width}
                 videoHeight={videoSize.height}
                 coach={selectedCoach}
-              />
-            )}
-
-            {/* Joint angle labels tracking body joints */}
-            {!isIntroVideoActive && isCameraActive && result && (
-              <JointAngleOverlay
-                landmarks={result.landmarks}
-                jointAngles={jointAngles}
-                videoWidth={videoSize.width}
-                videoHeight={videoSize.height}
-                isMirrored={isMirrored}
+                evaluation={stableEvaluation}
               />
             )}
 
@@ -695,7 +729,7 @@ export function AICoachPage() {
             <div className="absolute right-4 top-4 sm:right-6 sm:top-6 z-20">
               <AsanaReference
                 asana={currentAsana}
-                className="w-40 xs:w-44 sm:w-48 lg:w-52 shadow-2xl"
+                className="w-48 xs:w-52 sm:w-56 lg:w-60 shadow-2xl"
               />
             </div>
 
@@ -724,8 +758,21 @@ export function AICoachPage() {
                 </button>
               )}
 
-              {stableScore !== null && (
-                <CircularScoreRing score={stableScore} size={44} strokeWidth={4} compact />
+              {sessionState === "holding" && (
+                <div className="mr-2 animate-in fade-in slide-in-from-right-2">
+                  <HoldTimer
+                    isHolding={true}
+                    holdTime={holdTime}
+                    targetHoldSeconds={currentAsana.targetHoldSeconds}
+                    className="bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-emerald-200/50 shadow-sm"
+                  />
+                </div>
+              )}
+
+              {isSessionActive && stableScore !== null && (
+                <div className={stableScore >= 75 ? "animate-[pulse_1.5s_ease-in-out_1]" : ""}>
+                  <CircularScoreRing score={stableScore} size={44} strokeWidth={4} compact />
+                </div>
               )}
 
               <button
@@ -850,25 +897,35 @@ export function AICoachPage() {
 
             {/* Hold Timer Banner in Cinema Mode */}
             {sessionState === "holding" && (
-              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-white/95 text-emerald-950 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200/80 animate-in fade-in zoom-in-95 duration-200">
-                <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-white/95 text-emerald-950 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200/80 animate-in fade-in slide-in-from-bottom-4 zoom-in-95 duration-500 hover:scale-105 transition-all">
+                <span className="relative flex h-3 w-3 items-center justify-center">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 </span>
                 <span className="text-sm font-bold tracking-tight text-emerald-950">
-                  Posture Scanned • Hold this position: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
+                  Excellent Alignment • Hold for <span className="font-mono text-emerald-700 font-extrabold">{Math.ceil(currentAsana.targetHoldSeconds - holdTime)}</span> seconds
                 </span>
               </div>
             )}
 
             {/* Pose Review Choice Modal in Cinema Mode */}
-            {sessionState === "pose_review" && (
+            {sessionState === "completed" && (
               <PoseReviewModal
                 asana={currentAsana}
-                score={stableScore ?? 80}
-                onDoItAgain={doItAgain}
+                score={completedAsanaScores[currentAsana.id] ?? stableScore ?? 80}
                 onMoveToNext={moveToNextAsana}
+                onStayHere={stayHere}
                 isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
+              />
+            )}
+
+            {/* Session Report Modal (End of session - cinema mode) */}
+            {sessionState === "session_completed" && (
+              <SessionReportModal
+                completedAsanas={completedAsanasForReport}
+                onClose={() => {
+                  resetSession();
+                }}
               />
             )}
           </div>
@@ -945,17 +1002,6 @@ export function AICoachPage() {
                   />
                 )}
 
-                {/* Live Joint Angles displayed directly beside joints */}
-                {!isIntroVideoActive && isCameraActive && result && (
-                  <JointAngleOverlay
-                    landmarks={result.landmarks}
-                    jointAngles={jointAngles}
-                    videoWidth={videoSize.width}
-                    videoHeight={videoSize.height}
-                    isMirrored={isMirrored}
-                  />
-                )}
-
                 {/* Top-Left: LIVE Status Indicator, Asana Name Pill & Score Ring */}
                 <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 flex items-center gap-2">
                   <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/95 text-white px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
@@ -971,7 +1017,7 @@ export function AICoachPage() {
                     {isIntroVideoActive ? "Welcome to AI Yoga Coach" : currentAsana.name}
                   </span>
 
-                  {isCameraActive && stableScore !== null && (
+                  {isSessionActive && isCameraActive && stableScore !== null && (
                     <CircularScoreRing score={stableScore} size={38} strokeWidth={4} compact />
                   )}
                 </div>
@@ -980,7 +1026,7 @@ export function AICoachPage() {
                 <div className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 z-20">
                   <AsanaReference
                     asana={currentAsana}
-                    className="w-36 xs:w-40 sm:w-44 md:w-48 shadow-xl"
+                    className="w-44 xs:w-48 sm:w-52 md:w-56 shadow-xl"
                   />
                 </div>
 
@@ -1093,25 +1139,35 @@ export function AICoachPage() {
 
                 {/* Bottom Center: Hold Progress Banner */}
                 {sessionState === "holding" && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-white/95 text-emerald-950 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200/80 animate-in fade-in zoom-in-95 duration-200">
-                    <span className="relative flex h-2.5 w-2.5 items-center justify-center">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-full bg-white/95 text-emerald-950 px-6 py-2.5 shadow-xl backdrop-blur-md border border-emerald-200/80 animate-in fade-in slide-in-from-bottom-4 zoom-in-95 duration-500 hover:scale-105 transition-all">
+                    <span className="relative flex h-3 w-3 items-center justify-center">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                     </span>
                     <span className="text-xs font-bold tracking-tight text-emerald-950">
-                      Posture Scanned • Hold this position: <span className="font-mono text-emerald-700 font-extrabold">{holdTime.toFixed(1)}s</span> / {currentAsana.targetHoldSeconds.toFixed(1)}s
+                      Excellent Alignment • Hold for <span className="font-mono text-emerald-700 font-extrabold">{Math.ceil(currentAsana.targetHoldSeconds - holdTime)}</span> seconds
                     </span>
                   </div>
                 )}
 
                 {/* Pose Review Choice Modal (>= 75% accuracy threshold achieved) */}
-                {sessionState === "pose_review" && (
+                {sessionState === "completed" && (
                   <PoseReviewModal
                     asana={currentAsana}
-                    score={stableScore ?? 80}
-                    onDoItAgain={doItAgain}
+                    score={completedAsanaScores[currentAsana.id] ?? stableScore ?? 80}
                     onMoveToNext={moveToNextAsana}
+                    onStayHere={stayHere}
                     isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
+                  />
+                )}
+
+                {/* Session Report Modal (End of session - normal mode) */}
+                {sessionState === "session_completed" && (
+                  <SessionReportModal
+                    completedAsanas={completedAsanasForReport}
+                    onClose={() => {
+                      resetSession();
+                    }}
                   />
                 )}
               </div>
@@ -1148,9 +1204,6 @@ export function AICoachPage() {
               {/* Concise Asana Instructions Card (🧘 Pose · Sanskrit + 3 concise steps) */}
               <AsanaInstructionsCard asana={currentAsana} />
 
-              {/* Compact Key Angles Summary (Body overlay is primary) */}
-              <KeyAnglesPanel jointAngles={jointAngles} compact />
-
               {/* Optional Developer Debug Panel (Only when explicitly enabled) */}
               {showDebugPanel && (
                 <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 shadow-sm text-slate-800">
@@ -1175,6 +1228,7 @@ export function AICoachPage() {
               <CoachPanel
                 coach={selectedCoach}
                 coachName={`Coach ${getCoachName(selectedCoach)}`}
+                outfitId={useAICoachStore((s) => s.selectedOutfitId)}
                 avatarState={avatarState}
                 guidanceMessage={latestCoachMessage}
                 isSpeaking={voiceState.status === "speaking"}
@@ -1182,7 +1236,6 @@ export function AICoachPage() {
                 isSessionActive={isSessionActive}
                 onStartVoice={() => {
                   voiceStart(selectedCoach);
-                  voiceSpeakGreeting();
                 }}
                 onStartListening={voiceStartListening}
                 onStopListening={voiceStopListening}

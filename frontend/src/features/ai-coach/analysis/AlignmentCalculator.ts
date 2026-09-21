@@ -199,6 +199,13 @@ function areValidLandmarks(
     return false;
   }
 
+  if (
+    (a.visibility !== undefined && a.visibility < 0.4) ||
+    (b.visibility !== undefined && b.visibility < 0.4)
+  ) {
+    return false;
+  }
+
   return (
     Number.isFinite(a.x) &&
     Number.isFinite(a.y) &&

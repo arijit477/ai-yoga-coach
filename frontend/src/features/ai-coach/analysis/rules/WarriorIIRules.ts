@@ -15,11 +15,11 @@ export const warriorIIRules: PoseRule[] = [
     points: [23, 25, 27],
     comparison: "between",
     min: 80,
-    max: 100,
+    max: 130, // Relaxed for realistic beginner bend
     weight: 2,
     severity: "high",
     feedback:
-      "Bend your left knee toward a 90-degree position.",
+      "Bend your left knee closer to a 90-degree position.",
   },
 
   {
@@ -28,12 +28,12 @@ export const warriorIIRules: PoseRule[] = [
     metric: "angle",
     points: [24, 26, 28],
     comparison: "between",
-    min: 80,
-    max: 100,
+    min: 150, // Straight back leg
+    max: 180,
     weight: 2,
     severity: "high",
     feedback:
-      "Bend your right knee toward a 90-degree position.",
+      "Keep your right leg straight behind you.",
   },
 
   {

@@ -7,6 +7,7 @@ import type { VoiceState } from "../voice/voice.types";
 interface CoachPanelProps {
   coach: CoachId;
   coachName: string;
+  outfitId?: string;
   avatarState: AvatarState;
   guidanceMessage?: string;
   isSpeaking: boolean;
@@ -24,6 +25,7 @@ interface CoachPanelProps {
 export const CoachPanel = React.memo(function CoachPanel({
   coach,
   coachName,
+  outfitId = "default",
   avatarState,
   isSpeaking,
   voiceState,
@@ -57,6 +59,7 @@ export const CoachPanel = React.memo(function CoachPanel({
       <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full overflow-hidden rounded-2xl border border-emerald-100/80 bg-slate-900 shadow-inner">
         <AvatarPlayer
           coach={coach}
+          outfitId={outfitId}
           state={avatarState}
           autoPlay
           muted={voiceState?.isMuted ?? false}

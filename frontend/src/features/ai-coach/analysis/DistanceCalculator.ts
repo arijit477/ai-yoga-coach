@@ -102,6 +102,12 @@ export function calculateLandmarkDistance(
   a: Landmark,
   b: Landmark,
 ): number | null {
+  if (
+    (a.visibility !== undefined && a.visibility < 0.4) ||
+    (b.visibility !== undefined && b.visibility < 0.4)
+  ) {
+    return null;
+  }
   return calculateDistance3D(a, b);
 }
 
@@ -113,6 +119,12 @@ export function calculateLandmarkDistance2D(
   a: Landmark,
   b: Landmark,
 ): number | null {
+  if (
+    (a.visibility !== undefined && a.visibility < 0.4) ||
+    (b.visibility !== undefined && b.visibility < 0.4)
+  ) {
+    return null;
+  }
   return calculateDistance2D(a, b);
 }
 

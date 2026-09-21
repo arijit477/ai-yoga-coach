@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useMemo } from "react";
 
 import type { PoseEvaluation } from "../features/ai-coach/types/pose-rules";
 
@@ -10,9 +10,6 @@ export function useStablePoseEvaluation(
 ): PoseEvaluation | null {
   const stabilizerRef = useRef<FeedbackStabilizer | null>(null);
 
-  const [stableEvaluation, setStableEvaluation] =
-    useState<PoseEvaluation | null>(null);
-
   if (stabilizerRef.current === null) {
     stabilizerRef.current = new FeedbackStabilizer({
       requiredFrames: 4,
@@ -20,17 +17,13 @@ export function useStablePoseEvaluation(
     });
   }
 
-  useEffect(() => {
+  const stableEvaluation = useMemo(() => {
     const stabilizer = stabilizerRef.current;
-
-    if (!stabilizer) {
-      return;
-    }
+    if (!stabilizer) return null;
 
     if (!evaluation) {
       stabilizer.reset();
-      setStableEvaluation(null);
-      return;
+      return null;
     }
 
     const prioritizedIssues = prioritizePoseIssues(
@@ -42,10 +35,7 @@ export function useStablePoseEvaluation(
       issues: prioritizedIssues,
     };
 
-    const stabilized =
-      stabilizer.stabilize(prioritizedEvaluation);
-
-    setStableEvaluation(stabilized);
+    return stabilizer.stabilize(prioritizedEvaluation);
   }, [evaluation]);
 
   return stableEvaluation;

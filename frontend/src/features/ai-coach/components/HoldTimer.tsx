@@ -27,9 +27,14 @@ export function HoldTimer({
             {isHolding ? "Hold & Breathe" : "Hold Tracker"}
           </span>
         </div>
-        <span className="font-mono font-extrabold text-xs text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
-          {holdTime.toFixed(1)}s / {targetHoldSeconds.toFixed(1)}s
-        </span>
+        <div className="flex flex-col items-end">
+          <span className="font-mono font-extrabold text-xs text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 shadow-sm">
+            Current: {Math.floor(holdTime)} / {targetHoldSeconds} seconds
+          </span>
+          <span className="text-[10px] text-emerald-700 font-medium mt-1">
+            Recommended: {targetHoldSeconds} seconds
+          </span>
+        </div>
       </div>
 
       {/* Progress Track */}

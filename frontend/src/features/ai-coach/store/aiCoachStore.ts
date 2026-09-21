@@ -6,22 +6,25 @@ import { ensureAsanaRules } from "../analysis/rules/poseRulesRegistry";
 
 interface AICoachState {
   selectedCoach: CoachPersona;
+  selectedOutfitId: string;
   sessionAsanas: Asana[];
   sessionLength: number;
   currentAsanaIndex: number;
   currentAsana: Asana;
   isSessionRunning: boolean;
   completedAsanaIds: string[];
+  completedAsanaScores: Record<string, number>;
   skippedAsanaIds: string[];
 
   // Actions
   setSelectedCoach: (coach: CoachPersona) => void;
+  setSelectedOutfitId: (outfitId: string) => void;
   setSessionLength: (length: number) => void;
   setCurrentAsana: (asana: Asana) => void;
   setCurrentAsanaIndex: (index: number) => void;
   skipToAsanaIndex: (index: number) => void;
   goBackToAsanaIndex: (index: number) => void;
-  markAsanaCompleted: (asanaId: string) => void;
+  markAsanaCompleted: (asanaId: string, score: number) => void;
   canAccessAsanaIndex: (index: number) => boolean;
   getActiveSessionAsanas: () => Asana[];
   nextAsana: () => Asana | null;
@@ -41,15 +44,18 @@ if (initialAsana) {
 
 export const useAICoachStore = create<AICoachState>((set, get) => ({
   selectedCoach: "alice",
+  selectedOutfitId: "default",
   sessionAsanas: initialAsanas,
   sessionLength: initialAsanas.length,
   currentAsanaIndex: 0,
   currentAsana: initialAsana,
   isSessionRunning: false,
   completedAsanaIds: [],
+  completedAsanaScores: {},
   skippedAsanaIds: [],
 
   setSelectedCoach: (coach) => set({ selectedCoach: coach }),
+  setSelectedOutfitId: (outfitId) => set({ selectedOutfitId: outfitId }),
 
   setSessionLength: (length) => {
     const validLength = Math.max(1, Math.min(length, get().sessionAsanas.length));
@@ -61,12 +67,16 @@ export const useAICoachStore = create<AICoachState>((set, get) => ({
     return sessionAsanas.slice(0, sessionLength);
   },
 
-  markAsanaCompleted: (asanaId) => {
+  markAsanaCompleted: (asanaId, score) => {
     set((state) => {
+      const newScores = { ...state.completedAsanaScores, [asanaId]: score };
       if (state.completedAsanaIds.includes(asanaId)) {
-        return state;
+        return { completedAsanaScores: newScores };
       }
-      return { completedAsanaIds: [...state.completedAsanaIds, asanaId] };
+      return { 
+        completedAsanaIds: [...state.completedAsanaIds, asanaId],
+        completedAsanaScores: newScores
+      };
     });
   },
 

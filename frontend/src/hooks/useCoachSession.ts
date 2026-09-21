@@ -15,7 +15,7 @@ interface UseCoachSessionOptions {
   totalAsanas: number;
   hasGuideVideo?: boolean;
   instructionsCount?: number;
-  onAsanaComplete?: (index: number) => void;
+  onAsanaComplete?: (index: number, score: number) => void;
   onAdvanceAsana?: (nextIndex: number) => void;
   onSessionComplete?: () => void;
   onCalibrationPrompt?: (warning?: string) => void;
@@ -41,6 +41,7 @@ interface UseCoachSessionResult {
   doItAgain: () => void;
   moveToNextAsana: () => void;
   skipTransition: () => void;
+  stayHere: () => void;
 }
 
 const COUNTDOWN_SECONDS = 3;
@@ -79,6 +80,7 @@ export function useCoachSession({
   const stabilityDetectorRef = useRef<PoseStabilityDetector>(new PoseStabilityDetector(25, 0.035));
   const hasPromptedCalibrationRef = useRef(false);
   const lastPromptedWarningRef = useRef<string | null>(null);
+  const hasCompletedCurrentAsanaRef = useRef(false);
 
   const clearTimers = useCallback(() => {
     if (countdownTimerRef.current) {
@@ -107,6 +109,7 @@ export function useCoachSession({
     setCurrentStepIndex(0);
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
+    hasCompletedCurrentAsanaRef.current = false;
   }, [clearTimers]);
 
   const stopSession = useCallback(() => {
@@ -243,6 +246,14 @@ export function useCoachSession({
     }
   }, [state, evaluation, instructionsCount, currentStepIndex, onStepChange]);
 
+  const hasPoseLostSinceRef = useRef<number | null>(null);
+  const highAccuracySinceRef = useRef<number | null>(null);
+
+  // Reset completion flag when moving to a new asana
+  useEffect(() => {
+    hasCompletedCurrentAsanaRef.current = false;
+  }, [currentAsanaIndex]);
+
   /**
    * Posture evaluation state transitions during active practice
    */
@@ -254,30 +265,63 @@ export function useCoachSession({
       state !== "correcting" &&
       state !== "holding"
     ) {
+      hasPoseLostSinceRef.current = null;
+      highAccuracySinceRef.current = null;
       return;
     }
 
     if (!hasPose) {
-      setState("detecting");
-      setHoldTime(0);
+      highAccuracySinceRef.current = null;
+      if (hasPoseLostSinceRef.current === null) {
+        hasPoseLostSinceRef.current = Date.now();
+      } else if (Date.now() - hasPoseLostSinceRef.current > 7000) { // 7 second grace period
+        setState("detecting");
+        setHoldTime(0);
+      }
       return;
+    } else {
+      hasPoseLostSinceRef.current = null;
     }
 
     if (!evaluation) {
+      highAccuracySinceRef.current = null;
       setState("analyzing");
       setHoldTime(0);
       return;
     }
 
-    if (evaluation.issues.length > 0) {
+    // Immediately complete if threshold is reached and we haven't completed it yet
+    if (evaluation.score >= COMPLETION_ACCURACY_THRESHOLD && !hasCompletedCurrentAsanaRef.current) {
+      hasCompletedCurrentAsanaRef.current = true;
+      const finalScore = evaluation.score;
+      setState("completed");
+      onAsanaComplete?.(currentAsanaIndex, finalScore);
+      onPoseReviewReady?.(finalScore);
+      return;
+    }
+
+    // Still trying to reach target form
+    if (evaluation.score < COMPLETION_ACCURACY_THRESHOLD) {
+      highAccuracySinceRef.current = null;
       setState("correcting");
       setHoldTime(0);
       return;
     }
 
-    // High accuracy alignment reached
-    setState("holding");
-  }, [evaluation, hasPose, state]);
+    if (highAccuracySinceRef.current === null) {
+      highAccuracySinceRef.current = Date.now();
+    }
+
+    // High accuracy alignment reached for 1 second continuously (for hold tracking purposes)
+    if (Date.now() - highAccuracySinceRef.current >= 1000) {
+      setState("holding");
+    } else {
+      // In that 1 second window, if we were correcting, stay correcting, don't flicker.
+      if (state !== "holding" && state !== "coaching") {
+         setState("coaching");
+      }
+    }
+  }, [evaluation, hasPose, state, currentAsanaIndex, onAsanaComplete, onPoseReviewReady]);
 
   /**
    * Hold timer count-up and 75% completion decision
@@ -304,19 +348,6 @@ export function useCoachSession({
             clearInterval(holdTimerRef.current);
             holdTimerRef.current = null;
           }
-
-          const finalScore = evaluation?.score ?? 80;
-
-          // >= 75% accuracy: enter pose review choice dialog (NO silent automatic advance)
-          if (finalScore >= COMPLETION_ACCURACY_THRESHOLD) {
-            setState("pose_review");
-            onAsanaComplete?.(currentAsanaIndex);
-            onPoseReviewReady?.(finalScore);
-          } else {
-            // Under 75%: prompt correction
-            setState("correcting");
-          }
-
           return targetHoldSeconds;
         }
 
@@ -389,6 +420,10 @@ export function useCoachSession({
     moveToNextAsana();
   }, [moveToNextAsana]);
 
+  const stayHere = useCallback(() => {
+    setState("coaching");
+  }, []);
+
   /*
    * Cleanup on unmount.
    */
@@ -415,5 +450,6 @@ export function useCoachSession({
     doItAgain,
     moveToNextAsana,
     skipTransition,
+    stayHere,
   };
 }

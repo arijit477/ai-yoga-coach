@@ -1,7 +1,4 @@
 import type { CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
-import type { VoiceProvider } from "./providers/VoiceProvider";
-import { ElevenLabsVoiceProvider } from "./providers/ElevenLabsVoiceProvider";
-
 export interface SessionContextData {
   coach: string;
   asanaId: string;
@@ -38,10 +35,13 @@ export class RealtimeVoiceAgent {
   private currentCoachId: string | null = null;
   private isConnecting: boolean = false;
   
-  // ElevenLabs Voice Provider for streaming text-to-speech
-  private voiceProvider: VoiceProvider | null = null;
-  // Hook for future avatar lip-sync: returns incoming audio stream
+  // Hook for avatar lip-sync: returns incoming audio stream
   private remoteAudioStream: MediaStream | null = null;
+  private audioCtx: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
+  private gainNode: GainNode | null = null;
+  private dataArray: Uint8Array | null = null;
+  private volumeInterval: number | null = null;
 
   constructor(
     onStatusChange?: (status: VoiceConnectionState, error?: string) => void,
@@ -58,9 +58,6 @@ export class RealtimeVoiceAgent {
   }
 
   getRemoteAudioStream(): MediaStream | null {
-    if (this.voiceProvider && this.voiceProvider instanceof ElevenLabsVoiceProvider) {
-      return this.voiceProvider.getMediaStream();
-    }
     return this.remoteAudioStream;
   }
 
@@ -80,27 +77,8 @@ export class RealtimeVoiceAgent {
     this.isConnecting = true;
     this.currentCoachId = coachId;
 
-    try {
-      this.voiceProvider = new ElevenLabsVoiceProvider();
-      await this.voiceProvider.initialize(coachId);
-    } catch (err) {
-      console.warn("[AI COACH] ElevenLabs Voice Provider failed to initialize", err);
-    }
-
-    // 1. Request microphone permission (gracefully proceed in speech output mode if unavailable)
-    this.updateStatus("requesting_permission");
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
-    } catch (micErr: any) {
-      console.warn("[AI COACH] Microphone permission not granted or device unavailable. Continuing in speech output mode:", micErr);
-      this.stream = null;
-    }
+    // 1. We no longer request microphone permission as the listening feature is removed.
+    this.stream = null;
 
     // 2. Connecting to backend session
     this.updateStatus("connecting");
@@ -125,27 +103,29 @@ export class RealtimeVoiceAgent {
 
       // 3. Setup WebRTC Peer Connection
       this.pc = new RTCPeerConnection();
+      
+      // We must explicitly add a transceiver to receive audio since we are no longer sending a local microphone track
+      this.pc.addTransceiver("audio", { direction: "recvonly" });
 
-      // Handle incoming audio stream from OpenAI - intentionally ignored to use ElevenLabs instead
-      this.pc.ontrack = () => {
-        // We drop the OpenAI audio because we stream text to ElevenLabs for TTS.
-        // The Lipsync engine gets its stream from ElevenLabsVoiceProvider.
+      // Handle incoming audio stream from OpenAI
+      this.pc.ontrack = (event) => {
+        if (event.streams && event.streams[0]) {
+          this.remoteAudioStream = event.streams[0];
+          if (this.audioEl) {
+            this.audioEl.srcObject = this.remoteAudioStream;
+          }
+          this.setupAudioAnalyzer();
+        }
       };
 
-      // Add local microphone tracks to PeerConnection
-      if (this.stream) {
-        this.stream.getTracks().forEach((track) => {
-          if (this.pc && this.stream) {
-            this.pc.addTrack(track, this.stream);
-          }
-        });
-      }
+      // Local microphone tracks are no longer added since listening feature is removed
 
       // 4. Set up data channel for bidirectional events
       this.dc = this.pc.createDataChannel("oai-events");
 
       this.dc.onopen = () => {
         console.log("[AI COACH] RealtimeVoiceAgent Data Channel Opened");
+        this.speakGreeting();
       };
 
       this.dc.onmessage = (e) => {
@@ -154,32 +134,19 @@ export class RealtimeVoiceAgent {
 
           // Track speaking and listening states
           if (ev.type === "response.audio.delta" || ev.type === "response.output_item.added") {
-            if (!this.isSpeaking) {
-              this.isSpeaking = true;
-              this.updateStatus(this.isMuted ? "muted" : "speaking");
-            }
+            // We now rely on the audio analyzer to set speaking state for precise lipsync
           } else if (
             ev.type === "response.done" ||
             ev.type === "response.audio.done" ||
             ev.type === "response.cancelled"
           ) {
             if (this.isSpeaking) {
-              this.isSpeaking = false;
-              this.updateStatus(this.isMuted ? "muted" : "connected");
+              // We now rely on the audio analyzer to clear the speaking state
             }
           } else if (ev.type === "input_audio_buffer.speech_started") {
-            // User interruption detected by OpenAI Server VAD
-            console.log("[AI COACH] User interruption detected");
-            this.isSpeaking = false;
-            this.updateStatus(this.isMuted ? "muted" : "listening");
-            // Instantly stop coach audio playback
-            if (this.voiceProvider) {
-              this.voiceProvider.stop();
-            }
+            // Unused since listening feature is removed
           } else if (ev.type === "input_audio_buffer.speech_stopped") {
-            if (!this.isSpeaking) {
-              this.updateStatus(this.isMuted ? "muted" : "connected");
-            }
+            // Unused since listening feature is removed
           }
 
           // Optional transcript capturing:
@@ -193,11 +160,9 @@ export class RealtimeVoiceAgent {
             });
           }
 
-          // Coach spoken response text chunk for ElevenLabs streaming
+          // Coach spoken response text chunk
           if (ev.type === "response.audio_transcript.delta" || ev.type === "response.text.delta") {
-            if (ev.delta && this.voiceProvider) {
-              this.voiceProvider.streamText(ev.delta);
-            }
+            // Transcript delta
           }
 
           // Coach spoken response transcript
@@ -264,13 +229,37 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * High-fidelity speech synthesis using ElevenLabs Voice Provider
+   * High-fidelity speech synthesis using OpenAI Realtime or browser fallback
    */
   speak(text: string) {
     if (this.isMuted) return;
 
-    if (this.voiceProvider) {
-      this.voiceProvider.streamText(text);
+    if (this.dc && this.dc.readyState === "open") {
+      try {
+        const oaiEvent = {
+          type: "conversation.item.create",
+          item: {
+            type: "message",
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: `[SYSTEM COMMAND] Please speak exactly this message clearly to the user: "${text}"`,
+              },
+            ],
+          },
+        };
+        this.dc.send(JSON.stringify(oaiEvent));
+
+        const responseCreate = {
+          type: "response.create",
+        };
+        this.dc.send(JSON.stringify(responseCreate));
+      } catch (err) {
+        console.warn("[AI COACH] Error asking OpenAI to speak:", err);
+      }
+    } else {
+      console.warn("[AI COACH] Data channel not ready, dropping speech request:", text);
     }
 
     this.onTranscript?.({
@@ -294,21 +283,17 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * Puts the voice agent in active listening mode for user questions or commands
+   * Listening feature removed. No-op.
    */
   startListening() {
-    if (this.isMuted) {
-      this.setMuted(false);
-    }
-    this.updateStatus("listening");
-    console.log("[AI COACH] Manual listen trigger activated");
+    console.log("[AI COACH] Listening feature is disabled.");
   }
 
   /**
-   * Exits listening mode
+   * Listening feature removed. No-op.
    */
   stopListening() {
-    this.updateStatus(this.pc?.connectionState === "connected" ? "connected" : "connected");
+    // No-op
   }
 
   /**
@@ -399,8 +384,8 @@ export class RealtimeVoiceAgent {
       }
     }
 
-    // 4. Guaranteed audible voice cue via ElevenLabs Voice Provider
-    if (spokenText && (!this.dc || this.dc.readyState !== "open" || !this.isSpeaking)) {
+    // 4. Fallback audible voice cue if not connected to OpenAI
+    if (spokenText && (!this.dc || this.dc.readyState !== "open")) {
       this.speak(spokenText);
     }
   }
@@ -463,8 +448,7 @@ export class RealtimeVoiceAgent {
 
   setMuted(isMuted: boolean) {
     this.isMuted = isMuted;
-    if (isMuted && this.voiceProvider) {
-      this.voiceProvider.stop();
+    if (isMuted) {
       this.isSpeaking = false;
     }
     this.syncMuteState();
@@ -472,21 +456,16 @@ export class RealtimeVoiceAgent {
   }
 
   private syncMuteState() {
-    if (this.stream) {
-      this.stream.getAudioTracks().forEach((track) => {
-        track.enabled = !this.isMuted;
-      });
-    }
+    // Microphone tracks removed
     if (this.audioEl) {
       this.audioEl.muted = this.isMuted;
+    }
+    if (this.gainNode) {
+      this.gainNode.gain.value = this.isMuted ? 0 : 2.5; // Mute or 2.5x volume boost
     }
   }
 
   disconnect() {
-    if (this.voiceProvider) {
-      this.voiceProvider.dispose();
-      this.voiceProvider = null;
-    }
     this.isSpeaking = false;
     this.isConnecting = false;
     if (this.stream) {
@@ -511,6 +490,20 @@ export class RealtimeVoiceAgent {
       }
       this.pc = null;
     }
+    if (this.volumeInterval) {
+      window.clearInterval(this.volumeInterval);
+      this.volumeInterval = null;
+    }
+    if (this.audioCtx) {
+      try {
+        this.audioCtx.close();
+      } catch (err) {}
+      this.audioCtx = null;
+    }
+    this.gainNode = null;
+    this.analyser = null;
+    this.dataArray = null;
+
     if (this.audioEl) {
       this.audioEl.srcObject = null;
     }
@@ -518,6 +511,49 @@ export class RealtimeVoiceAgent {
     this.clientSecret = null;
     this.currentCoachId = null;
     this.updateStatus("disconnected");
+  }
+
+  private setupAudioAnalyzer() {
+    if (!this.remoteAudioStream) return;
+    try {
+      this.audioCtx = new window.AudioContext();
+      const source = this.audioCtx.createMediaStreamSource(this.remoteAudioStream);
+      
+      this.gainNode = this.audioCtx.createGain();
+      this.gainNode.gain.value = this.isMuted ? 0 : 2.5; // Boost the incoming voice by 2.5x
+
+      this.analyser = this.audioCtx.createAnalyser();
+      this.analyser.fftSize = 256;
+      
+      // Connect nodes: Source -> Gain -> Analyser (We don't connect to destination to avoid double audio since audioEl is playing)
+      source.connect(this.gainNode);
+      this.gainNode.connect(this.analyser);
+      
+      this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+
+      if (this.volumeInterval) window.clearInterval(this.volumeInterval);
+      
+      this.volumeInterval = window.setInterval(() => {
+        if (this.isMuted) return;
+        if (this.analyser && this.dataArray) {
+          this.analyser.getByteFrequencyData(this.dataArray);
+          let sum = 0;
+          for (let i = 0; i < this.dataArray.length; i++) {
+            sum += this.dataArray[i];
+          }
+          const avg = sum / this.dataArray.length;
+          
+          const isCurrentlySpeaking = avg > 3; // Threshold for voice activity
+          
+          if (isCurrentlySpeaking !== this.isSpeaking) {
+             this.isSpeaking = isCurrentlySpeaking;
+             this.updateStatus(this.isSpeaking ? "speaking" : "connected");
+          }
+        }
+      }, 50);
+    } catch (e) {
+      console.warn("[AI COACH] Failed to setup audio analyzer for precise lipsync", e);
+    }
   }
 
   private updateStatus(status: VoiceConnectionState, error?: string) {

@@ -6,6 +6,7 @@ import { AvatarController } from "./AvatarController";
 
 interface AvatarPlayerProps {
   coach: CoachId;
+  outfitId?: string;
   state?: AvatarState;
   autoPlay?: boolean;
   muted?: boolean;
@@ -18,6 +19,7 @@ interface AvatarPlayerProps {
 
 export const AvatarPlayer = React.memo(function AvatarPlayer({
   coach,
+  outfitId = "default",
   state = "idle",
   className = "",
   onError,
@@ -93,6 +95,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
     const video = videoRef.current;
     if (!video || !videoSrc || !isVideoReady) return;
 
+    // Play video ONLY while speaking to maintain lipsync
     if (smoothedState === "speaking") {
       video.play().catch((err) => {
         if ((err as Error).name !== "AbortError") {
@@ -108,8 +111,6 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
   const stateBorderClass =
     smoothedState === "speaking"
       ? "border-emerald-500 shadow-[0_4px_20px_rgba(47,128,85,0.25)] ring-2 ring-emerald-400/30"
-      : smoothedState === "listening"
-      ? "border-teal-500 shadow-[0_4px_20px_rgba(20,184,166,0.25)] ring-2 ring-teal-400/30"
       : smoothedState === "analyzing"
       ? "border-cyan-500 shadow-[0_4px_20px_rgba(6,182,212,0.25)] ring-2 ring-cyan-400/30"
       : smoothedState === "correction"
@@ -122,9 +123,14 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
       ? "border-emerald-400/80 shadow-sm"
       : "border-slate-200/80 shadow-sm";
 
-  // Fallback to high-resolution portrait if video fails or when idle
-  const fallbackImageSrc =
-    COACHES[coach]?.id === "alice" ? "/images/alice.png" : "/images/kevin.jpg";
+  // Get the selected outfit image (or fallback to default)
+  const coachData = COACHES[coach];
+  const selectedOutfit = coachData?.outfits?.find(o => o.id === outfitId) || coachData?.outfits?.[0];
+  const fallbackImageSrc = selectedOutfit?.imageSrc || (coach === "alice" ? "/images/alice.png" : "/images/kevin.jpg");
+
+  // If a custom outfit is selected, we disable the video (since we don't have matching videos)
+  const hasCustomOutfit = outfitId !== "default";
+  const showVideo = videoSrc && !hasError && !hasCustomOutfit;
 
   return (
     <div
@@ -139,7 +145,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
         src={fallbackImageSrc}
         alt={`AI Coach ${COACHES[coach]?.name}`}
         className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-300 ${
-          smoothedState === "speaking" && isVideoReady ? "opacity-0 pointer-events-none" : "opacity-100"
+          smoothedState === "speaking" && isVideoReady && showVideo ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       />
 
@@ -148,7 +154,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
         Muted = true so only the LLM voice agent voice is heard.
         Fades in and plays lipsync movement strictly while speaking.
       */}
-      {videoSrc && !hasError && (
+      {showVideo && (
         <video
           ref={videoRef}
           src={videoSrc}
@@ -186,13 +192,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
         </div>
       )}
 
-      {/* Listening pulse badge */}
-      {smoothedState === "listening" && (
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-teal-500/30 shadow-sm pointer-events-none animate-in fade-in duration-200">
-          <span className="h-2 w-2 rounded-full bg-teal-500 animate-ping" />
-          <span className="text-[10px] font-bold text-teal-900">Listening...</span>
-        </div>
-      )}
+      {/* Listening badge removed */}
 
       {/* Analyzing posture badge */}
       {smoothedState === "analyzing" && (
@@ -202,13 +202,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
         </div>
       )}
 
-      {/* Posture correction badge */}
-      {smoothedState === "correction" && (
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-amber-50/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-amber-300 shadow-sm pointer-events-none animate-in fade-in duration-200">
-          <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-amber-950">Adjusting...</span>
-        </div>
-      )}
+
 
       {/* Good form badge */}
       {smoothedState === "good_form" && (

@@ -20,8 +20,8 @@ const SEVERITY_WEIGHT: Record<string, number> = {
 export class CoachingEventDispatcher {
   private agent: RealtimeVoiceAgent | null = null;
   private lastEventTime: number = 0;
-  private lastIssuedRuleId: string | null = null;
-  private lastIssuedSeverity: number = 0;
+  private ruleTimestamps = new Map<string, number>();
+  private ruleSeverities = new Map<string, number>();
   private lastEventType: string | null = null;
   private config: DispatcherConfig;
 
@@ -82,30 +82,44 @@ export class CoachingEventDispatcher {
         return false;
       }
       this.send(event, now, eventSeverity);
-      this.lastIssuedRuleId = null;
+      this.ruleTimestamps.clear(); // Good form resets rule trackers
+      this.ruleSeverities.clear();
       return true;
     }
 
     // 4. Duplicate suppression: do not repeat the exact same rule within the repeat window
-    const timeSinceLastEvent = now - this.lastEventTime;
-    if (
-      event.type === "pose_correction" &&
-      event.ruleId &&
-      event.ruleId === this.lastIssuedRuleId
-    ) {
+    if (event.type === "pose_correction" && event.ruleId) {
+      const lastRuleTime = this.ruleTimestamps.get(event.ruleId) || 0;
+      const lastRuleSeverity = this.ruleSeverities.get(event.ruleId) || 0;
+      const timeSinceRule = now - lastRuleTime;
+
       // If severity increased from medium/low to high, allow preemption
-      const isSeverityEscalation = eventSeverity > this.lastIssuedSeverity;
-      if (!isSeverityEscalation && timeSinceLastEvent < this.config.repeatSameRuleCooldownMs) {
+      const isSeverityEscalation = eventSeverity > lastRuleSeverity;
+      
+      if (!isSeverityEscalation && timeSinceRule < this.config.repeatSameRuleCooldownMs) {
         console.log(
-          `[AI COACH] Coaching event suppressed by cooldown: duplicate rule '${event.ruleId}' within repeat window (${Math.round(timeSinceLastEvent)}ms / ${this.config.repeatSameRuleCooldownMs}ms)`
+          `[AI COACH] Coaching event suppressed by cooldown: duplicate rule '${event.ruleId}' within repeat window (${Math.round(timeSinceRule)}ms / ${this.config.repeatSameRuleCooldownMs}ms)`
         );
         return false;
       }
     }
 
-    // 5. Higher-severity preempts an active cooldown of a lower-severity event
-    const isHigherSeverity = eventSeverity > this.lastIssuedSeverity;
-    if (!isHigherSeverity && timeSinceLastEvent < this.config.cooldownMs) {
+    // 5. Higher-severity preempts an active baseline cooldown of a lower-severity event
+    const timeSinceLastEvent = now - this.lastEventTime;
+    // Check if the current event is higher severity than whatever was last spoken generally (to allow interrupting info with a high warning)
+    let isHigherThanLast = false;
+    if (event.type === "pose_correction" && event.ruleId) {
+      // Find the max severity among recently fired rules
+      let maxRecentSeverity = 0;
+      for (const [id, time] of this.ruleTimestamps.entries()) {
+         if (now - time < this.config.cooldownMs) {
+            maxRecentSeverity = Math.max(maxRecentSeverity, this.ruleSeverities.get(id) || 0);
+         }
+      }
+      isHigherThanLast = eventSeverity > maxRecentSeverity;
+    }
+
+    if (!isHigherThanLast && timeSinceLastEvent < this.config.cooldownMs) {
       console.log(
         `[AI COACH] Coaching event suppressed by cooldown: active baseline cooldown (${Math.round(timeSinceLastEvent)}ms / ${this.config.cooldownMs}ms)`
       );
@@ -119,12 +133,10 @@ export class CoachingEventDispatcher {
   private send(event: CoachingEvent, timestamp: number, severity: number) {
     this.lastEventTime = timestamp;
     this.lastEventType = event.type;
-    this.lastIssuedSeverity = severity;
 
-    if (event.type === "pose_correction") {
-      this.lastIssuedRuleId = event.ruleId || null;
-    } else if (event.type !== "safety_warning") {
-      this.lastIssuedRuleId = null;
+    if (event.type === "pose_correction" && event.ruleId) {
+      this.ruleTimestamps.set(event.ruleId, timestamp);
+      this.ruleSeverities.set(event.ruleId, severity);
     }
 
     console.log(
@@ -135,8 +147,8 @@ export class CoachingEventDispatcher {
 
   reset() {
     this.lastEventTime = 0;
-    this.lastIssuedRuleId = null;
-    this.lastIssuedSeverity = 0;
+    this.ruleTimestamps.clear();
+    this.ruleSeverities.clear();
     this.lastEventType = null;
   }
 }

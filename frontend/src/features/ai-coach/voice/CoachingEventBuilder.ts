@@ -120,7 +120,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       score: score !== undefined ? Math.round(score) : undefined,
-      feedback: `Posture scanned and aligned. Now hold this position and breathe steadily.`,
+      feedback: `Excellent alignment. Achieving ${score ? Math.round(score) : 75}% accuracy is a great result! Now hold for 10 seconds.`,
       timestamp: Date.now(),
     };
   }
@@ -136,6 +136,22 @@ export class CoachingEventBuilder {
       asanaName,
       score: score !== undefined ? Math.round(score) : undefined,
       feedback: `Excellent work. ${asanaName} is complete.`,
+      timestamp: Date.now(),
+    };
+  }
+
+
+
+  /**
+   * Generates a hold_countdown event.
+   */
+  static buildHoldCountdownEvent(asanaId: string, asanaName: string, remainingSeconds: number): CoachingEvent {
+    return {
+      id: generateEventId("count"),
+      type: "hold_countdown",
+      asanaId,
+      asanaName,
+      feedback: `${Math.ceil(remainingSeconds)}`,
       timestamp: Date.now(),
     };
   }

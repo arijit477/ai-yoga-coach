@@ -9,6 +9,8 @@ export interface CoachingEvent {
     | "good_form"
     | "pose_held"
     | "pose_completed"
+    | "accuracy_threshold"
+    | "hold_countdown"
     | "safety_warning";
 
   asanaId: string;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useMemo } from "react";
 
 import { ScoreSmoother } from "../features/ai-coach/analysis/ScoreSmoother";
 
@@ -7,9 +7,6 @@ export function useStableScore(
 ): number | null {
   const smootherRef = useRef<ScoreSmoother | null>(null);
 
-  const [stableScore, setStableScore] =
-    useState<number | null>(null);
-
   if (smootherRef.current === null) {
     smootherRef.current = new ScoreSmoother({
       windowSize: 8,
@@ -17,20 +14,16 @@ export function useStableScore(
     });
   }
 
-  useEffect(() => {
+  const stableScore = useMemo(() => {
     const smoother = smootherRef.current;
-
-    if (!smoother) {
-      return;
-    }
+    if (!smoother) return null;
 
     if (score === null) {
       smoother.reset();
-      setStableScore(null);
-      return;
+      return null;
     }
 
-    setStableScore(smoother.smooth(score));
+    return smoother.smooth(score);
   }, [score]);
 
   return stableScore;

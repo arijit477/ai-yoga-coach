@@ -8,15 +8,39 @@ import { PoseLandmarkerService } from "../features/ai-coach/motion/PoseLandmarke
 
 import { MotionFrameProcessor } from "../features/ai-coach/motion/MotionFrameProcessor";
 
-import type { PoseTrackingResult } from "../features/ai-coach/types/landmarks";
+import type { PoseTrackingResult, PoseLandmarks } from "../features/ai-coach/types/landmarks";
+
+const EMA_ALPHA = 0.3; // Smoothing factor (0 = no update, 1 = no smoothing)
+
+function smoothLandmarks(current: PoseLandmarks, previous: PoseLandmarks | null): PoseLandmarks {
+  if (!previous) return current;
+  
+  return current.map((curr, idx) => {
+    const prev = previous[idx];
+    if (!prev || curr.visibility === undefined || curr.visibility < 0.2) {
+      return curr; // Don't smooth low-visibility landmarks or if no previous
+    }
+    
+    return {
+      ...curr,
+      x: prev.x + EMA_ALPHA * (curr.x - prev.x),
+      y: prev.y + EMA_ALPHA * (curr.y - prev.y),
+      z: prev.z !== undefined && prev.z !== undefined ? prev.z + EMA_ALPHA * ((curr.z ?? 0) - prev.z) : curr.z,
+    };
+  });
+}
 
 export function usePoseTracking(
   videoRef: React.RefObject<HTMLVideoElement | null>,
+  enabled: boolean,
 ) {
   const serviceRef = useRef<PoseLandmarkerService | null>(null);
   const processorRef = useRef<MotionFrameProcessor | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const isRunningRef = useRef(false);
+  const lastLandmarksRef = useRef<PoseLandmarks | null>(null);
+  const lastWorldLandmarksRef = useRef<PoseLandmarks | null>(null);
+  const lastRenderTimeRef = useRef<number>(0);
 
   const [result, setResult] = useState<PoseTrackingResult | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -25,7 +49,7 @@ export function usePoseTracking(
   useEffect(() => {
     let cancelled = false;
 
-    const loop = () => {
+    const loop = (timestamp: number) => {
       if (cancelled || !isRunningRef.current) {
         return;
       }
@@ -33,18 +57,43 @@ export function usePoseTracking(
       const video = videoRef.current;
       const processor = processorRef.current;
 
-      if (video && processor) {
+      // Throttle UI updates slightly to prevent React render loops, but process every frame
+      const shouldUpdateUI = timestamp - lastRenderTimeRef.current >= 30; // ~30fps max UI update
+
+      if (video && processor && video.readyState >= 2) { // HAVE_CURRENT_DATA
         try {
           const detection = processor.processFrame(video);
           if (detection && !cancelled) {
-            setResult(detection);
+            // Apply EMA Smoothing
+            const smoothedLandmarks = smoothLandmarks(detection.landmarks, lastLandmarksRef.current);
+            const smoothedWorldLandmarks = smoothLandmarks(detection.worldLandmarks, lastWorldLandmarksRef.current);
+            
+            lastLandmarksRef.current = smoothedLandmarks;
+            lastWorldLandmarksRef.current = smoothedWorldLandmarks;
+
+            if (shouldUpdateUI) {
+              lastRenderTimeRef.current = timestamp;
+              setResult({
+                ...detection,
+                landmarks: smoothedLandmarks,
+                worldLandmarks: smoothedWorldLandmarks,
+              });
+            }
+          } else if (!detection && !cancelled) {
+            // Clear result if no pose detected so hasPose becomes false
+            lastLandmarksRef.current = null;
+            lastWorldLandmarksRef.current = null;
+            if (shouldUpdateUI) {
+              lastRenderTimeRef.current = timestamp;
+              setResult(null);
+            }
           }
         } catch (err) {
           console.error("Pose detection error:", err);
         }
       }
 
-      if (!cancelled && isRunningRef.current) {
+      if (!cancelled && isRunningRef.current && enabled) {
         animationFrameRef.current = requestAnimationFrame(loop);
       }
     };
@@ -69,7 +118,7 @@ export function usePoseTracking(
         setIsInitialized(true);
 
         // Start the single RAF processing loop
-        if (!isRunningRef.current && !cancelled) {
+        if (!isRunningRef.current && !cancelled && enabled) {
           isRunningRef.current = true;
           animationFrameRef.current = requestAnimationFrame(loop);
         }
@@ -81,7 +130,30 @@ export function usePoseTracking(
       }
     };
 
-    initialize();
+    if (enabled && !serviceRef.current && !isInitialized) {
+      // Lazy load only when video is ready to prevent blocking
+      const video = videoRef.current;
+      if (video && video.readyState >= 2) {
+        initialize();
+      } else if (video) {
+        const onLoaded = () => {
+          if (!isInitialized && !serviceRef.current) initialize();
+          video.removeEventListener("loadeddata", onLoaded);
+        };
+        video.addEventListener("loadeddata", onLoaded);
+      } else {
+         initialize();
+      }
+    } else if (enabled && isInitialized && !isRunningRef.current) {
+      isRunningRef.current = true;
+      animationFrameRef.current = requestAnimationFrame(loop);
+    } else if (!enabled && isRunningRef.current) {
+      isRunningRef.current = false;
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+    }
 
     return () => {
       cancelled = true;
@@ -101,7 +173,7 @@ export function usePoseTracking(
       setIsInitialized(false);
       setResult(null);
     };
-  }, []); // Run ONCE on mount, teardown on unmount
+  }, [enabled]); // Only re-run when enabled state changes
 
   return {
     result,

@@ -23,7 +23,7 @@ export function GuideVideoOverlay({
 }: GuideVideoOverlayProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   const src = videoUrl || asana?.videoUrl;
   const displayTitle = title || asana?.name || "AI Yoga Coach";

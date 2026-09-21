@@ -25,6 +25,13 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
           throw new Error("Camera access is not supported by this browser.");
         }
 
+        // Avoid requesting if we already have a stream
+        if (videoRef.current && videoRef.current.srcObject) {
+          stream = videoRef.current.srcObject as MediaStream;
+          setCameraReady(true);
+          return;
+        }
+
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
@@ -101,15 +108,9 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
         </div>
       )}
 
-      {/* Camera loading when enabled */}
+      {/* Camera loading when enabled - No buffer UI per user request */}
       {enabled && !cameraReady && !error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0e131f] text-white">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-400/20 border-t-emerald-400" />
-
-          <p className="mt-4 text-sm text-slate-300">
-            Starting camera...
-          </p>
-        </div>
+        <div className="absolute inset-0 bg-[#0e131f]" />
       )}
 
       {/* Camera error */}
