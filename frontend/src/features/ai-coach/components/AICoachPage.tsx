@@ -20,8 +20,8 @@ import { SessionReportModal } from "./SessionReportModal";
 import { useAICoachStore } from "../store/aiCoachStore";
 import type { CoachPersona } from "../types/coach-session";
 import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
-import { extractJointAngles } from "../analysis/JointAngleExtractor";
-import { getPoseRules } from "../analysis/RuleEngine";
+
+
 import type { AvatarState } from "../avatar/avatar.types";
 import { CoachSelector } from "./CoachSelector";
 import { CoachPanel } from "./CoachPanel";
@@ -192,33 +192,13 @@ export function AICoachPage() {
    */
   const stableScore = useStableScore(evaluation?.score ?? null);
 
-  /*
-   * Real-time Joint Angles calculated with single source of truth (authoritative 3D engine & rules)
-   */
-  const activeRules = useMemo(() => {
-    return getPoseRules(currentAsana.id);
-  }, [currentAsana.id]);
-
-  const jointAngles = useMemo(() => {
-    return extractJointAngles(
-      result?.worldLandmarks ?? null,
-      activeRules,
-      stableEvaluation?.issues ?? [],
-      currentAsana.id,
-    );
-  }, [result?.worldLandmarks, activeRules, stableEvaluation?.issues, currentAsana.id]);
-
   const {
     state: voiceState,
     start: voiceStart,
     stop: voiceStop,
     toggleMute: voiceToggleMute,
-    retry: voiceRetry,
     dispatchEvent: voiceDispatch,
     updateSessionContext: voiceUpdateContext,
-    speakGreeting: voiceSpeakGreeting,
-    startListening: voiceStartListening,
-    stopListening: voiceStopListening,
   } = useRealtimeVoice();
 
   // Track one-shot events per asana to avoid redundant dispatching
@@ -252,7 +232,6 @@ export function AICoachPage() {
     finishGuideVideo,
     stopSession,
     resetSession,
-    doItAgain,
     moveToNextAsana,
     stayHere,
   } = useCoachSession({
@@ -1234,14 +1213,8 @@ export function AICoachPage() {
                 isSpeaking={voiceState.status === "speaking"}
                 voiceState={voiceState}
                 isSessionActive={isSessionActive}
-                onStartVoice={() => {
-                  voiceStart(selectedCoach);
-                }}
-                onStartListening={voiceStartListening}
-                onStopListening={voiceStopListening}
-                onStopVoice={voiceStop}
+
                 onToggleMute={voiceToggleMute}
-                onRetryVoice={() => voiceRetry(selectedCoach)}
               />
 
               {/* On-Device Privacy Guarantee Notice */}

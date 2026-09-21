@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, Award, ArrowRight, Loader2 } from "lucide-react";
 import type { Asana } from "../types/asana";
 

@@ -1,11 +1,7 @@
 import React from "react";
 import {
-  Mic,
   Volume2,
   VolumeX,
-  Play,
-  Square,
-  RotateCcw,
   Radio,
 } from "lucide-react";
 import type { VoiceState } from "../voice/voice.types";
@@ -14,12 +10,7 @@ interface VoiceControlsProps {
   voiceState: VoiceState;
   isSessionActive?: boolean;
   coachName?: string;
-  onStartVoice?: () => void;
-  onStartListening?: () => void;
-  onStopListening?: () => void;
-  onStopVoice?: () => void;
   onToggleMute?: () => void;
-  onRetry?: () => void;
   className?: string;
 }
 
@@ -34,12 +25,7 @@ interface VoiceControlsProps {
 export const VoiceControls = React.memo(function VoiceControls({
   voiceState,
   coachName = "Alice",
-  onStartVoice,
-  onStartListening,
-  onStopListening,
-  onStopVoice,
   onToggleMute,
-  onRetry,
   className = "",
 }: VoiceControlsProps) {
   const isSpeaking = voiceState.status === "speaking";
@@ -49,7 +35,6 @@ export const VoiceControls = React.memo(function VoiceControls({
   const isConnected =
     voiceState.status === "connected" || isSpeaking || isListening;
   const isConnecting = voiceState.status === "connecting" || voiceState.status === "requesting_permission";
-  const isDisconnected = voiceState.status === "disconnected" || (!isConnected && !isConnecting && !isError);
 
   // Status indicator styling & text
   let statusBadge = {

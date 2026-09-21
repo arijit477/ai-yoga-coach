@@ -1,4 +1,4 @@
-import { RotateCcw, ArrowRight, Award, X } from "lucide-react";
+import { ArrowRight, Award, X } from "lucide-react";
 import type { Asana } from "../types/asana";
 
 interface PoseReviewModalProps {
