@@ -1,7 +1,7 @@
-import type { PoseEvaluation } from "../types/pose-rules";
+import type { PoseEvaluationResult } from "../types/pose-rules";
 
 interface PoseScoreProps {
-  evaluation: PoseEvaluation | null;
+  evaluation: PoseEvaluationResult | null;
   score: number | null;
 }
 

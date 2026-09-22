@@ -1,10 +1,10 @@
-import type { PoseEvaluation } from "../types/pose-rules";
+import type { PoseEvaluationResult } from "../types/pose-rules";
 import type { CoachState } from "../types/coach-state";
 
 interface CoachStateInput {
   isInitialized: boolean;
   hasPose: boolean;
-  evaluation: PoseEvaluation | null;
+  evaluation: PoseEvaluationResult | null;
 }
 
 export function calculateCoachState(
@@ -28,7 +28,7 @@ export function calculateCoachState(
     return "detecting";
   }
 
-  if (evaluation.issues.length > 0) {
+  if (evaluation.primaryIssue) {
     return "correcting";
   }
 

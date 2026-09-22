@@ -6,12 +6,21 @@ export interface CoachingEvent {
     | "calibration_complete"
     | "step_guidance"
     | "pose_correction"
+    | "issue_improving"
+    | "issue_resolved"
     | "good_form"
     | "pose_held"
     | "pose_completed"
     | "accuracy_threshold"
     | "hold_countdown"
-    | "safety_warning";
+    | "safety_warning"
+    | "camera_state_change"
+    | "camera_unavailable"
+    | "user_out_of_frame"
+    | "partial_body"
+    | "camera_ready"
+    | "calibration_required"
+    | "calibration_failed";
 
   asanaId: string;
   asanaName: string;
@@ -35,6 +44,16 @@ export interface CoachingEvent {
   timestamp: number;
 }
 
+export interface CoachDecision {
+  shouldSpeak: boolean;
+  priority: number;
+  eventType: string;
+  reason: string;
+  context?: any;
+  interruptionRequired: boolean;
+  suggestedGoal?: string;
+}
+
 /**
  * Dedicated WebRTC connection state machine.
  * Decoupled from yoga posture CoachState.
@@ -45,7 +64,9 @@ export type VoiceConnectionState =
   | "connecting"
   | "connected"
   | "listening"
+  | "thinking"
   | "speaking"
+  | "interrupted"
   | "muted"
   | "reconnecting"
   | "error"

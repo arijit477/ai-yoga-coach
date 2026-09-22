@@ -9,7 +9,6 @@ import { HoldTimer } from "./HoldTimer";
 
 import { usePoseTracking } from "../../../hooks/usePoseTracking";
 import { usePoseEvaluation } from "../../../hooks/usePoseEvaluation";
-import { useStablePoseEvaluation } from "../../../hooks/useStablePoseEvaluation";
 import { useStableScore } from "../../../hooks/useStableScore";
 import { useCoachState } from "../../../hooks/useCoachState";
 import { useCoachSession } from "../../../hooks/useCoachSession";
@@ -20,6 +19,7 @@ import { SessionReportModal } from "./SessionReportModal";
 import { useAICoachStore } from "../store/aiCoachStore";
 import type { CoachPersona } from "../types/coach-session";
 import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
+import { CoachingEventEngine } from "../voice/CoachingEventEngine";
 
 
 import type { AvatarState } from "../avatar/avatar.types";
@@ -174,32 +174,32 @@ export function AICoachPage() {
   /*
    * Pose tracking
    */
-  const { result, isInitialized, error } = usePoseTracking(videoRef, isCameraActive);
+  const { result, isInitialized, error, cameraState } = usePoseTracking(videoRef, isCameraActive);
   const hasPose = Boolean(result);
 
   /*
    * Dynamic pose evaluation receiving rules for currentAsana
    */
-  const evaluation = usePoseEvaluation(result, currentAsana.id);
+  const stableEvaluation = usePoseEvaluation(result, currentAsana.id);
 
-  /*
-   * Stable correction / feedback
+  /**
+   * Keep score text smooth to prevent rapid flickering numbers
    */
-  const stableEvaluation = useStablePoseEvaluation(evaluation);
-
-  /*
-   * Stable score for UI
-   */
-  const stableScore = useStableScore(evaluation?.score ?? null);
+  const stableScore = stableEvaluation?.score ?? null;
 
   const {
     state: voiceState,
     start: voiceStart,
     stop: voiceStop,
     toggleMute: voiceToggleMute,
-    dispatchEvent: voiceDispatch,
     updateSessionContext: voiceUpdateContext,
+    dispatchEvent: voiceDispatch,
   } = useRealtimeVoice();
+
+  const coachingEngineRef = useRef<CoachingEventEngine | null>(null);
+  if (!coachingEngineRef.current) {
+    coachingEngineRef.current = new CoachingEventEngine();
+  }
 
   // Track one-shot events per asana to avoid redundant dispatching
   const hasDispatchedStartRef = useRef<string | null>(null);
@@ -261,6 +261,7 @@ export function AICoachPage() {
             currentAsana.name,
             msg,
           ),
+          { isUserSpeaking: voiceState.status === "listening" }
         );
       }
     }, [currentAsana.id, currentAsana.name, voiceDispatch]),
@@ -272,6 +273,7 @@ export function AICoachPage() {
             currentAsana.id,
             currentAsana.name,
           ),
+          { isUserSpeaking: voiceState.status === "listening" }
         );
       }
     }, [currentAsana.id, currentAsana.name, voiceDispatch]),
@@ -284,6 +286,7 @@ export function AICoachPage() {
             currentAsana.name,
             stepInstruction,
           ),
+          { isUserSpeaking: voiceState.status === "listening" }
         );
       }
     }, [currentAsana.id, currentAsana.name, currentAsana.instructions, voiceDispatch]),
@@ -306,6 +309,7 @@ export function AICoachPage() {
     lastAnnouncedCountdownRef.current = null;
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
+    coachingEngineRef.current?.reset();
 
     if (!isCameraActive) {
       handleStartCamera();
@@ -325,6 +329,7 @@ export function AICoachPage() {
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
     lastSentContextRef.current = null;
+    coachingEngineRef.current?.reset();
   }, [stopSession, voiceStop]);
 
   // Clean up voice connection when coach persona changes or unmounts
@@ -347,9 +352,14 @@ export function AICoachPage() {
     lastAnnouncedCountdownRef.current = null;
   }, [currentAsana.id]);
 
+  // Dispatch camera state changes as voice events
+  // Now handled by CoachingEventEngine in the main pipeline
+  
+  const scoreHistoryRef = useRef<number[]>([]);
+
   // Throttled session context synchronization to OpenAI Realtime
   useEffect(() => {
-    const primaryRuleId = stableEvaluation?.issues[0]?.ruleId ?? null;
+    const primaryRuleId = stableEvaluation?.primaryIssue?.ruleId ?? null;
     const currentScore = stableScore;
     const prev = lastSentContextRef.current;
 
@@ -364,6 +374,27 @@ export function AICoachPage() {
       (currentScore !== null && prev.score === null);
 
     if (shouldSendContext) {
+      let scoreTrend: "improving" | "worsening" | "stable" = "stable";
+      if (currentScore !== null) {
+        scoreHistoryRef.current.push(currentScore);
+        if (scoreHistoryRef.current.length > 5) {
+          scoreHistoryRef.current.shift();
+        }
+      } else {
+        scoreHistoryRef.current = [];
+      }
+      
+      if (scoreHistoryRef.current.length >= 3) {
+        const first = scoreHistoryRef.current[0];
+        const last = scoreHistoryRef.current[scoreHistoryRef.current.length - 1];
+        if (last - first >= 5) scoreTrend = "improving";
+        else if (first - last >= 5) scoreTrend = "worsening";
+      }
+
+      const completedPoses = completedAsanasForReport.map(a => ({ name: a.asana.name, score: a.score }));
+      const previousAsanaName = completedPoses.length > 0 ? completedPoses[completedPoses.length - 1].name : undefined;
+      const previousScore = completedPoses.length > 0 ? completedPoses[completedPoses.length - 1].score : undefined;
+
       lastSentContextRef.current = {
         coach: selectedCoach,
         asanaId: currentAsana.id,
@@ -382,18 +413,25 @@ export function AICoachPage() {
         sessionState,
         isHolding: sessionState === "holding",
         isCompleted: sessionState === "completed",
-        primaryIssue: stableEvaluation?.issues[0]
+        cameraState,
+        holdTime,
+        recentEvents: coachingEngineRef.current?.getRecentEvents() || [],
+        scoreTrend,
+        completedPoses,
+        previousAsanaName,
+        previousScore,
+        primaryIssue: stableEvaluation?.primaryIssue
           ? {
-              ruleId: stableEvaluation.issues[0].ruleId,
-              joint: stableEvaluation.issues[0].joint,
-              severity: stableEvaluation.issues[0].severity,
-              currentValue: Math.round(stableEvaluation.issues[0].currentValue),
-              currentAngle: Math.round(stableEvaluation.issues[0].currentValue),
-              min: stableEvaluation.issues[0].min,
-              max: stableEvaluation.issues[0].max,
-              targetMin: stableEvaluation.issues[0].targetMin ?? stableEvaluation.issues[0].min,
-              targetMax: stableEvaluation.issues[0].targetMax ?? stableEvaluation.issues[0].max,
-              feedback: stableEvaluation.issues[0].feedback,
+              ruleId: stableEvaluation.primaryIssue.ruleId,
+              joint: stableEvaluation.primaryIssue.joint,
+              severity: stableEvaluation.primaryIssue.severity,
+              currentValue: Math.round(stableEvaluation.primaryIssue.currentValue),
+              currentAngle: Math.round(stableEvaluation.primaryIssue.currentValue),
+              min: stableEvaluation.primaryIssue.min,
+              max: stableEvaluation.primaryIssue.max,
+              targetMin: stableEvaluation.primaryIssue.targetMin ?? stableEvaluation.primaryIssue.min,
+              targetMax: stableEvaluation.primaryIssue.targetMax ?? stableEvaluation.primaryIssue.max,
+              feedback: stableEvaluation.primaryIssue.feedback,
             }
           : null,
       });
@@ -406,117 +444,41 @@ export function AICoachPage() {
     sessionState,
     stableScore,
     stableEvaluation,
+    cameraState,
+    holdTime,
+    completedAsanasForReport,
     voiceUpdateContext,
   ]);
 
   /*
    * Structured Coaching Event Pipeline:
-   * MediaPipe -> PoseEvaluator -> FeedbackPrioritizer -> FeedbackStabilizer -> CoachingEventBuilder -> CoachingEventDispatcher -> RealtimeVoiceAgent
+   * MediaPipe -> PoseEvaluator -> TemporalPoseEvaluator -> CoachingEventEngine -> CoachingEventDispatcher -> RealtimeVoiceAgent
    */
   useEffect(() => {
-    if (sessionState === "idle") {
+    if (sessionState === "idle" || sessionState === "countdown" || sessionState === "guide_video") {
       return;
     }
 
-    // 1. POSE COMPLETED (CoachSessionState = completed)
-    if (sessionState === "completed") {
-      if (hasDispatchedCompletedRef.current !== currentAsana.id) {
-        hasDispatchedCompletedRef.current = currentAsana.id;
-        voiceDispatch(
-          CoachingEventBuilder.buildPoseCompletedEvent(
-            currentAsana.id,
-            currentAsana.name,
-            stableScore ?? undefined,
-          ),
-        );
-      }
-      return;
-    }
+    if (!coachingEngineRef.current) return;
 
-    // 2. POSE STARTED (Announce pose as coaching begins)
-    if (
-      (sessionState === "coaching" || (sessionState !== "countdown" && sessionState !== "transition" && hasPose)) &&
-      hasDispatchedStartRef.current !== currentAsana.id
-    ) {
-      hasDispatchedStartRef.current = currentAsana.id;
-      voiceDispatch(
-        CoachingEventBuilder.buildPoseStartedEvent(
-          currentAsana.id,
-          currentAsana.name,
-        ),
-      );
-    }
+    const newEvents = coachingEngineRef.current.process(
+      currentAsana.id,
+      currentAsana.name,
+      sessionState,
+      cameraState,
+      stableEvaluation
+    );
 
-    // 3. POSE HELD (CoachSessionState = holding)
-    if (sessionState === "holding") {
-      if (hasDispatchedHeldRef.current !== currentAsana.id) {
-        hasDispatchedHeldRef.current = currentAsana.id;
-        voiceDispatch(
-          CoachingEventBuilder.buildPoseHeldEvent(
-            currentAsana.id,
-            currentAsana.name,
-            stableScore ?? undefined,
-          ),
-        );
-      }
-    }
-
-    // 4. POSTURE EVALUATION & FEEDBACK
-    if (!stableEvaluation) {
-      return;
-    }
-
-    if (stableEvaluation.issues.length > 0) {
-      // Prioritized primary issue from FeedbackPrioritizer & FeedbackStabilizer
-      const primaryIssue = stableEvaluation.issues[0];
-
-      const isSafety =
-        primaryIssue.severity === "high" &&
-        (primaryIssue.ruleId.includes("safety") ||
-          primaryIssue.feedback.toLowerCase().includes("safety") ||
-          primaryIssue.feedback.toLowerCase().includes("stop") ||
-          primaryIssue.feedback.toLowerCase().includes("pain"));
-
-      if (isSafety) {
-        voiceDispatch(
-          CoachingEventBuilder.buildSafetyWarningEvent(
-            currentAsana.id,
-            currentAsana.name,
-            primaryIssue,
-            stableScore ?? undefined,
-          ),
-        );
-      } else {
-        voiceDispatch(
-          CoachingEventBuilder.buildPoseCorrectionEvent(
-            currentAsana.id,
-            currentAsana.name,
-            primaryIssue,
-            stableScore ?? undefined,
-          ),
-        );
-      }
-    } else if (
-      coachState === "good_form" ||
-      (coachState === "holding" && stableEvaluation.issues.length === 0)
-    ) {
-      // 5. GOOD FORM EVENT (User corrected issue or entered high-accuracy posture)
-      voiceDispatch(
-        CoachingEventBuilder.buildGoodFormEvent(
-          currentAsana.id,
-          currentAsana.name,
-          stableScore ?? undefined,
-        ),
-      );
-    }
+    newEvents.forEach((event) => {
+      voiceDispatch(event, { isUserSpeaking: voiceState.status === "listening" });
+    });
   }, [
     sessionState,
-    hasPose,
+    cameraState,
     stableEvaluation,
-    coachState,
     currentAsana,
-    stableScore,
     voiceDispatch,
+    voiceState.status
   ]);
 
   // Voice Countdown Effect based on holdTime
@@ -534,7 +496,8 @@ export function AICoachPage() {
             currentAsana.id,
             currentAsana.name,
             remainingSeconds
-          )
+          ),
+          { isUserSpeaking: voiceState.status === "listening" }
         );
       }
     } else if (sessionState !== "holding") {
@@ -595,37 +558,25 @@ export function AICoachPage() {
 
   const sessionLabel = getSessionLabel(sessionState);
 
-  // Derive AvatarState for AvatarPlayer based on voice, session lifecycle & posture engine
+  // Derive AvatarState purely from the intelligent voice state
+  // This decouples the visual avatar completely from rapid MediaPipe frame updates
   const avatarState: AvatarState = useMemo(() => {
-    // 1. Voice is the authoritative source of truth for speaking
-    if (voiceState.status === "speaking") return "speaking";
-
-    // 2. Guide video phase
-    if (sessionState === "guide_video") return "guide";
-
-    // 3. Calibration / hold still phase
-    if (sessionState === "hold_still" || sessionState === "calibrating") return "analyzing";
-
-    // 4. Routine / pose completed
-    if (sessionState === "completed" || sessionState === "session_completed") return "complete";
-
-    // 5. Posture correction needed
-    if (coachState === "correcting" || (stableEvaluation && stableEvaluation.issues.length > 0)) {
-      return "correction";
+    switch (voiceState.status) {
+      case "speaking":
+        return "speaking";
+      case "listening":
+        return "listening";
+      case "thinking":
+        return "thinking";
+      case "connected":
+      case "idle":
+      case "disconnected":
+      case "muted":
+      case "error":
+      default:
+        return "idle";
     }
-
-    // 6. Good form / holding target posture
-    if (coachState === "good_form" || sessionState === "holding") {
-      return "good_form";
-    }
-
-    // 7. Active session waiting/listening for user movement
-    if (isSessionActive || voiceState.status === "listening" || voiceState.status === "connected") {
-      return "listening";
-    }
-
-    return "idle";
-  }, [voiceState.status, sessionState, coachState, stableEvaluation, isSessionActive]);
+  }, [voiceState.status]);
 
 
   // Derive latest coach spoken message or text guidance
@@ -642,8 +593,8 @@ export function AICoachPage() {
       return error;
     }
 
-    if (stableEvaluation && stableEvaluation.issues.length > 0) {
-      return stableEvaluation.issues[0].feedback;
+    if (stableEvaluation && stableEvaluation.primaryIssue) {
+      return stableEvaluation.primaryIssue.feedback;
     }
 
     return getCoachStateMessage(coachState);

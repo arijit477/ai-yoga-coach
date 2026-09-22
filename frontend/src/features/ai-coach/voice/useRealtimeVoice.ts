@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { RealtimeVoiceAgent, type SessionContextData } from "./RealtimeVoiceAgent";
-import { CoachingEventDispatcher } from "./CoachingEventDispatcher";
+import { CoachDecisionEngine } from "./CoachDecisionEngine";
 import type { VoiceState, CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 
 export function useRealtimeVoice() {
   const agentRef = useRef<RealtimeVoiceAgent | null>(null);
-  const dispatcherRef = useRef<CoachingEventDispatcher | null>(null);
+  const decisionEngineRef = useRef<CoachDecisionEngine | null>(null);
   // Store latest status in a ref so dispatchEvent never re-creates due to status changes
   const statusRef = useRef<VoiceConnectionState>("disconnected");
   const lastActiveCoachRef = useRef<string>("kevin");
@@ -37,11 +37,10 @@ export function useRealtimeVoice() {
       },
     );
 
-    dispatcherRef.current = new CoachingEventDispatcher({
+    decisionEngineRef.current = new CoachDecisionEngine({
       cooldownMs: 4000, // 4 seconds default cooldown
       repeatSameRuleCooldownMs: 10000, // 10 seconds for repeating identical rule
     });
-    dispatcherRef.current.setAgent(agentRef.current);
   }
 
   const start = useCallback(async (coachId: string) => {
@@ -50,7 +49,7 @@ export function useRealtimeVoice() {
     setState((prev) => ({ ...prev, error: null, status: "connecting" }));
     if (agentRef.current) {
       await agentRef.current.connect(coachId);
-      dispatcherRef.current?.reset();
+      decisionEngineRef.current?.reset();
     }
   }, []);
 
@@ -58,7 +57,7 @@ export function useRealtimeVoice() {
     if (agentRef.current) {
       agentRef.current.disconnect();
     }
-    dispatcherRef.current?.reset();
+    decisionEngineRef.current?.reset();
   }, []);
 
   const mute = useCallback(() => {
@@ -94,12 +93,14 @@ export function useRealtimeVoice() {
     await start(coach);
   }, [start]);
 
-  /**
-   * Stable dispatchEvent that NEVER changes identity.
-   * Dispatches coaching events to provide immediate spoken verbal cues.
-   */
-  const dispatchEvent = useCallback((event: CoachingEvent) => {
-    dispatcherRef.current?.dispatch(event);
+  const dispatchEvent = useCallback((event: CoachingEvent, context?: any) => {
+    const decision = decisionEngineRef.current?.evaluate(event, context);
+    if (decision?.shouldSpeak) {
+       console.log(`[AI COACH] Coaching event approved: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
+       agentRef.current?.sendCoachingEvent(event);
+    } else if (decision) {
+       console.log(`[AI COACH] Coaching event suppressed: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
+    }
   }, []);
 
   const speakGreeting = useCallback(() => {

@@ -85,6 +85,21 @@ export interface PoseEvaluation {
   evaluatedAt: number;
 }
 
+export interface PoseEvaluationResult {
+  asanaId: string;
+  score: number;
+  isValid: boolean;
+  primaryIssue: PoseIssue | null;
+  secondaryIssues: PoseIssue[];
+  resolvedIssues: string[]; // array of ruleIds that were failing but are now passing
+  scoreTrend: "improving" | "declining" | "stable";
+  stability: number; // 0 to 100
+  holdProgress: number; // how long they have been holding the pose correctly
+  completionEligible: boolean; // if they have held it long enough with a high enough score
+  activeRules: number; // number of rules currently being evaluated
+  evaluatedAt: number;
+}
+
 export interface PoseEvaluatorContext {
   landmarks: PoseLandmarks;
   worldLandmarks: PoseLandmarks;

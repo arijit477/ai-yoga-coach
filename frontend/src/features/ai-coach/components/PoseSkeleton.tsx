@@ -5,14 +5,14 @@ import {
   VISIBLE_SKELETON_CONNECTIONS,
 } from "../types/pose-landmarks";
 import type { CoachPersona } from "../types/coach-session";
-import type { PoseEvaluation } from "../types/pose-rules";
+import type { PoseEvaluationResult } from "../types/pose-rules";
 
 interface PoseSkeletonProps {
   landmarks: PoseLandmarks | null;
   videoWidth: number;
   videoHeight: number;
   coach?: CoachPersona;
-  evaluation?: PoseEvaluation | null;
+  evaluation?: PoseEvaluationResult | null;
 }
 
 const VISIBILITY_THRESHOLD = 0.5;

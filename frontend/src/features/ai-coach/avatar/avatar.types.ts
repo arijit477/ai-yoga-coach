@@ -4,7 +4,7 @@ export type AvatarState =
   | "idle"
   | "guide"
   | "listening"
-  | "analyzing"
+  | "thinking"
   | "speaking"
   | "correction"
   | "good_form"

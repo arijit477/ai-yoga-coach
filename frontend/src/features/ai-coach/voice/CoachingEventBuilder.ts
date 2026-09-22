@@ -96,7 +96,37 @@ export class CoachingEventBuilder {
   }
 
   /**
-   * Generates a good_form event when the user corrects their posture.
+   * Generates an issue_improving event when a known issue gets significantly better.
+   */
+  static buildIssueImprovingEvent(asanaId: string, asanaName: string, ruleId: string): CoachingEvent {
+    return {
+      id: generateEventId("impr"),
+      type: "issue_improving",
+      asanaId,
+      asanaName,
+      ruleId,
+      feedback: "Much better, keep going.",
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Generates an issue_resolved event when a known issue is completely fixed.
+   */
+  static buildIssueResolvedEvent(asanaId: string, asanaName: string, ruleId: string): CoachingEvent {
+    return {
+      id: generateEventId("resolv"),
+      type: "issue_resolved",
+      asanaId,
+      asanaName,
+      ruleId,
+      feedback: "Great job, that looks perfect now.",
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Generates a good_form event when the user corrects their posture or starts with good form.
    */
   static buildGoodFormEvent(asanaId: string, asanaName: string, score?: number): CoachingEvent {
     return {
@@ -179,6 +209,107 @@ export class CoachingEventBuilder {
       max: issue.max,
       feedback: issue.feedback || "Ease out of the pose and return to a comfortable position.",
       score: score !== undefined ? Math.round(score) : undefined,
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Generates specific camera state events
+   */
+  static buildCameraUnavailableEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("cam_unav"),
+      type: "camera_unavailable",
+      asanaId,
+      asanaName,
+      feedback: "Camera is currently unavailable.",
+      timestamp: Date.now(),
+    };
+  }
+
+  static buildUserOutOfFrameEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("cam_out"),
+      type: "user_out_of_frame",
+      asanaId,
+      asanaName,
+      feedback: "I can't see you. Please step into the frame.",
+      timestamp: Date.now(),
+    };
+  }
+
+  static buildPartialBodyEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("cam_part"),
+      type: "partial_body",
+      asanaId,
+      asanaName,
+      feedback: "I can only see part of you. Please adjust your camera so your full body is visible.",
+      timestamp: Date.now(),
+    };
+  }
+
+  static buildCameraReadyEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("cam_rdy"),
+      type: "camera_ready",
+      asanaId,
+      asanaName,
+      feedback: "I can see you clearly now.",
+      timestamp: Date.now(),
+    };
+  }
+
+  static buildCalibrationRequiredEvent(asanaId: string, asanaName: string): CoachingEvent {
+    return {
+      id: generateEventId("calib_req"),
+      type: "calibration_required",
+      asanaId,
+      asanaName,
+      feedback: "Please stand back so we can calibrate.",
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Generates a calibration_failed event.
+   */
+  static buildCalibrationFailedEvent(
+    asanaId: string,
+    asanaName: string,
+    reason: string,
+  ): CoachingEvent {
+    let feedback = "";
+    switch (reason) {
+      case "move_back":
+        feedback = "Please step back so I can see your full body.";
+        break;
+      case "move_forward":
+        feedback = "Please step forward, you are too far away.";
+        break;
+      case "center_body":
+        feedback = "Please move to the center of the camera.";
+        break;
+      case "show_feet":
+        feedback = "Please adjust the camera to show your feet.";
+        break;
+      case "improve_visibility":
+        feedback = "Make sure the room is well-lit and you are clearly visible.";
+        break;
+      case "hold_still":
+        feedback = "Please hold still so I can calibrate your position.";
+        break;
+      default:
+        feedback = "Please adjust your position.";
+    }
+
+    return {
+      id: generateEventId("calib_fail"),
+      type: "calibration_failed",
+      asanaId,
+      asanaName,
+      issue: reason,
+      feedback,
       timestamp: Date.now(),
     };
   }

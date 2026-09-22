@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { CoachSessionState } from "../features/ai-coach/types/CoachSessionState";
-import type { PoseEvaluation } from "../features/ai-coach/types/pose-rules";
+import type { PoseEvaluationResult } from "../features/ai-coach/types/pose-rules";
 import type { PoseLandmarks } from "../features/ai-coach/types/landmarks";
-import { PoseStabilityDetector } from "../features/ai-coach/analysis/PoseStabilityDetector";
+import { CalibrationTracker, type CalibrationResult } from "../features/ai-coach/motion/CalibrationTracker";
 
 interface UseCoachSessionOptions {
-  evaluation: PoseEvaluation | null;
+  evaluation: PoseEvaluationResult | null;
   landmarks?: PoseLandmarks | null;
   isInitialized: boolean;
   hasPose: boolean;
@@ -18,7 +18,7 @@ interface UseCoachSessionOptions {
   onAsanaComplete?: (index: number, score: number) => void;
   onAdvanceAsana?: (nextIndex: number) => void;
   onSessionComplete?: () => void;
-  onCalibrationPrompt?: (warning?: string) => void;
+  onCalibrationPrompt?: (warning?: string, reason?: string) => void;
   onCalibrationComplete?: () => void;
   onStepChange?: (stepIndex: number) => void;
   onPoseReviewReady?: (score: number) => void;
@@ -32,6 +32,7 @@ interface UseCoachSessionResult {
   transitionCountdown: number | null;
   calibrationProgress: number;
   visibilityWarning: string | null;
+  calibrationResult: CalibrationResult | null;
   currentStepIndex: number;
   startSession: (options?: { skipVideo?: boolean }) => void;
   skipGuideVideo: () => void;
@@ -72,12 +73,32 @@ export function useCoachSession({
   const [transitionCountdown, setTransitionCountdown] = useState<number | null>(null);
   const [calibrationProgress, setCalibrationProgress] = useState(0);
   const [visibilityWarning, setVisibilityWarning] = useState<string | null>(null);
+  const [calibrationResult, setCalibrationResult] = useState<CalibrationResult | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const transitionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const stabilityDetectorRef = useRef<PoseStabilityDetector>(new PoseStabilityDetector(25, 0.035));
+  
+  const calibrationTrackerRef = useRef<CalibrationTracker | null>(null);
+  if (!calibrationTrackerRef.current) {
+    calibrationTrackerRef.current = new CalibrationTracker((result) => {
+      setCalibrationResult(result);
+      if (result.state === "CALIBRATION_FAILED" && result.reason) {
+        setVisibilityWarning(result.reason);
+      } else if (result.state === "CALIBRATION_STABLE") {
+        setCalibrationProgress(50);
+        setVisibilityWarning(null);
+      } else if (result.state === "CALIBRATION_COMPLETE") {
+        setCalibrationProgress(100);
+        setVisibilityWarning(null);
+      } else {
+         setCalibrationProgress(0);
+         setVisibilityWarning(null);
+      }
+    });
+  }
+
   const hasPromptedCalibrationRef = useRef(false);
   const lastPromptedWarningRef = useRef<string | null>(null);
   const hasCompletedCurrentAsanaRef = useRef(false);
@@ -99,13 +120,14 @@ export function useCoachSession({
 
   const resetSession = useCallback(() => {
     clearTimers();
-    stabilityDetectorRef.current.reset();
+    calibrationTrackerRef.current?.reset();
     setState("idle");
     setCountdown(null);
     setHoldTime(0);
     setTransitionCountdown(null);
     setCalibrationProgress(0);
     setVisibilityWarning(null);
+    setCalibrationResult(null);
     setCurrentStepIndex(0);
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
@@ -121,9 +143,10 @@ export function useCoachSession({
    */
   const startHoldStillCalibration = useCallback(() => {
     clearTimers();
-    stabilityDetectorRef.current.reset();
+    calibrationTrackerRef.current?.reset();
     setCalibrationProgress(0);
     setVisibilityWarning(null);
+    setCalibrationResult(null);
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
     setState("hold_still");
@@ -189,37 +212,35 @@ export function useCoachSession({
       return;
     }
 
-    const stability = stabilityDetectorRef.current.evaluate(landmarks ?? null);
-    setVisibilityWarning(stability.visibilityWarning);
-    setCalibrationProgress(stability.stabilityProgress);
+    calibrationTrackerRef.current?.updatePoseDetection(landmarks ?? null);
 
-    // If there is a visibility warning (e.g. "Move back so I can see your full body.")
-    if (stability.visibilityWarning) {
-      if (lastPromptedWarningRef.current !== stability.visibilityWarning) {
-        lastPromptedWarningRef.current = stability.visibilityWarning;
-        onCalibrationPrompt?.(stability.visibilityWarning);
+    if (calibrationResult) {
+      if (calibrationResult.state === "CALIBRATION_FAILED" && calibrationResult.reason) {
+        if (lastPromptedWarningRef.current !== calibrationResult.reason) {
+          lastPromptedWarningRef.current = calibrationResult.reason;
+          onCalibrationPrompt?.(calibrationResult.reason, calibrationResult.reason); // pass reason string
+        }
+      } else if (calibrationResult.state === "CALIBRATION_STARTED" || calibrationResult.state === "CALIBRATION_STABLE") {
+        if (!hasPromptedCalibrationRef.current || lastPromptedWarningRef.current !== null) {
+          hasPromptedCalibrationRef.current = true;
+          lastPromptedWarningRef.current = null;
+          onCalibrationPrompt?.("Hold still for a moment while I check your position.");
+        }
       }
-    } else {
-      // Body is visible; prompt to hold still if not yet prompted or after moving back into view
-      if (!hasPromptedCalibrationRef.current || lastPromptedWarningRef.current !== null) {
-        hasPromptedCalibrationRef.current = true;
-        lastPromptedWarningRef.current = null;
-        onCalibrationPrompt?.("Hold still for a moment while I check your position.");
+
+      if (calibrationResult.state === "CALIBRATION_STABLE" && state === "hold_still") {
+        setState("calibrating");
+      }
+
+      if (calibrationResult.state === "CALIBRATION_COMPLETE") {
+        onCalibrationComplete?.();
+        // Calibration completed! Transition to active coaching
+        setState("coaching");
+        setCurrentStepIndex(0);
+        onStepChange?.(0);
       }
     }
-
-    if (stability.stabilityProgress > 10 && state === "hold_still") {
-      setState("calibrating");
-    }
-
-    if (stability.isStable) {
-      onCalibrationComplete?.();
-      // Calibration completed! Transition to active coaching
-      setState("coaching");
-      setCurrentStepIndex(0);
-      onStepChange?.(0);
-    }
-  }, [landmarks, state, onCalibrationPrompt, onCalibrationComplete, onStepChange]);
+  }, [landmarks, state, calibrationResult, onCalibrationPrompt, onCalibrationComplete, onStepChange]);
 
   /**
    * Step-by-step guidance progression
@@ -375,7 +396,7 @@ export function useCoachSession({
    */
   const doItAgain = useCallback(() => {
     clearTimers();
-    stabilityDetectorRef.current.reset();
+    calibrationTrackerRef.current?.reset();
     setHoldTime(0);
     setCalibrationProgress(0);
     setVisibilityWarning(null);
@@ -441,6 +462,7 @@ export function useCoachSession({
     transitionCountdown,
     calibrationProgress,
     visibilityWarning,
+    calibrationResult,
     currentStepIndex,
     startSession,
     skipGuideVideo,

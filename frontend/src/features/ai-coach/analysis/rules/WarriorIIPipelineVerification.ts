@@ -1,9 +1,7 @@
 import { warriorIIRules } from "./WarriorIIRules";
-import { evaluatePose } from "../PoseEvaluator";
-import { prioritizePoseIssues } from "../FeedbackPrioritizer";
-import { FeedbackStabilizer } from "../FeedbackStabilizer";
+import { TemporalPoseEvaluator } from "../TemporalPoseEvaluator";
 import { CoachingEventBuilder } from "../../voice/CoachingEventBuilder";
-import { CoachingEventDispatcher } from "../../voice/CoachingEventDispatcher";
+import { CoachDecisionEngine } from "../../voice/CoachDecisionEngine";
 import type { CoachingEvent } from "../../voice/voice.types";
 
 export function runWarriorIIVoicePipelineVerification() {
@@ -58,38 +56,40 @@ export function runWarriorIIVoicePipelineVerification() {
     },
   };
 
-  const dispatcher = new CoachingEventDispatcher({
+  const decisionEngine = new CoachDecisionEngine({
     cooldownMs: 4000,
     repeatSameRuleCooldownMs: 10000,
   });
-  dispatcher.setAgent(mockVoiceAgent);
 
-  const stabilizer = new FeedbackStabilizer({
-    requiredFrames: 3,
-    releaseFrames: 2,
-  });
+  const evaluator = new TemporalPoseEvaluator();
+
+  function dispatchEvent(event: CoachingEvent) {
+     const decision = decisionEngine.evaluate(event);
+     if (decision.shouldSpeak) {
+        mockVoiceAgent.sendCoachingEvent(event);
+     }
+     return decision.shouldSpeak;
+  }
 
   // 1. Enter Pose
   const startEvent = CoachingEventBuilder.buildPoseStartedEvent("warrior-ii", "Warrior II");
-  const startDispatched = dispatcher.dispatch(startEvent);
+  const startDispatched = dispatchEvent(startEvent);
   console.assert(startDispatched, "Start event should dispatch");
   console.assert(dispatchedEvents.length === 1, "Dispatched count should be 1");
 
   // 2. Simulate frames where right knee is incorrect (164 deg instead of 80-100)
   for (let f = 1; f <= 5; f++) {
     const ctx = createMockLandmarks(164);
-    const evalResult = evaluatePose("warrior-ii", warriorIIRules, ctx);
-    const stable = stabilizer.stabilize(evalResult);
+    const stable = evaluator.evaluate("warrior-ii", warriorIIRules, ctx);
 
-    if (stable.issues.length > 0) {
-      const primary = prioritizePoseIssues(stable.issues)[0];
+    if (stable && stable.primaryIssue) {
+      const primary = stable.primaryIssue;
       const corrEvent = CoachingEventBuilder.buildPoseCorrectionEvent(
         "warrior-ii",
         "Warrior II",
         primary,
-        stable.score
       );
-      dispatcher.dispatch(corrEvent);
+      dispatchEvent(corrEvent);
     }
   }
 
@@ -103,17 +103,15 @@ export function runWarriorIIVoicePipelineVerification() {
   // 3. Keep knee incorrect and verify cooldown suppression (no spamming)
   for (let f = 1; f <= 10; f++) {
     const ctx = createMockLandmarks(164);
-    const evalResult = evaluatePose("warrior-ii", warriorIIRules, ctx);
-    const stable = stabilizer.stabilize(evalResult);
-    if (stable.issues.length > 0) {
-      const primary = prioritizePoseIssues(stable.issues)[0];
+    const stable = evaluator.evaluate("warrior-ii", warriorIIRules, ctx);
+    if (stable && stable.primaryIssue) {
+      const primary = stable.primaryIssue;
       const corrEvent = CoachingEventBuilder.buildPoseCorrectionEvent(
         "warrior-ii",
         "Warrior II",
         primary,
-        stable.score
       );
-      dispatcher.dispatch(corrEvent);
+      dispatchEvent(corrEvent);
     }
   }
   console.assert(dispatchedEvents.length === 2, `Cooldown should prevent repeat spamming, got: ${dispatchedEvents.length}`);
@@ -121,11 +119,10 @@ export function runWarriorIIVoicePipelineVerification() {
   // 4. User corrects knee to 90 deg -> good_form transition
   for (let f = 1; f <= 4; f++) {
     const ctx = createMockLandmarks(90);
-    const evalResult = evaluatePose("warrior-ii", warriorIIRules, ctx);
-    const stable = stabilizer.stabilize(evalResult);
-    if (stable.issues.length === 0) {
+    const stable = evaluator.evaluate("warrior-ii", warriorIIRules, ctx);
+    if (stable && !stable.primaryIssue) {
       const goodEvent = CoachingEventBuilder.buildGoodFormEvent("warrior-ii", "Warrior II", stable.score);
-      dispatcher.dispatch(goodEvent);
+      dispatchEvent(goodEvent);
     }
   }
 
@@ -135,12 +132,12 @@ export function runWarriorIIVoicePipelineVerification() {
 
   // 5. Pose held
   const heldEvent = CoachingEventBuilder.buildPoseHeldEvent("warrior-ii", "Warrior II", 95);
-  dispatcher.dispatch(heldEvent);
+  dispatchEvent(heldEvent);
   console.assert(dispatchedEvents.length === 4, `Should dispatch pose_held, got: ${dispatchedEvents.length}`);
 
   // 6. Pose completed
   const compEvent = CoachingEventBuilder.buildPoseCompletedEvent("warrior-ii", "Warrior II", 98);
-  dispatcher.dispatch(compEvent);
+  dispatchEvent(compEvent);
   console.assert(dispatchedEvents.length === 5, `Should dispatch pose_completed, got: ${dispatchedEvents.length}`);
 
   console.log("--- Warrior II Voice Pipeline Verification PASSED successfully! ---");

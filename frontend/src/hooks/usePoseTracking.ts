@@ -7,6 +7,7 @@ import {
 import { PoseLandmarkerService } from "../features/ai-coach/motion/PoseLandmarkerService";
 
 import { MotionFrameProcessor } from "../features/ai-coach/motion/MotionFrameProcessor";
+import { CameraReadinessTracker, type CameraReadinessState } from "../features/ai-coach/motion/CameraReadinessTracker";
 
 import type { PoseTrackingResult, PoseLandmarks } from "../features/ai-coach/types/landmarks";
 
@@ -45,6 +46,16 @@ export function usePoseTracking(
   const [result, setResult] = useState<PoseTrackingResult | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cameraState, setCameraState] = useState<CameraReadinessState>("CAMERA_DISABLED");
+  
+  const readinessTrackerRef = useRef<CameraReadinessTracker | null>(null);
+  
+  // Initialize the tracker once
+  if (!readinessTrackerRef.current) {
+    readinessTrackerRef.current = new CameraReadinessTracker((newState) => {
+      setCameraState(newState);
+    });
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +72,9 @@ export function usePoseTracking(
       const shouldUpdateUI = timestamp - lastRenderTimeRef.current >= 30; // ~30fps max UI update
 
       if (video && processor && video.readyState >= 2) { // HAVE_CURRENT_DATA
+        // Update hardware state inside the loop
+        readinessTrackerRef.current?.updateCameraStatus(enabled ? "enabled" : "disabled");
+        
         try {
           const detection = processor.processFrame(video);
           if (detection && !cancelled) {
@@ -70,6 +84,8 @@ export function usePoseTracking(
             
             lastLandmarksRef.current = smoothedLandmarks;
             lastWorldLandmarksRef.current = smoothedWorldLandmarks;
+            
+            readinessTrackerRef.current?.updatePoseDetection(smoothedLandmarks);
 
             if (shouldUpdateUI) {
               lastRenderTimeRef.current = timestamp;
@@ -83,6 +99,8 @@ export function usePoseTracking(
             // Clear result if no pose detected so hasPose becomes false
             lastLandmarksRef.current = null;
             lastWorldLandmarksRef.current = null;
+            readinessTrackerRef.current?.updatePoseDetection(null);
+            
             if (shouldUpdateUI) {
               lastRenderTimeRef.current = timestamp;
               setResult(null);
@@ -130,6 +148,10 @@ export function usePoseTracking(
       }
     };
 
+    if (enabled && !isInitialized) {
+       readinessTrackerRef.current?.updateCameraStatus("requesting");
+    }
+
     if (enabled && !serviceRef.current && !isInitialized) {
       // Lazy load only when video is ready to prevent blocking
       const video = videoRef.current;
@@ -149,6 +171,7 @@ export function usePoseTracking(
       animationFrameRef.current = requestAnimationFrame(loop);
     } else if (!enabled && isRunningRef.current) {
       isRunningRef.current = false;
+      readinessTrackerRef.current?.updateCameraStatus("disabled");
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
@@ -179,5 +202,6 @@ export function usePoseTracking(
     result,
     isInitialized,
     error,
+    cameraState,
   };
 }

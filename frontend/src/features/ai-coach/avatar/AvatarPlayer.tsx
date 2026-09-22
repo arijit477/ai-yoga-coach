@@ -40,7 +40,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
       window.clearTimeout(stateTimerRef.current);
     }
 
-    if (state === "speaking" || state === "correction" || state === "good_form") {
+    if (state === "speaking") {
       setSmoothedState(state);
     } else {
       stateTimerRef.current = window.setTimeout(() => {
@@ -111,16 +111,10 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
   const stateBorderClass =
     smoothedState === "speaking"
       ? "border-emerald-500 shadow-[0_4px_20px_rgba(47,128,85,0.25)] ring-2 ring-emerald-400/30"
-      : smoothedState === "analyzing"
+      : smoothedState === "thinking"
       ? "border-cyan-500 shadow-[0_4px_20px_rgba(6,182,212,0.25)] ring-2 ring-cyan-400/30"
-      : smoothedState === "correction"
-      ? "border-amber-500 shadow-[0_4px_18px_rgba(212,160,23,0.2)] ring-2 ring-amber-400/35"
-      : smoothedState === "good_form"
-      ? "border-emerald-600 shadow-[0_4px_24px_rgba(47,128,85,0.3)] ring-2 ring-emerald-400/40"
-      : smoothedState === "complete"
-      ? "border-emerald-500 shadow-[0_4px_20px_rgba(16,185,129,0.25)] ring-2 ring-emerald-300/40"
-      : smoothedState === "guide"
-      ? "border-emerald-400/80 shadow-sm"
+      : smoothedState === "listening"
+      ? "border-blue-500 shadow-[0_4px_18px_rgba(59,130,246,0.2)] ring-2 ring-blue-400/35"
       : "border-slate-200/80 shadow-sm";
 
   // Get the selected outfit image (or fallback to default)
@@ -192,31 +186,19 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
         </div>
       )}
 
-      {/* Listening badge removed */}
+      {/* Listening badge */}
+      {smoothedState === "listening" && (
+        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-blue-500/30 shadow-sm pointer-events-none animate-in fade-in duration-200">
+          <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+          <span className="text-[10px] font-bold text-blue-900">Listening</span>
+        </div>
+      )}
 
-      {/* Analyzing posture badge */}
-      {smoothedState === "analyzing" && (
+      {/* Thinking badge */}
+      {smoothedState === "thinking" && (
         <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-cyan-500/30 shadow-sm pointer-events-none animate-in fade-in duration-200">
           <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-cyan-950">Analyzing...</span>
-        </div>
-      )}
-
-
-
-      {/* Good form badge */}
-      {smoothedState === "good_form" && (
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-emerald-50/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-300 shadow-sm pointer-events-none animate-in fade-in duration-200">
-          <span className="text-xs">✨</span>
-          <span className="text-[10px] font-bold text-emerald-900">Good Form!</span>
-        </div>
-      )}
-
-      {/* Complete badge */}
-      {smoothedState === "complete" && (
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-emerald-50/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-300 shadow-sm pointer-events-none animate-in fade-in duration-200">
-          <span className="text-xs">🎉</span>
-          <span className="text-[10px] font-bold text-emerald-900">Pose Complete</span>
+          <span className="text-[10px] font-bold text-cyan-900">Thinking</span>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import type { PoseEvaluation } from "../features/ai-coach/types/pose-rules";
+import type { PoseEvaluationResult } from "../features/ai-coach/types/pose-rules";
 import type { CoachState } from "../features/ai-coach/types/coach-state";
 
 import { calculateCoachState } from "../features/ai-coach/analysis/CoachStateCalculator";
@@ -8,7 +8,7 @@ import { calculateCoachState } from "../features/ai-coach/analysis/CoachStateCal
 interface UseCoachStateOptions {
   isInitialized: boolean;
   hasPose: boolean;
-  evaluation: PoseEvaluation | null;
+  evaluation: PoseEvaluationResult | null;
 }
 
 export function useCoachState({

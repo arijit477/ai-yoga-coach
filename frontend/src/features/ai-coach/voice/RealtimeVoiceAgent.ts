@@ -20,6 +20,13 @@ export interface SessionContextData {
   } | null;
   isHolding?: boolean;
   isCompleted?: boolean;
+  cameraState?: string;
+  recentEvents?: CoachingEvent[];
+  holdTime?: number;
+  previousAsanaName?: string;
+  previousScore?: number;
+  scoreTrend?: "improving" | "worsening" | "stable";
+  completedPoses?: { name: string; score: number }[];
 }
 
 export class RealtimeVoiceAgent {
@@ -34,6 +41,7 @@ export class RealtimeVoiceAgent {
   private isSpeaking: boolean = false;
   private currentCoachId: string | null = null;
   private isConnecting: boolean = false;
+  private currentSessionContext: SessionContextData | null = null;
   
   // Hook for avatar lip-sync: returns incoming audio stream
   private remoteAudioStream: MediaStream | null = null;
@@ -77,13 +85,19 @@ export class RealtimeVoiceAgent {
     this.isConnecting = true;
     this.currentCoachId = coachId;
 
-    // 1. We no longer request microphone permission as the listening feature is removed.
-    this.stream = null;
+    // 1. Get microphone permission for WebRTC bidirectional audio
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      console.warn("[AI COACH] Could not get microphone access:", err);
+      this.stream = null;
+    }
 
     // 2. Connecting to backend session
     this.updateStatus("connecting");
     try {
-      const resp = await fetch("http://localhost:8000/api/ai-coach/realtime/session", {
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const resp = await fetch(`${apiUrl}/api/ai-coach/realtime/session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ coach_id: coachId }),
@@ -104,8 +118,15 @@ export class RealtimeVoiceAgent {
       // 3. Setup WebRTC Peer Connection
       this.pc = new RTCPeerConnection();
       
-      // We must explicitly add a transceiver to receive audio since we are no longer sending a local microphone track
-      this.pc.addTransceiver("audio", { direction: "recvonly" });
+      // Since we want bidirectional audio, we add local tracks
+      if (this.stream) {
+        this.stream.getTracks().forEach((track) => {
+          this.pc?.addTrack(track, this.stream!);
+        });
+      } else {
+        // Fallback to recvonly if no mic permission
+        this.pc.addTransceiver("audio", { direction: "recvonly" });
+      }
 
       // Handle incoming audio stream from OpenAI
       this.pc.ontrack = (event) => {
@@ -118,7 +139,7 @@ export class RealtimeVoiceAgent {
         }
       };
 
-      // Local microphone tracks are no longer added since listening feature is removed
+      // Local microphone tracks handled above
 
       // 4. Set up data channel for bidirectional events
       this.dc = this.pc.createDataChannel("oai-events");
@@ -144,9 +165,17 @@ export class RealtimeVoiceAgent {
               // We now rely on the audio analyzer to clear the speaking state
             }
           } else if (ev.type === "input_audio_buffer.speech_started") {
-            // Unused since listening feature is removed
+             if (this.isSpeaking) {
+               // User interrupted the coach
+               this.isSpeaking = false;
+               this.updateStatus("interrupted");
+             } else {
+               this.updateStatus("listening");
+             }
           } else if (ev.type === "input_audio_buffer.speech_stopped") {
-            // Unused since listening feature is removed
+             this.updateStatus("thinking");
+          } else if (ev.type === "response.function_call_arguments.done") {
+             this.handleFunctionCall(ev);
           }
 
           // Optional transcript capturing:
@@ -395,6 +424,8 @@ export class RealtimeVoiceAgent {
    * so the conversational model always knows what pose is active when the user asks questions.
    */
   updateSessionContext(context: SessionContextData) {
+    this.currentSessionContext = context;
+    
     if (!this.dc || this.dc.readyState !== "open") {
       return;
     }
@@ -444,6 +475,74 @@ export class RealtimeVoiceAgent {
 
     this.dc.send(JSON.stringify(oaiContextMessage));
     console.log(`[AI COACH] Session context updated: ${context.asanaName} (${context.coachState || "active"})`);
+  }
+
+  private handleFunctionCall(ev: any) {
+    if (!this.dc || this.dc.readyState !== "open") return;
+    
+    const callId = ev.call_id;
+    const functionName = ev.name;
+    
+    console.log(`[AI COACH] OpenAI called function: ${functionName}`);
+    let result: any = { error: "Context not available" };
+
+    if (this.currentSessionContext) {
+      const ctx = this.currentSessionContext;
+      switch (functionName) {
+        case "get_camera_status":
+          result = { cameraState: ctx.cameraState || "unknown" };
+          break;
+        case "get_current_pose":
+        case "get_current_asana":
+          result = { asanaId: ctx.asanaId, asanaName: ctx.asanaName };
+          break;
+        case "get_posture_status":
+          result = {
+            score: ctx.score ?? null,
+            status: ctx.primaryIssue ? "needs_correction" : (ctx.score && ctx.score > 80 ? "good" : "evaluating"),
+            primaryIssue: ctx.primaryIssue || null,
+            stability: ctx.coachState === "stable" ? "stable" : "transitioning",
+            scoreTrend: ctx.scoreTrend,
+            previousScore: ctx.previousScore
+          };
+          break;
+        case "get_session_state":
+          result = {
+            coachState: ctx.coachState,
+            sessionState: ctx.sessionState,
+            isHolding: ctx.isHolding,
+            isCompleted: ctx.isCompleted,
+            previousAsana: ctx.previousAsanaName,
+            completedPoses: ctx.completedPoses
+          };
+          break;
+        case "get_primary_correction":
+          result = { primaryIssue: ctx.primaryIssue || null };
+          break;
+        case "get_hold_status":
+          result = { isHolding: ctx.isHolding || false, holdTimeRemaining: ctx.holdTime || 0 };
+          break;
+        case "get_recent_coaching_events":
+          result = { recentEvents: (ctx.recentEvents || []).slice(-3).map(e => ({ type: e.type, feedback: e.feedback })) };
+          break;
+        default:
+          result = { error: `Function ${functionName} not recognized locally.` };
+      }
+    }
+
+    try {
+      this.dc.send(JSON.stringify({
+        type: "conversation.item.create",
+        item: {
+          type: "function_call_output",
+          call_id: callId,
+          output: JSON.stringify(result)
+        }
+      }));
+      this.dc.send(JSON.stringify({ type: "response.create" }));
+    } catch (e) {
+      console.warn("[AI COACH] Error responding to function call", e);
+    }
   }
 
   setMuted(isMuted: boolean) {

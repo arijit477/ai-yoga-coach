@@ -20,6 +20,7 @@ export interface RuleResult {
   passed: boolean;
   score: number;
   issue?: PoseIssue;
+  ignored?: boolean;
 }
 
 /**
@@ -38,10 +39,15 @@ export function evaluateRule(
     !worldLandmarks ||
     worldLandmarks.length < 33
   ) {
-    return {
-      passed: false,
-      score: 0,
-    };
+    return { passed: false, score: 0, ignored: true };
+  }
+
+  // Pre-check landmark confidence for the rule's points
+  for (const pointIdx of rule.points) {
+    const lm = imageLandmarks[pointIdx];
+    if (!lm || (lm.visibility !== undefined && lm.visibility < 0.4)) {
+      return { passed: false, score: 0, ignored: true }; // Landmark is occluded or not confident
+    }
   }
 
   let value: number | null = null;
@@ -64,10 +70,7 @@ export function evaluateRule(
       break;
 
     default:
-      return {
-        passed: false,
-        score: 0,
-      };
+      return { passed: false, score: 0, ignored: true };
   }
 
   /*
@@ -75,10 +78,7 @@ export function evaluateRule(
    * not be evaluated reliably.
    */
   if (value === null) {
-    return {
-      passed: false,
-      score: 0,
-    };
+    return { passed: false, score: 0, ignored: true };
   }
 
   const passed = compareValue(value, rule);

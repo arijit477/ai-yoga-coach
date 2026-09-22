@@ -23,6 +23,10 @@ export function evaluatePose(
       context
     );
 
+    if (result.ignored) {
+      continue;
+    }
+
     totalWeight += rule.weight;
 
     weightedScore +=
