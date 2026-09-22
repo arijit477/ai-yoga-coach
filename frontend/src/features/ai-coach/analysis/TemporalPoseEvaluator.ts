@@ -17,9 +17,11 @@ export class TemporalPoseEvaluator {
   private previouslyFailingRules: Set<string> = new Set();
   private holdFramesCount: number = 0;
 
-  constructor(
-    private readonly targetHoldFrames: number = 150 // Approx 5 seconds at 30fps
-  ) {}
+  private readonly targetHoldFrames: number;
+
+  constructor(targetHoldFrames: number = 150) {
+    this.targetHoldFrames = targetHoldFrames;
+  }
 
   public reset() {
     this.smoothedScore = null;

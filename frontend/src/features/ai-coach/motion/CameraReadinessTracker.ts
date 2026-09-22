@@ -22,9 +22,12 @@ export class CameraReadinessTracker {
   private lastGoodFrameTime: number = 0;
   private lastBadFrameTime: number = 0;
 
+  private readonly onStateChange: (newState: CameraReadinessState) => void;
+
   constructor(
-    private readonly onStateChange: (newState: CameraReadinessState) => void
+    onStateChange: (newState: CameraReadinessState) => void
   ) {
+    this.onStateChange = onStateChange;
     this.lastGoodFrameTime = Date.now();
     this.lastBadFrameTime = Date.now();
   }

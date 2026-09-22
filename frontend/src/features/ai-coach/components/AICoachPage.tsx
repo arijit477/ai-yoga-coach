@@ -9,7 +9,6 @@ import { HoldTimer } from "./HoldTimer";
 
 import { usePoseTracking } from "../../../hooks/usePoseTracking";
 import { usePoseEvaluation } from "../../../hooks/usePoseEvaluation";
-import { useStableScore } from "../../../hooks/useStableScore";
 import { useCoachState } from "../../../hooks/useCoachState";
 import { useCoachSession } from "../../../hooks/useCoachSession";
 import { AsanaSelector } from "./AsanaSelector";
@@ -175,7 +174,6 @@ export function AICoachPage() {
    * Pose tracking
    */
   const { result, isInitialized, error, cameraState } = usePoseTracking(videoRef, isCameraActive);
-  const hasPose = Boolean(result);
 
   /*
    * Dynamic pose evaluation receiving rules for currentAsana

@@ -47,9 +47,13 @@ export class CalibrationTracker {
   private isMirrored: boolean = false;
   private isFacingRight: boolean = false;
 
+  private readonly onCalibrationChange: (result: CalibrationResult) => void;
+
   constructor(
-    private readonly onCalibrationChange: (result: CalibrationResult) => void
-  ) {}
+    onCalibrationChange: (result: CalibrationResult) => void
+  ) {
+    this.onCalibrationChange = onCalibrationChange;
+  }
 
   public reset() {
     this.state = "CALIBRATION_STARTED";

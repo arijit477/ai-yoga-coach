@@ -1,4 +1,4 @@
-import type { CoachContext, CameraContext, PoseContext, PostureContext, SafetyContext, SessionContext, InteractionContext } from "../types/coach-context";
+import type { CoachContext, PostureContext, SafetyContext } from "../types/coach-context";
 
 export class CoachContextHelper {
   static cameraUnavailable(): Partial<CoachContext> {

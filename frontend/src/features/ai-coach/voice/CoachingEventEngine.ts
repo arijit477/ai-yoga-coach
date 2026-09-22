@@ -1,4 +1,4 @@
-import type { PoseEvaluationResult, PoseIssue } from "../types/pose-rules";
+import type { PoseEvaluationResult } from "../types/pose-rules";
 import type { CameraReadinessState } from "../motion/CameraReadinessTracker";
 import type { CoachSessionState } from "../types/CoachSessionState";
 import type { CoachingEvent } from "./voice.types";
@@ -44,7 +44,7 @@ export class CoachingEventEngine {
     if (this.lastSessionState !== sessionState) {
       if (sessionState === "calibrating") {
          events.push(CoachingEventBuilder.buildCalibrationRequiredEvent(asanaId, asanaName));
-      } else if (sessionState === "active" && this.lastSessionState !== "holding") {
+      } else if (sessionState === "coaching" && this.lastSessionState !== "holding") {
          // Entered pose active coaching
          events.push(CoachingEventBuilder.buildPoseStartedEvent(asanaId, asanaName));
          this.hasAnnouncedGoodFormForPose = false;
@@ -58,7 +58,7 @@ export class CoachingEventEngine {
     }
 
     // 3. Pose Evaluation (Issues)
-    if (sessionState === "active" || sessionState === "holding" || sessionState === "correcting") {
+    if (sessionState === "coaching" || sessionState === "holding" || sessionState === "correcting") {
       if (evaluation) {
         
         // Safety Warning check
@@ -102,7 +102,7 @@ export class CoachingEventEngine {
         }
 
         // Good Form
-        if (!primary && evaluation.score >= 85 && !this.hasAnnouncedGoodFormForPose && sessionState === "active") {
+        if (!primary && evaluation.score >= 85 && !this.hasAnnouncedGoodFormForPose && sessionState === "coaching") {
           events.push(CoachingEventBuilder.buildGoodFormEvent(asanaId, asanaName, evaluation.score));
           this.hasAnnouncedGoodFormForPose = true;
         }
