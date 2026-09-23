@@ -1304,7 +1304,6 @@ export function AICoachPage() {
                 voiceState={voiceState}
                 isSessionActive={isSessionActive}
                 onToggleMute={voiceToggleMute}
-                onStartVoice={handleStartSession}
                 onStopVoice={voiceStop}
                 onToggleConversationMode={voiceToggleConversationMode}
               />

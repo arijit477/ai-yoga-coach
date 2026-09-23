@@ -13,7 +13,6 @@ interface VoiceControlsProps {
   isSessionActive?: boolean;
   coachName?: string;
   onToggleMute?: () => void;
-  onStartVoice?: () => void;
   onStopVoice?: () => void;
   onToggleConversationMode?: () => void;
   className?: string;
@@ -31,7 +30,6 @@ export const VoiceControls = React.memo(function VoiceControls({
   voiceState,
   coachName = "Alice",
   onToggleMute,
-  onStartVoice,
   onStopVoice,
   onToggleConversationMode,
   className = "",

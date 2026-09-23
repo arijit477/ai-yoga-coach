@@ -14,7 +14,6 @@ interface CoachPanelProps {
   voiceState?: VoiceState;
   isSessionActive?: boolean;
   onToggleMute?: () => void;
-  onStartVoice?: () => void;
   onStopVoice?: () => void;
   onToggleConversationMode?: () => void;
   className?: string;
@@ -29,7 +28,6 @@ export const CoachPanel = React.memo(function CoachPanel({
   voiceState,
   isSessionActive = false,
   onToggleMute,
-  onStartVoice,
   onStopVoice,
   onToggleConversationMode,
   className = "",
@@ -85,7 +83,6 @@ export const CoachPanel = React.memo(function CoachPanel({
             isSessionActive={isSessionActive}
             coachName={coach === "alice" ? "Alice" : "Kevin"}
             onToggleMute={onToggleMute}
-            onStartVoice={onStartVoice}
             onStopVoice={onStopVoice}
             onToggleConversationMode={onToggleConversationMode}
           />
