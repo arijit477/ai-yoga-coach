@@ -102,6 +102,7 @@ export function useCoachSession({
   const hasPromptedCalibrationRef = useRef(false);
   const lastPromptedWarningRef = useRef<string | null>(null);
   const hasCompletedCurrentAsanaRef = useRef(false);
+  const holdScoresRef = useRef<number[]>([]);
 
   const clearTimers = useCallback(() => {
     if (countdownTimerRef.current) {
@@ -132,6 +133,7 @@ export function useCoachSession({
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
     hasCompletedCurrentAsanaRef.current = false;
+    holdScoresRef.current = [];
   }, [clearTimers]);
 
   const stopSession = useCallback(() => {
@@ -149,8 +151,12 @@ export function useCoachSession({
     setCalibrationResult(null);
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
-    setState("hold_still");
-  }, [clearTimers]);
+    
+    // Skip calibration directly to coaching to keep flow simple and responsive
+    setState("coaching");
+    setCurrentStepIndex(0);
+    onStepChange?.(0);
+  }, [clearTimers, onStepChange]);
 
   /**
    * Countdown: 3, 2, 1 before Hold Still calibration.
@@ -270,9 +276,11 @@ export function useCoachSession({
   const hasPoseLostSinceRef = useRef<number | null>(null);
   const highAccuracySinceRef = useRef<number | null>(null);
 
-  // Reset completion flag when moving to a new asana
+  // Reset completion flag and hold scores when moving to a new asana
   useEffect(() => {
     hasCompletedCurrentAsanaRef.current = false;
+    holdScoresRef.current = [];
+    setHoldTime(0);
   }, [currentAsanaIndex]);
 
   /**
@@ -298,6 +306,7 @@ export function useCoachSession({
       } else if (Date.now() - hasPoseLostSinceRef.current > 7000) { // 7 second grace period
         setState("detecting");
         setHoldTime(0);
+        holdScoresRef.current = [];
       }
       return;
     } else {
@@ -308,44 +317,38 @@ export function useCoachSession({
       highAccuracySinceRef.current = null;
       setState("analyzing");
       setHoldTime(0);
+      holdScoresRef.current = [];
       return;
     }
 
-    // Immediately complete if threshold is reached and we haven't completed it yet
-    if (evaluation.score >= COMPLETION_ACCURACY_THRESHOLD && !hasCompletedCurrentAsanaRef.current) {
-      hasCompletedCurrentAsanaRef.current = true;
-      const finalScore = evaluation.score;
-      setState("completed");
-      onAsanaComplete?.(currentAsanaIndex, finalScore);
-      onPoseReviewReady?.(finalScore);
-      return;
-    }
+    // High accuracy alignment reached (>= 75% threshold)
+    if (evaluation.score >= COMPLETION_ACCURACY_THRESHOLD) {
+      if (highAccuracySinceRef.current === null) {
+        highAccuracySinceRef.current = Date.now();
+      }
 
-    // Still trying to reach target form
-    if (evaluation.score < COMPLETION_ACCURACY_THRESHOLD) {
+      // Complete the asana immediately once alignment is held steadily for 500ms
+      if (Date.now() - highAccuracySinceRef.current >= 500) {
+        if (!hasCompletedCurrentAsanaRef.current) {
+          hasCompletedCurrentAsanaRef.current = true;
+          const finalScore = Math.max(75, Math.min(100, Math.round(evaluation.score)));
+          onAsanaComplete?.(currentAsanaIndex, finalScore);
+          onPoseReviewReady?.(finalScore);
+          setState("completed");
+        }
+      } else {
+        if (state !== "coaching") {
+          setState("coaching");
+        }
+      }
+    } else {
       highAccuracySinceRef.current = null;
       setState("correcting");
-      setHoldTime(0);
-      return;
     }
-
-    if (highAccuracySinceRef.current === null) {
-      highAccuracySinceRef.current = Date.now();
-    }
-
-    // High accuracy alignment reached for 1 second continuously (for hold tracking purposes)
-    if (Date.now() - highAccuracySinceRef.current >= 1000) {
-      setState("holding");
-    } else {
-      // In that 1 second window, if we were correcting, stay correcting, don't flicker.
-      if (state !== "holding" && state !== "coaching") {
-         setState("coaching");
-      }
-    }
-  }, [evaluation, hasPose, state, currentAsanaIndex, onAsanaComplete, onPoseReviewReady]);
+  }, [evaluation, hasPose, state, currentAsanaIndex]);
 
   /**
-   * Hold timer count-up and 75% completion decision
+   * Hold timer count-up: Once targetHoldSeconds is completed, calculate final average hold accuracy
    */
   useEffect(() => {
     if (state !== "holding") {
@@ -362,13 +365,28 @@ export function useCoachSession({
 
     holdTimerRef.current = setInterval(() => {
       setHoldTime((previous) => {
-        const next = previous + 0.1;
+        const next = Math.round((previous + 0.1) * 10) / 10;
 
         if (next >= targetHoldSeconds) {
           if (holdTimerRef.current) {
             clearInterval(holdTimerRef.current);
             holdTimerRef.current = null;
           }
+
+          // Compute genuine hold accuracy across all collected frames during the hold
+          const samples = holdScoresRef.current;
+          const finalScore =
+            samples.length > 0
+              ? Math.max(50, Math.min(100, Math.round(samples.reduce((sum, s) => sum + s, 0) / samples.length)))
+              : Math.round(evaluation?.score ?? 80);
+
+          hasCompletedCurrentAsanaRef.current = true;
+          onAsanaComplete?.(currentAsanaIndex, finalScore);
+          onPoseReviewReady?.(finalScore);
+
+          // Auto-advance to the next asana instead of requiring manual button click
+          moveToNextAsana();
+
           return targetHoldSeconds;
         }
 

@@ -72,7 +72,15 @@ export interface PoseIssue {
 export interface PoseEvaluation {
   asanaId: string;
 
+  /**
+   * Unrounded floating-point score for this frame (0-100).
+   */
   score: number;
+
+  /**
+   * Alias for raw unrounded score.
+   */
+  rawScore?: number;
 
   status:
     | "excellent"
@@ -87,7 +95,27 @@ export interface PoseEvaluation {
 
 export interface PoseEvaluationResult {
   asanaId: string;
+
+  /**
+   * Displayed/stable score for backward compatibility.
+   */
   score: number;
+
+  /**
+   * Unrounded instantaneous frame score from rule evaluator (0-100).
+   */
+  rawScore?: number;
+
+  /**
+   * Temporally smoothed, outlier-filtered continuous float accuracy (0-100).
+   */
+  stableScore?: number;
+
+  /**
+   * Stable integer percentage for UI text display, protected by dead-band hysteresis.
+   */
+  displayedScore?: number;
+
   isValid: boolean;
   primaryIssue: PoseIssue | null;
   secondaryIssues: PoseIssue[];

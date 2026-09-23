@@ -1,25 +1,36 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { RealtimeVoiceAgent, type SessionContextData } from "./RealtimeVoiceAgent";
+import { CoachTTSAgent } from "./CoachTTSAgent";
 import { CoachDecisionEngine } from "./CoachDecisionEngine";
 import type { VoiceState, CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 
 export function useRealtimeVoice() {
-  const agentRef = useRef<RealtimeVoiceAgent | null>(null);
+  const rtcAgentRef = useRef<RealtimeVoiceAgent | null>(null);
+  const ttsAgentRef = useRef<CoachTTSAgent | null>(null);
   const decisionEngineRef = useRef<CoachDecisionEngine | null>(null);
-  // Store latest status in a ref so dispatchEvent never re-creates due to status changes
+  
   const statusRef = useRef<VoiceConnectionState>("disconnected");
-  const lastActiveCoachRef = useRef<string>("kevin");
+  const lastActiveCoachRef = useRef<string>("alice");
 
   const [state, setState] = useState<VoiceState>({
     status: "disconnected",
     isMuted: false,
     error: null,
     transcripts: [],
+    isConversationMode: false,
   });
 
-  // Initialize refs once on first render (never re-runs)
-  if (!agentRef.current) {
-    agentRef.current = new RealtimeVoiceAgent(
+  if (!ttsAgentRef.current) {
+    ttsAgentRef.current = new CoachTTSAgent((item: VoiceTranscriptItem) => {
+      setState((prev) => ({
+        ...prev,
+        transcripts: [...prev.transcripts.slice(-9), item],
+      }));
+    });
+  }
+
+  if (!rtcAgentRef.current) {
+    rtcAgentRef.current = new RealtimeVoiceAgent(
       (status: VoiceConnectionState, error?: string) => {
         statusRef.current = status;
         setState((prev) => ({
@@ -31,49 +42,62 @@ export function useRealtimeVoice() {
       (item: VoiceTranscriptItem) => {
         setState((prev) => ({
           ...prev,
-          // Keep last 10 transcript items for lightweight dialogue
           transcripts: [...prev.transcripts.slice(-9), item],
         }));
       },
     );
 
     decisionEngineRef.current = new CoachDecisionEngine({
-      cooldownMs: 4000, // 4 seconds default cooldown
-      repeatSameRuleCooldownMs: 10000, // 10 seconds for repeating identical rule
+      cooldownMs: 4000, 
+      repeatSameRuleCooldownMs: 10000,
     });
   }
 
   const start = useCallback(async (coachId: string) => {
     lastActiveCoachRef.current = coachId;
-    statusRef.current = "connecting";
-    setState((prev) => ({ ...prev, error: null, status: "connecting" }));
-    if (agentRef.current) {
-      await agentRef.current.connect(coachId);
-      decisionEngineRef.current?.reset();
-    }
+    ttsAgentRef.current?.setCoach(coachId);
+    
+    // By default, start in TTS coaching mode (no WebRTC connection)
+    statusRef.current = "connected";
+    setState((prev) => ({ ...prev, error: null, status: "connected", isConversationMode: false }));
+    decisionEngineRef.current?.reset();
+  }, []);
+
+  const toggleConversationMode = useCallback(async () => {
+    setState((prev) => {
+      const nextMode = !prev.isConversationMode;
+      if (nextMode) {
+        // Switching TO conversation mode: connect WebRTC
+        ttsAgentRef.current?.stopSpeaking();
+        rtcAgentRef.current?.connect(lastActiveCoachRef.current);
+      } else {
+        // Switching OFF conversation mode: disconnect WebRTC
+        rtcAgentRef.current?.disconnect();
+        statusRef.current = "connected";
+      }
+      return { ...prev, isConversationMode: nextMode, status: nextMode ? "connecting" : "connected" };
+    });
   }, []);
 
   const stop = useCallback(() => {
-    if (agentRef.current) {
-      agentRef.current.disconnect();
-    }
+    rtcAgentRef.current?.disconnect();
+    ttsAgentRef.current?.stopSpeaking();
     decisionEngineRef.current?.reset();
+    setState((prev) => ({ ...prev, isConversationMode: false, status: "disconnected" }));
   }, []);
 
   const mute = useCallback(() => {
     setState((prev) => {
-      if (agentRef.current) {
-        agentRef.current.setMuted(true);
-      }
+      rtcAgentRef.current?.setMuted(true);
+      ttsAgentRef.current?.setMuted(true);
       return { ...prev, isMuted: true };
     });
   }, []);
 
   const unmute = useCallback(() => {
     setState((prev) => {
-      if (agentRef.current) {
-        agentRef.current.setMuted(false);
-      }
+      rtcAgentRef.current?.setMuted(false);
+      ttsAgentRef.current?.setMuted(false);
       return { ...prev, isMuted: false };
     });
   }, []);
@@ -81,59 +105,59 @@ export function useRealtimeVoice() {
   const toggleMute = useCallback(() => {
     setState((prev) => {
       const nextMuted = !prev.isMuted;
-      if (agentRef.current) {
-        agentRef.current.setMuted(nextMuted);
-      }
+      rtcAgentRef.current?.setMuted(nextMuted);
+      ttsAgentRef.current?.setMuted(nextMuted);
       return { ...prev, isMuted: nextMuted };
     });
   }, []);
-
-  const retry = useCallback(async (coachId?: string) => {
-    const coach = coachId || lastActiveCoachRef.current;
-    await start(coach);
-  }, [start]);
 
   const dispatchEvent = useCallback((event: CoachingEvent, context?: any) => {
     const decision = decisionEngineRef.current?.evaluate(event, context);
     if (decision?.shouldSpeak) {
        console.log(`[AI COACH] Coaching event approved: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
-       agentRef.current?.sendCoachingEvent(event);
+       // Use TTS for fast posture guidance, unless in conversation mode
+       if (state.isConversationMode) {
+         rtcAgentRef.current?.sendCoachingEvent(event);
+       } else {
+         ttsAgentRef.current?.sendCoachingEvent(event, decision.priority);
+       }
     } else if (decision) {
        console.log(`[AI COACH] Coaching event suppressed: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
     }
-  }, []);
+  }, [state.isConversationMode]);
+
+  const triggerPoseStart = useCallback((asanaId: string, asanaName: string) => {
+    if (state.isConversationMode) {
+      rtcAgentRef.current?.triggerPoseStart(asanaId, asanaName);
+    } else {
+      ttsAgentRef.current?.speak(`Let's begin ${asanaName}. Stand comfortably and check your posture.`, 10, "pose_started");
+    }
+  }, [state.isConversationMode]);
 
   const speakGreeting = useCallback(() => {
-    agentRef.current?.speakGreeting();
-  }, []);
+    if (state.isConversationMode) {
+      rtcAgentRef.current?.speakGreeting();
+    } else {
+      ttsAgentRef.current?.speak("Welcome to your practice. Let's get started.", 10, "greeting");
+    }
+  }, [state.isConversationMode]);
 
   const speak = useCallback((text: string) => {
-    agentRef.current?.speak(text);
-  }, []);
+    if (state.isConversationMode) {
+      rtcAgentRef.current?.speak(text);
+    } else {
+      ttsAgentRef.current?.speak(text, 5);
+    }
+  }, [state.isConversationMode]);
 
-  const startListening = useCallback(() => {
-    agentRef.current?.startListening();
-    setState((prev) => ({ ...prev, status: "listening" }));
-  }, []);
-
-  const stopListening = useCallback(() => {
-    agentRef.current?.stopListening();
-    setState((prev) => ({ ...prev, status: "connected" }));
-  }, []);
-
-  /**
-   * Sends session context updates to the realtime voice agent.
-   */
   const updateSessionContext = useCallback((context: SessionContextData) => {
-    agentRef.current?.updateSessionContext(context);
+    rtcAgentRef.current?.updateSessionContext(context);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (agentRef.current) {
-        agentRef.current.disconnect();
-      }
+      rtcAgentRef.current?.disconnect();
+      ttsAgentRef.current?.stopSpeaking();
     };
   }, []);
 
@@ -143,17 +167,16 @@ export function useRealtimeVoice() {
     stop,
     mute,
     unmute,
-    retry,
-    connect: start, // backwards compatibility alias
-    disconnect: stop, // backwards compatibility alias
+    retry: () => start(lastActiveCoachRef.current),
+    connect: start,
+    disconnect: stop,
     toggleMute,
+    toggleConversationMode,
     dispatchEvent,
     updateSessionContext,
+    triggerPoseStart,
     speakGreeting,
     speak,
-    startListening,
-    stopListening,
-    getRemoteAudioStream: () => agentRef.current?.getRemoteAudioStream() ?? null,
+    getRemoteAudioStream: () => rtcAgentRef.current?.getRemoteAudioStream() ?? null,
   };
 }
-

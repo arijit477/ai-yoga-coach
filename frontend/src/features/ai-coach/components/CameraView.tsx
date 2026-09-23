@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 interface CameraViewProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   enabled?: boolean;
+  score?: number | null;
 }
 
-export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
+export function CameraView({ videoRef, enabled = true, score }: CameraViewProps) {
   const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -140,6 +141,38 @@ export function CameraView({ videoRef, enabled = true }: CameraViewProps) {
           <span className="text-xs font-medium text-white/80">
             Camera Live
           </span>
+        </div>
+      )}
+      
+      {/* Accuracy Circular Progress Bar */}
+      {cameraReady && !error && score !== undefined && score !== null && (
+        <div className="absolute top-4 right-4 pointer-events-none drop-shadow-md">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full bg-slate-900/40 backdrop-blur-sm p-1">
+            <svg viewBox="0 0 36 36" className="absolute top-0 left-0 w-full h-full -rotate-90">
+              <path
+                className="text-white/20"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+              />
+              <path
+                className={`transition-all duration-300 ease-out ${
+                  score >= 85 ? "text-emerald-400" : score >= 60 ? "text-amber-400" : "text-rose-400"
+                }`}
+                strokeDasharray={`${score}, 100`}
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="flex flex-col items-center justify-center z-10 text-white leading-none">
+              <span className="text-sm sm:text-lg font-bold tracking-tight">{Math.round(score)}%</span>
+              <span className="text-[8px] sm:text-[10px] font-semibold tracking-widest uppercase opacity-80 mt-0.5">Acc</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

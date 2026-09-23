@@ -14,6 +14,7 @@ export function evaluatePose(
 ): PoseEvaluation {
   const issues: PoseIssue[] = [];
 
+  const expectedTotalWeight = rules.reduce((acc, r) => acc + r.weight, 0);
   let totalWeight = 0;
   let weightedScore = 0;
 
@@ -24,6 +25,15 @@ export function evaluatePose(
     );
 
     if (result.ignored) {
+      issues.push({
+        ruleId: rule.id,
+        ruleName: rule.name,
+        metric: rule.metric,
+        severity: rule.severity,
+        currentValue: 0,
+        joint: rule.name,
+        feedback: `Ensure your ${rule.name.toLowerCase()} are clearly visible to the camera.`,
+      });
       continue;
     }
 
@@ -37,12 +47,15 @@ export function evaluatePose(
     }
   }
 
-  const score =
-    totalWeight === 0
+  // Account for all expected rules of the asana: missing/occluded required limbs cannot grant 100% score
+  const effectiveTotalWeight = Math.max(totalWeight, expectedTotalWeight);
+
+  const rawScore =
+    effectiveTotalWeight === 0
       ? 0
-      : Math.round(
-          weightedScore / totalWeight
-        );
+      : weightedScore / effectiveTotalWeight;
+
+  const score = rawScore;
 
   const status = getPoseStatus(
     score,
@@ -52,6 +65,7 @@ export function evaluatePose(
   return {
     asanaId,
     score,
+    rawScore,
     status,
     issues,
     evaluatedAt: Date.now(),

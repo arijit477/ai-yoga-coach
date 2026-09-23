@@ -6,12 +6,12 @@ import type {
   RuleSeverity,
 } from "../types/pose-rules";
 import { evaluatePose } from "./PoseEvaluator";
+import { AccuracyStabilizer } from "./AccuracyStabilizer";
 
-const EMA_ALPHA = 0.2; // Smoothing factor for overall score
 const ISSUE_PERSISTENCE_THRESHOLD = 10; // Frames an issue must persist to become primary
 
 export class TemporalPoseEvaluator {
-  private smoothedScore: number | null = null;
+  private accuracyStabilizer = new AccuracyStabilizer();
   private previousSmoothedScore: number | null = null;
   private issuePersistence: Map<string, number> = new Map();
   private previouslyFailingRules: Set<string> = new Set();
@@ -23,8 +23,8 @@ export class TemporalPoseEvaluator {
     this.targetHoldFrames = targetHoldFrames;
   }
 
-  public reset() {
-    this.smoothedScore = null;
+  public reset(): void {
+    this.accuracyStabilizer.reset();
     this.previousSmoothedScore = null;
     this.issuePersistence.clear();
     this.previouslyFailingRules.clear();
@@ -37,30 +37,29 @@ export class TemporalPoseEvaluator {
     context: PoseEvaluatorContext
   ): PoseEvaluationResult | null {
     const rawEvaluation = evaluatePose(asanaId, rules, context);
+    const hasOccludedLandmarks = rawEvaluation.score === 0 && rawEvaluation.issues.length === 0;
 
-    if (rawEvaluation.score === 0 && rawEvaluation.issues.length === 0) {
-      // Meaning no rules could be evaluated (landmarks occluded)
+    // Update the accuracy stabilizer
+    const stabilized = this.accuracyStabilizer.update(
+      hasOccludedLandmarks ? null : rawEvaluation.score,
+      !hasOccludedLandmarks
+    );
+
+    // If completely unavailable beyond grace period, return null
+    if (stabilized.stableAccuracy === null) {
       return null;
     }
 
-    // 1. Smooth Score
-    if (this.smoothedScore === null) {
-      this.smoothedScore = rawEvaluation.score;
-    } else {
-      this.previousSmoothedScore = this.smoothedScore;
-      this.smoothedScore =
-        this.smoothedScore + EMA_ALPHA * (rawEvaluation.score - this.smoothedScore);
-    }
-
-    // 2. Score Trend
+    // 1. Score Trend based on stabilized score
     let scoreTrend: "improving" | "declining" | "stable" = "stable";
     if (this.previousSmoothedScore !== null) {
-      const diff = this.smoothedScore - this.previousSmoothedScore;
+      const diff = stabilized.stableAccuracy - this.previousSmoothedScore;
       if (diff > 1) scoreTrend = "improving";
       else if (diff < -1) scoreTrend = "declining";
     }
+    this.previousSmoothedScore = stabilized.stableAccuracy;
 
-    // 3. Track Issue Persistence
+    // 2. Posture issues evaluation (immediate from raw rules, not delayed by accuracy smoothing)
     const currentIssueIds = new Set(rawEvaluation.issues.map((i) => i.ruleId));
 
     // Increment persistence for current issues
@@ -76,8 +75,7 @@ export class TemporalPoseEvaluator {
       }
     }
 
-    // 4. Identify Primary and Secondary Issues
-    // Sort issues by: Severity (High > Medium > Low), then persistence, then lowest score
+    // 3. Identify Primary and Secondary Issues
     const severityWeight: Record<RuleSeverity, number> = {
       high: 3,
       medium: 2,
@@ -99,8 +97,6 @@ export class TemporalPoseEvaluator {
          return bPersistence - aPersistence;
       }
 
-      // 3. Current Value Deviation (proxy by which rule's current score was worse, though evaluatePose doesn't export rule scores inside the issue currently)
-      // Since we don't have individual score in PoseIssue, we'll leave it at severity and persistence for now.
       return 0;
     });
 
@@ -108,7 +104,6 @@ export class TemporalPoseEvaluator {
     let secondaryIssues: PoseIssue[] = [];
 
     if (sortedIssues.length > 0) {
-      // Only set as primary if it has persisted enough, or if it's high severity
       const topIssue = sortedIssues[0];
       const persistence = this.issuePersistence.get(topIssue.ruleId) || 0;
       if (persistence >= ISSUE_PERSISTENCE_THRESHOLD || topIssue.severity === "high") {
@@ -119,7 +114,7 @@ export class TemporalPoseEvaluator {
       }
     }
 
-    // 5. Track Resolved Issues
+    // 4. Track Resolved Issues
     const resolvedIssues: string[] = [];
     for (const id of this.previouslyFailingRules) {
       if (!currentIssueIds.has(id)) {
@@ -128,14 +123,13 @@ export class TemporalPoseEvaluator {
     }
     this.previouslyFailingRules = currentIssueIds;
 
-    // 6. Hold Progress
-    const roundedScore = Math.round(this.smoothedScore);
-    const isValid = roundedScore >= 75; // Threshold for validity
+    // 5. Hold Progress & Completion Eligibility
+    const displayedScore = stabilized.displayedAccuracy ?? Math.round(stabilized.stableAccuracy);
+    const isValid = !hasOccludedLandmarks && displayedScore >= 75;
 
     if (isValid && !primaryIssue) {
       this.holdFramesCount++;
     } else {
-      // Degrade hold progress slowly if they mess up
       this.holdFramesCount = Math.max(0, this.holdFramesCount - 2);
     }
 
@@ -144,13 +138,16 @@ export class TemporalPoseEvaluator {
 
     return {
       asanaId,
-      score: roundedScore,
-      isValid,
+      score: displayedScore, // Stable integer for backward compatibility
+      rawScore: rawEvaluation.score,
+      stableScore: stabilized.stableAccuracy,
+      displayedScore,
+      isValid: !hasOccludedLandmarks,
       primaryIssue,
       secondaryIssues,
       resolvedIssues,
       scoreTrend,
-      stability: 100, // This represents landmark jitter stability, separate from score. (Placeholder if needed)
+      stability: stabilized.isStable ? 100 : 70,
       holdProgress,
       completionEligible,
       activeRules: rules.length,

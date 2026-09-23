@@ -48,6 +48,8 @@ export function SessionControls({
             <button
               type="button"
               onClick={onStopSession}
+              title="End Routine and Stop Voice Guidance"
+              aria-label="End Routine and Stop Voice Guidance"
               className="flex items-center gap-1.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 text-xs font-bold transition shadow-sm cursor-pointer active:scale-95"
             >
               <Square size={11} className="fill-white" />

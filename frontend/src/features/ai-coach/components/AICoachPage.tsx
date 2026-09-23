@@ -3,7 +3,6 @@ import { Maximize, Minimize, Camera, CameraOff } from "lucide-react";
 
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
-import { AngleDebugPanel } from "./AngleDebugPanel";
 import { CircularScoreRing } from "./CircularScoreRing";
 import { HoldTimer } from "./HoldTimer";
 
@@ -20,7 +19,6 @@ import type { CoachPersona } from "../types/coach-session";
 import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
 import { CoachingEventEngine } from "../voice/CoachingEventEngine";
 
-
 import type { AvatarState } from "../avatar/avatar.types";
 import { CoachSelector } from "./CoachSelector";
 import { CoachPanel } from "./CoachPanel";
@@ -31,10 +29,7 @@ import { SafetyGuideBanner } from "./SafetyGuideBanner";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
 
-
-function getCoachStateMessage(
-  state: ReturnType<typeof useCoachState>,
-): string {
+function getCoachStateMessage(state: ReturnType<typeof useCoachState>): string {
   switch (state) {
     case "idle":
       return "Initializing pose detection...";
@@ -112,8 +107,11 @@ function getSessionLabel(
       return "Ready";
   }
 }
+
 //guide video url from supabase
-const INTRO_GUIDE_VIDEO_URL = getAsanaVideoUrl("guide-videos/AI%20Yoga%20Coach.mp4");
+const INTRO_GUIDE_VIDEO_URL = getAsanaVideoUrl(
+  "guide-videos/AI%20Yoga%20Coach.mp4",
+);
 
 export function AICoachPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -121,7 +119,7 @@ export function AICoachPage() {
   // Introductory guide video state (plays inside camera stage on initial page load)
   const [isIntroVideoActive, setIsIntroVideoActive] = useState(true);
 
-  // Dedicated manual camera power state (defaults to false until user presses 'Start camera' or finishes/skips intro)
+  // Dedicated manual camera power state (starts on intro video completion/skip)
   const [isCameraActive, setIsCameraActive] = useState(false);
 
   const handleStartCamera = useCallback(() => {
@@ -173,7 +171,10 @@ export function AICoachPage() {
   /*
    * Pose tracking
    */
-  const { result, isInitialized, error, cameraState } = usePoseTracking(videoRef, isCameraActive);
+  const { result, isInitialized, error, cameraState } = usePoseTracking(
+    videoRef,
+    isCameraActive,
+  );
 
   /*
    * Dynamic pose evaluation receiving rules for currentAsana
@@ -190,9 +191,26 @@ export function AICoachPage() {
     start: voiceStart,
     stop: voiceStop,
     toggleMute: voiceToggleMute,
+    toggleConversationMode: voiceToggleConversationMode,
     updateSessionContext: voiceUpdateContext,
+    triggerPoseStart: voiceTriggerPoseStart,
     dispatchEvent: voiceDispatch,
   } = useRealtimeVoice();
+
+  // Keep coach connection updated when switching coach (Alice <-> Kevin) ONLY if voice is already active
+  const prevCoachRef = useRef(selectedCoach);
+  useEffect(() => {
+    if (prevCoachRef.current !== selectedCoach) {
+      prevCoachRef.current = selectedCoach;
+      if (
+        voiceState.status === "connected" ||
+        voiceState.status === "speaking" ||
+        voiceState.status === "connecting"
+      ) {
+        voiceStart(selectedCoach);
+      }
+    }
+  }, [selectedCoach, voiceStart, voiceState.status]);
 
   const coachingEngineRef = useRef<CoachingEventEngine | null>(null);
   if (!coachingEngineRef.current) {
@@ -217,6 +235,9 @@ export function AICoachPage() {
     primaryIssueRuleId: string | null;
   } | null>(null);
 
+  // Score to display after asana completes (animates from standby to final score)
+  const [finalAsanaScore, setFinalAsanaScore] = useState<number | null>(null);
+
   /*
    * Multi-asana session state configured dynamically
    */
@@ -233,7 +254,9 @@ export function AICoachPage() {
     moveToNextAsana,
     stayHere,
   } = useCoachSession({
-    evaluation: stableEvaluation ? { ...stableEvaluation, score: stableScore ?? stableEvaluation.score } : null,
+    evaluation: stableEvaluation
+      ? { ...stableEvaluation, score: stableScore ?? stableEvaluation.score }
+      : null,
     landmarks: result?.landmarks ?? null,
     isInitialized,
     hasPose: Boolean(result),
@@ -242,27 +265,39 @@ export function AICoachPage() {
     totalAsanas: activeAsanas.length,
     hasGuideVideo: Boolean(currentAsana.videoUrl),
     instructionsCount: currentAsana.instructions.length,
-    onAsanaComplete: useCallback((idx: number, score?: number) => {
-      markAsanaCompleted(activeAsanas[idx].id, score ?? 80);
-    }, [activeAsanas, markAsanaCompleted]),
-    onAdvanceAsana: useCallback((nextIdx: number) => {
-      setCurrentAsanaIndex(nextIdx);
-    }, [setCurrentAsanaIndex]),
-    onCalibrationPrompt: useCallback((promptMessage?: string) => {
-      const msg = promptMessage || "Hold still for a moment while I check your position.";
-      const key = `${currentAsana.id}_${msg}`;
-      if (hasDispatchedCalibrationPromptRef.current !== key) {
-        hasDispatchedCalibrationPromptRef.current = key;
-        voiceDispatch(
-          CoachingEventBuilder.buildCalibrationPromptEvent(
-            currentAsana.id,
-            currentAsana.name,
-            msg,
-          ),
-          { isUserSpeaking: voiceState.status === "listening" }
-        );
-      }
-    }, [currentAsana.id, currentAsana.name, voiceDispatch]),
+    onAsanaComplete: useCallback(
+      (idx: number, score?: number) => {
+        markAsanaCompleted(activeAsanas[idx].id, score ?? 80);
+      },
+      [activeAsanas, markAsanaCompleted],
+    ),
+    onAdvanceAsana: useCallback(
+      (nextIdx: number) => {
+        setFinalAsanaScore(null);
+        setCurrentAsanaIndex(nextIdx);
+      },
+      [setCurrentAsanaIndex],
+    ),
+    onCalibrationPrompt: useCallback(
+      (promptMessage?: string) => {
+        const msg =
+          promptMessage ||
+          "Hold still for a moment while I check your position.";
+        const key = `${currentAsana.id}_${msg}`;
+        if (hasDispatchedCalibrationPromptRef.current !== key) {
+          hasDispatchedCalibrationPromptRef.current = key;
+          voiceDispatch(
+            CoachingEventBuilder.buildCalibrationPromptEvent(
+              currentAsana.id,
+              currentAsana.name,
+              msg,
+            ),
+            { isUserSpeaking: voiceState.status === "listening" },
+          );
+        }
+      },
+      [currentAsana.id, currentAsana.name, voiceDispatch],
+    ),
     onCalibrationComplete: useCallback(() => {
       if (hasDispatchedCalibrationCompleteRef.current !== currentAsana.id) {
         hasDispatchedCalibrationCompleteRef.current = currentAsana.id;
@@ -271,24 +306,40 @@ export function AICoachPage() {
             currentAsana.id,
             currentAsana.name,
           ),
-          { isUserSpeaking: voiceState.status === "listening" }
+          { isUserSpeaking: voiceState.status === "listening" },
         );
       }
     }, [currentAsana.id, currentAsana.name, voiceDispatch]),
-    onStepChange: useCallback((stepIdx: number) => {
-      const stepInstruction = currentAsana.instructions[stepIdx];
-      if (stepInstruction) {
-        voiceDispatch(
-          CoachingEventBuilder.buildStepGuidanceEvent(
-            currentAsana.id,
-            currentAsana.name,
-            stepInstruction,
-          ),
-          { isUserSpeaking: voiceState.status === "listening" }
-        );
-      }
-    }, [currentAsana.id, currentAsana.name, currentAsana.instructions, voiceDispatch]),
+    onStepChange: useCallback(
+      (stepIdx: number) => {
+        const stepInstruction = currentAsana.instructions[stepIdx];
+        if (stepInstruction) {
+          voiceDispatch(
+            CoachingEventBuilder.buildStepGuidanceEvent(
+              currentAsana.id,
+              currentAsana.name,
+              stepInstruction,
+            ),
+            { isUserSpeaking: voiceState.status === "listening" },
+          );
+        }
+      },
+      [
+        currentAsana.id,
+        currentAsana.name,
+        currentAsana.instructions,
+        voiceDispatch,
+      ],
+    ),
+    onPoseReviewReady: useCallback((score: number) => {
+      setFinalAsanaScore(score);
+    }, []),
   });
+
+  const isSessionActive =
+    sessionState !== "idle" &&
+    sessionState !== "completed" &&
+    sessionState !== "session_completed";
 
   /*
    * High-level coaching state
@@ -313,12 +364,38 @@ export function AICoachPage() {
       handleStartCamera();
     }
     startSession();
-    voiceStart(selectedCoach);
-  }, [isCameraActive, handleStartCamera, selectedCoach, startSession, voiceStart]);
+
+    // When practice starts, trigger active coaching guidance
+    if (
+      voiceState.status === "connected" ||
+      voiceState.status === "speaking"
+    ) {
+      voiceDispatch(
+        CoachingEventBuilder.buildPoseStartedEvent(
+          currentAsana.id,
+          currentAsana.name,
+        ),
+      );
+    } else {
+      voiceStart(selectedCoach);
+      voiceTriggerPoseStart(currentAsana.id, currentAsana.name);
+    }
+  }, [
+    isCameraActive,
+    handleStartCamera,
+    startSession,
+    voiceState.status,
+    voiceDispatch,
+    voiceTriggerPoseStart,
+    voiceStart,
+    selectedCoach,
+    currentAsana.id,
+    currentAsana.name,
+  ]);
 
   const handleStopSession = useCallback(() => {
     stopSession();
-    voiceStop();
+    voiceStop(); // Stop speaking and disconnect voice coach immediately
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
@@ -330,16 +407,15 @@ export function AICoachPage() {
     coachingEngineRef.current?.reset();
   }, [stopSession, voiceStop]);
 
-  // Clean up voice connection when coach persona changes or unmounts
+  // Reset per-asana dispatch locks when coach persona changes
   useEffect(() => {
-    voiceStop();
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
     hasDispatchedThresholdRef.current = null;
     lastAnnouncedCountdownRef.current = null;
     lastSentContextRef.current = null;
-  }, [selectedCoach, voiceStop]);
+  }, [selectedCoach]);
 
   // Reset per-asana dispatch locks and handle throttled session context updates
   useEffect(() => {
@@ -352,7 +428,7 @@ export function AICoachPage() {
 
   // Dispatch camera state changes as voice events
   // Now handled by CoachingEventEngine in the main pipeline
-  
+
   const scoreHistoryRef = useRef<number[]>([]);
 
   // Throttled session context synchronization to OpenAI Realtime
@@ -368,7 +444,9 @@ export function AICoachPage() {
       prev.coachState !== coachState ||
       prev.sessionState !== sessionState ||
       prev.primaryIssueRuleId !== primaryRuleId ||
-      (currentScore !== null && prev.score !== null && Math.abs(currentScore - prev.score) >= 6) ||
+      (currentScore !== null &&
+        prev.score !== null &&
+        Math.abs(currentScore - prev.score) >= 6) ||
       (currentScore !== null && prev.score === null);
 
     if (shouldSendContext) {
@@ -381,17 +459,27 @@ export function AICoachPage() {
       } else {
         scoreHistoryRef.current = [];
       }
-      
+
       if (scoreHistoryRef.current.length >= 3) {
         const first = scoreHistoryRef.current[0];
-        const last = scoreHistoryRef.current[scoreHistoryRef.current.length - 1];
+        const last =
+          scoreHistoryRef.current[scoreHistoryRef.current.length - 1];
         if (last - first >= 5) scoreTrend = "improving";
         else if (first - last >= 5) scoreTrend = "worsening";
       }
 
-      const completedPoses = completedAsanasForReport.map(a => ({ name: a.asana.name, score: a.score }));
-      const previousAsanaName = completedPoses.length > 0 ? completedPoses[completedPoses.length - 1].name : undefined;
-      const previousScore = completedPoses.length > 0 ? completedPoses[completedPoses.length - 1].score : undefined;
+      const completedPoses = completedAsanasForReport.map((a) => ({
+        name: a.asana.name,
+        score: a.score,
+      }));
+      const previousAsanaName =
+        completedPoses.length > 0
+          ? completedPoses[completedPoses.length - 1].name
+          : undefined;
+      const previousScore =
+        completedPoses.length > 0
+          ? completedPoses[completedPoses.length - 1].score
+          : undefined;
 
       lastSentContextRef.current = {
         coach: selectedCoach,
@@ -411,7 +499,10 @@ export function AICoachPage() {
         sessionState,
         isHolding: sessionState === "holding",
         isCompleted: sessionState === "completed",
+        isSessionActive,
         cameraState,
+        hasPose: Boolean(result),
+        userVisible: Boolean(result),
         holdTime,
         recentEvents: coachingEngineRef.current?.getRecentEvents() || [],
         scoreTrend,
@@ -423,12 +514,20 @@ export function AICoachPage() {
               ruleId: stableEvaluation.primaryIssue.ruleId,
               joint: stableEvaluation.primaryIssue.joint,
               severity: stableEvaluation.primaryIssue.severity,
-              currentValue: Math.round(stableEvaluation.primaryIssue.currentValue),
-              currentAngle: Math.round(stableEvaluation.primaryIssue.currentValue),
+              currentValue: Math.round(
+                stableEvaluation.primaryIssue.currentValue,
+              ),
+              currentAngle: Math.round(
+                stableEvaluation.primaryIssue.currentValue,
+              ),
               min: stableEvaluation.primaryIssue.min,
               max: stableEvaluation.primaryIssue.max,
-              targetMin: stableEvaluation.primaryIssue.targetMin ?? stableEvaluation.primaryIssue.min,
-              targetMax: stableEvaluation.primaryIssue.targetMax ?? stableEvaluation.primaryIssue.max,
+              targetMin:
+                stableEvaluation.primaryIssue.targetMin ??
+                stableEvaluation.primaryIssue.min,
+              targetMax:
+                stableEvaluation.primaryIssue.targetMax ??
+                stableEvaluation.primaryIssue.max,
               feedback: stableEvaluation.primaryIssue.feedback,
             }
           : null,
@@ -453,7 +552,11 @@ export function AICoachPage() {
    * MediaPipe -> PoseEvaluator -> TemporalPoseEvaluator -> CoachingEventEngine -> CoachingEventDispatcher -> RealtimeVoiceAgent
    */
   useEffect(() => {
-    if (sessionState === "idle" || sessionState === "countdown" || sessionState === "guide_video") {
+    if (
+      sessionState === "idle" ||
+      sessionState === "countdown" ||
+      sessionState === "guide_video"
+    ) {
       return;
     }
 
@@ -464,11 +567,13 @@ export function AICoachPage() {
       currentAsana.name,
       sessionState,
       cameraState,
-      stableEvaluation
+      stableEvaluation,
     );
 
     newEvents.forEach((event) => {
-      voiceDispatch(event, { isUserSpeaking: voiceState.status === "listening" });
+      voiceDispatch(event, {
+        isUserSpeaking: voiceState.status === "listening",
+      });
     });
   }, [
     sessionState,
@@ -476,13 +581,15 @@ export function AICoachPage() {
     stableEvaluation,
     currentAsana,
     voiceDispatch,
-    voiceState.status
+    voiceState.status,
   ]);
 
   // Voice Countdown Effect based on holdTime
   useEffect(() => {
     if (sessionState === "holding" && holdTime > 0) {
-      const remainingSeconds = Math.ceil(currentAsana.targetHoldSeconds - holdTime);
+      const remainingSeconds = Math.ceil(
+        currentAsana.targetHoldSeconds - holdTime,
+      );
       if (
         remainingSeconds > 0 &&
         remainingSeconds <= 10 &&
@@ -493,9 +600,9 @@ export function AICoachPage() {
           CoachingEventBuilder.buildHoldCountdownEvent(
             currentAsana.id,
             currentAsana.name,
-            remainingSeconds
+            remainingSeconds,
           ),
-          { isUserSpeaking: voiceState.status === "listening" }
+          { isUserSpeaking: voiceState.status === "listening" },
         );
       }
     } else if (sessionState !== "holding") {
@@ -549,11 +656,6 @@ export function AICoachPage() {
     return () => document.removeEventListener("keydown", handleKey);
   }, []);
 
-  const isSessionActive =
-    sessionState !== "idle" &&
-    sessionState !== "completed" &&
-    sessionState !== "session_completed";
-
   const sessionLabel = getSessionLabel(sessionState);
 
   // Derive AvatarState purely from the intelligent voice state
@@ -576,7 +678,6 @@ export function AICoachPage() {
     }
   }, [voiceState.status]);
 
-
   // Derive latest coach spoken message or text guidance
   const latestCoachMessage = useMemo(() => {
     const lastCoachTranscript = [...voiceState.transcripts]
@@ -598,7 +699,6 @@ export function AICoachPage() {
     return getCoachStateMessage(coachState);
   }, [voiceState.transcripts, error, stableEvaluation, coachState]);
 
-  const showDebugPanel = import.meta.env.VITE_ENABLE_POSE_DEBUG === "true";
   const [isMirrored, setIsMirrored] = useState(true);
   const [showSkeleton, setShowSkeleton] = useState(true);
   const [showVoiceCues, setShowVoiceCues] = useState(true);
@@ -612,18 +712,25 @@ export function AICoachPage() {
         <div className="fixed inset-0 z-[9999] bg-slate-950 flex flex-col overflow-hidden">
           {/* Camera + skeleton fills entire viewport */}
           <div className="relative flex-1 overflow-hidden w-full h-full flex items-center justify-center">
-            <CameraView videoRef={videoRef} enabled={!isIntroVideoActive && isCameraActive} />
+            <CameraView
+              videoRef={videoRef}
+              enabled={!isIntroVideoActive && isCameraActive}
+              score={stableScore}
+            />
 
             {/* Neon glowing skeleton overlay */}
-            {!isIntroVideoActive && isCameraActive && result && showSkeleton && (
-              <PoseSkeleton
-                landmarks={result.landmarks}
-                videoWidth={videoSize.width}
-                videoHeight={videoSize.height}
-                coach={selectedCoach}
-                evaluation={stableEvaluation}
-              />
-            )}
+            {!isIntroVideoActive &&
+              isCameraActive &&
+              result &&
+              showSkeleton && (
+                <PoseSkeleton
+                  landmarks={result.landmarks}
+                  videoWidth={videoSize.width}
+                  videoHeight={videoSize.height}
+                  coach={selectedCoach}
+                  evaluation={stableEvaluation}
+                />
+              )}
 
             {/* Top-left: LIVE status, Asana Title & Asana Selector in Cinema Mode */}
             <div className="absolute left-5 top-5 z-20 flex items-center gap-3">
@@ -697,9 +804,21 @@ export function AICoachPage() {
                 </div>
               )}
 
-              {isSessionActive && stableScore !== null && (
-                <div className={stableScore >= 75 ? "animate-[pulse_1.5s_ease-in-out_1]" : ""}>
-                  <CircularScoreRing score={stableScore} size={44} strokeWidth={4} compact />
+              {isSessionActive && (
+                <div
+                  className={
+                    stableScore !== null && stableScore >= 75
+                      ? "animate-[pulse_1.5s_ease-in-out_1]"
+                      : ""
+                  }
+                >
+                  <CircularScoreRing
+                    score={finalAsanaScore ?? stableScore}
+                    displayedScore={finalAsanaScore ?? stableEvaluation?.displayedScore ?? stableScore}
+                    size={44}
+                    strokeWidth={4}
+                    compact
+                  />
                 </div>
               )}
 
@@ -725,7 +844,11 @@ export function AICoachPage() {
             <div className="absolute bottom-5 right-5 w-48 sm:w-56 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 z-20">
               <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10 relative">
                 <img
-                  src={selectedCoach === "alice" ? "/images/alice.png" : "/images/kevin.jpg"}
+                  src={
+                    selectedCoach === "alice"
+                      ? "/images/alice.png"
+                      : "/images/kevin.jpg"
+                  }
                   alt={`Coach ${getCoachName(selectedCoach)}`}
                   className="w-full h-full object-cover object-top"
                 />
@@ -743,8 +866,8 @@ export function AICoachPage() {
                       voiceState.status === "speaking"
                         ? "bg-emerald-400 animate-ping"
                         : voiceState.status === "listening"
-                        ? "bg-teal-400 animate-pulse"
-                        : "bg-emerald-500"
+                          ? "bg-teal-400 animate-pulse"
+                          : "bg-emerald-500"
                     }`}
                   />
                 </div>
@@ -764,13 +887,15 @@ export function AICoachPage() {
             )}
 
             {/* Guide Video Overlay in Cinema Mode (Per-Asana) */}
-            {!isIntroVideoActive && sessionState === "guide_video" && currentAsana.videoUrl && (
-              <GuideVideoOverlay
-                asana={currentAsana}
-                onSkip={skipGuideVideo}
-                onEnded={finishGuideVideo}
-              />
-            )}
+            {!isIntroVideoActive &&
+              sessionState === "guide_video" &&
+              currentAsana.videoUrl && (
+                <GuideVideoOverlay
+                  asana={currentAsana}
+                  onSkip={skipGuideVideo}
+                  onEnded={finishGuideVideo}
+                />
+              )}
 
             {/* Countdown Overlay in Cinema Mode */}
             {sessionState === "countdown" && countdown !== null && (
@@ -792,36 +917,36 @@ export function AICoachPage() {
               </div>
             )}
 
-
-
             {/* Step-by-Step Guidance Banner in Cinema Mode */}
-            {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
-              <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-                    Step {currentStepIndex + 1} of {currentAsana.instructions.length}
-                  </span>
-                  {/* Step Timeline Progress Indicator */}
-                  <div className="flex items-center gap-1.5">
-                    {currentAsana.instructions.map((_, idx) => (
-                      <span
-                        key={idx}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          idx === currentStepIndex
-                            ? "w-5 bg-emerald-600 shadow-sm"
-                            : idx < currentStepIndex
-                            ? "w-2 bg-emerald-400"
-                            : "w-1.5 bg-emerald-100"
-                        }`}
-                      />
-                    ))}
+            {sessionState === "coaching" &&
+              currentAsana.instructions[currentStepIndex] && (
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                      Step {currentStepIndex + 1} of{" "}
+                      {currentAsana.instructions.length}
+                    </span>
+                    {/* Step Timeline Progress Indicator */}
+                    <div className="flex items-center gap-1.5">
+                      {currentAsana.instructions.map((_, idx) => (
+                        <span
+                          key={idx}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            idx === currentStepIndex
+                              ? "w-5 bg-emerald-600 shadow-sm"
+                              : idx < currentStepIndex
+                                ? "w-2 bg-emerald-400"
+                                : "w-1.5 bg-emerald-100"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
+                  <p className="text-xs font-semibold leading-snug text-emerald-950">
+                    {currentAsana.instructions[currentStepIndex]}
+                  </p>
                 </div>
-                <p className="text-xs font-semibold leading-snug text-emerald-950">
-                  {currentAsana.instructions[currentStepIndex]}
-                </p>
-              </div>
-            )}
+              )}
 
             {/* Hold Timer Banner in Cinema Mode */}
             {sessionState === "holding" && (
@@ -831,7 +956,11 @@ export function AICoachPage() {
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 </span>
                 <span className="text-sm font-bold tracking-tight text-emerald-950">
-                  Excellent Alignment • Hold for <span className="font-mono text-emerald-700 font-extrabold">{Math.ceil(currentAsana.targetHoldSeconds - holdTime)}</span> seconds
+                  Excellent Alignment • Hold for{" "}
+                  <span className="font-mono text-emerald-700 font-extrabold">
+                    {Math.ceil(currentAsana.targetHoldSeconds - holdTime)}
+                  </span>{" "}
+                  seconds
                 </span>
               </div>
             )}
@@ -840,7 +969,9 @@ export function AICoachPage() {
             {sessionState === "completed" && (
               <PoseReviewModal
                 asana={currentAsana}
-                score={completedAsanaScores[currentAsana.id] ?? stableScore ?? 80}
+                score={
+                  completedAsanaScores[currentAsana.id] ?? stableScore ?? 80
+                }
                 onMoveToNext={moveToNextAsana}
                 onStayHere={stayHere}
                 isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
@@ -853,6 +984,7 @@ export function AICoachPage() {
                 completedAsanas={completedAsanasForReport}
                 onClose={() => {
                   resetSession();
+                  voiceStop();
                 }}
               />
             )}
@@ -883,7 +1015,9 @@ export function AICoachPage() {
                 Your camera becomes your yoga instructor.
               </h1>
               <p className="mt-1 text-sm text-slate-600 max-w-2xl">
-                Real-time posture feedback powered by private, on-device pose tracking. Choose your coach, step onto your mat, and flow with confidence.
+                Real-time posture feedback powered by private, on-device pose
+                tracking. Choose your coach, step onto your mat, and flow with
+                confidence.
               </p>
             </div>
 
@@ -917,18 +1051,22 @@ export function AICoachPage() {
                   <CameraView
                     videoRef={videoRef}
                     enabled={!isIntroVideoActive && isCameraActive}
+                    score={stableScore}
                   />
                 )}
 
                 {/* Body-Only MediaPipe Skeleton with Polished Neon Glow Tracer (face dots hidden) */}
-                {!isIntroVideoActive && isCameraActive && result && showSkeleton && (
-                  <PoseSkeleton
-                    landmarks={result.landmarks}
-                    videoWidth={videoSize.width}
-                    videoHeight={videoSize.height}
-                    coach={selectedCoach}
-                  />
-                )}
+                {!isIntroVideoActive &&
+                  isCameraActive &&
+                  result &&
+                  showSkeleton && (
+                    <PoseSkeleton
+                      landmarks={result.landmarks}
+                      videoWidth={videoSize.width}
+                      videoHeight={videoSize.height}
+                      coach={selectedCoach}
+                    />
+                  )}
 
                 {/* Top-Left: LIVE Status Indicator, Asana Name Pill & Score Ring */}
                 <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 flex items-center gap-2">
@@ -937,17 +1075,26 @@ export function AICoachPage() {
                     {isIntroVideoActive
                       ? "Intro Guide"
                       : !isCameraActive
-                      ? "Camera Standby"
-                      : `LIVE • ${sessionLabel}`}
+                        ? "Camera Standby"
+                        : `LIVE • ${sessionLabel}`}
                   </span>
 
                   <span className="rounded-full bg-slate-900/80 text-white/90 px-3 py-1 text-xs font-semibold backdrop-blur-md border border-white/10 hidden sm:inline-block">
-                    {isIntroVideoActive ? "Welcome to AI Yoga Coach" : currentAsana.name}
+                    {isIntroVideoActive
+                      ? "Welcome to AI Yoga Coach"
+                      : currentAsana.name}
                   </span>
 
-                  {isSessionActive && isCameraActive && stableScore !== null && (
-                    <CircularScoreRing score={stableScore} size={38} strokeWidth={4} compact />
-                  )}
+                  {isSessionActive &&
+                    isCameraActive && (
+                      <CircularScoreRing
+                        score={finalAsanaScore ?? stableScore}
+                        displayedScore={finalAsanaScore ?? stableEvaluation?.displayedScore ?? stableScore}
+                        size={38}
+                        strokeWidth={4}
+                        compact
+                      />
+                    )}
                 </div>
 
                 {/* Top-Right: Overlaid Target Pose Reference Card (Copy This Pose) */}
@@ -958,7 +1105,7 @@ export function AICoachPage() {
                   />
                 </div>
 
-                {/* Bottom-Left Controls inside Camera View: Start & Stop Camera */}
+                {/* Bottom-Left Controls inside Camera View: Start & Stop Camera, Guide Video */}
                 <div className="absolute bottom-3 left-3 sm:bottom-3.5 sm:left-3.5 z-20 flex items-center gap-2">
                   {!isCameraActive ? (
                     <button
@@ -1006,13 +1153,15 @@ export function AICoachPage() {
                 )}
 
                 {/* Guide Video Overlay (First stage of session if video exists) */}
-                {!isIntroVideoActive && sessionState === "guide_video" && currentAsana.videoUrl && (
-                  <GuideVideoOverlay
-                    asana={currentAsana}
-                    onSkip={skipGuideVideo}
-                    onEnded={finishGuideVideo}
-                  />
-                )}
+                {!isIntroVideoActive &&
+                  sessionState === "guide_video" &&
+                  currentAsana.videoUrl && (
+                    <GuideVideoOverlay
+                      asana={currentAsana}
+                      onSkip={skipGuideVideo}
+                      onEnded={finishGuideVideo}
+                    />
+                  )}
 
                 {/* Center / Countdown Overlay */}
                 {sessionState === "countdown" && countdown !== null && (
@@ -1034,36 +1183,36 @@ export function AICoachPage() {
                   </div>
                 )}
 
-
-
                 {/* Step-by-Step Guidance Banner in Camera View */}
-                {sessionState === "coaching" && currentAsana.instructions[currentStepIndex] && (
-                  <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
-                        Step {currentStepIndex + 1} of {currentAsana.instructions.length}
-                      </span>
-                      {/* Step Timeline Progress Indicator */}
-                      <div className="flex items-center gap-1.5">
-                        {currentAsana.instructions.map((_, idx) => (
-                          <span
-                            key={idx}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${
-                              idx === currentStepIndex
-                                ? "w-5 bg-emerald-600 shadow-sm"
-                                : idx < currentStepIndex
-                                ? "w-2 bg-emerald-400"
-                                : "w-1.5 bg-emerald-100"
-                            }`}
-                          />
-                        ))}
+                {sessionState === "coaching" &&
+                  currentAsana.instructions[currentStepIndex] && (
+                    <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                          Step {currentStepIndex + 1} of{" "}
+                          {currentAsana.instructions.length}
+                        </span>
+                        {/* Step Timeline Progress Indicator */}
+                        <div className="flex items-center gap-1.5">
+                          {currentAsana.instructions.map((_, idx) => (
+                            <span
+                              key={idx}
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                                idx === currentStepIndex
+                                  ? "w-5 bg-emerald-600 shadow-sm"
+                                  : idx < currentStepIndex
+                                    ? "w-2 bg-emerald-400"
+                                    : "w-1.5 bg-emerald-100"
+                              }`}
+                            />
+                          ))}
+                        </div>
                       </div>
+                      <p className="text-xs font-semibold leading-snug text-emerald-950">
+                        {currentAsana.instructions[currentStepIndex]}
+                      </p>
                     </div>
-                    <p className="text-xs font-semibold leading-snug text-emerald-950">
-                      {currentAsana.instructions[currentStepIndex]}
-                    </p>
-                  </div>
-                )}
+                  )}
 
                 {/* Bottom Center: Hold Progress Banner */}
                 {sessionState === "holding" && (
@@ -1073,7 +1222,11 @@ export function AICoachPage() {
                       <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                     </span>
                     <span className="text-xs font-bold tracking-tight text-emerald-950">
-                      Excellent Alignment • Hold for <span className="font-mono text-emerald-700 font-extrabold">{Math.ceil(currentAsana.targetHoldSeconds - holdTime)}</span> seconds
+                      Excellent Alignment • Hold for{" "}
+                      <span className="font-mono text-emerald-700 font-extrabold">
+                        {Math.ceil(currentAsana.targetHoldSeconds - holdTime)}
+                      </span>{" "}
+                      seconds
                     </span>
                   </div>
                 )}
@@ -1082,7 +1235,9 @@ export function AICoachPage() {
                 {sessionState === "completed" && (
                   <PoseReviewModal
                     asana={currentAsana}
-                    score={completedAsanaScores[currentAsana.id] ?? stableScore ?? 80}
+                    score={
+                      completedAsanaScores[currentAsana.id] ?? stableScore ?? 80
+                    }
                     onMoveToNext={moveToNextAsana}
                     onStayHere={stayHere}
                     isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
@@ -1095,6 +1250,7 @@ export function AICoachPage() {
                     completedAsanas={completedAsanasForReport}
                     onClose={() => {
                       resetSession();
+                      voiceStop();
                     }}
                   />
                 )}
@@ -1131,21 +1287,6 @@ export function AICoachPage() {
 
               {/* Concise Asana Instructions Card (🧘 Pose · Sanskrit + 3 concise steps) */}
               <AsanaInstructionsCard asana={currentAsana} />
-
-              {/* Optional Developer Debug Panel (Only when explicitly enabled) */}
-              {showDebugPanel && (
-                <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 shadow-sm text-slate-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">
-                      Developer Debug Mode
-                    </span>
-                    <span className="text-[11px] text-amber-800 font-mono">
-                      {result ? `${result.landmarks.length} Landmarks` : "No landmarks"}
-                    </span>
-                  </div>
-                  <AngleDebugPanel landmarks={result?.worldLandmarks ?? null} />
-                </div>
-              )}
             </main>
 
             {/* ------------------------------------------------ */}
@@ -1162,8 +1303,10 @@ export function AICoachPage() {
                 isSpeaking={voiceState.status === "speaking"}
                 voiceState={voiceState}
                 isSessionActive={isSessionActive}
-
                 onToggleMute={voiceToggleMute}
+                onStartVoice={handleStartSession}
+                onStopVoice={voiceStop}
+                onToggleConversationMode={voiceToggleConversationMode}
               />
 
               {/* On-Device Privacy Guarantee Notice */}
@@ -1175,4 +1318,3 @@ export function AICoachPage() {
     </>
   );
 }
-

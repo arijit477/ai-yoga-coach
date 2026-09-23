@@ -95,7 +95,6 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
     const video = videoRef.current;
     if (!video || !videoSrc || !isVideoReady) return;
 
-    // Play video ONLY while speaking to maintain lipsync
     if (smoothedState === "speaking") {
       video.play().catch((err) => {
         if ((err as Error).name !== "AbortError") {
@@ -111,10 +110,6 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
   const stateBorderClass =
     smoothedState === "speaking"
       ? "border-emerald-500 shadow-[0_4px_20px_rgba(47,128,85,0.25)] ring-2 ring-emerald-400/30"
-      : smoothedState === "thinking"
-      ? "border-cyan-500 shadow-[0_4px_20px_rgba(6,182,212,0.25)] ring-2 ring-cyan-400/30"
-      : smoothedState === "listening"
-      ? "border-blue-500 shadow-[0_4px_18px_rgba(59,130,246,0.2)] ring-2 ring-blue-400/35"
       : "border-slate-200/80 shadow-sm";
 
   // Get the selected outfit image (or fallback to default)
@@ -133,7 +128,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
     >
       {/* 
         High-Resolution Resting Portrait:
-        Displays when coach is listening, analyzing, or idle (serene expression, mouth closed).
+        Displays when coach is idle or not speaking.
       */}
       <img
         src={fallbackImageSrc}
@@ -145,7 +140,6 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
 
       {/* 
         Lipsync Video Element:
-        Muted = true so only the LLM voice agent voice is heard.
         Fades in and plays lipsync movement strictly while speaking.
       */}
       {showVideo && (
@@ -175,7 +169,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
       {/* Subtle bottom gradient overlay for legibility */}
       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent pointer-events-none" />
 
-      {/* Speaking voice wave effect */}
+      {/* Speaking badge */}
       {smoothedState === "speaking" && (
         <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-emerald-500/30 shadow-sm pointer-events-none animate-in fade-in duration-200">
           <span className="h-2 w-1 bg-emerald-600 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -185,23 +179,6 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
           <span className="text-[10px] font-bold text-emerald-900 ml-1">Speaking</span>
         </div>
       )}
-
-      {/* Listening badge */}
-      {smoothedState === "listening" && (
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-blue-500/30 shadow-sm pointer-events-none animate-in fade-in duration-200">
-          <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-blue-900">Listening</span>
-        </div>
-      )}
-
-      {/* Thinking badge */}
-      {smoothedState === "thinking" && (
-        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full border border-cyan-500/30 shadow-sm pointer-events-none animate-in fade-in duration-200">
-          <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
-          <span className="text-[10px] font-bold text-cyan-900">Thinking</span>
-        </div>
-      )}
     </div>
   );
 });
-

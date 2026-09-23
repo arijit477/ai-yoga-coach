@@ -3,6 +3,8 @@ import {
   Volume2,
   VolumeX,
   Radio,
+  PowerOff,
+  Mic
 } from "lucide-react";
 import type { VoiceState } from "../voice/voice.types";
 
@@ -11,6 +13,9 @@ interface VoiceControlsProps {
   isSessionActive?: boolean;
   coachName?: string;
   onToggleMute?: () => void;
+  onStartVoice?: () => void;
+  onStopVoice?: () => void;
+  onToggleConversationMode?: () => void;
   className?: string;
 }
 
@@ -20,28 +25,31 @@ interface VoiceControlsProps {
  * 1. [Start Voice] / [Start Listening] / [Stop Listening]
  * 2. [Stop Voice] (cancels speech & disconnects)
  * 3. [Mute / Unmute] (toggles audio & mic)
- * 4. [Retry] (connection recovery)
+ * 4. [Ask Coach] (toggles Conversation Mode WebRTC)
  */
 export const VoiceControls = React.memo(function VoiceControls({
   voiceState,
   coachName = "Alice",
   onToggleMute,
+  onStartVoice,
+  onStopVoice,
+  onToggleConversationMode,
   className = "",
 }: VoiceControlsProps) {
   const isSpeaking = voiceState.status === "speaking";
-  const isListening = voiceState.status === "listening";
   const isError = voiceState.status === "error";
   const isMuted = voiceState.isMuted;
+  const isConversationMode = voiceState.isConversationMode;
   const isConnected =
-    voiceState.status === "connected" || isSpeaking || isListening;
+    voiceState.status === "connected" || isSpeaking || isConversationMode;
   const isConnecting = voiceState.status === "connecting" || voiceState.status === "requesting_permission";
 
   // Status indicator styling & text
   let statusBadge = {
-    text: "Offline",
+    text: "Standby",
     dotClass: "bg-slate-400",
     bgClass: "bg-slate-100 text-slate-700 border-slate-200",
-    message: "Voice coach is offline. Click Start Voice to activate.",
+    message: `Voice agent will start when you click Practice with ${coachName}.`,
   };
 
   if (isError) {
@@ -58,19 +66,19 @@ export const VoiceControls = React.memo(function VoiceControls({
       bgClass: "bg-amber-50 text-amber-800 border-amber-200",
       message: "Establishing voice connection...",
     };
+  } else if (isConversationMode) {
+    statusBadge = {
+      text: "Conversation Mode",
+      dotClass: "bg-blue-500 animate-pulse",
+      bgClass: "bg-blue-50 text-blue-900 border-blue-300",
+      message: `You can now speak with ${coachName}.`,
+    };
   } else if (isSpeaking) {
     statusBadge = {
-      text: "Speaking",
+      text: "Guiding",
       dotClass: "bg-emerald-500 animate-ping",
       bgClass: "bg-emerald-50 text-emerald-900 border-emerald-300",
-      message: `${coachName} is speaking verbal guidance cues`,
-    };
-  } else if (isListening) {
-    statusBadge = {
-      text: "Listening...",
-      dotClass: "bg-teal-500 animate-ping",
-      bgClass: "bg-teal-50 text-teal-950 border-teal-300",
-      message: "Listening to your voice... Speak anytime!",
+      message: `${coachName} is speaking verbal guidance`,
     };
   } else if (isMuted) {
     statusBadge = {
@@ -84,7 +92,7 @@ export const VoiceControls = React.memo(function VoiceControls({
       text: "Live & Ready",
       dotClass: "bg-emerald-500",
       bgClass: "bg-emerald-50 text-emerald-900 border-emerald-200",
-      message: `${coachName} is ready. Click 'Start Listening' to speak.`,
+      message: `${coachName} is ready to guide your practice.`,
     };
   }
 
@@ -97,7 +105,7 @@ export const VoiceControls = React.memo(function VoiceControls({
         <div className="flex items-center gap-1.5 min-w-0">
           <Radio size={14} className={isConnected ? "text-emerald-600 animate-pulse" : "text-slate-400"} />
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700 truncate">
-            Voice Agent
+            Voice Guidance
           </span>
         </div>
 
@@ -110,32 +118,71 @@ export const VoiceControls = React.memo(function VoiceControls({
         </div>
       </div>
 
-      {/* Single Action Button Control Bar */}
-      <div className="flex flex-col">
-        {/* MUTE / UNMUTE */}
-        <button
-          type="button"
-          onClick={onToggleMute}
-          aria-label={isMuted ? "Unmute voice coach" : "Mute voice coach"}
-          title={isMuted ? "Unmute voice coach" : "Mute voice coach"}
-          className={`flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-xl border font-semibold text-[13px] transition shadow-xs active:scale-[0.97] cursor-pointer ${
-            isMuted
-              ? "bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300"
-              : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
-          }`}
-        >
-          {isMuted ? (
-            <>
-              <VolumeX size={18} className="text-amber-800" />
-              <span className="truncate">Unmute Coach</span>
-            </>
-          ) : (
-            <>
-              <Volume2 size={18} className="text-slate-700" />
-              <span className="truncate">Mute Coach</span>
-            </>
-          )}
-        </button>
+      {/* Action Buttons Control Bar */}
+      <div className="flex flex-col gap-2">
+        {!isConnected && !isConnecting ? (
+          <div className="flex flex-col items-center justify-center gap-2 px-4 py-4 rounded-xl border border-dashed border-slate-200 bg-slate-50">
+            <Radio size={20} className="text-slate-300" />
+            <span className="text-xs text-slate-500 font-medium text-center">
+              Voice controls will appear here once you start the practice session.
+            </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2">
+            {/* CONVERSATION MODE (ASK COACH) */}
+            <button
+              type="button"
+              onClick={onToggleConversationMode}
+              aria-label={isConversationMode ? "End conversation mode" : "Ask Coach a question"}
+              title={isConversationMode ? "End conversation mode" : "Ask Coach a question"}
+              className={`col-span-2 flex items-center justify-center gap-2 px-2 py-2 rounded-xl border font-semibold text-[13px] transition shadow-xs active:scale-[0.97] cursor-pointer ${
+                isConversationMode
+                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-800 animate-pulse"
+                  : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200"
+              }`}
+            >
+              <Mic size={16} className={isConversationMode ? "text-white" : "text-indigo-600"} />
+              <span className="truncate">{isConversationMode ? "End Conversation" : "Ask Coach (Mic Off)"}</span>
+            </button>
+
+            {/* END CONVERSATION */}
+            <button
+              type="button"
+              onClick={onStopVoice}
+              aria-label="End session"
+              title="End session"
+              className="flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-xl border font-semibold text-[12px] transition shadow-xs active:scale-[0.97] cursor-pointer bg-red-100 hover:bg-red-200 text-red-900 border-red-300"
+            >
+              <PowerOff size={16} className="text-red-800" />
+              <span className="truncate">Stop Coach</span>
+            </button>
+
+            {/* MUTE / UNMUTE */}
+            <button
+              type="button"
+              onClick={onToggleMute}
+              aria-label={isMuted ? "Unmute voice coach" : "Mute voice coach"}
+              title={isMuted ? "Unmute voice coach" : "Mute voice coach"}
+              className={`flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-xl border font-semibold text-[12px] transition shadow-xs active:scale-[0.97] cursor-pointer ${
+                isMuted
+                  ? "bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
+              }`}
+            >
+              {isMuted ? (
+                <>
+                  <VolumeX size={16} className="text-amber-800" />
+                  <span className="truncate">Unmute Coach</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 size={16} className="text-slate-700" />
+                  <span className="truncate">Mute Coach</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Helper text / status message */}
@@ -145,3 +192,4 @@ export const VoiceControls = React.memo(function VoiceControls({
     </div>
   );
 });
+

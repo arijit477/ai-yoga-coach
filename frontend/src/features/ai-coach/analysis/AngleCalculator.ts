@@ -110,9 +110,9 @@ export function calculateLandmarkAngle(
   c: Landmark,
 ): number | null {
   if (
-    (a.visibility !== undefined && a.visibility < 0.4) ||
-    (b.visibility !== undefined && b.visibility < 0.4) ||
-    (c.visibility !== undefined && c.visibility < 0.4)
+    (a.visibility !== undefined && a.visibility < 0.25) ||
+    (b.visibility !== undefined && b.visibility < 0.25) ||
+    (c.visibility !== undefined && c.visibility < 0.25)
   ) {
     return null;
   }

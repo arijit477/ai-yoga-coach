@@ -16,6 +16,16 @@ export class CoachingEventEngine {
 
   private hasAnnouncedGoodFormForPose = false;
   private recentEvents: CoachingEvent[] = [];
+  private lastOutOfFrameReminderTime: number = 0;
+
+  public reset(): void {
+    this.lastSessionState = "idle";
+    this.lastCameraState = "CAMERA_DISABLED";
+    this.activeIssue = null;
+    this.hasAnnouncedGoodFormForPose = false;
+    this.recentEvents = [];
+    this.lastOutOfFrameReminderTime = 0;
+  }
 
   public process(
     asanaId: string,
@@ -26,18 +36,33 @@ export class CoachingEventEngine {
   ): CoachingEvent[] {
     const events: CoachingEvent[] = [];
 
-    // 1. Camera State Transitions
+    // 1. Camera State Transitions & Continuous Presence
     if (this.lastCameraState !== cameraState) {
       if (cameraState === "CAMERA_DISABLED" || cameraState === "CAMERA_ERROR") {
         events.push(CoachingEventBuilder.buildCameraUnavailableEvent(asanaId, asanaName));
       } else if (cameraState === "NO_PERSON") {
         events.push(CoachingEventBuilder.buildUserOutOfFrameEvent(asanaId, asanaName));
+        this.lastOutOfFrameReminderTime = Date.now();
       } else if (cameraState === "PARTIAL_BODY") {
         events.push(CoachingEventBuilder.buildPartialBodyEvent(asanaId, asanaName));
       } else if (cameraState === "CAMERA_READY") {
         events.push(CoachingEventBuilder.buildCameraReadyEvent(asanaId, asanaName));
       }
       this.lastCameraState = cameraState;
+    } else if (cameraState === "NO_PERSON" && sessionState !== "idle") {
+      // Continuous presence: if user stays out of frame for >15s, give gentle reminder
+      const now = Date.now();
+      if (now - this.lastOutOfFrameReminderTime >= 15000) {
+        this.lastOutOfFrameReminderTime = now;
+        events.push({
+          id: `presence_${now}`,
+          type: "user_out_of_frame",
+          asanaId,
+          asanaName,
+          feedback: "I'm still here waiting for you. Take your time, and step into view when you're ready.",
+          timestamp: now,
+        });
+      }
     }
 
     // 2. Session State Transitions
@@ -123,11 +148,4 @@ export class CoachingEventEngine {
     return this.recentEvents;
   }
 
-  public reset() {
-    this.lastSessionState = "idle";
-    this.lastCameraState = "CAMERA_DISABLED";
-    this.activeIssue = null;
-    this.hasAnnouncedGoodFormForPose = false;
-    this.recentEvents = [];
-  }
 }

@@ -239,65 +239,9 @@ async def create_realtime_session(req: RealtimeSessionRequest):
 
     payload = {
         "session": {
-            "type": "realtime",
             "model": model,
             "instructions": build_coach_instructions(coach_id),
-            "audio": {
-                "output": {
-                    "voice": voice
-                },
-                "input": {
-                    "turn_detection": {
-                        "type": "server_vad",
-                        "threshold": 0.65,
-                        "prefix_padding_ms": 300,
-                        "silence_duration_ms": 500
-                    }
-                }
-            },
-            "tools": [
-                {
-                    "type": "function",
-                    "name": "get_camera_status",
-                    "description": "Get the current status of the user's camera (e.g., enabled, disabled, ready)."
-                },
-                {
-                    "type": "function",
-                    "name": "get_current_pose",
-                    "description": "Get the name and ID of the current yoga pose/asana."
-                },
-                {
-                    "type": "function",
-                    "name": "get_posture_status",
-                    "description": "Get detailed posture status including current score, score trend, stability, and active corrections."
-                },
-                {
-                    "type": "function",
-                    "name": "get_current_asana",
-                    "description": "Alias for get_current_pose. Returns the current active asana."
-                },
-                {
-                    "type": "function",
-                    "name": "get_session_state",
-                    "description": "Get high-level session state (e.g. calibrating, holding), completed poses, and previous asana details."
-                },
-                {
-                    "type": "function",
-                    "name": "get_primary_correction",
-                    "description": "Get the most severe primary posture correction needed right now."
-                },
-                {
-                    "type": "function",
-                    "name": "get_hold_status",
-                    "description": "Get how long the user has been holding the pose."
-                },
-                {
-                    "type": "function",
-                    "name": "get_recent_coaching_events",
-                    "description": "Get a summary of recent events spoken to the user."
-                }
-            ],
-            "tool_choice": "auto"
+            "voice": voice
         }
     }
 

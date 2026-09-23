@@ -45,7 +45,7 @@ export function evaluateRule(
   // Pre-check landmark confidence for the rule's points
   for (const pointIdx of rule.points) {
     const lm = imageLandmarks[pointIdx];
-    if (!lm || (lm.visibility !== undefined && lm.visibility < 0.4)) {
+    if (!lm || (lm.visibility !== undefined && lm.visibility < 0.25)) {
       return { passed: false, score: 0, ignored: true }; // Landmark is occluded or not confident
     }
   }

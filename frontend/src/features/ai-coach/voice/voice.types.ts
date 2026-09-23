@@ -88,5 +88,6 @@ export interface VoiceState {
   isMuted: boolean;
   error: string | null;
   transcripts: VoiceTranscriptItem[];
+  isConversationMode?: boolean;
 }
 

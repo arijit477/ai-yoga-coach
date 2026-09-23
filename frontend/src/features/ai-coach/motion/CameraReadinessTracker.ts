@@ -11,6 +11,8 @@ export type CameraReadinessState =
   | "FULL_BODY_DETECTED"
   | "CAMERA_READY";
 
+export type CameraState = CameraReadinessState;
+
 export class CameraReadinessTracker {
   private readonly outOfFrameDelay = 2000;
   private readonly inFrameDelay = 500;

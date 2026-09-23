@@ -1,7 +1,18 @@
 import { useState, useEffect } from "react";
 
 interface CircularScoreRingProps {
+  /**
+   * Continuous smoothed accuracy score (0-100 float).
+   * Drives the SVG progress circle arc with sub-pixel fluid precision.
+   */
   score: number | null;
+
+  /**
+   * Optional discrete integer accuracy score protected by dead-band hysteresis.
+   * If not provided, Math.round(score) is used.
+   */
+  displayedScore?: number | null;
+
   size?: number;
   strokeWidth?: number;
   compact?: boolean;
@@ -10,6 +21,7 @@ interface CircularScoreRingProps {
 
 export function CircularScoreRing({
   score,
+  displayedScore,
   size = 110,
   strokeWidth = 8,
   compact = false,
@@ -22,33 +34,42 @@ export function CircularScoreRing({
     return () => clearTimeout(timer);
   }, []);
 
-  const normalizedScore = score !== null ? Math.max(0, Math.min(100, Math.round(score))) : null;
+  // Continuous float score for SVG arc (0 - 100)
+  const continuousScore = score !== null && !isNaN(score) ? Math.max(0, Math.min(100, score)) : null;
+
+  // Discrete integer score for text label (respects dead-band if provided)
+  const integerScore =
+    displayedScore !== undefined && displayedScore !== null && !isNaN(displayedScore)
+      ? Math.max(0, Math.min(100, displayedScore))
+      : continuousScore !== null
+      ? Math.round(continuousScore)
+      : null;
 
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset =
-    normalizedScore !== null && isMounted
-      ? circumference - (normalizedScore / 100) * circumference
+    continuousScore !== null && isMounted
+      ? circumference - (continuousScore / 100) * circumference
       : circumference;
 
   const color =
-    normalizedScore === null
+    integerScore === null
       ? "#94a3b8"
-      : normalizedScore >= 80
+      : integerScore >= 80
       ? "#eab308" // Gold
-      : normalizedScore >= 60
+      : integerScore >= 60
       ? "#22c55e" // Green
-      : normalizedScore >= 40
+      : integerScore >= 40
       ? "#f97316" // Orange
       : "#ef4444"; // Red
 
   const getLabel = () => {
-    if (normalizedScore === null) return "Standby";
-    if (normalizedScore === 100) return "Perfect Hold";
-    if (normalizedScore >= 90) return "Excellent Form";
-    if (normalizedScore >= 75) return "Excellent Alignment";
-    if (normalizedScore >= 60) return "Almost There";
-    if (normalizedScore >= 40) return "Looking Better";
+    if (integerScore === null) return "Standby";
+    if (integerScore === 100) return "Perfect Form";
+    if (integerScore >= 90) return "Excellent Form";
+    if (integerScore >= 75) return "Great Alignment";
+    if (integerScore >= 60) return "Good Alignment";
+    if (integerScore >= 40) return "Adjusting";
     return "Getting Started";
   };
 
@@ -75,7 +96,7 @@ export function CircularScoreRing({
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
           fill="none"
-          className="transition-all duration-300 ease-out"
+          className="transition-[stroke-dashoffset,stroke] duration-300 ease-out"
         />
       </svg>
 
@@ -86,7 +107,7 @@ export function CircularScoreRing({
           }`}
           style={{ fontFamily: "'Fraunces', Georgia, serif" }}
         >
-          {normalizedScore !== null ? normalizedScore : "--"}
+          {integerScore !== null ? integerScore : "--"}
         </span>
         <span
           className={`text-slate-400 font-medium ${
@@ -141,4 +162,3 @@ export function CircularScoreRing({
     </div>
   );
 }
-

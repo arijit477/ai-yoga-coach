@@ -20,7 +20,10 @@ export interface SessionContextData {
   } | null;
   isHolding?: boolean;
   isCompleted?: boolean;
+  isSessionActive?: boolean;
   cameraState?: string;
+  hasPose?: boolean;
+  userVisible?: boolean;
   recentEvents?: CoachingEvent[];
   holdTime?: number;
   previousAsanaName?: string;
@@ -50,6 +53,7 @@ export class RealtimeVoiceAgent {
   private gainNode: GainNode | null = null;
   private dataArray: Uint8Array | null = null;
   private volumeInterval: number | null = null;
+  private pendingPoseStart: { id: string; name: string } | null = null;
 
   constructor(
     onStatusChange?: (status: VoiceConnectionState, error?: string) => void,
@@ -85,13 +89,8 @@ export class RealtimeVoiceAgent {
     this.isConnecting = true;
     this.currentCoachId = coachId;
 
-    // 1. Get microphone permission for WebRTC bidirectional audio
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (err) {
-      console.warn("[AI COACH] Could not get microphone access:", err);
-      this.stream = null;
-    }
+    // 1. Pure audio receive (recvonly) - zero mic capture, zero VAD latency
+    this.stream = null;
 
     // 2. Connecting to backend session
     this.updateStatus("connecting");
@@ -115,18 +114,9 @@ export class RealtimeVoiceAgent {
         throw new Error("No client secret returned from voice session backend.");
       }
 
-      // 3. Setup WebRTC Peer Connection
+      // 3. Setup WebRTC Peer Connection with zero-latency audio receive
       this.pc = new RTCPeerConnection();
-      
-      // Since we want bidirectional audio, we add local tracks
-      if (this.stream) {
-        this.stream.getTracks().forEach((track) => {
-          this.pc?.addTrack(track, this.stream!);
-        });
-      } else {
-        // Fallback to recvonly if no mic permission
-        this.pc.addTransceiver("audio", { direction: "recvonly" });
-      }
+      this.pc.addTransceiver("audio", { direction: "recvonly" });
 
       // Handle incoming audio stream from OpenAI
       this.pc.ontrack = (event) => {
@@ -146,7 +136,13 @@ export class RealtimeVoiceAgent {
 
       this.dc.onopen = () => {
         console.log("[AI COACH] RealtimeVoiceAgent Data Channel Opened");
-        this.speakGreeting();
+        if (this.pendingPoseStart) {
+          const asana = this.pendingPoseStart;
+          this.pendingPoseStart = null;
+          this.speak(`Let's begin ${asana.name}. Stand comfortably and check your alignment.`);
+        } else if (this.currentSessionContext?.isSessionActive) {
+          this.speakGreeting();
+        }
       };
 
       this.dc.onmessage = (e) => {
@@ -164,29 +160,10 @@ export class RealtimeVoiceAgent {
             if (this.isSpeaking) {
               // We now rely on the audio analyzer to clear the speaking state
             }
-          } else if (ev.type === "input_audio_buffer.speech_started") {
-             if (this.isSpeaking) {
-               // User interrupted the coach
-               this.isSpeaking = false;
-               this.updateStatus("interrupted");
-             } else {
-               this.updateStatus("listening");
-             }
-          } else if (ev.type === "input_audio_buffer.speech_stopped") {
-             this.updateStatus("thinking");
-          } else if (ev.type === "response.function_call_arguments.done") {
-             this.handleFunctionCall(ev);
           }
 
-          // Optional transcript capturing:
-          // User speech transcription
-          if (ev.type === "conversation.item.input_audio_transcription.completed" && ev.transcript) {
-            this.onTranscript?.({
-              id: ev.item_id || `user_${Date.now()}`,
-              role: "user",
-              text: ev.transcript.trim(),
-              timestamp: Date.now(),
-            });
+          if (ev.type === "response.function_call_arguments.done") {
+             this.handleFunctionCall(ev);
           }
 
           // Coach spoken response text chunk
@@ -222,21 +199,11 @@ export class RealtimeVoiceAgent {
         "Content-Type": "application/sdp",
       };
 
-      let sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
+      const sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
         method: "POST",
         body: offer.sdp,
         headers: sdpHeaders,
       });
-
-      // Fallback if GA path is routed differently
-      if (!sdpResponse.ok && sdpResponse.status === 404) {
-        console.warn("[AI COACH] /calls returned 404, falling back to /v1/realtime");
-        sdpResponse = await fetch("https://api.openai.com/v1/realtime", {
-          method: "POST",
-          body: offer.sdp,
-          headers: sdpHeaders,
-        });
-      }
 
       if (!sdpResponse.ok) {
         const errorDetail = await sdpResponse.text();
@@ -251,9 +218,9 @@ export class RealtimeVoiceAgent {
       this.updateStatus(this.isMuted ? "muted" : "connected");
       this.syncMuteState();
     } catch (e: any) {
-      console.warn("[AI COACH] WebRTC connection could not be established, continuing with instant speech synthesis:", e);
+      console.error("[AI COACH] WebRTC connection failed:", e);
       this.isConnecting = false;
-      this.updateStatus(this.isMuted ? "muted" : "connected");
+      this.updateStatus("error", e?.message || "Voice connection failed.");
     }
   }
 
@@ -265,23 +232,18 @@ export class RealtimeVoiceAgent {
 
     if (this.dc && this.dc.readyState === "open") {
       try {
-        const oaiEvent = {
-          type: "conversation.item.create",
-          item: {
-            type: "message",
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: `[SYSTEM COMMAND] Please speak exactly this message clearly to the user: "${text}"`,
-              },
-            ],
-          },
-        };
-        this.dc.send(JSON.stringify(oaiEvent));
+        // If coach is already speaking, cancel previous response to prevent queuing lag
+        if (this.isSpeaking) {
+          try {
+            this.dc.send(JSON.stringify({ type: "response.cancel" }));
+          } catch (_) {}
+        }
 
         const responseCreate = {
           type: "response.create",
+          response: {
+            instructions: `Speak this yoga cue clearly and warmly: "${text}"`,
+          },
         };
         this.dc.send(JSON.stringify(responseCreate));
       } catch (err) {
@@ -300,22 +262,46 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * Speak a greeting when the session connects.
+   * Triggers or queues the pose start verbal cue.
+   * If data channel is already open, speaks immediately.
+   * Otherwise, queues it to speak immediately upon connection open.
+   */
+  triggerPoseStart(asanaId: string, asanaName: string) {
+    if (this.dc && this.dc.readyState === "open") {
+      this.speak(`Let's begin ${asanaName}. Stand comfortably and check your posture.`);
+    } else {
+      this.pendingPoseStart = { id: asanaId, name: asanaName };
+    }
+  }
+
+  /**
+   * Verbal guidance on connection:
+   * Only provides verbal guidance if practice has actively started.
+   * Stays silent and ready before practice is started.
    */
   speakGreeting() {
-    const greeting =
-      this.currentCoachId === "kevin"
-        ? "Hi, I'm Kevin, your AI yoga coach. Let's begin. Today, we will focus on building core strength. Remember to listen to your body and have fun."
-        : "Welcome to your practice today. Let us begin by finding a tall, comfortable seat. Relax your shoulders and take a deep breath in. Feel the calm within you.";
+    const ctx = this.currentSessionContext;
 
-    this.speak(greeting);
+    if (ctx && ctx.isSessionActive && ctx.sessionState && ctx.sessionState !== "idle") {
+      let greeting = "";
+      if (ctx.cameraState === "off" || ctx.cameraState === "unavailable") {
+        greeting = "Please enable your camera first.";
+      } else if (ctx.cameraState === "no_person" || ctx.hasPose === false) {
+        greeting = "I can't see you yet. Step into the camera frame.";
+      } else if (ctx.cameraState === "partial_body") {
+        greeting = "I can see you, but not your full body. Take a small step back.";
+      } else {
+        greeting = `Perfect. Let's get you ready for ${ctx.asanaName || "your pose"}. Stand comfortably and hold still for a moment.`;
+      }
+      this.speak(greeting);
+    }
   }
 
   /**
    * Listening feature removed. No-op.
    */
   startListening() {
-    console.log("[AI COACH] Listening feature is disabled.");
+    // No-op
   }
 
   /**
@@ -326,11 +312,9 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * Dispatches a structured coaching event through the existing data channel
-   * and speaks verbal instructions clearly to the user.
+   * Dispatches a structured coaching event and speaks verbal instructions clearly to the user.
    */
   sendCoachingEvent(event: CoachingEvent) {
-    // 1. Resolve human-friendly verbal cue for the yoga instruction
     let spokenText = "";
     if (event.type === "step_guidance" && event.feedback) {
       spokenText = event.feedback;
@@ -350,131 +334,28 @@ export class RealtimeVoiceAgent {
       spokenText = "Posture aligned! Hold steady and breathe.";
     } else if (event.type === "pose_completed") {
       spokenText = `Great job completing ${event.asanaName}!`;
+    } else if (event.type === "hold_countdown" && event.feedback) {
+      spokenText = event.feedback;
+    } else if (event.type === "user_out_of_frame") {
+      spokenText = event.feedback || "I can't see you. Step back into the frame so we can continue.";
+    } else if (event.type === "partial_body") {
+      spokenText = event.feedback || "I can only see part of your body. Take a small step back.";
+    } else if (event.type === "camera_unavailable") {
+      spokenText = event.feedback || "Please enable your camera so I can guide you.";
+    } else if (event.type === "camera_ready") {
+      spokenText = event.feedback || "Welcome back! I can see you clearly now.";
     }
 
-    // 2. If event has feedback, record it in transcripts
-    if (event.feedback && (event.type === "pose_correction" || event.type === "safety_warning")) {
-      this.onTranscript?.({
-        id: event.id,
-        role: "coach",
-        text: event.feedback,
-        timestamp: event.timestamp,
-        isCorrection: true,
-      });
-    }
-
-    // 3. If OpenAI Realtime WebRTC data channel is open, send structured event
-    if (this.dc && this.dc.readyState === "open") {
-      console.log(`[AI COACH] Pose event dispatched over WebRTC: ${event.type} for ${event.asanaName}`);
-
-      const eventContent = [
-        `[SYSTEM POSTURE EVENT]`,
-        `Type: ${event.type}`,
-        `Asana: ${event.asanaName} (${event.asanaId})`,
-        event.ruleId ? `Rule: ${event.ruleId}` : null,
-        event.joint ? `Joint / Body Part: ${event.joint}` : null,
-        event.issue ? `Issue: ${event.issue}` : null,
-        event.severity ? `Severity: ${event.severity}` : null,
-        event.currentValue !== undefined ? `Current Angle/Value: ${event.currentValue}°` : null,
-        event.targetValue !== undefined ? `Target Value: ${event.targetValue}°` : null,
-        (event.min !== undefined || event.targetMin !== undefined) && (event.max !== undefined || event.targetMax !== undefined)
-          ? `Target Angle Range: ${event.targetMin ?? event.min}° - ${event.targetMax ?? event.max}°`
-          : null,
-        event.feedback ? `Instruction: ${event.feedback}` : null,
-        event.score !== undefined ? `Current Score: ${event.score}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n");
-
-      try {
-        const oaiEvent = {
-          type: "conversation.item.create",
-          item: {
-            type: "message",
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: eventContent,
-              },
-            ],
-          },
-        };
-
-        this.dc.send(JSON.stringify(oaiEvent));
-
-        // Request immediate voice response generation
-        const responseCreate = {
-          type: "response.create",
-        };
-        this.dc.send(JSON.stringify(responseCreate));
-      } catch (err) {
-        console.warn("[AI COACH] Error dispatching over WebRTC Data Channel:", err);
-      }
-    }
-
-    // 4. Fallback audible voice cue if not connected to OpenAI
-    if (spokenText && (!this.dc || this.dc.readyState !== "open")) {
+    if (spokenText) {
       this.speak(spokenText);
     }
   }
 
   /**
-   * Updates current session context (e.g. asana changed, session completed)
-   * so the conversational model always knows what pose is active when the user asks questions.
+   * Updates current session context locally (e.g. asana changed, session completed).
    */
   updateSessionContext(context: SessionContextData) {
     this.currentSessionContext = context;
-    
-    if (!this.dc || this.dc.readyState !== "open") {
-      return;
-    }
-
-    const primaryIssueText = context.primaryIssue
-      ? [
-          `Rule: ${context.primaryIssue.ruleId}`,
-          context.primaryIssue.joint ? `Joint: ${context.primaryIssue.joint}` : null,
-          `Severity: ${context.primaryIssue.severity}`,
-          (context.primaryIssue.currentAngle !== undefined || context.primaryIssue.currentValue !== undefined)
-            ? `Current Angle: ${context.primaryIssue.currentAngle ?? context.primaryIssue.currentValue}°`
-            : null,
-          (context.primaryIssue.targetMin !== undefined || context.primaryIssue.min !== undefined) && (context.primaryIssue.targetMax !== undefined || context.primaryIssue.max !== undefined)
-            ? `Target Range: ${context.primaryIssue.targetMin ?? context.primaryIssue.min}° - ${context.primaryIssue.targetMax ?? context.primaryIssue.max}°`
-            : null,
-          context.primaryIssue.feedback ? `Feedback: ${context.primaryIssue.feedback}` : null,
-        ].filter(Boolean).join(", ")
-      : "Alignment in good standing";
-
-    const contextText = [
-      `[ACTIVE SESSION CONTEXT UPDATE]`,
-      `Coach: ${context.coach}`,
-      `Active Asana: ${context.asanaName} (${context.asanaId})`,
-      context.score !== undefined ? `Current Score: ${context.score}` : null,
-      context.coachState ? `Coach State: ${context.coachState}` : null,
-      context.sessionState ? `Session State: ${context.sessionState}` : null,
-      context.isHolding ? `Status: Holding target pose` : null,
-      context.isCompleted ? `Status: Asana completed successfully` : null,
-      `Primary Posture Issue Context: [${primaryIssueText}]`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    const oaiContextMessage = {
-      type: "conversation.item.create",
-      item: {
-        type: "message",
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text: contextText,
-          },
-        ],
-      },
-    };
-
-    this.dc.send(JSON.stringify(oaiContextMessage));
-    console.log(`[AI COACH] Session context updated: ${context.asanaName} (${context.coachState || "active"})`);
   }
 
   private handleFunctionCall(ev: any) {
@@ -567,6 +448,29 @@ export class RealtimeVoiceAgent {
   disconnect() {
     this.isSpeaking = false;
     this.isConnecting = false;
+
+    // Immediately stop browser speech synthesis if active
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (_) {}
+    }
+
+    // Cancel any ongoing speech response in OpenAI Realtime
+    if (this.dc && this.dc.readyState === "open") {
+      try {
+        this.dc.send(JSON.stringify({ type: "response.cancel" }));
+      } catch (_) {}
+    }
+
+    // Immediately pause and silence audio element
+    if (this.audioEl) {
+      try {
+        this.audioEl.pause();
+      } catch (_) {}
+      this.audioEl.srcObject = null;
+    }
+
     if (this.stream) {
       this.stream.getTracks().forEach((track) => {
         track.stop();
