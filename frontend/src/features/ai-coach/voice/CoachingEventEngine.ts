@@ -32,7 +32,8 @@ export class CoachingEventEngine {
     asanaName: string,
     sessionState: CoachSessionState,
     cameraState: CameraReadinessState,
-    evaluation: PoseEvaluationResult | null
+    evaluation: PoseEvaluationResult | null,
+    asanaDescription?: string
   ): CoachingEvent[] {
     const events: CoachingEvent[] = [];
 
@@ -71,7 +72,7 @@ export class CoachingEventEngine {
          events.push(CoachingEventBuilder.buildCalibrationRequiredEvent(asanaId, asanaName));
       } else if (sessionState === "coaching" && this.lastSessionState !== "holding") {
          // Entered pose active coaching
-         events.push(CoachingEventBuilder.buildPoseStartedEvent(asanaId, asanaName));
+         events.push(CoachingEventBuilder.buildPoseStartedEvent(asanaId, asanaName, asanaDescription));
          this.hasAnnouncedGoodFormForPose = false;
       } else if (sessionState === "holding") {
          events.push(CoachingEventBuilder.buildPoseHeldEvent(asanaId, asanaName, evaluation?.score));

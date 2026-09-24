@@ -9,12 +9,13 @@ export class CoachingEventBuilder {
   /**
    * Generates a pose_started event when a user enters the target asana.
    */
-  static buildPoseStartedEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildPoseStartedEvent(asanaId: string, asanaName: string, asanaDescription?: string): CoachingEvent {
     return {
       id: generateEventId("start"),
       type: "pose_started",
       asanaId,
       asanaName,
+      feedback: asanaDescription ? `Let's begin ${asanaName}. ${asanaDescription}` : `Let's begin ${asanaName}.`,
       timestamp: Date.now(),
     };
   }
@@ -165,7 +166,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       score: score !== undefined ? Math.round(score) : undefined,
-      feedback: `Excellent work. ${asanaName} is complete.`,
+      feedback: `Congratulations! You have completed ${asanaName}.`,
       timestamp: Date.now(),
     };
   }

@@ -1,0 +1,160 @@
+import { useState, useEffect, useRef } from "react";
+import type { PostureCheckItem } from "../types/posture-check";
+
+interface PostureCheckOverlayProps {
+  items: PostureCheckItem[];
+  hasData: boolean;
+}
+
+export function PostureCheckOverlay({ items, hasData }: PostureCheckOverlayProps) {
+  const [isOpen, setIsOpen] = useState(true);
+  const userClosedRef  = useRef(false);
+  const autoClosedRef  = useRef(false);
+
+  // Auto-close 1.5 s after all checks go green; re-open if issues return
+  useEffect(() => {
+    if (!hasData) return;
+    const allGood = items.every((i) => i.status === "good");
+
+    if (allGood && isOpen && !userClosedRef.current) {
+      const t = setTimeout(() => {
+        setIsOpen(false);
+        autoClosedRef.current = true;
+      }, 1500);
+      return () => clearTimeout(t);
+    }
+
+    if (!allGood && autoClosedRef.current && !userClosedRef.current) {
+      setIsOpen(true);
+      autoClosedRef.current = false;
+    }
+  }, [items, hasData, isOpen]);
+
+  if (!hasData) return null;
+
+  const issueCount = items.filter(
+    (i) => i.status === "warning" || i.status === "critical",
+  ).length;
+  const allGood = issueCount === 0;
+
+  const handleToggle = () => {
+    const closing = isOpen;
+    userClosedRef.current = closing;
+    if (!closing) autoClosedRef.current = false;
+    setIsOpen((v) => !v);
+  };
+
+  return (
+    /**
+     * Outer wrapper anchored to left-0 so nothing ever clips outside the camera.
+     * Flex row: [animated-panel-area] [toggle-tab]
+     * When the panel animates to width-0 the tab naturally sits at left-0.
+     */
+    <div className="absolute left-0 top-[58%] -translate-y-1/2 z-20 flex items-center pointer-events-none select-none">
+
+      {/* -- Animated panel area -- */}
+      <div
+        className="overflow-hidden pointer-events-auto"
+        style={{
+          width:      isOpen ? "164px" : "0px",
+          opacity:    isOpen ? 1 : 0,
+          transition: "width 300ms cubic-bezier(0.4,0,0.2,1), opacity 250ms ease-in-out",
+        }}
+      >
+        {/* inner card — fixed width so it doesn't shrink as the wrapper narrows */}
+        <div
+          className="ml-3 rounded-2xl bg-slate-900/50 backdrop-blur-sm border border-white/10 shadow-xl p-2.5"
+          style={{ width: "148px" }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between mb-1.5 pb-1.5 border-b border-white/10">
+            <span className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/50 shrink-0">
+              Posture Check
+            </span>
+            <span
+              className={`text-[8px] font-semibold ml-1.5 shrink-0 ${allGood ? "text-emerald-400" : "text-amber-400"}`}
+            >
+              {allGood ? "\u2713 Good" : `${issueCount} issue${issueCount > 1 ? "s" : ""}`}
+            </span>
+          </div>
+
+          {/* Rows */}
+          <div className="flex flex-col gap-0.5">
+            {items.map((item) => (
+              <div
+                key={item.key}
+                className={`flex items-center gap-1.5 px-1.5 py-[5px] rounded-lg transition-all duration-300 ${
+                  item.status === "critical" ? "bg-rose-500/15" :
+                  item.status === "warning"  ? "bg-amber-400/10" :
+                                               "bg-transparent"
+                }`}
+              >
+                <span
+                  className={`text-[10px] shrink-0 transition-colors duration-300 ${
+                    item.status === "good"     ? "text-emerald-400" :
+                    item.status === "warning"  ? "text-amber-400"   :
+                    item.status === "critical" ? "text-rose-400"    :
+                                                 "text-white/20"
+                  }`}
+                >
+                  {item.status === "good" ? "\u25cf" : item.status === "warning" ? "\u26a0" : item.status === "critical" ? "\u2715" : "\u25cb"}
+                </span>
+                <span
+                  className={`text-[10px] font-medium truncate transition-colors duration-300 ${
+                    item.status === "good"     ? "text-white/60"      :
+                    item.status === "warning"  ? "text-amber-200/90"  :
+                    item.status === "critical" ? "text-rose-200/90"   :
+                                                 "text-white/25"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* -- Toggle tab — always at right edge of the animated area -- */}
+      <button
+        type="button"
+        onClick={handleToggle}
+        className="pointer-events-auto flex flex-col items-center justify-center gap-0.5 bg-slate-900/50 hover:bg-slate-900/70 backdrop-blur-sm border border-l-0 border-white/10 text-white/50 hover:text-white/90 transition-all duration-200 cursor-pointer rounded-r-xl shrink-0"
+        style={{
+          width:   "18px",
+          height:  "60px",
+          transition: "background 200ms",
+        }}
+        title={isOpen ? "Hide posture check" : "Show posture check"}
+      >
+        {/* Chevron rotates based on state */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="9" height="9"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{
+            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 300ms cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+
+        {/* Vertical label — only when collapsed so user knows what it is */}
+        {!isOpen && (
+          <span
+            className="text-[7px] font-bold uppercase text-white/40"
+            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", letterSpacing: "0.1em" }}
+          >
+            {allGood ? "\u2713" : issueCount}
+          </span>
+        )}
+      </button>
+    </div>
+  );
+}

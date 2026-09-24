@@ -384,8 +384,11 @@ export function useCoachSession({
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);
 
-          // Auto-advance to the next asana instead of requiring manual button click
-          moveToNextAsana();
+          setState("completed");
+          // Auto-advance to the next asana after allowing time for completion message
+          transitionTimerRef.current = setTimeout(() => {
+            moveToNextAsana();
+          }, 5000);
 
           return targetHoldSeconds;
         }

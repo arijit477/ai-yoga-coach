@@ -28,6 +28,9 @@ import { PrivacyNotice } from "./PrivacyNotice";
 import { SafetyGuideBanner } from "./SafetyGuideBanner";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
+import { PostureCheckPanel } from "./PostureCheckPanel";
+import { PostureCheckOverlay } from "./PostureCheckOverlay";
+import { analyzePosture } from "../analysis/PostureAnalyzer";
 
 function getCoachStateMessage(state: ReturnType<typeof useCoachState>): string {
   switch (state) {
@@ -185,6 +188,15 @@ export function AICoachPage() {
    * Keep score text smooth to prevent rapid flickering numbers
    */
   const stableScore = stableEvaluation?.score ?? null;
+
+  /**
+   * Posture Check — derived from live MediaPipe landmarks.
+   * Re-runs every frame a new result arrives; no extra detection pipeline.
+   */
+  const postureCheck = useMemo(
+    () => analyzePosture(result?.landmarks ?? null),
+    [result],
+  );
 
   const {
     state: voiceState,
@@ -374,11 +386,12 @@ export function AICoachPage() {
         CoachingEventBuilder.buildPoseStartedEvent(
           currentAsana.id,
           currentAsana.name,
+          currentAsana.description
         ),
       );
     } else {
       voiceStart(selectedCoach);
-      voiceTriggerPoseStart(currentAsana.id, currentAsana.name);
+      voiceTriggerPoseStart(currentAsana.id, currentAsana.name, currentAsana.description);
     }
   }, [
     isCameraActive,
@@ -391,6 +404,7 @@ export function AICoachPage() {
     selectedCoach,
     currentAsana.id,
     currentAsana.name,
+    currentAsana.description,
   ]);
 
   const handleStopSession = useCallback(() => {
@@ -568,6 +582,7 @@ export function AICoachPage() {
       sessionState,
       cameraState,
       stableEvaluation,
+      currentAsana.description
     );
 
     newEvents.forEach((event) => {
@@ -759,6 +774,11 @@ export function AICoachPage() {
                 </span>
               )}
             </div>
+
+            {/* Left-Side Posture Check Overlay (Cinema Mode) */}
+            {isCameraActive && (
+              <PostureCheckOverlay items={postureCheck.items} hasData={postureCheck.hasData} />
+            )}
 
             {/* Top-Right: Target Pose Reference Card Overlaid on Fullscreen Camera */}
             <div className="absolute right-4 top-4 sm:right-6 sm:top-6 z-20">
@@ -1100,6 +1120,11 @@ export function AICoachPage() {
                       />
                     )}
                 </div>
+
+                {/* Left-Side Posture Check Overlay — compact floating panel inside camera */}
+                {isCameraActive && (
+                  <PostureCheckOverlay items={postureCheck.items} hasData={postureCheck.hasData} />
+                )}
 
                 {/* Top-Right: Overlaid Target Pose Reference Card (Copy This Pose) */}
                 <div className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 z-20">

@@ -139,7 +139,8 @@ export class RealtimeVoiceAgent {
         if (this.pendingPoseStart) {
           const asana = this.pendingPoseStart;
           this.pendingPoseStart = null;
-          this.speak(`Let's begin ${asana.name}. Stand comfortably and check your alignment.`);
+          const desc = (asana as any).description ? ` ${(asana as any).description}` : '';
+          this.speak(`Let's begin ${asana.name}.${desc} Stand comfortably and check your alignment.`);
         } else if (this.currentSessionContext?.isSessionActive) {
           this.speakGreeting();
         }
@@ -266,11 +267,12 @@ export class RealtimeVoiceAgent {
    * If data channel is already open, speaks immediately.
    * Otherwise, queues it to speak immediately upon connection open.
    */
-  triggerPoseStart(asanaId: string, asanaName: string) {
+  triggerPoseStart(asanaId: string, asanaName: string, asanaDescription?: string) {
     if (this.dc && this.dc.readyState === "open") {
-      this.speak(`Let's begin ${asanaName}. Stand comfortably and check your posture.`);
+      const desc = asanaDescription ? ` ${asanaDescription}` : '';
+      this.speak(`Let's begin ${asanaName}.${desc} Stand comfortably and check your posture.`);
     } else {
-      this.pendingPoseStart = { id: asanaId, name: asanaName };
+      this.pendingPoseStart = { id: asanaId, name: asanaName, description: asanaDescription } as any;
     }
   }
 
@@ -319,7 +321,7 @@ export class RealtimeVoiceAgent {
     if (event.type === "step_guidance" && event.feedback) {
       spokenText = event.feedback;
     } else if (event.type === "pose_started") {
-      spokenText = `Let's begin ${event.asanaName}.`;
+      spokenText = event.feedback || `Let's begin ${event.asanaName}.`;
     } else if (event.type === "calibration_prompt" && event.feedback) {
       spokenText = event.feedback;
     } else if (event.type === "calibration_complete") {
@@ -333,7 +335,7 @@ export class RealtimeVoiceAgent {
     } else if (event.type === "pose_held") {
       spokenText = "Posture aligned! Hold steady and breathe.";
     } else if (event.type === "pose_completed") {
-      spokenText = `Great job completing ${event.asanaName}!`;
+      spokenText = event.feedback || `Congratulations! You have completed ${event.asanaName}.`;
     } else if (event.type === "hold_countdown" && event.feedback) {
       spokenText = event.feedback;
     } else if (event.type === "user_out_of_frame") {

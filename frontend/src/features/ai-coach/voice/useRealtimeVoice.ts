@@ -126,11 +126,12 @@ export function useRealtimeVoice() {
     }
   }, [state.isConversationMode]);
 
-  const triggerPoseStart = useCallback((asanaId: string, asanaName: string) => {
+  const triggerPoseStart = useCallback((asanaId: string, asanaName: string, asanaDescription?: string) => {
     if (state.isConversationMode) {
-      rtcAgentRef.current?.triggerPoseStart(asanaId, asanaName);
+      rtcAgentRef.current?.triggerPoseStart(asanaId, asanaName, asanaDescription);
     } else {
-      ttsAgentRef.current?.speak(`Let's begin ${asanaName}. Stand comfortably and check your posture.`, 10, "pose_started");
+      const desc = asanaDescription ? ` ${asanaDescription}` : '';
+      ttsAgentRef.current?.speak(`Let's begin ${asanaName}.${desc} Stand comfortably and check your posture.`, 10, "pose_started");
     }
   }, [state.isConversationMode]);
 
