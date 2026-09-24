@@ -304,7 +304,9 @@ export function useCoachSession({
       if (hasPoseLostSinceRef.current === null) {
         hasPoseLostSinceRef.current = Date.now();
       } else if (Date.now() - hasPoseLostSinceRef.current > 7000) { // 7 second grace period
-        setState("detecting");
+        if (state !== "detecting") {
+          setState("detecting");
+        }
         setHoldTime(0);
         holdScoresRef.current = [];
       }
@@ -315,7 +317,9 @@ export function useCoachSession({
 
     if (!evaluation) {
       highAccuracySinceRef.current = null;
-      setState("analyzing");
+      if (state !== "analyzing") {
+        setState("analyzing");
+      }
       setHoldTime(0);
       holdScoresRef.current = [];
       return;
@@ -334,7 +338,9 @@ export function useCoachSession({
           const finalScore = Math.max(75, Math.min(100, Math.round(evaluation.score)));
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);
-          setState("completed");
+          if (state !== "completed") {
+            setState("completed");
+          }
         }
       } else {
         if (state !== "coaching") {
@@ -343,7 +349,9 @@ export function useCoachSession({
       }
     } else {
       highAccuracySinceRef.current = null;
-      setState("correcting");
+      if (state !== "correcting") {
+        setState("correcting");
+      }
     }
   }, [evaluation, hasPose, state, currentAsanaIndex]);
 

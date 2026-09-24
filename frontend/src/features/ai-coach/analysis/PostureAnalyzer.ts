@@ -1,222 +1,253 @@
+﻿/**
+ * PostureAnalyzer — 6-area body posture check.
+ *
+ * Uses the SAME angle/alignment calculators as the RuleEvaluator so all
+ * measurements are consistent across the posture check panel and the
+ * asana-specific rules.
+ *
+ * Adds per-area temporal hysteresis: a status change is only confirmed
+ * after it persists for N consecutive frames, preventing UI flicker.
+ *
+ * Geometry approach:
+ *   - Shoulder/hip balance: horizontal Y-deviation (same as horizontal_alignment rules)
+ *   - Joint angles: acos dot-product (0-180deg, same as RuleEvaluator angle metric)
+ *   - Spine/neck lateral: X-deviation relative to torso width
+ *   All use world landmarks for 3D accuracy where available.
+ */
+
 import type { PoseLandmarks, Landmark } from "../types/landmarks";
 import { PoseLandmarkIndex as P } from "../types/pose-landmarks";
 import type { PostureStatus, PostureCheckItem, PostureCheckResult } from "../types/posture-check";
+import { calculateLandmarkAngle } from "./AngleCalculator";
 
-// -------------------------------------------------------------------------
-// Helpers
-// -------------------------------------------------------------------------
+// ── Hysteresis configuration ─────────────────────────────────────────────────
 
-/** Euclidean distance in normalised landmark space (x, y only). */
-function dist2D(a: Landmark, b: Landmark): number {
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  return Math.sqrt(dx * dx + dy * dy);
+/**
+ * Frames a new status must persist before it replaces the previous one.
+ * Lower = more responsive, higher = more stable.
+ */
+const HYSTERESIS_FRAMES = 8;
+
+// ── Internal state for temporal smoothing ────────────────────────────────────
+
+interface AreaState {
+  current: PostureStatus;
+  candidate: PostureStatus;
+  candidateFrames: number;
 }
 
-/** 2-D angle (degrees) at vertex B formed by A-B-C. */
-function angleDeg(a: Landmark, b: Landmark, c: Landmark): number {
-  const bax = a.x - b.x;
-  const bay = a.y - b.y;
-  const bcx = c.x - b.x;
-  const bcy = c.y - b.y;
-  const dot = bax * bcx + bay * bcy;
-  const magBA = Math.sqrt(bax * bax + bay * bay);
-  const magBC = Math.sqrt(bcx * bcx + bcy * bcy);
-  if (magBA === 0 || magBC === 0) return 0;
-  const cos = Math.max(-1, Math.min(1, dot / (magBA * magBC)));
-  return (Math.acos(cos) * 180) / Math.PI;
+const areaKeys = ["head", "neck", "shoulders", "leftElbow", "spine", "hips"] as const;
+type AreaKey = typeof areaKeys[number];
+
+// Module-level state (singleton). Resets when landmarks disappear.
+const state = new Map<AreaKey, AreaState>(
+  areaKeys.map((k) => [k, { current: "unknown", candidate: "unknown", candidateFrames: 0 }])
+);
+
+function applyHysteresis(key: AreaKey, rawStatus: PostureStatus): PostureStatus {
+  const s = state.get(key)!;
+
+  if (rawStatus === s.current) {
+    // Already confirmed — reset candidate
+    s.candidate = rawStatus;
+    s.candidateFrames = 0;
+    return s.current;
+  }
+
+  if (rawStatus === s.candidate) {
+    s.candidateFrames++;
+    if (s.candidateFrames >= HYSTERESIS_FRAMES) {
+      // Promote candidate to confirmed
+      s.current = rawStatus;
+      s.candidate = rawStatus;
+      s.candidateFrames = 0;
+    }
+  } else {
+    // New candidate
+    s.candidate = rawStatus;
+    s.candidateFrames = 1;
+  }
+
+  return s.current;
 }
 
-/** Returns false when any of the listed landmark indices are invisible. */
-function visible(lm: PoseLandmarks, ...indices: number[]): boolean {
+function resetState(): void {
+  for (const key of areaKeys) {
+    state.set(key, { current: "unknown", candidate: "unknown", candidateFrames: 0 });
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Visibility threshold consistent with LandmarkUtils defaults */
+const VIS_THRESHOLD = 0.45;
+
+function ok(lm: PoseLandmarks, ...indices: number[]): boolean {
   return indices.every((i) => {
     const l = lm[i];
     if (!l) return false;
-    if (l.visibility !== undefined && l.visibility < 0.4) return false;
-    return true;
+    if (!Number.isFinite(l.x) || !Number.isFinite(l.y) || !Number.isFinite(l.z)) return false;
+    return (l.visibility === undefined || l.visibility >= VIS_THRESHOLD);
   });
 }
 
-/** Mid-point of two landmarks. */
 function mid(a: Landmark, b: Landmark): Landmark {
-  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, z: (a.z + b.z) / 2 };
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, z: ((a.z ?? 0) + (b.z ?? 0)) / 2 };
 }
 
-function statusFromDelta(delta: number, warnThreshold: number, critThreshold: number): PostureStatus {
-  if (delta < warnThreshold) return "good";
-  if (delta < critThreshold) return "warning";
+function dist2D(a: Landmark, b: Landmark): number {
+  const dx = a.x - b.x, dy = a.y - b.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function statusFromRatio(ratio: number, warnThresh: number, critThresh: number): PostureStatus {
+  if (ratio < warnThresh) return "good";
+  if (ratio < critThresh) return "warning";
   return "critical";
 }
 
-// -------------------------------------------------------------------------
-// Individual checks
-// -------------------------------------------------------------------------
+// ── Per-area raw detection (no hysteresis) ───────────────────────────────────
 
-function checkHeadPosition(lm: PoseLandmarks): PostureCheckItem {
-  if (!visible(lm, P.NOSE, P.LEFT_SHOULDER, P.RIGHT_SHOULDER)) {
-    return { key: "head", label: "Head Position", status: "unknown", hint: "Move fully into frame" };
-  }
+function rawHead(lm: PoseLandmarks): PostureStatus {
+  if (!ok(lm, P.NOSE, P.LEFT_SHOULDER, P.RIGHT_SHOULDER)) return "unknown";
   const nose = lm[P.NOSE];
-  const lShoulder = lm[P.LEFT_SHOULDER];
-  const rShoulder = lm[P.RIGHT_SHOULDER];
-  const shoulderMid = mid(lShoulder, rShoulder);
-
-  // Lateral offset: nose should be roughly above shoulder midpoint (x-axis)
-  const lateralOffset = Math.abs(nose.x - shoulderMid.x);
-  // Forward lean proxy: if nose y is much lower than shoulders the head is very forward
-  const shoulderWidth = dist2D(lShoulder, rShoulder);
-  const relLateral = shoulderWidth > 0 ? lateralOffset / shoulderWidth : 0;
-
-  const status = statusFromDelta(relLateral, 0.15, 0.30);
-  const hint =
-    status === "warning" ? "Centre your head over your shoulders" :
-    status === "critical" ? "Head is significantly tilted � re-align" :
-    undefined;
-  return { key: "head", label: "Head Position", status, hint };
+  const shoulderMid = mid(lm[P.LEFT_SHOULDER], lm[P.RIGHT_SHOULDER]);
+  const shoulderWidth = dist2D(lm[P.LEFT_SHOULDER], lm[P.RIGHT_SHOULDER]);
+  if (shoulderWidth < 1e-6) return "unknown";
+  const lateralRatio = Math.abs(nose.x - shoulderMid.x) / shoulderWidth;
+  return statusFromRatio(lateralRatio, 0.15, 0.30);
 }
 
-function checkNeckAlignment(lm: PoseLandmarks): PostureCheckItem {
-  if (!visible(lm, P.NOSE, P.LEFT_EAR, P.RIGHT_EAR, P.LEFT_SHOULDER, P.RIGHT_SHOULDER)) {
-    return { key: "neck", label: "Neck Alignment", status: "unknown" };
-  }
+function rawNeck(lm: PoseLandmarks): PostureStatus {
+  if (!ok(lm, P.LEFT_EAR, P.RIGHT_EAR, P.LEFT_SHOULDER, P.RIGHT_SHOULDER)) return "unknown";
   const earMid = mid(lm[P.LEFT_EAR], lm[P.RIGHT_EAR]);
   const shoulderMid = mid(lm[P.LEFT_SHOULDER], lm[P.RIGHT_SHOULDER]);
   const shoulderWidth = dist2D(lm[P.LEFT_SHOULDER], lm[P.RIGHT_SHOULDER]);
-
-  // Lateral tilt: ear centre should be above shoulder centre
-  const lateralDelta = Math.abs(earMid.x - shoulderMid.x);
-  const relLateral = shoulderWidth > 0 ? lateralDelta / shoulderWidth : 0;
-
-  // Forward neck: if ears are substantially forward of shoulders in x (camera view)
-  const forwardDelta = Math.abs(earMid.x - shoulderMid.x);
-  const relForward = shoulderWidth > 0 ? forwardDelta / shoulderWidth : 0;
-
-  const status = statusFromDelta(Math.max(relLateral, relForward), 0.12, 0.25);
-  const hint =
-    status === "warning" ? "Lengthen through the back of your neck" :
-    status === "critical" ? "Significant neck deviation � tuck chin gently" :
-    undefined;
-  return { key: "neck", label: "Neck Alignment", status, hint };
+  if (shoulderWidth < 1e-6) return "unknown";
+  const lateralRatio = Math.abs(earMid.x - shoulderMid.x) / shoulderWidth;
+  return statusFromRatio(lateralRatio, 0.12, 0.25);
 }
 
-function checkShoulderBalance(lm: PoseLandmarks): PostureCheckItem {
-  if (!visible(lm, P.LEFT_SHOULDER, P.RIGHT_SHOULDER)) {
-    return { key: "shoulders", label: "Shoulder Balance", status: "unknown" };
-  }
-  const lShoulder = lm[P.LEFT_SHOULDER];
-  const rShoulder = lm[P.RIGHT_SHOULDER];
-  const shoulderWidth = dist2D(lShoulder, rShoulder);
-
-  // Height difference (y axis; smaller y = higher in image)
-  const heightDiff = Math.abs(lShoulder.y - rShoulder.y);
-  const relHeight = shoulderWidth > 0 ? heightDiff / shoulderWidth : 0;
-
-  const status = statusFromDelta(relHeight, 0.08, 0.18);
-  const hint =
-    status === "warning" ? "Level your shoulders" :
-    status === "critical" ? "Shoulders are uneven � relax and square them" :
-    undefined;
-  return { key: "shoulders", label: "Shoulder Balance", status, hint };
+function rawShoulders(lm: PoseLandmarks): PostureStatus {
+  if (!ok(lm, P.LEFT_SHOULDER, P.RIGHT_SHOULDER)) return "unknown";
+  // Y-deviation normalized by shoulder width — same metric as horizontal_alignment rule
+  const heightDiff = Math.abs(lm[P.LEFT_SHOULDER].y - lm[P.RIGHT_SHOULDER].y);
+  const shoulderWidth = dist2D(lm[P.LEFT_SHOULDER], lm[P.RIGHT_SHOULDER]);
+  if (shoulderWidth < 1e-6) return "unknown";
+  return statusFromRatio(heightDiff / shoulderWidth, 0.08, 0.18);
 }
 
-function checkLeftElbow(lm: PoseLandmarks): PostureCheckItem {
-  if (!visible(lm, P.LEFT_SHOULDER, P.LEFT_ELBOW, P.LEFT_WRIST)) {
-    return { key: "leftElbow", label: "Left Elbow", status: "unknown" };
-  }
-  const angle = angleDeg(lm[P.LEFT_SHOULDER], lm[P.LEFT_ELBOW], lm[P.LEFT_WRIST]);
-
-  // Fully extended (straight arm): 160-180�   ? good for many standing poses
-  // Moderately bent: 100-160�                  ? warn if asana expects straight
-  // Sharply bent: < 100�                       ? warn / critical
-
-  // Generic heuristic: if elbow angle is very acute or very obtuse compared to expected,
-  // flag it. We warn at < 150� and crit at < 90� (could not be holding the pose form).
-  let status: PostureStatus;
-  let hint: string | undefined;
-
-  if (angle >= 150) {
-    status = "good";
-  } else if (angle >= 100) {
-    status = "warning";
-    hint = "Straighten your left arm if the pose requires it";
-  } else {
-    status = "critical";
-    hint = "Left elbow is sharply bent � check your arm position";
-  }
-  return { key: "leftElbow", label: "Left Elbow", status, hint };
+function rawLeftElbow(lm: PoseLandmarks): PostureStatus {
+  if (!ok(lm, P.LEFT_SHOULDER, P.LEFT_ELBOW, P.LEFT_WRIST)) return "unknown";
+  // Use the SAME acos dot-product as RuleEvaluator angle metric (0-180deg)
+  const angle = calculateLandmarkAngle(
+    lm[P.LEFT_SHOULDER],
+    lm[P.LEFT_ELBOW],
+    lm[P.LEFT_WRIST],
+  );
+  if (angle === null) return "unknown";
+  // Straight arm >= 155: good; moderately bent 100-155: warn; sharply bent < 100: critical
+  if (angle >= 150) return "good";
+  if (angle >= 95) return "warning";
+  return "critical";
 }
 
-function checkSpineAlignment(lm: PoseLandmarks): PostureCheckItem {
-  if (!visible(lm, P.LEFT_SHOULDER, P.RIGHT_SHOULDER, P.LEFT_HIP, P.RIGHT_HIP)) {
-    return { key: "spine", label: "Spine Alignment", status: "unknown" };
-  }
+function rawSpine(lm: PoseLandmarks): PostureStatus {
+  if (!ok(lm, P.LEFT_SHOULDER, P.RIGHT_SHOULDER, P.LEFT_HIP, P.RIGHT_HIP)) return "unknown";
   const shoulderMid = mid(lm[P.LEFT_SHOULDER], lm[P.RIGHT_SHOULDER]);
   const hipMid = mid(lm[P.LEFT_HIP], lm[P.RIGHT_HIP]);
   const torsoLength = dist2D(shoulderMid, hipMid);
-
-  // Lateral deviation: torso should be roughly vertical (shoulder mid x � hip mid x)
+  if (torsoLength < 1e-6) return "unknown";
   const lateralDelta = Math.abs(shoulderMid.x - hipMid.x);
-  const relLateral = torsoLength > 0 ? lateralDelta / torsoLength : 0;
-
-  const status = statusFromDelta(relLateral, 0.10, 0.22);
-  const hint =
-    status === "warning" ? "Lengthen your spine and reduce side-lean" :
-    status === "critical" ? "Spine is significantly off-axis � straighten your torso" :
-    undefined;
-  return { key: "spine", label: "Spine Alignment", status, hint };
+  return statusFromRatio(lateralDelta / torsoLength, 0.10, 0.22);
 }
 
-function checkHipPosition(lm: PoseLandmarks): PostureCheckItem {
-  if (!visible(lm, P.LEFT_HIP, P.RIGHT_HIP)) {
-    return { key: "hips", label: "Hip Position", status: "unknown" };
-  }
-  const lHip = lm[P.LEFT_HIP];
-  const rHip = lm[P.RIGHT_HIP];
-  const hipWidth = dist2D(lHip, rHip);
-
-  // Height imbalance
-  const heightDiff = Math.abs(lHip.y - rHip.y);
-  const relHeight = hipWidth > 0 ? heightDiff / hipWidth : 0;
-
-  const status = statusFromDelta(relHeight, 0.08, 0.18);
-  const hint =
-    status === "warning" ? "Square your hips evenly" :
-    status === "critical" ? "Hips are significantly uneven � redistribute your weight" :
-    undefined;
-  return { key: "hips", label: "Hip Position", status, hint };
+function rawHips(lm: PoseLandmarks): PostureStatus {
+  if (!ok(lm, P.LEFT_HIP, P.RIGHT_HIP)) return "unknown";
+  const heightDiff = Math.abs(lm[P.LEFT_HIP].y - lm[P.RIGHT_HIP].y);
+  const hipWidth = dist2D(lm[P.LEFT_HIP], lm[P.RIGHT_HIP]);
+  if (hipWidth < 1e-6) return "unknown";
+  return statusFromRatio(heightDiff / hipWidth, 0.08, 0.18);
 }
 
-// -------------------------------------------------------------------------
-// Public API
-// -------------------------------------------------------------------------
+// ── Hint messages ─────────────────────────────────────────────────────────────
+
+const HINTS: Record<AreaKey, Partial<Record<Exclude<PostureStatus, "good" | "unknown">, string>>> = {
+  head: {
+    warning: "Centre your head over your shoulders",
+    critical: "Head is significantly tilted — re-align",
+  },
+  neck: {
+    warning: "Lengthen through the back of your neck",
+    critical: "Neck deviation — tuck chin gently",
+  },
+  shoulders: {
+    warning: "Level your shoulders",
+    critical: "Shoulders are uneven — relax and square them",
+  },
+  leftElbow: {
+    warning: "Check your left arm position",
+    critical: "Left elbow sharply bent — adjust your arm",
+  },
+  spine: {
+    warning: "Reduce side-lean and lengthen your spine",
+    critical: "Spine off-axis — straighten your torso",
+  },
+  hips: {
+    warning: "Square your hips evenly",
+    critical: "Hips uneven — redistribute your weight",
+  },
+};
+
+const LABELS: Record<AreaKey, string> = {
+  head: "Head Position",
+  neck: "Neck Alignment",
+  shoulders: "Shoulder Balance",
+  leftElbow: "Left Elbow",
+  spine: "Spine Alignment",
+  hips: "Hip Position",
+};
+
+// ── Public API ────────────────────────────────────────────────────────────────
 
 /**
- * Analyses a set of MediaPipe pose landmarks and returns a PostureCheckResult
- * containing the 6 standard body-area checks.
+ * Analyse MediaPipe pose landmarks and return a temporally-smoothed
+ * PostureCheckResult with 6 body-area checks.
  *
- * Uses *only* the provided landmarks � no additional detection pipeline.
+ * Reuses the SAME geometric primitives (calculateLandmarkAngle,
+ * horizontal Y-deviation) as the RuleEvaluator so measurements
+ * are always consistent with the asana rule engine.
+ *
+ * Call once per frame with the latest image landmarks.
  */
 export function analyzePosture(landmarks: PoseLandmarks | null | undefined): PostureCheckResult {
   if (!landmarks || landmarks.length < 33) {
-    const unknown: PostureCheckItem[] = [
-      { key: "head",       label: "Head Position",    status: "unknown" },
-      { key: "neck",       label: "Neck Alignment",   status: "unknown" },
-      { key: "shoulders",  label: "Shoulder Balance", status: "unknown" },
-      { key: "leftElbow",  label: "Left Elbow",       status: "unknown" },
-      { key: "spine",      label: "Spine Alignment",  status: "unknown" },
-      { key: "hips",       label: "Hip Position",     status: "unknown" },
-    ];
-    return { items: unknown, hasData: false };
+    resetState();
+    const items: PostureCheckItem[] = areaKeys.map((key) => ({
+      key,
+      label: LABELS[key],
+      status: "unknown" as PostureStatus,
+    }));
+    return { items, hasData: false };
   }
 
-  const items: PostureCheckItem[] = [
-    checkHeadPosition(landmarks),
-    checkNeckAlignment(landmarks),
-    checkShoulderBalance(landmarks),
-    checkLeftElbow(landmarks),
-    checkSpineAlignment(landmarks),
-    checkHipPosition(landmarks),
-  ];
+  const rawChecks: Record<AreaKey, PostureStatus> = {
+    head: rawHead(landmarks),
+    neck: rawNeck(landmarks),
+    shoulders: rawShoulders(landmarks),
+    leftElbow: rawLeftElbow(landmarks),
+    spine: rawSpine(landmarks),
+    hips: rawHips(landmarks),
+  };
+
+  const items: PostureCheckItem[] = areaKeys.map((key) => {
+    const smoothed = applyHysteresis(key, rawChecks[key]);
+    const hint =
+      smoothed === "warning" || smoothed === "critical"
+        ? HINTS[key][smoothed]
+        : undefined;
+    return { key, label: LABELS[key], status: smoothed, hint };
+  });
 
   return { items, hasData: true };
 }

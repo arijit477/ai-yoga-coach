@@ -88,7 +88,8 @@ export class CoachingEventEngine {
       if (evaluation) {
         
         // Safety Warning check
-        const safetyIssue = evaluation.secondaryIssues.find(i => i.severity === "high") || 
+        const secondary = evaluation.secondaryIssues || [];
+        const safetyIssue = secondary.find(i => i.severity === "high") || 
                            (evaluation.primaryIssue?.severity === "high" ? evaluation.primaryIssue : null);
         
         if (safetyIssue) {

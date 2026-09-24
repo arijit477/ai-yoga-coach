@@ -172,7 +172,7 @@ export function AICoachPage() {
   }, [activeAsanas, completedAsanaIds, completedAsanaScores]);
 
   /*
-   * Pose tracking
+   * Pose tracking - high-performance browser MediaPipe Tasks Vision (GPU accelerated)
    */
   const { result, isInitialized, error, cameraState } = usePoseTracking(
     videoRef,
@@ -266,9 +266,7 @@ export function AICoachPage() {
     moveToNextAsana,
     stayHere,
   } = useCoachSession({
-    evaluation: stableEvaluation
-      ? { ...stableEvaluation, score: stableScore ?? stableEvaluation.score }
-      : null,
+    evaluation: stableEvaluation,
     landmarks: result?.landmarks ?? null,
     isInitialized,
     hasPose: Boolean(result),

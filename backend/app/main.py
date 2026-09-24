@@ -8,6 +8,7 @@ from app.api.routes.asanas import router as asana_router
 from app.api.routes.temp import router as temp_router
 from app.api.routes import realtime
 from app.api.routes import tts
+from app.api.routes import video_stream
 app = FastAPI(title="AI Yoga Coach API", version="0.1.0")
 
 # Setup CORS to allow frontend requests
@@ -24,6 +25,7 @@ app.include_router(asana_router)
 app.include_router(temp_router)
 app.include_router(realtime.router)
 app.include_router(tts.router)
+app.include_router(video_stream.router)
 
 @app.get("/api/health")
 async def health_check():

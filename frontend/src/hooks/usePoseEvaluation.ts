@@ -37,13 +37,13 @@ export function usePoseEvaluation(
       return null;
     }
 
-    if (result.worldLandmarks.length < 33) {
-      return null;
-    }
+    const worldLandmarks = (result.worldLandmarks && result.worldLandmarks.length >= 33)
+      ? result.worldLandmarks
+      : result.landmarks;
 
     return evaluatorRef.current?.evaluate(asanaId, rules, {
       landmarks: result.landmarks,
-      worldLandmarks: result.worldLandmarks,
+      worldLandmarks,
     }) || null;
   }, [result, asanaId, customRules]);
 }
