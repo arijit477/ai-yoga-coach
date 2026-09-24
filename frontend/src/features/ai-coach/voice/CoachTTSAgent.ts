@@ -107,6 +107,24 @@ export class CoachTTSAgent {
     this.processQueue();
   }
 
+  stopSpeaking() {
+    if (this.audioElement) {
+      this.audioElement.pause();
+      this.audioElement.removeAttribute('src');
+      this.audioElement.load(); // Aborts the ongoing download
+    }
+    this.cleanupCurrentAudio();
+    this.isSpeaking = false;
+    this.queue = [];
+  }
+
+  destroy() {
+    this.stopSpeaking();
+    if (this.audioElement) {
+      this.audioElement = null;
+    }
+  }
+
   private async processQueue() {
     if (this.isSpeaking || this.queue.length === 0 || this.isMuted || !this.audioElement) return;
 
@@ -124,24 +142,12 @@ export class CoachTTSAgent {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiUrl}/api/ai-coach/tts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: nextUtterance.text,
-          coach_id: this.currentCoachId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`TTS API Error: ${response.status}`);
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: 'audio/mpeg' });
-      this.currentObjectUrl = URL.createObjectURL(blob);
+      const url = new URL(`${apiUrl}/api/ai-coach/tts`);
+      url.searchParams.set("text", nextUtterance.text);
+      url.searchParams.set("coach_id", this.currentCoachId);
       
-      this.audioElement.src = this.currentObjectUrl;
+      this.cleanupCurrentAudio();
+      this.audioElement.src = url.toString();
       
       // Wait for it to be ready
       await new Promise<void>((resolve, reject) => {
@@ -154,34 +160,26 @@ export class CoachTTSAgent {
         this.audioElement.addEventListener('error', (e) => reject(e), { once: true });
         
         // Timeout in case it hangs
-        setTimeout(() => resolve(), 2000);
+        setTimeout(() => resolve(), 3000);
       });
       
-      await this.audioElement.play();
+      // If stopSpeaking was called while waiting for audio to load
+      if (!this.isSpeaking) return;
       
-    } catch (err) {
-      console.error("[AI COACH] Failed to fetch ElevenLabs TTS:", err);
+      try {
+        await this.audioElement.play();
+      } catch (playErr: any) {
+        // Ignore AbortError caused by pause() during play()
+        if (playErr.name !== "AbortError") {
+          throw playErr;
+        }
+      }
+      
+    } catch (err: any) {
+      console.error("[AI COACH] Failed to stream TTS:", err);
       this.cleanupCurrentAudio();
       this.isSpeaking = false;
       this.processQueue();
-    }
-  }
-
-  stopSpeaking() {
-    if (this.audioElement) {
-      this.audioElement.pause();
-      this.audioElement.currentTime = 0;
-    }
-    this.cleanupCurrentAudio();
-    this.isSpeaking = false;
-    this.queue = [];
-  }
-
-  destroy() {
-    this.stopSpeaking();
-    if (this.audioElement) {
-      this.audioElement.src = "";
-      this.audioElement = null;
     }
   }
 }

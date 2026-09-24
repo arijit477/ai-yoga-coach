@@ -43,13 +43,13 @@ export interface AccuracyStabilizerConfig {
 }
 
 export const DEFAULT_STABILIZER_CONFIG: AccuracyStabilizerConfig = {
-  smoothingAlpha: 0.03, // Much slower exponential moving average
-  largeChangeThreshold: 20,
-  severeChangeThreshold: 35,
-  largeChangePersistenceFrames: 12, // Require longer persistence for big changes
-  severeChangePersistenceFrames: 8,
-  deadBand: 2.0, // Prevent text flickering
-  invalidFrameGraceMs: 2500, // Longer grace period
+  smoothingAlpha: 0.10, // Faster exponential moving average to sync with detection
+  largeChangeThreshold: 15,
+  severeChangeThreshold: 25,
+  largeChangePersistenceFrames: 6, // Respond quicker to legitimate changes
+  severeChangePersistenceFrames: 4,
+  deadBand: 1.5, // Prevent text flickering
+  invalidFrameGraceMs: 1500, // Grace period
 };
 
 export interface StableAccuracyState {

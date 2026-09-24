@@ -46,7 +46,11 @@ export function evaluateRule(
   for (const pointIdx of rule.points) {
     const lm = imageLandmarks[pointIdx];
     if (!lm || (lm.visibility !== undefined && lm.visibility < 0.25)) {
-      return { passed: false, score: 0, ignored: true }; // Landmark is occluded or not confident
+      return { passed: false, score: 0, ignored: true }; // Landmark is not confident
+    }
+    // Check if landmark is inside the physical camera frame
+    if (lm.x < 0 || lm.x > 1 || lm.y < 0 || lm.y > 1) {
+      return { passed: false, score: 0, ignored: true }; // Landmark is out of frame
     }
   }
 

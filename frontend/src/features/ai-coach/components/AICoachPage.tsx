@@ -804,7 +804,9 @@ export function AICoachPage() {
                 </div>
               )}
 
-              {isSessionActive && (
+              {isSessionActive &&
+                sessionState !== "countdown" &&
+                sessionState !== "guide_video" && (
                 <div
                   className={
                     stableScore !== null && stableScore >= 75
@@ -1086,6 +1088,8 @@ export function AICoachPage() {
                   </span>
 
                   {isSessionActive &&
+                    sessionState !== "countdown" &&
+                    sessionState !== "guide_video" &&
                     isCameraActive && (
                       <CircularScoreRing
                         score={finalAsanaScore ?? stableScore}
