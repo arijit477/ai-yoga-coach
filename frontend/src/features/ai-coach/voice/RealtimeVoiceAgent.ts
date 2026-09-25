@@ -45,6 +45,7 @@ export class RealtimeVoiceAgent {
   private currentCoachId: string | null = null;
   private isConnecting: boolean = false;
   private currentSessionContext: SessionContextData | null = null;
+  private hasActiveServerResponse: boolean = false;
   
   // Hook for avatar lip-sync: returns incoming audio stream
   private remoteAudioStream: MediaStream | null = null;
@@ -61,11 +62,13 @@ export class RealtimeVoiceAgent {
   ) {
     this.onStatusChange = onStatusChange;
     this.onTranscript = onTranscript;
-    this.audioEl = document.createElement("audio");
-    this.audioEl.autoplay = true;
-    this.audioEl.style.display = "none";
-    if (typeof document !== "undefined" && document.body && !document.body.contains(this.audioEl)) {
-      document.body.appendChild(this.audioEl);
+    if (typeof document !== "undefined") {
+      this.audioEl = document.createElement("audio");
+      this.audioEl.autoplay = true;
+      this.audioEl.style.display = "none";
+      if (document.body && !document.body.contains(this.audioEl)) {
+        document.body.appendChild(this.audioEl);
+      }
     }
   }
 
@@ -151,16 +154,14 @@ export class RealtimeVoiceAgent {
           const ev = JSON.parse(e.data);
 
           // Track speaking and listening states
-          if (ev.type === "response.audio.delta" || ev.type === "response.output_item.added") {
-            // We now rely on the audio analyzer to set speaking state for precise lipsync
+          if (ev.type === "response.created" || ev.type === "response.output_item.added" || ev.type === "response.audio.delta") {
+            this.hasActiveServerResponse = true;
           } else if (
             ev.type === "response.done" ||
             ev.type === "response.audio.done" ||
             ev.type === "response.cancelled"
           ) {
-            if (this.isSpeaking) {
-              // We now rely on the audio analyzer to clear the speaking state
-            }
+            this.hasActiveServerResponse = false;
           }
 
           if (ev.type === "response.function_call_arguments.done") {
@@ -183,6 +184,11 @@ export class RealtimeVoiceAgent {
           }
 
           if (ev.type === "error") {
+            // Benign race condition: response finished just before cancel arrived
+            if (ev.error?.code === "response_cancel_not_active") {
+              this.hasActiveServerResponse = false;
+              return;
+            }
             console.error("[AI COACH] Realtime Server Event Error:", ev.error);
           }
         } catch (err) {
@@ -233,11 +239,12 @@ export class RealtimeVoiceAgent {
 
     if (this.dc && this.dc.readyState === "open") {
       try {
-        // If coach is already speaking, cancel previous response to prevent queuing lag
-        if (this.isSpeaking) {
+        // If coach is already generating a response, cancel previous response to prevent queuing lag
+        if (this.hasActiveServerResponse) {
           try {
             this.dc.send(JSON.stringify({ type: "response.cancel" }));
           } catch (_) {}
+          this.hasActiveServerResponse = false;
         }
 
         const responseCreate = {
@@ -247,6 +254,7 @@ export class RealtimeVoiceAgent {
           },
         };
         this.dc.send(JSON.stringify(responseCreate));
+        this.hasActiveServerResponse = true;
       } catch (err) {
         console.warn("[AI COACH] Error asking OpenAI to speak:", err);
       }
@@ -459,10 +467,11 @@ export class RealtimeVoiceAgent {
     }
 
     // Cancel any ongoing speech response in OpenAI Realtime
-    if (this.dc && this.dc.readyState === "open") {
+    if (this.dc && this.dc.readyState === "open" && this.hasActiveServerResponse) {
       try {
         this.dc.send(JSON.stringify({ type: "response.cancel" }));
       } catch (_) {}
+      this.hasActiveServerResponse = false;
     }
 
     // Immediately pause and silence audio element

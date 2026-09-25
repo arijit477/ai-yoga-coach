@@ -23,11 +23,14 @@ export function useBackendPoseTracking(
   const [error, setError] = useState<string | null>(null);
   const [cameraState, setCameraState] = useState<CameraReadinessState>("CAMERA_DISABLED");
   
+  const onCameraStateChangeRef = useRef<(newState: CameraReadinessState) => void>(setCameraState);
+  onCameraStateChangeRef.current = setCameraState;
+
   const readinessTrackerRef = useRef<CameraReadinessTracker | null>(null);
   
   if (!readinessTrackerRef.current) {
     readinessTrackerRef.current = new CameraReadinessTracker((newState) => {
-      setCameraState(newState);
+      onCameraStateChangeRef.current(newState);
     });
   }
 
@@ -37,10 +40,12 @@ export function useBackendPoseTracking(
     const connectWebSocket = () => {
       const wsUrl = "ws://localhost:8000/api/ai-coach/video/stream";
       const ws = new WebSocket(wsUrl);
+      readinessTrackerRef.current?.updateCameraStatus("requesting");
       
       ws.onopen = () => {
         setIsInitialized(true);
         setError(null);
+        readinessTrackerRef.current?.updateCameraStatus("enabled");
         if (!cancelled && enabled && !isRunningRef.current) {
           isRunningRef.current = true;
           animationFrameRef.current = requestAnimationFrame(sendFrame);
@@ -129,8 +134,6 @@ export function useBackendPoseTracking(
       // Send at ~15fps to not overwhelm backend
       if (video && video.readyState >= 2 && ws && ws.readyState === WebSocket.OPEN) {
         if (timestamp - lastRenderTimeRef.current >= 66) {
-          readinessTrackerRef.current?.updateCameraStatus(enabled ? "enabled" : "disabled");
-          
           if (!canvasRef.current) {
             canvasRef.current = document.createElement("canvas");
           }
@@ -165,6 +168,8 @@ export function useBackendPoseTracking(
       wsRef.current.close();
       wsRef.current = null;
       isRunningRef.current = false;
+      readinessTrackerRef.current?.updateCameraStatus("disabled");
+      readinessTrackerRef.current?.updatePoseDetection(null);
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
@@ -174,6 +179,8 @@ export function useBackendPoseTracking(
     return () => {
       cancelled = true;
       isRunningRef.current = false;
+      readinessTrackerRef.current?.updateCameraStatus("disabled");
+      readinessTrackerRef.current?.updatePoseDetection(null);
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;

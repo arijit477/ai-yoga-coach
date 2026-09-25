@@ -1,4 +1,5 @@
 import type { PoseLandmarks } from "./landmarks";
+import type { PoseFeatures } from "./pose-features";
 
 export type RuleMetric =
   | "angle"
@@ -17,118 +18,132 @@ export type RuleComparison =
   | "greater_than"
   | "less_than";
 
+export type RuleEvaluationStatus =
+  | "pass"
+  | "warning"
+  | "fail"
+  | "unknown";
+
+export type OverallPoseStatus =
+  | "excellent"
+  | "good"
+  | "needs_adjustment"
+  | "unsafe"
+  | "unknown";
+
+export type PostureAreaStatus =
+  | "good"
+  | "warning"
+  | "bad"
+  | "unknown";
+
 export interface PoseRule {
   id: string;
-
   name: string;
-
   metric: RuleMetric;
-
   points: number[];
-
   comparison: RuleComparison;
-
   min?: number;
-
   max?: number;
-
   target?: number;
-
   tolerance?: number;
-
+  warningTolerance?: number;
   weight: number;
-
   severity: RuleSeverity;
-
   feedback: string;
+  isSafety?: boolean;
 }
 
 export interface PoseIssue {
   ruleId: string;
-
   ruleName: string;
-
   severity: RuleSeverity;
-
   metric: RuleMetric;
-
   currentValue: number;
-
   targetValue?: number;
-
   min?: number;
-
   max?: number;
-
   feedback: string;
-
   joint?: string;
-
   targetMin?: number;
-
   targetMax?: number;
+  normalizedDeviation?: number;
+  isSafety?: boolean;
+}
+
+export interface RuleEvaluation {
+  ruleId: string;
+  ruleName: string;
+  metric: RuleMetric;
+  status: RuleEvaluationStatus;
+  severity: RuleSeverity;
+  weight: number;
+  score: number;
+  measuredValue: number | null;
+  target?: number;
+  min?: number;
+  max?: number;
+  tolerance?: number;
+  feedback: string;
+  issue?: PoseIssue;
+}
+
+export interface PoseEvaluationSummary {
+  totalRules: number;
+  evaluatedRules: number;
+  passedRules: number;
+  warningRules: number;
+  failedRules: number;
+  unknownRules: number;
 }
 
 export interface PoseEvaluation {
   asanaId: string;
-
-  /**
-   * Unrounded floating-point score for this frame (0-100).
-   */
+  timestamp: number;
   score: number;
-
-  /**
-   * Alias for raw unrounded score.
-   */
   rawScore?: number;
-
-  status:
-    | "excellent"
-    | "good"
-    | "needs_adjustment"
-    | "unsafe";
-
+  overallStatus: OverallPoseStatus;
+  status?: OverallPoseStatus; // alias for backwards compatibility
+  rules: RuleEvaluation[];
   issues: PoseIssue[];
-
+  primaryIssue: PoseIssue | null;
+  summary: PoseEvaluationSummary;
+  posture: {
+    head: PostureAreaStatus;
+    neck: PostureAreaStatus;
+    shoulders: PostureAreaStatus;
+    elbows: PostureAreaStatus;
+    spine: PostureAreaStatus;
+    hips: PostureAreaStatus;
+    knees: PostureAreaStatus;
+    ankles: PostureAreaStatus;
+  };
+  completionEligible: boolean;
+  confidence: number;
   evaluatedAt: number;
 }
 
 export interface PoseEvaluationResult {
   asanaId: string;
-
-  /**
-   * Displayed/stable score for backward compatibility.
-   */
   score: number;
-
-  /**
-   * Unrounded instantaneous frame score from rule evaluator (0-100).
-   */
   rawScore?: number;
-
-  /**
-   * Temporally smoothed, outlier-filtered continuous float accuracy (0-100).
-   */
   stableScore?: number;
-
-  /**
-   * Stable integer percentage for UI text display, protected by dead-band hysteresis.
-   */
   displayedScore?: number;
-
   isValid: boolean;
   primaryIssue: PoseIssue | null;
   secondaryIssues: PoseIssue[];
-  resolvedIssues: string[]; // array of ruleIds that were failing but are now passing
+  resolvedIssues: string[];
   scoreTrend: "improving" | "declining" | "stable";
-  stability: number; // 0 to 100
-  holdProgress: number; // how long they have been holding the pose correctly
-  completionEligible: boolean; // if they have held it long enough with a high enough score
-  activeRules: number; // number of rules currently being evaluated
+  stability: number;
+  holdProgress: number;
+  completionEligible: boolean;
+  activeRules: number;
   evaluatedAt: number;
 }
 
 export interface PoseEvaluatorContext {
   landmarks: PoseLandmarks;
-  worldLandmarks: PoseLandmarks;
-}
+  worldLandmarks?: PoseLandmarks;
+  features?: PoseFeatures;
+  timestamp?: number;
+}

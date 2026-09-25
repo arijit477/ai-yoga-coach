@@ -1,3 +1,4 @@
+import React from "react";
 import { Square } from "lucide-react";
 
 interface SessionControlsProps {
@@ -19,7 +20,7 @@ interface SessionControlsProps {
   children?: React.ReactNode;
 }
 
-export function SessionControls({
+export const SessionControls = React.memo(function SessionControls({
   isSessionActive,
   onStartSession,
   onStopSession,
@@ -82,5 +83,5 @@ export function SessionControls({
       </div>
     </div>
   );
-}
+});
 

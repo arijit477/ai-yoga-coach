@@ -28,9 +28,9 @@ import { PrivacyNotice } from "./PrivacyNotice";
 import { SafetyGuideBanner } from "./SafetyGuideBanner";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
-import { PostureCheckPanel } from "./PostureCheckPanel";
 import { PostureCheckOverlay } from "./PostureCheckOverlay";
-import { analyzePosture } from "../analysis/PostureAnalyzer";
+import { getPostureCheckResult, PostureStatusDebouncer } from "../analysis/PostureCheckAdapter";
+import { getAsanaLandmarkRequirements } from "../analysis/AsanaLandmarkRequirements";
 
 function getCoachStateMessage(state: ReturnType<typeof useCoachState>): string {
   switch (state) {
@@ -74,10 +74,16 @@ function getSessionLabel(
     case "guide_video":
       return "Guide Video";
 
+    case "get_ready":
     case "countdown":
       return "Get Ready";
 
+    case "camera_check":
+      return "Camera Check";
+
     case "hold_still":
+      return "Hold Still";
+
     case "calibrating":
       return "Calibrating";
 
@@ -96,6 +102,9 @@ function getSessionLabel(
 
     case "pose_review":
       return "Target Form Reached";
+
+    case "user_choice":
+      return "Asana Completed";
 
     case "completed":
       return "Pose Completed";
@@ -172,11 +181,19 @@ export function AICoachPage() {
   }, [activeAsanas, completedAsanaIds, completedAsanaScores]);
 
   /*
+   * Asana-Specific Landmark Requirements derived purely from rule dependencies
+   */
+  const asanaRequirements = useMemo(() => {
+    return getAsanaLandmarkRequirements(currentAsana.id);
+  }, [currentAsana.id]);
+
+  /*
    * Pose tracking - high-performance browser MediaPipe Tasks Vision (GPU accelerated)
    */
   const { result, isInitialized, error, cameraState } = usePoseTracking(
     videoRef,
     isCameraActive,
+    asanaRequirements.requiredLandmarks,
   );
 
   /*
@@ -189,13 +206,23 @@ export function AICoachPage() {
    */
   const stableScore = stableEvaluation?.score ?? null;
 
+  const postureDebouncerRef = useRef<PostureStatusDebouncer | null>(null);
+  if (!postureDebouncerRef.current) {
+    postureDebouncerRef.current = new PostureStatusDebouncer(3);
+  }
+
+  // Reset debouncer when asana changes
+  useEffect(() => {
+    postureDebouncerRef.current?.reset();
+  }, [currentAsana.id]);
+
   /**
-   * Posture Check — derived from live MediaPipe landmarks.
-   * Re-runs every frame a new result arrives; no extra detection pipeline.
+   * Posture Check — derived directly from stable PoseEvaluation (Single Source of Truth)
+   * UI components do NOT calculate angles or alignments independently.
    */
   const postureCheck = useMemo(
-    () => analyzePosture(result?.landmarks ?? null),
-    [result],
+    () => getPostureCheckResult(stableEvaluation, postureDebouncerRef.current ?? undefined),
+    [stableEvaluation],
   );
 
   const {
@@ -203,7 +230,6 @@ export function AICoachPage() {
     start: voiceStart,
     stop: voiceStop,
     toggleMute: voiceToggleMute,
-    toggleConversationMode: voiceToggleConversationMode,
     updateSessionContext: voiceUpdateContext,
     triggerPoseStart: voiceTriggerPoseStart,
     dispatchEvent: voiceDispatch,
@@ -258,6 +284,7 @@ export function AICoachPage() {
     countdown,
     holdTime,
     currentStepIndex,
+    cameraGuidanceMessage,
     startSession,
     skipGuideVideo,
     finishGuideVideo,
@@ -268,6 +295,8 @@ export function AICoachPage() {
   } = useCoachSession({
     evaluation: stableEvaluation,
     landmarks: result?.landmarks ?? null,
+    requiredLandmarks: asanaRequirements.requiredLandmarks,
+    requiredRegions: asanaRequirements.requiredRegions,
     isInitialized,
     hasPose: Boolean(result),
     targetHoldSeconds: currentAsana.targetHoldSeconds,
@@ -359,6 +388,59 @@ export function AICoachPage() {
     hasPose: Boolean(result),
     evaluation: stableEvaluation,
   });
+
+  /**
+   * Separate LIVE ACCURACY from FINAL ASANA ACCURACY.
+   * Live accuracy is only active when full tracking is valid and active coaching is running.
+   */
+  const liveAccuracyScore = useMemo(() => {
+    if (
+      !isCameraActive ||
+      !stableEvaluation?.isValid ||
+      sessionState === "get_ready" ||
+      sessionState === "camera_check" ||
+      sessionState === "hold_still" ||
+      sessionState === "calibrating" ||
+      sessionState === "guide_video" ||
+      sessionState === "countdown" ||
+      sessionState === "idle"
+    ) {
+      return null;
+    }
+    return stableEvaluation.stableScore ?? stableEvaluation.score ?? null;
+  }, [isCameraActive, stableEvaluation, sessionState]);
+
+  const liveDisplayedScore = useMemo(() => {
+    if (
+      !isCameraActive ||
+      !stableEvaluation?.isValid ||
+      sessionState === "get_ready" ||
+      sessionState === "camera_check" ||
+      sessionState === "hold_still" ||
+      sessionState === "calibrating" ||
+      sessionState === "guide_video" ||
+      sessionState === "countdown" ||
+      sessionState === "idle"
+    ) {
+      return null;
+    }
+    return (
+      stableEvaluation.displayedScore ??
+      (stableEvaluation.stableScore !== null && stableEvaluation.stableScore !== undefined
+        ? Math.round(stableEvaluation.stableScore)
+        : null)
+    );
+  }, [isCameraActive, stableEvaluation, sessionState]);
+
+  const effectiveScore =
+    sessionState === "session_completed" || sessionState === "pose_review"
+      ? (finalAsanaScore ?? liveAccuracyScore)
+      : liveAccuracyScore;
+
+  const effectiveDisplayedScore =
+    sessionState === "session_completed" || sessionState === "pose_review"
+      ? (finalAsanaScore ?? liveDisplayedScore)
+      : liveDisplayedScore;
 
   const handleStartSession = useCallback(() => {
     hasDispatchedStartRef.current = null;
@@ -775,7 +857,11 @@ export function AICoachPage() {
 
             {/* Left-Side Posture Check Overlay (Cinema Mode) */}
             {isCameraActive && (
-              <PostureCheckOverlay items={postureCheck.items} hasData={postureCheck.hasData} />
+              <PostureCheckOverlay
+                items={postureCheck.items}
+                hasData={postureCheck.hasData}
+                asanaId={currentAsana.id}
+              />
             )}
 
             {/* Top-Right: Target Pose Reference Card Overlaid on Fullscreen Camera */}
@@ -827,14 +913,14 @@ export function AICoachPage() {
                 sessionState !== "guide_video" && (
                 <div
                   className={
-                    stableScore !== null && stableScore >= 75
+                    effectiveDisplayedScore !== null && effectiveDisplayedScore >= 75
                       ? "animate-[pulse_1.5s_ease-in-out_1]"
                       : ""
                   }
                 >
                   <CircularScoreRing
-                    score={finalAsanaScore ?? stableScore}
-                    displayedScore={finalAsanaScore ?? stableEvaluation?.displayedScore ?? stableScore}
+                    score={effectiveScore}
+                    displayedScore={effectiveDisplayedScore}
                     size={44}
                     strokeWidth={4}
                     compact
@@ -917,9 +1003,9 @@ export function AICoachPage() {
                 />
               )}
 
-            {/* Countdown Overlay in Cinema Mode */}
-            {sessionState === "countdown" && countdown !== null && (
-              <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/40 backdrop-blur-[2px]">
+            {/* Countdown / Get Ready Overlay in Cinema Mode */}
+            {(sessionState === "get_ready" || sessionState === "countdown") && countdown !== null && (
+              <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/40 backdrop-blur-[2px] z-30">
                 <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-100 max-w-xs">
                   <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-800">
                     Get Ready
@@ -932,6 +1018,18 @@ export function AICoachPage() {
                   </p>
                   <p className="text-xs text-slate-600 font-medium">
                     Prepare for {currentAsana.name}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Camera Check Guidance Overlay in Cinema Mode */}
+            {sessionState === "camera_check" && (
+              <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-amber-500/95 text-white px-5 py-3 shadow-xl backdrop-blur-md border border-amber-300 z-30 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-white animate-pulse shrink-0" />
+                  <p className="text-xs font-bold leading-snug">
+                    {cameraGuidanceMessage}
                   </p>
                 </div>
               </div>
@@ -985,8 +1083,8 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Pose Review Choice Modal in Cinema Mode */}
-            {sessionState === "completed" && (
+            {/* Pose Review / User Choice Choice Modal in Cinema Mode */}
+            {(sessionState === "completed" || sessionState === "pose_review" || sessionState === "user_choice") && (
               <PoseReviewModal
                 asana={currentAsana}
                 score={
@@ -994,6 +1092,7 @@ export function AICoachPage() {
                 }
                 onMoveToNext={moveToNextAsana}
                 onStayHere={stayHere}
+                onEndSession={handleStopSession}
                 isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
               />
             )}
@@ -1071,11 +1170,11 @@ export function AICoachPage() {
                   <CameraView
                     videoRef={videoRef}
                     enabled={!isIntroVideoActive && isCameraActive}
-                    score={stableScore}
+                    score={effectiveDisplayedScore}
                   />
                 )}
 
-                {/* Body-Only MediaPipe Skeleton with Polished Neon Glow Tracer (face dots hidden) */}
+                {/* Body-Only MediaPipe Skeleton with Polished Neon Glow Tracer */}
                 {!isIntroVideoActive &&
                   isCameraActive &&
                   result &&
@@ -1085,6 +1184,7 @@ export function AICoachPage() {
                       videoWidth={videoSize.width}
                       videoHeight={videoSize.height}
                       coach={selectedCoach}
+                      evaluation={stableEvaluation}
                     />
                   )}
 
@@ -1110,8 +1210,8 @@ export function AICoachPage() {
                     sessionState !== "guide_video" &&
                     isCameraActive && (
                       <CircularScoreRing
-                        score={finalAsanaScore ?? stableScore}
-                        displayedScore={finalAsanaScore ?? stableEvaluation?.displayedScore ?? stableScore}
+                        score={effectiveScore}
+                        displayedScore={effectiveDisplayedScore}
                         size={38}
                         strokeWidth={4}
                         compact
@@ -1121,7 +1221,11 @@ export function AICoachPage() {
 
                 {/* Left-Side Posture Check Overlay — compact floating panel inside camera */}
                 {isCameraActive && (
-                  <PostureCheckOverlay items={postureCheck.items} hasData={postureCheck.hasData} />
+                  <PostureCheckOverlay
+                    items={postureCheck.items}
+                    hasData={postureCheck.hasData}
+                    asanaId={currentAsana.id}
+                  />
                 )}
 
                 {/* Top-Right: Overlaid Target Pose Reference Card (Copy This Pose) */}
@@ -1190,9 +1294,9 @@ export function AICoachPage() {
                     />
                   )}
 
-                {/* Center / Countdown Overlay */}
-                {sessionState === "countdown" && countdown !== null && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/40 backdrop-blur-[2px]">
+                {/* Center / Countdown / Get Ready Overlay */}
+                {(sessionState === "get_ready" || sessionState === "countdown") && countdown !== null && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-emerald-950/40 backdrop-blur-[2px] z-30">
                     <div className="text-center bg-white/95 rounded-3xl p-6 shadow-2xl border border-emerald-100 max-w-xs">
                       <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-800">
                         Get Ready
@@ -1205,6 +1309,18 @@ export function AICoachPage() {
                       </p>
                       <p className="text-xs text-slate-600 font-medium">
                         Prepare for {currentAsana.name}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Camera Check Guidance Overlay */}
+                {sessionState === "camera_check" && (
+                  <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-amber-500/95 text-white px-5 py-3 shadow-xl backdrop-blur-md border border-amber-300 z-30 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-white animate-pulse shrink-0" />
+                      <p className="text-xs font-bold leading-snug">
+                        {cameraGuidanceMessage}
                       </p>
                     </div>
                   </div>
@@ -1258,8 +1374,8 @@ export function AICoachPage() {
                   </div>
                 )}
 
-                {/* Pose Review Choice Modal (>= 75% accuracy threshold achieved) */}
-                {sessionState === "completed" && (
+                {/* Pose Review / User Choice Modal (>= 75% accuracy threshold achieved) */}
+                {(sessionState === "completed" || sessionState === "pose_review" || sessionState === "user_choice") && (
                   <PoseReviewModal
                     asana={currentAsana}
                     score={
@@ -1267,6 +1383,7 @@ export function AICoachPage() {
                     }
                     onMoveToNext={moveToNextAsana}
                     onStayHere={stayHere}
+                    onEndSession={handleStopSession}
                     isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
                   />
                 )}
@@ -1332,7 +1449,6 @@ export function AICoachPage() {
                 isSessionActive={isSessionActive}
                 onToggleMute={voiceToggleMute}
                 onStopVoice={voiceStop}
-                onToggleConversationMode={voiceToggleConversationMode}
               />
 
               {/* On-Device Privacy Guarantee Notice */}

@@ -1,3 +1,4 @@
+import React from "react";
 import type { Asana } from "../types/asana";
 
 interface AsanaInstructionsCardProps {
@@ -14,7 +15,7 @@ interface AsanaInstructionsCardProps {
  * 2. Arms relaxed by your sides
  * 3. Lengthen the spine, soften the shoulders
  */
-export function AsanaInstructionsCard({
+export const AsanaInstructionsCard = React.memo(function AsanaInstructionsCard({
   asana,
   className = "",
   isDark = false,
@@ -91,6 +92,6 @@ export function AsanaInstructionsCard({
       </ol>
     </div>
   );
-}
+});
 
 

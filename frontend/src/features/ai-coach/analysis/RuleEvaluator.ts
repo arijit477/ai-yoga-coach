@@ -2,25 +2,27 @@ import type {
   PoseRule,
   PoseIssue,
   PoseEvaluatorContext,
+  RuleEvaluationStatus,
 } from "../types/pose-rules";
 
 import { calculateLandmarkAngle } from "./AngleCalculator";
-
 import {
   calculateLandmarkDistance,
   calculateRelativeLandmarkDistance,
 } from "./DistanceCalculator";
-
 import {
   calculateHorizontalDeviation,
   calculateVerticalDeviation,
 } from "./AlignmentCalculator";
+import { isLandmarkUsable } from "./LandmarkUtils";
 
 export interface RuleResult {
   passed: boolean;
+  status: RuleEvaluationStatus;
   score: number;
+  measuredValue: number | null;
   issue?: PoseIssue;
-  ignored?: boolean;
+  ignored?: boolean; // alias for status === "unknown"
 }
 
 /**
@@ -31,29 +33,77 @@ export function evaluateRule(
   context: PoseEvaluatorContext,
 ): RuleResult {
   const imageLandmarks = context.landmarks;
-  const worldLandmarks = context.worldLandmarks;
+  const worldLandmarks = context.worldLandmarks ?? context.landmarks;
 
-  if (
-    !imageLandmarks ||
-    imageLandmarks.length < 33 ||
-    !worldLandmarks ||
-    worldLandmarks.length < 33
-  ) {
-    return { passed: false, score: 0, ignored: true };
+  if (!imageLandmarks || imageLandmarks.length < 33) {
+    return {
+      passed: false,
+      status: "unknown",
+      score: 0,
+      measuredValue: null,
+      ignored: true,
+    };
   }
 
-  // Pre-check landmark confidence for the rule's points
+  // 1. Validate rule configuration
+  if (!rule || !rule.id || !rule.metric || !rule.points || !rule.comparison) {
+    return {
+      passed: false,
+      status: "unknown",
+      score: 0,
+      measuredValue: null,
+      ignored: true,
+    };
+  }
+
+  // Check malformed comparisons
+  if (rule.comparison === "between") {
+    if (rule.min === undefined || rule.max === undefined || rule.min > rule.max) {
+      return {
+        passed: false,
+        status: "unknown",
+        score: 0,
+        measuredValue: null,
+        ignored: true,
+      };
+    }
+  } else if (rule.comparison === "greater_than") {
+    if (rule.target === undefined && rule.min === undefined) {
+      return {
+        passed: false,
+        status: "unknown",
+        score: 0,
+        measuredValue: null,
+        ignored: true,
+      };
+    }
+  } else if (rule.comparison === "less_than") {
+    if (rule.target === undefined && rule.max === undefined) {
+      return {
+        passed: false,
+        status: "unknown",
+        score: 0,
+        measuredValue: null,
+        ignored: true,
+      };
+    }
+  }
+
+  // 2. Pre-check landmark usability for all required rule points
   for (const pointIdx of rule.points) {
     const lm = imageLandmarks[pointIdx];
-    if (!lm || (lm.visibility !== undefined && lm.visibility < 0.25)) {
-      return { passed: false, score: 0, ignored: true }; // Landmark is not confident
-    }
-    // Check if landmark is inside the physical camera frame
-    if (lm.x < 0 || lm.x > 1 || lm.y < 0 || lm.y > 1) {
-      return { passed: false, score: 0, ignored: true }; // Landmark is out of frame
+    if (!lm || !isLandmarkUsable(lm)) {
+      return {
+        passed: false,
+        status: "unknown",
+        score: 0,
+        measuredValue: null,
+        ignored: true,
+      };
     }
   }
 
+  // 3. Extract measured value based on metric
   let value: number | null = null;
 
   switch (rule.metric) {
@@ -74,50 +124,116 @@ export function evaluateRule(
       break;
 
     default:
-      return { passed: false, score: 0, ignored: true };
+      return {
+        passed: false,
+        status: "unknown",
+        score: 0,
+        measuredValue: null,
+        ignored: true,
+      };
   }
 
-  /*
-   * Null means that the required landmarks could
-   * not be evaluated reliably.
-   */
-  if (value === null) {
-    return { passed: false, score: 0, ignored: true };
-  }
-
-  const passed = compareValue(value, rule);
-
-  if (passed) {
+  if (value === null || !Number.isFinite(value)) {
     return {
-      passed: true,
-      score: 100,
+      passed: false,
+      status: "unknown",
+      score: 0,
+      measuredValue: null,
+      ignored: true,
     };
   }
 
+  // 4. Compare measured value against target/warning/failure zones
+  let targetMin: number;
+  let targetMax: number;
+
+  if (rule.comparison === "between") {
+    targetMin = rule.min!;
+    targetMax = rule.max!;
+  } else if (rule.comparison === "greater_than") {
+    targetMin = rule.target ?? rule.min!;
+    targetMax = Number.POSITIVE_INFINITY;
+  } else {
+    // less_than
+    targetMin = Number.NEGATIVE_INFINITY;
+    targetMax = rule.target ?? rule.max!;
+  }
+
+  // Determine warning tolerance zone
+  const defaultWarningTol =
+    rule.metric === "angle"
+      ? 15
+      : rule.metric === "horizontal_alignment" || rule.metric === "vertical_alignment"
+        ? 0.04
+        : 0.1;
+
+  const warningTol =
+    rule.warningTolerance ??
+    (rule.tolerance !== undefined ? rule.tolerance * 1.5 : defaultWarningTol);
+
+  // Exact target pass
+  if (value >= targetMin && value <= targetMax) {
+    return {
+      passed: true,
+      status: "pass",
+      score: 100,
+      measuredValue: value,
+      ignored: false,
+    };
+  }
+
+  // Compute deviation
+  const delta = value < targetMin ? targetMin - value : value - targetMax;
+  const baseTol = rule.tolerance ?? (rule.metric === "angle" ? 10 : 0.03);
+  const normalizedDeviation = baseTol > 0 ? delta / baseTol : delta;
+
+  // Warning vs Fail
+  const isWarning = delta <= warningTol;
+  const status: RuleEvaluationStatus = isWarning ? "warning" : "fail";
+
+  const score = isWarning
+    ? Math.max(50, Math.round(100 - (delta / Math.max(warningTol, 1e-6)) * 40))
+    : Math.max(0, Math.round(50 - ((delta - warningTol) / Math.max(warningTol * 2, 1e-6)) * 50));
+
+  const issue: PoseIssue = {
+    ruleId: rule.id,
+    ruleName: rule.name,
+    severity: rule.severity,
+    metric: rule.metric,
+    currentValue: value,
+    targetValue: rule.target,
+    min: rule.min,
+    max: rule.max,
+    feedback: rule.feedback,
+    joint: inferJointFromRule(rule),
+    targetMin: rule.min,
+    targetMax: rule.max,
+    normalizedDeviation,
+    isSafety: rule.isSafety ?? false,
+  };
+
   return {
     passed: false,
-    score: calculateRuleScore(value, rule),
-    issue: createPoseIssue(rule, value),
+    status,
+    score,
+    measuredValue: value,
+    issue,
+    ignored: false,
   };
 }
 
 /**
- * Evaluate an angle rule.
- *
- * points = [A, B, C]
- *
- * Calculates angle ABC.
+ * Evaluate an angle rule ABC (vertex = B).
  */
 function evaluateAngle(
   rule: PoseRule,
-  landmarks: PoseEvaluatorContext["worldLandmarks"],
+  landmarks: PoseEvaluatorContext["landmarks"],
 ): number | null {
   if (rule.points.length !== 3) {
     return null;
   }
 
   const [a, b, c] = rule.points;
-
   if (!landmarks[a] || !landmarks[b] || !landmarks[c]) {
     return null;
   }
@@ -126,49 +242,30 @@ function evaluateAngle(
 }
 
 /**
- * Evaluate a distance rule.
- *
- * 2 points:
- *   distance(A, B)
- *
- * 4 points:
- *   distance(A, B) /
- *   distance(referenceA, referenceB)
- *
- * The 4-point version provides a body-relative
- * measurement that is less dependent on camera distance.
+ * Evaluate a distance rule (2 points: direct, 4 points: relative ratio).
  */
 function evaluateDistance(
   rule: PoseRule,
-  landmarks: PoseEvaluatorContext["worldLandmarks"],
+  landmarks: PoseEvaluatorContext["landmarks"],
 ): number | null {
   if (rule.points.length === 2) {
     const [a, b] = rule.points;
-
     if (!landmarks[a] || !landmarks[b]) {
       return null;
     }
-
     return calculateLandmarkDistance(landmarks[a], landmarks[b]);
   }
 
   if (rule.points.length === 4) {
-    const [a, b, referenceA, referenceB] = rule.points;
-
-    if (
-      !landmarks[a] ||
-      !landmarks[b] ||
-      !landmarks[referenceA] ||
-      !landmarks[referenceB]
-    ) {
+    const [a, b, refA, refB] = rule.points;
+    if (!landmarks[a] || !landmarks[b] || !landmarks[refA] || !landmarks[refB]) {
       return null;
     }
-
     return calculateRelativeLandmarkDistance(
       landmarks[a],
       landmarks[b],
-      landmarks[referenceA],
-      landmarks[referenceB],
+      landmarks[refA],
+      landmarks[refB],
     );
   }
 
@@ -176,9 +273,7 @@ function evaluateDistance(
 }
 
 /**
- * Evaluate horizontal alignment.
- *
- * Smaller deviation means better alignment.
+ * Evaluate horizontal alignment (Y delta).
  */
 function evaluateHorizontalAlignment(
   rule: PoseRule,
@@ -187,20 +282,15 @@ function evaluateHorizontalAlignment(
   if (rule.points.length !== 2) {
     return null;
   }
-
   const [a, b] = rule.points;
-
   if (!landmarks[a] || !landmarks[b]) {
     return null;
   }
-
   return calculateHorizontalDeviation(landmarks[a], landmarks[b]);
 }
 
 /**
- * Evaluate vertical alignment.
- *
- * Smaller deviation means better alignment.
+ * Evaluate vertical alignment (X delta).
  */
 function evaluateVerticalAlignment(
   rule: PoseRule,
@@ -209,97 +299,11 @@ function evaluateVerticalAlignment(
   if (rule.points.length !== 2) {
     return null;
   }
-
   const [a, b] = rule.points;
-
   if (!landmarks[a] || !landmarks[b]) {
     return null;
   }
-
   return calculateVerticalDeviation(landmarks[a], landmarks[b]);
-}
-
-/**
- * Compare a measured value against a rule.
- */
-function compareValue(value: number, rule: PoseRule): boolean {
-  switch (rule.comparison) {
-    case "between":
-      return (
-        rule.min !== undefined &&
-        rule.max !== undefined &&
-        value >= rule.min &&
-        value <= rule.max
-      );
-
-    case "greater_than":
-      return rule.target !== undefined && value >= rule.target;
-
-    case "less_than":
-      return rule.target !== undefined && value <= rule.target;
-
-    default:
-      return false;
-  }
-}
-
-/**
- * Calculate a continuous score for a failed rule.
- *
- * The score decreases as the measured value
- * moves farther away from the expected value.
- */
-function calculateRuleScore(value: number, rule: PoseRule): number {
-  /*
-   * Range-based rule.
-   */
-  if (
-    rule.comparison === "between" &&
-    rule.min !== undefined &&
-    rule.max !== undefined
-  ) {
-    const range = rule.max - rule.min;
-
-    if (range <= 0) {
-      return 0;
-    }
-
-    if (value < rule.min) {
-      const distance = rule.min - value;
-
-      return Math.max(0, Math.round(100 - (distance / range) * 100));
-    }
-
-    if (value > rule.max) {
-      const distance = value - rule.max;
-
-      return Math.max(0, Math.round(100 - (distance / range) * 100));
-    }
-  }
-
-  /*
-   * Greater-than / less-than rules.
-   *
-   * For these rules, tolerance defines how quickly
-   * the score decreases when the target is missed.
-   */
-  if (rule.target !== undefined) {
-    let difference = 0;
-
-    if (rule.comparison === "greater_than") {
-      difference = Math.max(0, rule.target - value);
-    } else if (rule.comparison === "less_than") {
-      difference = Math.max(0, value - rule.target);
-    } else {
-      difference = Math.abs(value - rule.target);
-    }
-
-    const tolerance = Math.max(Math.abs(rule.tolerance ?? 0.05), 1e-8);
-
-    return Math.max(0, Math.round(100 - (difference / tolerance) * 100));
-  }
-
-  return 0;
 }
 
 function inferJointFromRule(rule: PoseRule): string | undefined {
@@ -319,22 +323,3 @@ function inferJointFromRule(rule: PoseRule): string | undefined {
   return undefined;
 }
 
-/**
- * Create a structured pose issue.
- */
-function createPoseIssue(rule: PoseRule, currentValue: number): PoseIssue {
-  return {
-    ruleId: rule.id,
-    ruleName: rule.name,
-    severity: rule.severity,
-    metric: rule.metric,
-    currentValue,
-    targetValue: rule.target,
-    min: rule.min,
-    max: rule.max,
-    feedback: rule.feedback,
-    joint: inferJointFromRule(rule),
-    targetMin: rule.min,
-    targetMax: rule.max,
-  };
-}

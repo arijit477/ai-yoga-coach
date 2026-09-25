@@ -37,17 +37,48 @@ export class TemporalPoseEvaluator {
     context: PoseEvaluatorContext
   ): PoseEvaluationResult | null {
     const rawEvaluation = evaluatePose(asanaId, rules, context);
-    const hasOccludedLandmarks = rawEvaluation.score === 0 && rawEvaluation.issues.length === 0;
+    
+    // Check if the pose is truly valid:
+    // 1. Must have valid landmark array with >= 33 landmarks
+    // 2. Evaluated rules must represent at least half the required rules
+    // 3. Overall status must not be "unknown"
+    const isPartialOrUnknown =
+      rawEvaluation.summary.totalRules > 0 &&
+      rawEvaluation.summary.evaluatedRules < Math.ceil(rawEvaluation.summary.totalRules * 0.5);
+
+    const hasUsableTracking =
+      Boolean(context.landmarks &&
+      context.landmarks.length >= 33 &&
+      rawEvaluation.summary.evaluatedRules > 0 &&
+      !isPartialOrUnknown &&
+      rawEvaluation.overallStatus !== "unknown");
 
     // Update the accuracy stabilizer
     const stabilized = this.accuracyStabilizer.update(
-      hasOccludedLandmarks ? null : rawEvaluation.score,
-      !hasOccludedLandmarks
+      hasUsableTracking ? rawEvaluation.score : null,
+      hasUsableTracking
     );
 
-    // If completely unavailable beyond grace period, return null
+    // If completely unavailable, return state indicating invalid tracking
     if (stabilized.stableAccuracy === null) {
-      return null;
+      this.previousSmoothedScore = null;
+      return {
+        asanaId,
+        score: 0,
+        rawScore: 0,
+        stableScore: undefined,
+        displayedScore: undefined,
+        isValid: false,
+        primaryIssue: rawEvaluation.primaryIssue,
+        secondaryIssues: rawEvaluation.issues,
+        resolvedIssues: [],
+        scoreTrend: "stable",
+        stability: 0,
+        holdProgress: 0,
+        completionEligible: false,
+        activeRules: rules.length,
+        evaluatedAt: Date.now(),
+      };
     }
 
     // 1. Score Trend based on stabilized score
@@ -124,8 +155,8 @@ export class TemporalPoseEvaluator {
     this.previouslyFailingRules = currentIssueIds;
 
     // 5. Hold Progress & Completion Eligibility
-    const displayedScore = stabilized.displayedAccuracy ?? Math.round(stabilized.stableAccuracy);
-    const isValid = !hasOccludedLandmarks && displayedScore >= 75;
+    const displayedScore = stabilized.displayedAccuracy ?? (stabilized.stableAccuracy !== null ? Math.round(stabilized.stableAccuracy) : undefined);
+    const isValid = Boolean(hasUsableTracking && displayedScore !== undefined && displayedScore >= 75);
 
     if (isValid && !primaryIssue) {
       this.holdFramesCount++;
@@ -138,11 +169,11 @@ export class TemporalPoseEvaluator {
 
     return {
       asanaId,
-      score: displayedScore, // Stable integer for backward compatibility
+      score: displayedScore ?? 0, // Stable integer for backward compatibility
       rawScore: rawEvaluation.score,
-      stableScore: stabilized.stableAccuracy,
-      displayedScore,
-      isValid: !hasOccludedLandmarks,
+      stableScore: stabilized.stableAccuracy ?? undefined,
+      displayedScore: displayedScore ?? undefined,
+      isValid: Boolean(hasUsableTracking && displayedScore !== undefined),
       primaryIssue,
       secondaryIssues,
       resolvedIssues,

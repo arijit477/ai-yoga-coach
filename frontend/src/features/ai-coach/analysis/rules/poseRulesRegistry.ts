@@ -637,6 +637,8 @@ export const ASANA_RULES_CATALOG: Record<string, PoseRule[]> = {
   ],
 };
 
+import { getAsanaDefinition } from "./asanas";
+
 /**
  * Ensures rules for the specified asana are registered in the RuleEngine.
  */
@@ -653,7 +655,8 @@ export function ensureAsanaRules(asanaId: string, customRules?: PoseRule[]): Pos
     }
   }
 
-  const defaultRules = ASANA_RULES_CATALOG[asanaId] ?? [];
+  const asanaDef = getAsanaDefinition(asanaId);
+  const defaultRules = asanaDef?.rules ?? ASANA_RULES_CATALOG[asanaId] ?? [];
   if (defaultRules.length > 0) {
     registerPoseRules(asanaId, defaultRules);
   }

@@ -1,3 +1,9 @@
+import type { PoseFeatures } from "./pose-features";
+
+export type LandmarkStatus = "VALID" | "LOW_CONFIDENCE" | "MISSING";
+
+export type PoseValidity = "no_pose" | "partial_pose" | "valid_pose";
+
 export interface Landmark {
   x: number;
   y: number;
@@ -13,6 +19,9 @@ export interface PoseTrackingResult {
   worldLandmarks: PoseLandmarks;
   timestamp: number;
   confidence: number;
+  validity?: PoseValidity;
+  landmarkStatuses?: LandmarkStatus[];
+  features?: PoseFeatures;
 }
 
 /**
@@ -32,4 +41,4 @@ export interface PoseQuality {
   confidence: number;
   validLandmarks: number;
   totalLandmarks: number;
-}
+}

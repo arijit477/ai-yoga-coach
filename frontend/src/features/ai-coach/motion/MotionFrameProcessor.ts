@@ -2,6 +2,13 @@ import type { PoseTrackingResult } from "../types/landmarks";
 
 import { PoseLandmarkerService } from "./PoseLandmarkerService";
 import { LandmarkSmoother } from "./LandmarkSmoother";
+import { getLandmarkStatus, evaluatePoseValidity } from "../analysis/LandmarkUtils";
+import { extractPoseFeatures } from "../analysis/PoseFeatureEngine";
+
+export interface ProcessFrameTimings {
+  mediaPipeMs: number;
+  featuresMs: number;
+}
 
 export class MotionFrameProcessor {
   private readonly poseLandmarkerService: PoseLandmarkerService;
@@ -12,12 +19,17 @@ export class MotionFrameProcessor {
     new LandmarkSmoother();
 
   private lastTimestamp = -1;
+  private lastTimings: ProcessFrameTimings = { mediaPipeMs: 0, featuresMs: 0 };
 
   constructor(
     poseLandmarkerService: PoseLandmarkerService,
   ) {
     this.poseLandmarkerService =
       poseLandmarkerService;
+  }
+
+  getLastTimings(): ProcessFrameTimings {
+    return this.lastTimings;
   }
 
   processFrame(
@@ -57,14 +69,17 @@ export class MotionFrameProcessor {
     this.lastTimestamp = timestamp;
 
     /*
-     * Run MediaPipe pose detection.
+     * Run MediaPipe pose detection with micro-timing.
      */
+    const t0 = performance.now();
     const result =
       this.poseLandmarkerService.instance
         .detectForVideo(
           video,
           timestamp,
         );
+    const t1 = performance.now();
+    const mediaPipeMs = t1 - t0;
 
     /*
      * No pose detected.
@@ -73,6 +88,7 @@ export class MotionFrameProcessor {
       !result.landmarks ||
       result.landmarks.length === 0
     ) {
+      this.lastTimings = { mediaPipeMs, featuresMs: 0 };
       return null;
     }
 
@@ -83,16 +99,12 @@ export class MotionFrameProcessor {
       !rawLandmarks ||
       rawLandmarks.length < 33
     ) {
+      this.lastTimings = { mediaPipeMs, featuresMs: 0 };
       return null;
     }
 
     /*
      * Smooth image-space landmarks.
-     *
-     * Used for:
-     * - skeleton rendering
-     * - image-space alignment
-     * - visual analysis
      */
     const landmarks =
       this.smoother.smooth(
@@ -100,10 +112,7 @@ export class MotionFrameProcessor {
       );
 
     /*
-     * World landmarks are required for:
-     * - joint angles
-     * - 3D distances
-     * - body-relative measurements
+     * World landmarks are required for joint angles & 3D measurements.
      */
     const rawWorldLandmarks =
       result.worldLandmarks?.[0] ?? [];
@@ -124,14 +133,37 @@ export class MotionFrameProcessor {
       );
 
     /*
-     * Return a normalized application-level
-     * pose tracking result.
+     * Calculate structured pose validity and per-landmark statuses.
+     */
+    const validity = evaluatePoseValidity(landmarks);
+    const landmarkStatuses = landmarks.map((lm) => getLandmarkStatus(lm));
+
+    /*
+     * Extract pure geometric pose features (angles, distances, alignments, body centers).
+     */
+    const features = extractPoseFeatures({
+      landmarks,
+      worldLandmarks,
+      timestamp,
+      validity,
+      confidence,
+    });
+
+    const t2 = performance.now();
+    const featuresMs = t2 - t1;
+    this.lastTimings = { mediaPipeMs, featuresMs };
+
+    /*
+     * Return a normalized application-level pose tracking result.
      */
     return {
       landmarks,
       worldLandmarks,
       timestamp,
       confidence,
+      validity,
+      landmarkStatuses,
+      features,
     };
   }
 

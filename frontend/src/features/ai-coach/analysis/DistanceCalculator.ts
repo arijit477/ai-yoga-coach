@@ -1,4 +1,5 @@
 import type { Landmark } from "../types/landmarks";
+import { isLandmarkUsable } from "./LandmarkUtils";
 
 export interface Point2D {
   x: number;
@@ -8,7 +9,7 @@ export interface Point2D {
 export interface Point3D {
   x: number;
   y: number;
-  z: number;
+  z?: number;
 }
 
 const EPSILON = 1e-8;
@@ -16,21 +17,20 @@ const EPSILON = 1e-8;
 /**
  * Check whether a 2D point contains valid numeric coordinates.
  */
-function isFinitePoint2D(point: Point2D): boolean {
-  return (
-    Number.isFinite(point.x) &&
-    Number.isFinite(point.y)
-  );
+function isFinitePoint2D(point: Point2D | null | undefined): boolean {
+  if (!point) return false;
+  return Number.isFinite(point.x) && Number.isFinite(point.y);
 }
 
 /**
  * Check whether a 3D point contains valid numeric coordinates.
  */
-function isFinitePoint3D(point: Point3D): boolean {
+function isFinitePoint3D(point: Point3D | null | undefined): boolean {
+  if (!point) return false;
   return (
     Number.isFinite(point.x) &&
     Number.isFinite(point.y) &&
-    Number.isFinite(point.z)
+    Number.isFinite(point.z ?? 0)
   );
 }
 
@@ -40,26 +40,19 @@ function isFinitePoint3D(point: Point3D): boolean {
  * Useful for image-space landmark relationships.
  */
 export function calculateDistance2D(
-  a: Point2D,
-  b: Point2D,
+  a: Point2D | null | undefined,
+  b: Point2D | null | undefined,
 ): number | null {
-  if (
-    !isFinitePoint2D(a) ||
-    !isFinitePoint2D(b)
-  ) {
+  if (!isFinitePoint2D(a) || !isFinitePoint2D(b)) {
     return null;
   }
 
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
+  const dx = a!.x - b!.x;
+  const dy = a!.y - b!.y;
 
-  const distance = Math.sqrt(
-    dx ** 2 + dy ** 2,
-  );
+  const distance = Math.sqrt(dx ** 2 + dy ** 2);
 
-  return Number.isFinite(distance)
-    ? distance
-    : null;
+  return Number.isFinite(distance) ? distance : null;
 }
 
 /**
@@ -69,29 +62,20 @@ export function calculateDistance2D(
  * world landmarks when analyzing actual body geometry.
  */
 export function calculateDistance3D(
-  a: Point3D,
-  b: Point3D,
+  a: Point3D | null | undefined,
+  b: Point3D | null | undefined,
 ): number | null {
-  if (
-    !isFinitePoint3D(a) ||
-    !isFinitePoint3D(b)
-  ) {
+  if (!isFinitePoint3D(a) || !isFinitePoint3D(b)) {
     return null;
   }
 
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  const dz = a.z - b.z;
+  const dx = a!.x - b!.x;
+  const dy = a!.y - b!.y;
+  const dz = (a!.z ?? 0) - (b!.z ?? 0);
 
-  const distance = Math.sqrt(
-    dx ** 2 +
-      dy ** 2 +
-      dz ** 2,
-  );
+  const distance = Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
 
-  return Number.isFinite(distance)
-    ? distance
-    : null;
+  return Number.isFinite(distance) ? distance : null;
 }
 
 /**
@@ -99,13 +83,13 @@ export function calculateDistance3D(
  * using their 3D coordinates.
  */
 export function calculateLandmarkDistance(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
 ): number | null {
-  if (
-    (a.visibility !== undefined && a.visibility < 0.4) ||
-    (b.visibility !== undefined && b.visibility < 0.4)
-  ) {
+  if (!a || !b) {
+    return null;
+  }
+  if (!isLandmarkUsable(a) || !isLandmarkUsable(b)) {
     return null;
   }
   return calculateDistance3D(a, b);
@@ -116,17 +100,18 @@ export function calculateLandmarkDistance(
  * using only their image-space coordinates.
  */
 export function calculateLandmarkDistance2D(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
 ): number | null {
-  if (
-    (a.visibility !== undefined && a.visibility < 0.4) ||
-    (b.visibility !== undefined && b.visibility < 0.4)
-  ) {
+  if (!a || !b) {
+    return null;
+  }
+  if (!isLandmarkUsable(a) || !isLandmarkUsable(b)) {
     return null;
   }
   return calculateDistance2D(a, b);
 }
+
 
 /**
  * Calculate a distance relative to a reference distance.

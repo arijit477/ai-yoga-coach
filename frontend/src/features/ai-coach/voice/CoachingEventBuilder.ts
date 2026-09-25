@@ -1,5 +1,7 @@
 import type { PoseIssue } from "../types/pose-rules";
-import type { CoachingEvent } from "./voice.types";
+import type { CoachSessionState } from "../types/CoachSessionState";
+import type { CameraReadinessState } from "../motion/CameraReadinessTracker";
+import type { CoachingEvent, CoachingEventPrimaryIssue } from "./voice.types";
 
 function generateEventId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -9,30 +11,42 @@ export class CoachingEventBuilder {
   /**
    * Generates a pose_started event when a user enters the target asana.
    */
-  static buildPoseStartedEvent(asanaId: string, asanaName: string, asanaDescription?: string): CoachingEvent {
+  static buildPoseStartedEvent(
+    asanaId: string,
+    asanaName: string,
+    asanaDescription?: string,
+    coach?: "alice" | "kevin",
+    cameraState?: CameraReadinessState
+  ): CoachingEvent {
     return {
       id: generateEventId("start"),
       type: "pose_started",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "coaching",
+      cameraState: cameraState ?? "CAMERA_READY",
       feedback: asanaDescription ? `Let's begin ${asanaName}. ${asanaDescription}` : `Let's begin ${asanaName}.`,
       timestamp: Date.now(),
     };
   }
 
   /**
-   * Generates a calibration_prompt event asking the user to hold still or adjust position (e.g. move back).
+   * Generates a calibration_prompt event asking the user to hold still or adjust position.
    */
   static buildCalibrationPromptEvent(
     asanaId: string,
     asanaName: string,
     message: string = "Hold still for a moment while I check your position.",
+    coach?: "alice" | "kevin"
   ): CoachingEvent {
     return {
       id: generateEventId("calib_prompt"),
       type: "calibration_prompt",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "calibrating",
       feedback: message,
       timestamp: Date.now(),
     };
@@ -41,12 +55,18 @@ export class CoachingEventBuilder {
   /**
    * Generates a calibration_complete event once the user is stable.
    */
-  static buildCalibrationCompleteEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildCalibrationCompleteEvent(
+    asanaId: string,
+    asanaName: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("calib_done"),
       type: "calibration_complete",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "coaching",
       feedback: `Perfect. I can see you clearly. Let's begin ${asanaName}.`,
       timestamp: Date.now(),
     };
@@ -55,12 +75,19 @@ export class CoachingEventBuilder {
   /**
    * Generates a step_guidance event for step-by-step posture instruction.
    */
-  static buildStepGuidanceEvent(asanaId: string, asanaName: string, stepText: string): CoachingEvent {
+  static buildStepGuidanceEvent(
+    asanaId: string,
+    asanaName: string,
+    stepText: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("step"),
       type: "step_guidance",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "coaching",
       feedback: stepText,
       timestamp: Date.now(),
     };
@@ -74,12 +101,34 @@ export class CoachingEventBuilder {
     asanaName: string,
     issue: PoseIssue,
     score?: number,
+    sessionState?: CoachSessionState,
+    cameraState?: CameraReadinessState,
+    coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const primaryIssue: CoachingEventPrimaryIssue = {
+      ruleId: issue.ruleId,
+      joint: issue.joint,
+      severity: issue.severity,
+      feedback: issue.feedback,
+      currentValue: Math.round(issue.currentValue),
+      target: issue.targetValue !== undefined ? Math.round(issue.targetValue) : undefined,
+      targetValue: issue.targetValue !== undefined ? Math.round(issue.targetValue) : undefined,
+      min: issue.min,
+      max: issue.max,
+      targetMin: issue.targetMin ?? issue.min,
+      targetMax: issue.targetMax ?? issue.max,
+    };
+
     return {
       id: generateEventId("corr"),
       type: "pose_correction",
+      coach,
       asanaId,
       asanaName,
+      sessionState: sessionState ?? "coaching",
+      cameraState: cameraState ?? "CAMERA_READY",
+      posture: "WARNING",
+      primaryIssue,
       ruleId: issue.ruleId,
       issue: issue.ruleName ? issue.ruleName.toLowerCase().replace(/\s+/g, "_") : issue.metric,
       joint: issue.joint,
@@ -99,13 +148,20 @@ export class CoachingEventBuilder {
   /**
    * Generates an issue_improving event when a known issue gets significantly better.
    */
-  static buildIssueImprovingEvent(asanaId: string, asanaName: string, ruleId: string): CoachingEvent {
+  static buildIssueImprovingEvent(
+    asanaId: string,
+    asanaName: string,
+    ruleId: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("impr"),
       type: "issue_improving",
+      coach,
       asanaId,
       asanaName,
       ruleId,
+      sessionState: "coaching",
       feedback: "Much better, keep going.",
       timestamp: Date.now(),
     };
@@ -114,13 +170,20 @@ export class CoachingEventBuilder {
   /**
    * Generates an issue_resolved event when a known issue is completely fixed.
    */
-  static buildIssueResolvedEvent(asanaId: string, asanaName: string, ruleId: string): CoachingEvent {
+  static buildIssueResolvedEvent(
+    asanaId: string,
+    asanaName: string,
+    ruleId: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("resolv"),
       type: "issue_resolved",
+      coach,
       asanaId,
       asanaName,
       ruleId,
+      sessionState: "coaching",
       feedback: "Great job, that looks perfect now.",
       timestamp: Date.now(),
     };
@@ -129,12 +192,23 @@ export class CoachingEventBuilder {
   /**
    * Generates a good_form event when the user corrects their posture or starts with good form.
    */
-  static buildGoodFormEvent(asanaId: string, asanaName: string, score?: number): CoachingEvent {
+  static buildGoodFormEvent(
+    asanaId: string,
+    asanaName: string,
+    score?: number,
+    sessionState?: CoachSessionState,
+    cameraState?: CameraReadinessState,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("good"),
       type: "good_form",
+      coach,
       asanaId,
       asanaName,
+      sessionState: sessionState ?? "coaching",
+      cameraState: cameraState ?? "CAMERA_READY",
+      posture: "GOOD",
       score: score !== undefined ? Math.round(score) : undefined,
       feedback: "Great form. Maintain this position.",
       timestamp: Date.now(),
@@ -144,12 +218,20 @@ export class CoachingEventBuilder {
   /**
    * Generates a pose_held event when the user maintains good form into holding.
    */
-  static buildPoseHeldEvent(asanaId: string, asanaName: string, score?: number): CoachingEvent {
+  static buildPoseHeldEvent(
+    asanaId: string,
+    asanaName: string,
+    score?: number,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("held"),
       type: "pose_held",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "holding",
+      posture: "GOOD",
       score: score !== undefined ? Math.round(score) : undefined,
       feedback: `Excellent alignment. Achieving ${score ? Math.round(score) : 75}% accuracy is a great result! Now hold for 10 seconds.`,
       timestamp: Date.now(),
@@ -157,31 +239,44 @@ export class CoachingEventBuilder {
   }
 
   /**
-   * Generates a pose_completed event when target hold time is successfully completed.
+   * Generates a pose_completed event when target hold time or 75% threshold is successfully achieved.
    */
-  static buildPoseCompletedEvent(asanaId: string, asanaName: string, score?: number): CoachingEvent {
+  static buildPoseCompletedEvent(
+    asanaId: string,
+    asanaName: string,
+    score?: number,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("comp"),
       type: "pose_completed",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "completed",
+      posture: "GOOD",
       score: score !== undefined ? Math.round(score) : undefined,
       feedback: `Congratulations! You have completed ${asanaName}.`,
       timestamp: Date.now(),
     };
   }
 
-
-
   /**
    * Generates a hold_countdown event.
    */
-  static buildHoldCountdownEvent(asanaId: string, asanaName: string, remainingSeconds: number): CoachingEvent {
+  static buildHoldCountdownEvent(
+    asanaId: string,
+    asanaName: string,
+    remainingSeconds: number,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("count"),
       type: "hold_countdown",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "holding",
       feedback: `${Math.ceil(remainingSeconds)}`,
       timestamp: Date.now(),
     };
@@ -195,12 +290,34 @@ export class CoachingEventBuilder {
     asanaName: string,
     issue: PoseIssue,
     score?: number,
+    sessionState?: CoachSessionState,
+    cameraState?: CameraReadinessState,
+    coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const primaryIssue: CoachingEventPrimaryIssue = {
+      ruleId: issue.ruleId,
+      joint: issue.joint,
+      severity: "high",
+      feedback: issue.feedback || "Ease out of the pose and return to a comfortable position.",
+      currentValue: Math.round(issue.currentValue),
+      target: issue.targetValue !== undefined ? Math.round(issue.targetValue) : undefined,
+      targetValue: issue.targetValue !== undefined ? Math.round(issue.targetValue) : undefined,
+      min: issue.min,
+      max: issue.max,
+      targetMin: issue.targetMin ?? issue.min,
+      targetMax: issue.targetMax ?? issue.max,
+    };
+
     return {
       id: generateEventId("safe"),
       type: "safety_warning",
+      coach,
       asanaId,
       asanaName,
+      sessionState: sessionState ?? "correcting",
+      cameraState: cameraState ?? "CAMERA_READY",
+      posture: "BAD",
+      primaryIssue,
       ruleId: issue.ruleId,
       issue: issue.ruleName ? issue.ruleName.toLowerCase().replace(/\s+/g, "_") : "safety_alert",
       severity: "high",
@@ -217,56 +334,86 @@ export class CoachingEventBuilder {
   /**
    * Generates specific camera state events
    */
-  static buildCameraUnavailableEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildCameraUnavailableEvent(
+    asanaId: string,
+    asanaName: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("cam_unav"),
       type: "camera_unavailable",
+      coach,
       asanaId,
       asanaName,
-      feedback: "Camera is currently unavailable.",
+      cameraState: "CAMERA_DISABLED",
+      feedback: "Camera is currently unavailable. Please enable your camera.",
       timestamp: Date.now(),
     };
   }
 
-  static buildUserOutOfFrameEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildUserOutOfFrameEvent(
+    asanaId: string,
+    asanaName: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("cam_out"),
       type: "user_out_of_frame",
+      coach,
       asanaId,
       asanaName,
-      feedback: "I can't see you. Please step into the frame.",
+      cameraState: "NO_PERSON",
+      feedback: "I can't see you at the moment. Come back into the frame.",
       timestamp: Date.now(),
     };
   }
 
-  static buildPartialBodyEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildPartialBodyEvent(
+    asanaId: string,
+    asanaName: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("cam_part"),
       type: "partial_body",
+      coach,
       asanaId,
       asanaName,
-      feedback: "I can only see part of you. Please adjust your camera so your full body is visible.",
+      cameraState: "PARTIAL_BODY",
+      feedback: "I can only see part of your body. Please adjust your camera so your full body is visible.",
       timestamp: Date.now(),
     };
   }
 
-  static buildCameraReadyEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildCameraReadyEvent(
+    asanaId: string,
+    asanaName: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("cam_rdy"),
       type: "camera_ready",
+      coach,
       asanaId,
       asanaName,
+      cameraState: "CAMERA_READY",
       feedback: "I can see you clearly now.",
       timestamp: Date.now(),
     };
   }
 
-  static buildCalibrationRequiredEvent(asanaId: string, asanaName: string): CoachingEvent {
+  static buildCalibrationRequiredEvent(
+    asanaId: string,
+    asanaName: string,
+    coach?: "alice" | "kevin"
+  ): CoachingEvent {
     return {
       id: generateEventId("calib_req"),
       type: "calibration_required",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "calibrating",
       feedback: "Please stand back so we can calibrate.",
       timestamp: Date.now(),
     };
@@ -279,6 +426,7 @@ export class CoachingEventBuilder {
     asanaId: string,
     asanaName: string,
     reason: string,
+    coach?: "alice" | "kevin"
   ): CoachingEvent {
     let feedback = "";
     switch (reason) {
@@ -307,11 +455,14 @@ export class CoachingEventBuilder {
     return {
       id: generateEventId("calib_fail"),
       type: "calibration_failed",
+      coach,
       asanaId,
       asanaName,
+      sessionState: "calibrating",
       issue: reason,
       feedback,
       timestamp: Date.now(),
     };
   }
 }
+

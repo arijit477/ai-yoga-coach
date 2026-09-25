@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { RealtimeVoiceAgent, type SessionContextData } from "./RealtimeVoiceAgent";
-import { CoachTTSAgent } from "./CoachTTSAgent";
-import { CoachDecisionEngine } from "./CoachDecisionEngine";
+import { CoachDecisionEngine, DEFAULT_COACHING_CONFIG } from "./CoachDecisionEngine";
 import type { VoiceState, CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 
 export function useRealtimeVoice() {
   const rtcAgentRef = useRef<RealtimeVoiceAgent | null>(null);
-  const ttsAgentRef = useRef<CoachTTSAgent | null>(null);
   const decisionEngineRef = useRef<CoachDecisionEngine | null>(null);
   
   const statusRef = useRef<VoiceConnectionState>("disconnected");
@@ -17,17 +15,8 @@ export function useRealtimeVoice() {
     isMuted: false,
     error: null,
     transcripts: [],
-    isConversationMode: false,
+    isConversationMode: true,
   });
-
-  if (!ttsAgentRef.current) {
-    ttsAgentRef.current = new CoachTTSAgent((item: VoiceTranscriptItem) => {
-      setState((prev) => ({
-        ...prev,
-        transcripts: [...prev.transcripts.slice(-9), item],
-      }));
-    });
-  }
 
   if (!rtcAgentRef.current) {
     rtcAgentRef.current = new RealtimeVoiceAgent(
@@ -47,49 +36,24 @@ export function useRealtimeVoice() {
       },
     );
 
-    decisionEngineRef.current = new CoachDecisionEngine({
-      cooldownMs: 4000, 
-      repeatSameRuleCooldownMs: 10000,
-    });
+    decisionEngineRef.current = new CoachDecisionEngine(DEFAULT_COACHING_CONFIG);
   }
 
   const start = useCallback(async (coachId: string) => {
     lastActiveCoachRef.current = coachId;
-    ttsAgentRef.current?.setCoach(coachId);
-    
-    // By default, start in TTS coaching mode (no WebRTC connection)
-    statusRef.current = "connected";
-    setState((prev) => ({ ...prev, error: null, status: "connected", isConversationMode: false }));
     decisionEngineRef.current?.reset();
-  }, []);
-
-  const toggleConversationMode = useCallback(async () => {
-    setState((prev) => {
-      const nextMode = !prev.isConversationMode;
-      if (nextMode) {
-        // Switching TO conversation mode: connect WebRTC
-        ttsAgentRef.current?.stopSpeaking();
-        rtcAgentRef.current?.connect(lastActiveCoachRef.current);
-      } else {
-        // Switching OFF conversation mode: disconnect WebRTC
-        rtcAgentRef.current?.disconnect();
-        statusRef.current = "connected";
-      }
-      return { ...prev, isConversationMode: nextMode, status: nextMode ? "connecting" : "connected" };
-    });
+    await rtcAgentRef.current?.connect(coachId);
   }, []);
 
   const stop = useCallback(() => {
     rtcAgentRef.current?.disconnect();
-    ttsAgentRef.current?.stopSpeaking();
     decisionEngineRef.current?.reset();
-    setState((prev) => ({ ...prev, isConversationMode: false, status: "disconnected" }));
+    setState((prev) => ({ ...prev, status: "disconnected" }));
   }, []);
 
   const mute = useCallback(() => {
     setState((prev) => {
       rtcAgentRef.current?.setMuted(true);
-      ttsAgentRef.current?.setMuted(true);
       return { ...prev, isMuted: true };
     });
   }, []);
@@ -97,7 +61,6 @@ export function useRealtimeVoice() {
   const unmute = useCallback(() => {
     setState((prev) => {
       rtcAgentRef.current?.setMuted(false);
-      ttsAgentRef.current?.setMuted(false);
       return { ...prev, isMuted: false };
     });
   }, []);
@@ -106,7 +69,6 @@ export function useRealtimeVoice() {
     setState((prev) => {
       const nextMuted = !prev.isMuted;
       rtcAgentRef.current?.setMuted(nextMuted);
-      ttsAgentRef.current?.setMuted(nextMuted);
       return { ...prev, isMuted: nextMuted };
     });
   }, []);
@@ -115,41 +77,23 @@ export function useRealtimeVoice() {
     const decision = decisionEngineRef.current?.evaluate(event, context);
     if (decision?.shouldSpeak) {
        console.log(`[AI COACH] Coaching event approved: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
-       // Use TTS for fast posture guidance, unless in conversation mode
-       if (state.isConversationMode) {
-         rtcAgentRef.current?.sendCoachingEvent(event);
-       } else {
-         ttsAgentRef.current?.sendCoachingEvent(event, decision.priority);
-       }
+       rtcAgentRef.current?.sendCoachingEvent(event);
     } else if (decision) {
        console.log(`[AI COACH] Coaching event suppressed: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
     }
-  }, [state.isConversationMode]);
+  }, []);
 
   const triggerPoseStart = useCallback((asanaId: string, asanaName: string, asanaDescription?: string) => {
-    if (state.isConversationMode) {
-      rtcAgentRef.current?.triggerPoseStart(asanaId, asanaName, asanaDescription);
-    } else {
-      const desc = asanaDescription ? ` ${asanaDescription}` : '';
-      ttsAgentRef.current?.speak(`Let's begin ${asanaName}.${desc} Stand comfortably and check your posture.`, 10, "pose_started");
-    }
-  }, [state.isConversationMode]);
+    rtcAgentRef.current?.triggerPoseStart(asanaId, asanaName, asanaDescription);
+  }, []);
 
   const speakGreeting = useCallback(() => {
-    if (state.isConversationMode) {
-      rtcAgentRef.current?.speakGreeting();
-    } else {
-      ttsAgentRef.current?.speak("Welcome to your practice. Let's get started.", 10, "greeting");
-    }
-  }, [state.isConversationMode]);
+    rtcAgentRef.current?.speakGreeting();
+  }, []);
 
   const speak = useCallback((text: string) => {
-    if (state.isConversationMode) {
-      rtcAgentRef.current?.speak(text);
-    } else {
-      ttsAgentRef.current?.speak(text, 5);
-    }
-  }, [state.isConversationMode]);
+    rtcAgentRef.current?.speak(text);
+  }, []);
 
   const updateSessionContext = useCallback((context: SessionContextData) => {
     rtcAgentRef.current?.updateSessionContext(context);
@@ -158,7 +102,6 @@ export function useRealtimeVoice() {
   useEffect(() => {
     return () => {
       rtcAgentRef.current?.disconnect();
-      ttsAgentRef.current?.stopSpeaking();
     };
   }, []);
 
@@ -172,7 +115,7 @@ export function useRealtimeVoice() {
     connect: start,
     disconnect: stop,
     toggleMute,
-    toggleConversationMode,
+    toggleConversationMode: () => {},
     dispatchEvent,
     updateSessionContext,
     triggerPoseStart,
@@ -181,3 +124,4 @@ export function useRealtimeVoice() {
     getRemoteAudioStream: () => rtcAgentRef.current?.getRemoteAudioStream() ?? null,
   };
 }
+

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface CameraViewProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -6,7 +6,7 @@ interface CameraViewProps {
   score?: number | null;
 }
 
-export function CameraView({ videoRef, enabled = true, score }: CameraViewProps) {
+export const CameraView = React.memo(function CameraView({ videoRef, enabled = true, score }: CameraViewProps) {
   const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -177,4 +177,4 @@ export function CameraView({ videoRef, enabled = true, score }: CameraViewProps)
       )}
     </div>
   );
-}
+});

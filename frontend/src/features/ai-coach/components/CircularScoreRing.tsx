@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 interface CircularScoreRingProps {
   /**
@@ -19,7 +19,7 @@ interface CircularScoreRingProps {
   className?: string;
 }
 
-export function CircularScoreRing({
+export const CircularScoreRing = React.memo(function CircularScoreRing({
   score,
   displayedScore,
   size = 110,
@@ -64,12 +64,12 @@ export function CircularScoreRing({
       : "#ef4444"; // Red
 
   const getLabel = () => {
-    if (integerScore === null) return "Standby";
-    if (integerScore === 100) return "Perfect Form";
+    if (integerScore === null) return "Adjust Position";
+    if (integerScore === 100) return "Perfect Hold";
     if (integerScore >= 90) return "Excellent Form";
     if (integerScore >= 75) return "Great Alignment";
-    if (integerScore >= 60) return "Good Alignment";
-    if (integerScore >= 40) return "Adjusting";
+    if (integerScore >= 60) return "Almost There";
+    if (integerScore >= 40) return "Looking Better";
     return "Getting Started";
   };
 
@@ -161,4 +161,4 @@ export function CircularScoreRing({
       </div>
     </div>
   );
-}
+});

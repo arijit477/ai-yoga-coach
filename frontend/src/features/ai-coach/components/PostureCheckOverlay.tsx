@@ -1,67 +1,99 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { PostureCheckItem } from "../types/posture-check";
 
 interface PostureCheckOverlayProps {
   items: PostureCheckItem[];
   hasData: boolean;
+  asanaId?: string;
 }
 
-export function PostureCheckOverlay({ items, hasData }: PostureCheckOverlayProps) {
+export const PostureCheckOverlay = React.memo(function PostureCheckOverlay({
+  items,
+  hasData,
+  asanaId,
+}: PostureCheckOverlayProps) {
   const [isOpen, setIsOpen] = useState(true);
-  const userClosedRef  = useRef(false);
-  const autoClosedRef  = useRef(false);
+  const userClosedRef = useRef(false);
+  const hasAutoClosedForAsanaRef = useRef(false);
+  const allGoodTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Auto-close 1.5 s after all checks go green; re-open if issues return
+  // Reset overlay to open state once when asana changes
   useEffect(() => {
-    if (!hasData) return;
-    const allGood = items.every((i) => i.status === "good");
+    setIsOpen(true);
+    userClosedRef.current = false;
+    hasAutoClosedForAsanaRef.current = false;
+    if (allGoodTimerRef.current) {
+      clearTimeout(allGoodTimerRef.current);
+      allGoodTimerRef.current = null;
+    }
+  }, [asanaId]);
 
-    if (allGood && isOpen && !userClosedRef.current) {
-      const t = setTimeout(() => {
-        setIsOpen(false);
-        autoClosedRef.current = true;
-      }, 1500);
-      return () => clearTimeout(t);
+  // Auto-close 1s after all checks go green; do NOT auto-reopen for the rest of this asana
+  useEffect(() => {
+    if (!hasData) {
+      if (allGoodTimerRef.current) {
+        clearTimeout(allGoodTimerRef.current);
+        allGoodTimerRef.current = null;
+      }
+      return;
     }
 
-    if (!allGood && autoClosedRef.current && !userClosedRef.current) {
-      setIsOpen(true);
-      autoClosedRef.current = false;
+    const issueCount = items.filter(
+      (i) => i.status === "warning" || i.status === "bad" || i.status === "critical",
+    ).length;
+    const hasGoodItem = items.some((i) => i.status === "good");
+    const isAllGood = items.length > 0 && issueCount === 0 && hasGoodItem;
+
+    if (isAllGood) {
+      if (!allGoodTimerRef.current && isOpen && !hasAutoClosedForAsanaRef.current) {
+        allGoodTimerRef.current = setTimeout(() => {
+          setIsOpen(false);
+          hasAutoClosedForAsanaRef.current = true;
+          allGoodTimerRef.current = null;
+        }, 1000);
+      }
+    } else {
+      if (allGoodTimerRef.current) {
+        clearTimeout(allGoodTimerRef.current);
+        allGoodTimerRef.current = null;
+      }
     }
   }, [items, hasData, isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (allGoodTimerRef.current) {
+        clearTimeout(allGoodTimerRef.current);
+      }
+    };
+  }, []);
 
   if (!hasData) return null;
 
   const issueCount = items.filter(
-    (i) => i.status === "warning" || i.status === "critical",
+    (i) => i.status === "warning" || i.status === "bad" || i.status === "critical",
   ).length;
   const allGood = issueCount === 0;
 
   const handleToggle = () => {
-    const closing = isOpen;
-    userClosedRef.current = closing;
-    if (!closing) autoClosedRef.current = false;
-    setIsOpen((v) => !v);
+    setIsOpen((prev) => {
+      const next = !prev;
+      userClosedRef.current = !next;
+      return next;
+    });
   };
 
   return (
-    /**
-     * Outer wrapper anchored to left-0 so nothing ever clips outside the camera.
-     * Flex row: [animated-panel-area] [toggle-tab]
-     * When the panel animates to width-0 the tab naturally sits at left-0.
-     */
     <div className="absolute left-0 top-[58%] -translate-y-1/2 z-20 flex items-center pointer-events-none select-none">
-
       {/* -- Animated panel area -- */}
       <div
         className="overflow-hidden pointer-events-auto"
         style={{
-          width:      isOpen ? "164px" : "0px",
-          opacity:    isOpen ? 1 : 0,
+          width: isOpen ? "164px" : "0px",
+          opacity: isOpen ? 1 : 0,
           transition: "width 300ms cubic-bezier(0.4,0,0.2,1), opacity 250ms ease-in-out",
         }}
       >
-        {/* inner card — fixed width so it doesn't shrink as the wrapper narrows */}
         <div
           className="ml-3 rounded-2xl bg-slate-900/50 backdrop-blur-sm border border-white/10 shadow-xl p-2.5"
           style={{ width: "148px" }}
@@ -84,27 +116,41 @@ export function PostureCheckOverlay({ items, hasData }: PostureCheckOverlayProps
               <div
                 key={item.key}
                 className={`flex items-center gap-1.5 px-1.5 py-[5px] rounded-lg transition-all duration-300 ${
-                  item.status === "critical" ? "bg-rose-500/15" :
-                  item.status === "warning"  ? "bg-amber-400/10" :
-                                               "bg-transparent"
+                  item.status === "bad" || item.status === "critical"
+                    ? "bg-rose-500/15"
+                    : item.status === "warning"
+                      ? "bg-amber-400/10"
+                      : "bg-transparent"
                 }`}
               >
                 <span
                   className={`text-[10px] shrink-0 transition-colors duration-300 ${
-                    item.status === "good"     ? "text-emerald-400" :
-                    item.status === "warning"  ? "text-amber-400"   :
-                    item.status === "critical" ? "text-rose-400"    :
-                                                 "text-white/20"
+                    item.status === "good"
+                      ? "text-emerald-400"
+                      : item.status === "warning"
+                        ? "text-amber-400"
+                        : item.status === "bad" || item.status === "critical"
+                          ? "text-rose-400"
+                          : "text-white/20"
                   }`}
                 >
-                  {item.status === "good" ? "\u25cf" : item.status === "warning" ? "\u26a0" : item.status === "critical" ? "\u2715" : "\u25cb"}
+                  {item.status === "good"
+                    ? "\u25cf"
+                    : item.status === "warning"
+                      ? "\u26a0"
+                      : item.status === "bad" || item.status === "critical"
+                        ? "\u2715"
+                        : "\u25cb"}
                 </span>
                 <span
                   className={`text-[10px] font-medium truncate transition-colors duration-300 ${
-                    item.status === "good"     ? "text-white/60"      :
-                    item.status === "warning"  ? "text-amber-200/90"  :
-                    item.status === "critical" ? "text-rose-200/90"   :
-                                                 "text-white/25"
+                    item.status === "good"
+                      ? "text-white/60"
+                      : item.status === "warning"
+                        ? "text-amber-200/90"
+                        : item.status === "bad" || item.status === "critical"
+                          ? "text-rose-200/90"
+                          : "text-white/25"
                   }`}
                 >
                   {item.label}
@@ -115,22 +161,22 @@ export function PostureCheckOverlay({ items, hasData }: PostureCheckOverlayProps
         </div>
       </div>
 
-      {/* -- Toggle tab — always at right edge of the animated area -- */}
+      {/* -- Toggle tab -- */}
       <button
         type="button"
         onClick={handleToggle}
         className="pointer-events-auto flex flex-col items-center justify-center gap-0.5 bg-slate-900/50 hover:bg-slate-900/70 backdrop-blur-sm border border-l-0 border-white/10 text-white/50 hover:text-white/90 transition-all duration-200 cursor-pointer rounded-r-xl shrink-0"
         style={{
-          width:   "18px",
-          height:  "60px",
+          width: "18px",
+          height: "60px",
           transition: "background 200ms",
         }}
         title={isOpen ? "Hide posture check" : "Show posture check"}
       >
-        {/* Chevron rotates based on state */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="9" height="9"
+          width="9"
+          height="9"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -145,7 +191,6 @@ export function PostureCheckOverlay({ items, hasData }: PostureCheckOverlayProps
           <polyline points="9 18 15 12 9 6" />
         </svg>
 
-        {/* Vertical label — only when collapsed so user knows what it is */}
         {!isOpen && (
           <span
             className="text-[7px] font-bold uppercase text-white/40"
@@ -157,4 +202,4 @@ export function PostureCheckOverlay({ items, hasData }: PostureCheckOverlayProps
       </button>
     </div>
   );
-}
+});

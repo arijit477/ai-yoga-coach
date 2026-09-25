@@ -43,13 +43,13 @@ export interface AccuracyStabilizerConfig {
 }
 
 export const DEFAULT_STABILIZER_CONFIG: AccuracyStabilizerConfig = {
-  smoothingAlpha: 0.10, // Faster exponential moving average to sync with detection
-  largeChangeThreshold: 15,
-  severeChangeThreshold: 25,
-  largeChangePersistenceFrames: 6, // Respond quicker to legitimate changes
-  severeChangePersistenceFrames: 4,
-  deadBand: 1.5, // Prevent text flickering
-  invalidFrameGraceMs: 1500, // Grace period
+  smoothingAlpha: 0.30, // Responsive exponential moving average for fluid live response
+  largeChangeThreshold: 20,
+  severeChangeThreshold: 35,
+  largeChangePersistenceFrames: 3, // Rapid response to genuine posture changes
+  severeChangePersistenceFrames: 2,
+  deadBand: 1.0, // Prevent integer text flicker
+  invalidFrameGraceMs: 600, // Quick reset when posture tracking drops
 };
 
 export interface StableAccuracyState {
@@ -199,11 +199,10 @@ export class AccuracyStabilizer {
           ? this.config.severeChangePersistenceFrames
           : this.config.largeChangePersistenceFrames;
 
-      // Check if this new frame is consistent with the active candidate deviation
+      // Check if this new frame is in the same direction of deviation
       if (
         this.candidateTarget !== null &&
-        Math.sign(clampedRaw - this.currentStable) === Math.sign(this.candidateTarget - this.currentStable) &&
-        Math.abs(clampedRaw - this.candidateTarget) <= 10
+        Math.sign(clampedRaw - this.currentStable) === Math.sign(this.candidateTarget - this.currentStable)
       ) {
         this.candidatePersistenceCount++;
       } else {
@@ -214,10 +213,10 @@ export class AccuracyStabilizer {
 
       if (this.candidatePersistenceCount >= requiredFrames) {
         // Change has persisted! Accept the posture change and transition smoothly
-        effectiveAlpha = Math.min(0.35, this.config.smoothingAlpha * 2);
+        effectiveAlpha = 0.45;
       } else {
-        // Transient outlier: suppress jump while awaiting persistence
-        effectiveAlpha = 0.02; // Very damped or zero so outlier does not jerk the ring
+        // Transient outlier: apply mild damping while awaiting confirmation
+        effectiveAlpha = 0.15;
       }
     } else {
       // Normal change within threshold: clear any candidate tracking

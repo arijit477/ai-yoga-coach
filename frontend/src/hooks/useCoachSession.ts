@@ -1,13 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { CoachSessionState } from "../features/ai-coach/types/CoachSessionState";
-import type { PoseEvaluationResult } from "../features/ai-coach/types/pose-rules";
+import type { PoseEvaluation, PoseEvaluationResult } from "../features/ai-coach/types/pose-rules";
 import type { PoseLandmarks } from "../features/ai-coach/types/landmarks";
 import { CalibrationTracker, type CalibrationResult } from "../features/ai-coach/motion/CalibrationTracker";
+import { ScoreBuffer } from "../features/ai-coach/analysis/ScoreAggregator";
+import { evaluateCameraReadiness } from "../features/ai-coach/motion/CameraReadinessEvaluator";
+import { SessionStateMachine } from "../features/ai-coach/session/SessionStateMachine";
+import {
+  CAMERA_GUIDANCE_MESSAGES,
+  type CameraReadinessResult,
+  type BodyRegion,
+} from "../features/ai-coach/types/camera";
 
 interface UseCoachSessionOptions {
-  evaluation: PoseEvaluationResult | null;
+  evaluation: PoseEvaluation | PoseEvaluationResult | null;
   landmarks?: PoseLandmarks | null;
+  requiredLandmarks?: number[];
+  requiredRegions?: BodyRegion[];
   isInitialized: boolean;
   hasPose: boolean;
   targetHoldSeconds?: number;
@@ -33,25 +43,33 @@ interface UseCoachSessionResult {
   calibrationProgress: number;
   visibilityWarning: string | null;
   calibrationResult: CalibrationResult | null;
+  cameraReadiness: CameraReadinessResult;
+  cameraGuidanceMessage: string;
   currentStepIndex: number;
   startSession: (options?: { skipVideo?: boolean }) => void;
   skipGuideVideo: () => void;
   finishGuideVideo: () => void;
   stopSession: () => void;
   resetSession: () => void;
+  resetCurrentAsana: () => void;
+  resetCamera: () => void;
   doItAgain: () => void;
   moveToNextAsana: () => void;
   skipTransition: () => void;
   stayHere: () => void;
+  endSession: () => void;
 }
 
-const COUNTDOWN_SECONDS = 3;
+const GET_READY_SECONDS = 3;
+const HOLD_STILL_SECONDS = 2;
 const DEFAULT_REQUIRED_HOLD_SECONDS = 5;
 const COMPLETION_ACCURACY_THRESHOLD = 75;
 
 export function useCoachSession({
   evaluation,
   landmarks,
+  requiredLandmarks,
+  requiredRegions,
   isInitialized: _isInitialized,
   hasPose,
   targetHoldSeconds = DEFAULT_REQUIRED_HOLD_SECONDS,
@@ -76,9 +94,24 @@ export function useCoachSession({
   const [calibrationResult, setCalibrationResult] = useState<CalibrationResult | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
+  const [cameraReadiness, setCameraReadiness] = useState<CameraReadinessResult>(() =>
+    evaluateCameraReadiness(landmarks, {
+      hardwareStatus: hasPose ? "ready" : "disabled",
+      requiredLandmarks,
+      requiredRegions,
+    })
+  );
+
+  const stateMachineRef = useRef<SessionStateMachine>(
+    new SessionStateMachine("idle", (_from, to) => {
+      setState(to);
+    })
+  );
+
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const transitionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const scoreBufferRef = useRef<ScoreBuffer>(new ScoreBuffer());
   
   const calibrationTrackerRef = useRef<CalibrationTracker | null>(null);
   if (!calibrationTrackerRef.current) {
@@ -93,8 +126,8 @@ export function useCoachSession({
         setCalibrationProgress(100);
         setVisibilityWarning(null);
       } else {
-         setCalibrationProgress(0);
-         setVisibilityWarning(null);
+        setCalibrationProgress(0);
+        setVisibilityWarning(null);
       }
     });
   }
@@ -119,134 +152,256 @@ export function useCoachSession({
     }
   }, []);
 
-  const resetSession = useCallback(() => {
+  /**
+   * Safe State Machine Transition helper
+   */
+  const transitionTo = useCallback((target: CoachSessionState): boolean => {
+    return stateMachineRef.current.transition(target);
+  }, []);
+
+  /**
+   * 16. SESSION RESET — Clean separation of reset boundaries:
+   * resetCurrentAsana(): resets asana-specific score, buffer, completion, hold, calibration
+   */
+  const resetCurrentAsana = useCallback(() => {
     clearTimers();
     calibrationTrackerRef.current?.reset();
-    setState("idle");
-    setCountdown(null);
+    scoreBufferRef.current.reset();
+    hasCompletedCurrentAsanaRef.current = false;
     setHoldTime(0);
-    setTransitionCountdown(null);
     setCalibrationProgress(0);
     setVisibilityWarning(null);
     setCalibrationResult(null);
     setCurrentStepIndex(0);
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
-    hasCompletedCurrentAsanaRef.current = false;
     holdScoresRef.current = [];
   }, [clearTimers]);
+
+  /**
+   * resetSession(): resets session progression, timers, state -> idle
+   */
+  const resetSession = useCallback(() => {
+    resetCurrentAsana();
+    stateMachineRef.current.reset("idle");
+    setCountdown(null);
+    setTransitionCountdown(null);
+  }, [resetCurrentAsana]);
+
+  /**
+   * Helper to deduplicate camera readiness results
+   */
+  const areReadinessResultsEqual = (
+    a: CameraReadinessResult | null | undefined,
+    b: CameraReadinessResult | null | undefined
+  ): boolean => {
+    if (a === b) return true;
+    if (!a || !b) return false;
+    if (a.ready !== b.ready || a.state !== b.state || a.guidance !== b.guidance) return false;
+    if (Math.round(a.confidence * 10) !== Math.round(b.confidence * 10)) return false;
+    if (a.missing.length !== b.missing.length) return false;
+    for (let i = 0; i < a.missing.length; i++) {
+      if (a.missing[i] !== b.missing[i]) return false;
+    }
+    return true;
+  };
+
+  const prevReadinessRef = useRef<CameraReadinessResult>(cameraReadiness);
+
+  /**
+   * resetCamera(): preserves session/asana, resets camera readiness state
+   */
+  const resetCamera = useCallback(() => {
+    const newReadiness = evaluateCameraReadiness(null, { hardwareStatus: "disabled" });
+    if (!areReadinessResultsEqual(prevReadinessRef.current, newReadiness)) {
+      prevReadinessRef.current = newReadiness;
+      setCameraReadiness(newReadiness);
+    }
+  }, []);
 
   const stopSession = useCallback(() => {
     resetSession();
   }, [resetSession]);
 
   /**
-   * Begins Hold Still / Calibration stage after countdown.
+   * Evaluate Camera Readiness on landmark update — deduplicated to avoid unnecessary re-renders
    */
-  const startHoldStillCalibration = useCallback(() => {
+  useEffect(() => {
+    const readiness = evaluateCameraReadiness(landmarks, {
+      hardwareStatus: hasPose ? "ready" : "starting",
+      requiredLandmarks,
+      requiredRegions,
+    });
+    if (!areReadinessResultsEqual(prevReadinessRef.current, readiness)) {
+      prevReadinessRef.current = readiness;
+      setCameraReadiness(readiness);
+    }
+  }, [landmarks, hasPose, requiredLandmarks, requiredRegions]);
+
+  /**
+   * 10. CALIBRATING Stage
+   */
+  const startCalibrating = useCallback(() => {
     clearTimers();
     calibrationTrackerRef.current?.reset();
     setCalibrationProgress(0);
     setVisibilityWarning(null);
-    setCalibrationResult(null);
     hasPromptedCalibrationRef.current = false;
     lastPromptedWarningRef.current = null;
-    
-    // Skip calibration directly to coaching to keep flow simple and responsive
-    setState("coaching");
-    setCurrentStepIndex(0);
-    onStepChange?.(0);
-  }, [clearTimers, onStepChange]);
+    transitionTo("calibrating");
+  }, [clearTimers, transitionTo]);
 
   /**
-   * Countdown: 3, 2, 1 before Hold Still calibration.
+   * 9. HOLD STILL Stage: 2s stability confirmation before calibration
    */
-  const startCountdown = useCallback(() => {
+  const startHoldStill = useCallback(() => {
     clearTimers();
-    setHoldTime(0);
-    setTransitionCountdown(null);
-    setCountdown(COUNTDOWN_SECONDS);
-    setState("countdown");
-
-    let remaining = COUNTDOWN_SECONDS;
+    setCountdown(HOLD_STILL_SECONDS);
+    transitionTo("hold_still");
 
     countdownTimerRef.current = setInterval(() => {
-      remaining -= 1;
-
-      if (remaining <= 0) {
-        if (countdownTimerRef.current) {
-          clearInterval(countdownTimerRef.current);
-          countdownTimerRef.current = null;
+      setCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          if (countdownTimerRef.current) {
+            clearInterval(countdownTimerRef.current);
+            countdownTimerRef.current = null;
+          }
+          startCalibrating();
+          return null;
         }
-
-        setCountdown(null);
-        startHoldStillCalibration();
-        return;
-      }
-
-      setCountdown(remaining);
+        return prev - 1;
+      });
     }, 1000);
-  }, [clearTimers, startHoldStillCalibration]);
+  }, [clearTimers, transitionTo, startCalibrating]);
 
   /**
-   * Starts session: checks for guide video first, else proceeds to countdown.
+   * 8. CAMERA CHECK Stage: Checks camera readiness before allowing hold still
+   */
+  const startCameraCheck = useCallback(() => {
+    clearTimers();
+    setCountdown(null);
+    transitionTo("camera_check");
+  }, [clearTimers, transitionTo]);
+
+  /**
+   * 7. GET READY Stage: 3s preparation countdown
+   */
+  const startGetReady = useCallback(() => {
+    clearTimers();
+    resetCurrentAsana();
+    setCountdown(GET_READY_SECONDS);
+    transitionTo("get_ready");
+
+    countdownTimerRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === null || prev <= 1) {
+          if (countdownTimerRef.current) {
+            clearInterval(countdownTimerRef.current);
+            countdownTimerRef.current = null;
+          }
+          startCameraCheck();
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [clearTimers, resetCurrentAsana, transitionTo, startCameraCheck]);
+
+  /**
+   * 6. GUIDE VIDEO / Session Startup
    */
   const startSession = useCallback(
     (options?: { skipVideo?: boolean }) => {
+      resetSession();
       if (hasGuideVideo && !options?.skipVideo) {
-        setState("guide_video");
+        transitionTo("guide_video");
       } else {
-        startCountdown();
+        startGetReady();
       }
     },
-    [hasGuideVideo, startCountdown],
+    [hasGuideVideo, resetSession, transitionTo, startGetReady]
   );
 
   const skipGuideVideo = useCallback(() => {
-    startCountdown();
-  }, [startCountdown]);
+    startGetReady();
+  }, [startGetReady]);
 
   const finishGuideVideo = useCallback(() => {
-    startCountdown();
-  }, [startCountdown]);
+    startGetReady();
+  }, [startGetReady]);
 
   /**
-   * Real-time Hold Still / Calibration motion monitoring
+   * Camera Check Flow: Transition to hold_still once camera readiness is satisfied
    */
   useEffect(() => {
-    if (state !== "hold_still" && state !== "calibrating") {
-      return;
+    if (state !== "camera_check") return;
+
+    if (cameraReadiness.ready) {
+      startHoldStill();
+    }
+  }, [state, cameraReadiness.ready, startHoldStill]);
+
+  /**
+   * Hold Still Flow: If user moves or visibility is lost during hold_still, reset countdown
+   */
+  useEffect(() => {
+    if (state !== "hold_still") return;
+
+    if (!cameraReadiness.ready) {
+      // Pause/reset hold still countdown if readiness lost
+      setCountdown(HOLD_STILL_SECONDS);
+    }
+  }, [state, cameraReadiness.ready]);
+
+  /**
+   * Calibration tracking in calibrating state
+   */
+  useEffect(() => {
+    if (state !== "calibrating") return;
+
+    if (landmarks && landmarks.length >= 33) {
+      calibrationTrackerRef.current?.updatePoseDetection(landmarks);
     }
 
-    calibrationTrackerRef.current?.updatePoseDetection(landmarks ?? null);
-
     if (calibrationResult) {
-      if (calibrationResult.state === "CALIBRATION_FAILED" && calibrationResult.reason) {
+      if (
+        calibrationResult.state === "CALIBRATION_FAILED" &&
+        calibrationResult.reason
+      ) {
         if (lastPromptedWarningRef.current !== calibrationResult.reason) {
           lastPromptedWarningRef.current = calibrationResult.reason;
-          onCalibrationPrompt?.(calibrationResult.reason, calibrationResult.reason); // pass reason string
+          onCalibrationPrompt?.(calibrationResult.reason);
         }
-      } else if (calibrationResult.state === "CALIBRATION_STARTED" || calibrationResult.state === "CALIBRATION_STABLE") {
-        if (!hasPromptedCalibrationRef.current || lastPromptedWarningRef.current !== null) {
+      } else if (
+        calibrationResult.state === "CALIBRATION_STARTED" ||
+        calibrationResult.state === "CALIBRATION_STABLE"
+      ) {
+        if (
+          !hasPromptedCalibrationRef.current ||
+          lastPromptedWarningRef.current !== null
+        ) {
           hasPromptedCalibrationRef.current = true;
           lastPromptedWarningRef.current = null;
           onCalibrationPrompt?.("Hold still for a moment while I check your position.");
         }
       }
 
-      if (calibrationResult.state === "CALIBRATION_STABLE" && state === "hold_still") {
-        setState("calibrating");
-      }
-
       if (calibrationResult.state === "CALIBRATION_COMPLETE") {
         onCalibrationComplete?.();
-        // Calibration completed! Transition to active coaching
-        setState("coaching");
+        transitionTo("coaching");
         setCurrentStepIndex(0);
         onStepChange?.(0);
       }
     }
-  }, [landmarks, state, calibrationResult, onCalibrationPrompt, onCalibrationComplete, onStepChange]);
+  }, [
+    landmarks,
+    state,
+    calibrationResult,
+    onCalibrationPrompt,
+    onCalibrationComplete,
+    onStepChange,
+    transitionTo,
+  ]);
 
   /**
    * Step-by-step guidance progression
@@ -254,10 +409,8 @@ export function useCoachSession({
   useEffect(() => {
     if (state !== "coaching") return;
 
-    // Advance steps if instructions exist and good progress is being made
     const maxSteps = Math.max(1, instructionsCount);
     if (currentStepIndex < maxSteps - 1) {
-      // If user achieves good form or high score on this step, advance step
       if (evaluation && evaluation.score >= 60) {
         const stepTimer = setTimeout(() => {
           setCurrentStepIndex((prev) => {
@@ -276,23 +429,20 @@ export function useCoachSession({
   const hasPoseLostSinceRef = useRef<number | null>(null);
   const highAccuracySinceRef = useRef<number | null>(null);
 
-  // Reset completion flag and hold scores when moving to a new asana
+  // Reset completion flag and buffers when moving to a new asana index
   useEffect(() => {
-    hasCompletedCurrentAsanaRef.current = false;
-    holdScoresRef.current = [];
-    setHoldTime(0);
-  }, [currentAsanaIndex]);
+    resetCurrentAsana();
+  }, [currentAsanaIndex, resetCurrentAsana]);
 
   /**
-   * Posture evaluation state transitions during active practice
+   * 11. Coaching, 12. Correcting, 13. Holding, and 14. Completion
    */
   useEffect(() => {
     if (
       state !== "coaching" &&
-      state !== "detecting" &&
-      state !== "analyzing" &&
       state !== "correcting" &&
-      state !== "holding"
+      state !== "holding" &&
+      state !== "camera_check"
     ) {
       hasPoseLostSinceRef.current = null;
       highAccuracySinceRef.current = null;
@@ -303,9 +453,9 @@ export function useCoachSession({
       highAccuracySinceRef.current = null;
       if (hasPoseLostSinceRef.current === null) {
         hasPoseLostSinceRef.current = Date.now();
-      } else if (Date.now() - hasPoseLostSinceRef.current > 7000) { // 7 second grace period
-        if (state !== "detecting") {
-          setState("detecting");
+      } else if (Date.now() - hasPoseLostSinceRef.current > 7000) {
+        if (state !== "camera_check") {
+          transitionTo("camera_check");
         }
         setHoldTime(0);
         holdScoresRef.current = [];
@@ -317,46 +467,65 @@ export function useCoachSession({
 
     if (!evaluation) {
       highAccuracySinceRef.current = null;
-      if (state !== "analyzing") {
-        setState("analyzing");
-      }
-      setHoldTime(0);
-      holdScoresRef.current = [];
       return;
     }
 
-    // High accuracy alignment reached (>= 75% threshold)
+    // Push valid score to rolling buffer
+    const isValidFrame = hasPose && evaluation.score >= 0;
+    scoreBufferRef.current.push(evaluation.score, isValidFrame);
+
+    if (state === "holding") {
+      holdScoresRef.current.push(evaluation.score);
+    }
+
+    // 14. 75% Completion Threshold
     if (evaluation.score >= COMPLETION_ACCURACY_THRESHOLD) {
       if (highAccuracySinceRef.current === null) {
         highAccuracySinceRef.current = Date.now();
       }
 
-      // Complete the asana immediately once alignment is held steadily for 500ms
-      if (Date.now() - highAccuracySinceRef.current >= 500) {
+      // Complete asana once held steadily for 400ms (>= 75% threshold crossing)
+      if (Date.now() - highAccuracySinceRef.current >= 400) {
         if (!hasCompletedCurrentAsanaRef.current) {
           hasCompletedCurrentAsanaRef.current = true;
-          const finalScore = Math.max(75, Math.min(100, Math.round(evaluation.score)));
+          scoreBufferRef.current.setCompleted(true);
+          const finalScore =
+            scoreBufferRef.current.getFinalScore() ??
+            Math.max(75, Math.min(100, Math.round(evaluation.score)));
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);
-          if (state !== "completed") {
-            setState("completed");
-          }
+          transitionTo("pose_review");
+          // Immediately also support user_choice state
+          setTimeout(() => {
+            transitionTo("user_choice");
+          }, 50);
         }
       } else {
-        if (state !== "coaching") {
-          setState("coaching");
+        if (state !== "coaching" && state !== "holding") {
+          transitionTo("coaching");
         }
       }
     } else {
       highAccuracySinceRef.current = null;
-      if (state !== "correcting") {
-        setState("correcting");
+      // 12. Correcting state when primary issue exists
+      if (evaluation.primaryIssue && state !== "correcting" && state !== "holding") {
+        transitionTo("correcting");
+      } else if (!evaluation.primaryIssue && state === "correcting") {
+        transitionTo("coaching");
       }
     }
-  }, [evaluation, hasPose, state, currentAsanaIndex]);
+  }, [
+    evaluation,
+    hasPose,
+    state,
+    currentAsanaIndex,
+    onAsanaComplete,
+    onPoseReviewReady,
+    transitionTo,
+  ]);
 
   /**
-   * Hold timer count-up: Once targetHoldSeconds is completed, calculate final average hold accuracy
+   * 13. Optional Hold timer count-up (does NOT block 75% completion)
    */
   useEffect(() => {
     if (state !== "holding") {
@@ -381,22 +550,31 @@ export function useCoachSession({
             holdTimerRef.current = null;
           }
 
-          // Compute genuine hold accuracy across all collected frames during the hold
-          const samples = holdScoresRef.current;
-          const finalScore =
-            samples.length > 0
-              ? Math.max(50, Math.min(100, Math.round(samples.reduce((sum, s) => sum + s, 0) / samples.length)))
-              : Math.round(evaluation?.score ?? 80);
+          if (!hasCompletedCurrentAsanaRef.current) {
+            hasCompletedCurrentAsanaRef.current = true;
+            scoreBufferRef.current.setCompleted(true);
+            const samples = holdScoresRef.current;
+            const finalScore =
+              samples.length > 0
+                ? Math.max(
+                    50,
+                    Math.min(
+                      100,
+                      Math.round(
+                        samples.reduce((sum, s) => sum + s, 0) / samples.length
+                      )
+                    )
+                  )
+                : (scoreBufferRef.current.getFinalScore() ??
+                  Math.round(evaluation?.score ?? 80));
 
-          hasCompletedCurrentAsanaRef.current = true;
-          onAsanaComplete?.(currentAsanaIndex, finalScore);
-          onPoseReviewReady?.(finalScore);
-
-          setState("completed");
-          // Auto-advance to the next asana after allowing time for completion message
-          transitionTimerRef.current = setTimeout(() => {
-            moveToNextAsana();
-          }, 5000);
+            onAsanaComplete?.(currentAsanaIndex, finalScore);
+            onPoseReviewReady?.(finalScore);
+            transitionTo("pose_review");
+            setTimeout(() => {
+              transitionTo("user_choice");
+            }, 50);
+          }
 
           return targetHoldSeconds;
         }
@@ -418,61 +596,67 @@ export function useCoachSession({
     currentAsanaIndex,
     onAsanaComplete,
     onPoseReviewReady,
+    transitionTo,
   ]);
 
   /**
-   * Action: "Do It Again" -> restarts current asana directly at Get Ready / Hold Still (no guide video replay)
+   * 15. User Choice Actions:
+   * "Do It Again" -> restarts current asana
    */
   const doItAgain = useCallback(() => {
-    clearTimers();
-    calibrationTrackerRef.current?.reset();
-    setHoldTime(0);
-    setCalibrationProgress(0);
-    setVisibilityWarning(null);
-    setCurrentStepIndex(0);
-    startCountdown();
-  }, [clearTimers, startCountdown]);
+    startGetReady();
+  }, [startGetReady]);
 
   /**
-   * Action: "Move to Next Asana"
+   * "Move to Next Asana" (NEXT POSE)
    */
   const moveToNextAsana = useCallback(() => {
     clearTimers();
+    resetCurrentAsana();
     const isLastAsana = currentAsanaIndex + 1 >= totalAsanas;
 
     if (isLastAsana) {
-      setState("session_completed");
+      transitionTo("completed");
       onSessionComplete?.();
       return;
     }
 
-    // Advance to next asana and trigger fresh flow with guide video
     onAdvanceAsana?.(currentAsanaIndex + 1);
-    setHoldTime(0);
-    setCurrentStepIndex(0);
-    // Move to guide video if available or countdown
     if (hasGuideVideo) {
-      setState("guide_video");
+      transitionTo("guide_video");
     } else {
-      startCountdown();
+      startGetReady();
     }
   }, [
     clearTimers,
+    resetCurrentAsana,
     currentAsanaIndex,
     totalAsanas,
     hasGuideVideo,
     onSessionComplete,
     onAdvanceAsana,
-    startCountdown,
+    startGetReady,
+    transitionTo,
   ]);
 
   const skipTransition = useCallback(() => {
     moveToNextAsana();
   }, [moveToNextAsana]);
 
+  /**
+   * "Stay Here" (STAY HERE)
+   */
   const stayHere = useCallback(() => {
-    setState("coaching");
-  }, []);
+    transitionTo("coaching");
+  }, [transitionTo]);
+
+  /**
+   * "End Session" (END SESSION)
+   */
+  const endSession = useCallback(() => {
+    transitionTo("completed");
+    onSessionComplete?.();
+  }, [transitionTo, onSessionComplete]);
 
   /*
    * Cleanup on unmount.
@@ -483,6 +667,9 @@ export function useCoachSession({
     };
   }, [clearTimers]);
 
+  const guidanceMessage =
+    CAMERA_GUIDANCE_MESSAGES[cameraReadiness.guidance] || "Ready for Yoga.";
+
   return {
     state,
     countdown,
@@ -492,15 +679,20 @@ export function useCoachSession({
     calibrationProgress,
     visibilityWarning,
     calibrationResult,
+    cameraReadiness,
+    cameraGuidanceMessage: guidanceMessage,
     currentStepIndex,
     startSession,
     skipGuideVideo,
     finishGuideVideo,
     stopSession,
     resetSession,
+    resetCurrentAsana,
+    resetCamera,
     doItAgain,
     moveToNextAsana,
     skipTransition,
     stayHere,
+    endSession,
   };
 }

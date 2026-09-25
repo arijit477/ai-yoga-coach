@@ -1,30 +1,66 @@
+import type { CoachSessionState } from "../types/CoachSessionState";
+import type { CameraReadinessState } from "../motion/CameraReadinessTracker";
+import type { PostureAreaStatus, OverallPoseStatus } from "../types/pose-rules";
+
+export type PostureStatus = "GOOD" | "WARNING" | "BAD" | "UNKNOWN" | PostureAreaStatus | OverallPoseStatus;
+
+export type CoachingEventType =
+  | "pose_started"
+  | "calibration_prompt"
+  | "calibration_complete"
+  | "step_guidance"
+  | "pose_correction"
+  | "issue_improving"
+  | "issue_resolved"
+  | "good_form"
+  | "pose_held"
+  | "pose_completed"
+  | "accuracy_threshold"
+  | "hold_countdown"
+  | "safety_warning"
+  | "camera_state_change"
+  | "camera_unavailable"
+  | "user_out_of_frame"
+  | "partial_body"
+  | "camera_ready"
+  | "calibration_required"
+  | "calibration_failed";
+
+export interface CoachingEventPrimaryIssue {
+  ruleId: string;
+  bodyRegion?: string;
+  joint?: string;
+  severity: "info" | "low" | "medium" | "high";
+  feedback: string;
+  currentValue?: number;
+  target?: number;
+  targetValue?: number;
+  min?: number;
+  max?: number;
+  targetMin?: number;
+  targetMax?: number;
+}
+
 export interface CoachingEvent {
   id: string;
-  type:
-    | "pose_started"
-    | "calibration_prompt"
-    | "calibration_complete"
-    | "step_guidance"
-    | "pose_correction"
-    | "issue_improving"
-    | "issue_resolved"
-    | "good_form"
-    | "pose_held"
-    | "pose_completed"
-    | "accuracy_threshold"
-    | "hold_countdown"
-    | "safety_warning"
-    | "camera_state_change"
-    | "camera_unavailable"
-    | "user_out_of_frame"
-    | "partial_body"
-    | "camera_ready"
-    | "calibration_required"
-    | "calibration_failed";
+  type: CoachingEventType;
+  timestamp: number;
+
+  coach?: "alice" | "kevin";
 
   asanaId: string;
   asanaName: string;
 
+  score?: number;
+
+  sessionState?: CoachSessionState;
+  cameraState?: CameraReadinessState;
+
+  posture?: PostureStatus | "GOOD" | "WARNING" | "BAD" | "UNKNOWN";
+
+  primaryIssue?: CoachingEventPrimaryIssue;
+
+  // Granular details for rule identification and backwards compatibility
   ruleId?: string;
   issue?: string;
   joint?: string;
@@ -39,9 +75,7 @@ export interface CoachingEvent {
   targetMax?: number;
 
   feedback?: string;
-  score?: number;
-
-  timestamp: number;
+  messageContext?: string;
 }
 
 export interface CoachDecision {
@@ -90,4 +124,5 @@ export interface VoiceState {
   transcripts: VoiceTranscriptItem[];
   isConversationMode?: boolean;
 }
+
 

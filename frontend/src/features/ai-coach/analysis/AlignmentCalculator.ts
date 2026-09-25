@@ -1,4 +1,5 @@
 import type { Landmark } from "../types/landmarks";
+import { isLandmarkUsable } from "./LandmarkUtils";
 
 export interface AlignmentResult {
   aligned: boolean;
@@ -17,14 +18,14 @@ const EPSILON = 1e-8;
  * left shoulder Y ≈ right shoulder Y
  */
 export function calculateHorizontalDeviation(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
 ): number | null {
   if (!areValidLandmarks(a, b)) {
     return null;
   }
 
-  return Math.abs(a.y - b.y);
+  return Math.abs(a!.y - b!.y);
 }
 
 /**
@@ -37,14 +38,14 @@ export function calculateHorizontalDeviation(
  * knee X ≈ ankle X
  */
 export function calculateVerticalDeviation(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
 ): number | null {
   if (!areValidLandmarks(a, b)) {
     return null;
   }
 
-  return Math.abs(a.x - b.x);
+  return Math.abs(a!.x - b!.x);
 }
 
 /**
@@ -53,8 +54,8 @@ export function calculateVerticalDeviation(
  * `tolerance` is expressed in normalized image coordinates.
  */
 export function isHorizontallyAligned(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
   tolerance = 0.05,
 ): boolean {
   const deviation =
@@ -73,8 +74,8 @@ export function isHorizontallyAligned(
  * `tolerance` is expressed in normalized image coordinates.
  */
 export function isVerticallyAligned(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
   tolerance = 0.05,
 ): boolean {
   const deviation =
@@ -93,8 +94,8 @@ export function isVerticallyAligned(
  * Returns both the alignment state and deviation.
  */
 export function calculateHorizontalAlignment(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
   tolerance = 0.05,
 ): AlignmentResult | null {
   const deviation =
@@ -116,8 +117,8 @@ export function calculateHorizontalAlignment(
  * Returns both the alignment state and deviation.
  */
 export function calculateVerticalAlignment(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
   tolerance = 0.05,
 ): AlignmentResult | null {
   const deviation =
@@ -140,15 +141,15 @@ export function calculateVerticalAlignment(
  * landmarks is approximately horizontal.
  */
 export function calculateHorizontalSlope(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
 ): number | null {
   if (!areValidLandmarks(a, b)) {
     return null;
   }
 
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
+  const dx = b!.x - a!.x;
+  const dy = b!.y - a!.y;
 
   if (Math.abs(dx) < EPSILON) {
     return null;
@@ -167,15 +168,15 @@ export function calculateHorizontalSlope(
  * landmarks is approximately vertical.
  */
 export function calculateVerticalSlope(
-  a: Landmark,
-  b: Landmark,
+  a: Landmark | null | undefined,
+  b: Landmark | null | undefined,
 ): number | null {
   if (!areValidLandmarks(a, b)) {
     return null;
   }
 
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
+  const dx = b!.x - a!.x;
+  const dy = b!.y - a!.y;
 
   if (Math.abs(dy) < EPSILON) {
     return null;
@@ -186,10 +187,6 @@ export function calculateVerticalSlope(
 
 /**
  * Validate landmark coordinates.
- *
- * This intentionally does not impose a coordinate range because
- * image landmarks and world landmarks use different coordinate
- * systems.
  */
 function areValidLandmarks(
   a: Landmark | undefined | null,
@@ -199,19 +196,16 @@ function areValidLandmarks(
     return false;
   }
 
-  if (
-    (a.visibility !== undefined && a.visibility < 0.4) ||
-    (b.visibility !== undefined && b.visibility < 0.4)
-  ) {
+  if (!isLandmarkUsable(a) || !isLandmarkUsable(b)) {
     return false;
   }
 
   return (
     Number.isFinite(a.x) &&
     Number.isFinite(a.y) &&
-    Number.isFinite(a.z) &&
+    Number.isFinite(a.z ?? 0) &&
     Number.isFinite(b.x) &&
     Number.isFinite(b.y) &&
-    Number.isFinite(b.z)
+    Number.isFinite(b.z ?? 0)
   );
-}
+}

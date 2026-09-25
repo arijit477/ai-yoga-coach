@@ -239,19 +239,28 @@ async def create_realtime_session(req: RealtimeSessionRequest):
 
     payload = {
         "session": {
+            "type": "realtime",
             "model": model,
             "instructions": build_coach_instructions(coach_id),
-            "voice": voice
+            "audio": {
+                "output": {
+                    "voice": voice
+                }
+            }
         }
     }
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=20.0) as client:
         try:
-            response = await client.post(url, headers=headers, json=payload, timeout=10.0)
+            response = await client.post(url, headers=headers, json=payload)
             response.raise_for_status()
             data = response.json()
             
-            client_secret = data.get("value") or data.get("client_secret", {}).get("value")
+            client_secret = data.get("value") or (
+                data.get("client_secret", {}).get("value")
+                if isinstance(data.get("client_secret"), dict)
+                else data.get("client_secret")
+            )
             if not client_secret:
                 raise ValueError("No client_secret returned from OpenAI.")
             

@@ -1,8 +1,10 @@
+import React from "react";
+
 interface PrivacyNoticeProps {
   className?: string;
 }
 
-export function PrivacyNotice({ className = "" }: PrivacyNoticeProps) {
+export const PrivacyNotice = React.memo(function PrivacyNotice({ className = "" }: PrivacyNoticeProps) {
   return (
     <div className={`rounded-2xl border border-emerald-900/10 bg-emerald-50/60 p-4 text-slate-700 flex items-start gap-3 ${className}`}>
       <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">🔒</span>
@@ -12,4 +14,4 @@ export function PrivacyNotice({ className = "" }: PrivacyNoticeProps) {
       </div>
     </div>
   );
-}
+});

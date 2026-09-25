@@ -4,7 +4,6 @@ import {
   VolumeX,
   Radio,
   PowerOff,
-  Mic
 } from "lucide-react";
 import type { VoiceState } from "../voice/voice.types";
 
@@ -14,24 +13,20 @@ interface VoiceControlsProps {
   coachName?: string;
   onToggleMute?: () => void;
   onStopVoice?: () => void;
-  onToggleConversationMode?: () => void;
   className?: string;
 }
 
 /**
  * Dedicated Multi-Button Voice Control Bar:
  * Provides distinct, intuitive buttons for:
- * 1. [Start Voice] / [Start Listening] / [Stop Listening]
+ * 1. [Mute / Unmute] (toggles audio)
  * 2. [Stop Voice] (cancels speech & disconnects)
- * 3. [Mute / Unmute] (toggles audio & mic)
- * 4. [Ask Coach] (toggles Conversation Mode WebRTC)
  */
 export const VoiceControls = React.memo(function VoiceControls({
   voiceState,
   coachName = "Alice",
   onToggleMute,
   onStopVoice,
-  onToggleConversationMode,
   className = "",
 }: VoiceControlsProps) {
   const isSpeaking = voiceState.status === "speaking";
@@ -127,41 +122,13 @@ export const VoiceControls = React.memo(function VoiceControls({
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2">
-            {/* CONVERSATION MODE (ASK COACH) */}
-            <button
-              type="button"
-              onClick={onToggleConversationMode}
-              aria-label={isConversationMode ? "End conversation mode" : "Ask Coach a question"}
-              title={isConversationMode ? "End conversation mode" : "Ask Coach a question"}
-              className={`col-span-2 flex items-center justify-center gap-2 px-2 py-2 rounded-xl border font-semibold text-[13px] transition shadow-xs active:scale-[0.97] cursor-pointer ${
-                isConversationMode
-                  ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-800 animate-pulse"
-                  : "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200"
-              }`}
-            >
-              <Mic size={16} className={isConversationMode ? "text-white" : "text-indigo-600"} />
-              <span className="truncate">{isConversationMode ? "End Conversation" : "Ask Coach (Mic Off)"}</span>
-            </button>
-
-            {/* END CONVERSATION */}
-            <button
-              type="button"
-              onClick={onStopVoice}
-              aria-label="End session"
-              title="End session"
-              className="flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-xl border font-semibold text-[12px] transition shadow-xs active:scale-[0.97] cursor-pointer bg-red-100 hover:bg-red-200 text-red-900 border-red-300"
-            >
-              <PowerOff size={16} className="text-red-800" />
-              <span className="truncate">Stop Coach</span>
-            </button>
-
             {/* MUTE / UNMUTE */}
             <button
               type="button"
               onClick={onToggleMute}
               aria-label={isMuted ? "Unmute voice coach" : "Mute voice coach"}
               title={isMuted ? "Unmute voice coach" : "Mute voice coach"}
-              className={`flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-xl border font-semibold text-[12px] transition shadow-xs active:scale-[0.97] cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl border font-semibold text-[12px] transition shadow-xs active:scale-[0.97] cursor-pointer ${
                 isMuted
                   ? "bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300"
                   : "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300"
@@ -178,6 +145,18 @@ export const VoiceControls = React.memo(function VoiceControls({
                   <span className="truncate">Mute Coach</span>
                 </>
               )}
+            </button>
+
+            {/* STOP COACH */}
+            <button
+              type="button"
+              onClick={onStopVoice}
+              aria-label="End session"
+              title="End session"
+              className="flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl border font-semibold text-[12px] transition shadow-xs active:scale-[0.97] cursor-pointer bg-red-100 hover:bg-red-200 text-red-900 border-red-300"
+            >
+              <PowerOff size={16} className="text-red-800" />
+              <span className="truncate">Stop Coach</span>
             </button>
           </div>
         )}
