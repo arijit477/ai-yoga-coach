@@ -1,0 +1,1362 @@
+[
+  {
+    "id": "archers-akarna-dhanurasana",
+    "displayName": "Archer's Pose",
+    "sanskritName": "Akarna Dhanurasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "archers-akarna-dhanurasana.webp"
+  },
+  {
+    "id": "banana-supta-nitambasana",
+    "displayName": "Banana Pose",
+    "sanskritName": "Supta Nitambasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "banana-supta-nitambasana.webp"
+  },
+  {
+    "id": "big-toe-padangushthasana",
+    "displayName": "Big Toe Pose",
+    "sanskritName": "Padangushthasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "big-toe-padangushthasana.webp"
+  },
+  {
+    "id": "bird-of-paradise-svarga-dvijasana",
+    "displayName": "Bird of Paradise",
+    "sanskritName": "Svarga Dvijasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "bird-of-paradise-svarga-dvijasana.webp"
+  },
+  {
+    "id": "boat-navasana",
+    "displayName": "Boat Pose",
+    "sanskritName": "Navasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "filename": "boat-navasana.webp"
+  },
+  {
+    "id": "bound-angle-baddha-konasana",
+    "displayName": "Bound Angle Pose",
+    "sanskritName": "Baddha Konasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "bound-angle-baddha-konasana.webp"
+  },
+  {
+    "id": "bow-dhanurasana",
+    "displayName": "Bow Pose",
+    "sanskritName": "Dhanurasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "bow-dhanurasana.webp"
+  },
+  {
+    "id": "box-chakravakasana",
+    "displayName": "Box Pose",
+    "sanskritName": "Chakravakasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "box-chakravakasana.webp"
+  },
+  {
+    "id": "bridge-setu-bandha-sarvangasana",
+    "displayName": "Bridge Pose",
+    "sanskritName": "Setu Bandha Sarvangasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "filename": "bridge-setu-bandha-sarvangasana.webp"
+  },
+  {
+    "id": "butterfly",
+    "displayName": "Butterfly Pose",
+    "sanskritName": "Baddha Konasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "butterfly.webp"
+  },
+  {
+    "id": "camel-ustrasana",
+    "displayName": "Camel Pose",
+    "sanskritName": "Ustrasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "camel-ustrasana.webp"
+  },
+  {
+    "id": "cat-marjariasana",
+    "displayName": "Cat Pose",
+    "sanskritName": "Marjariasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "cat-marjariasana.webp"
+  },
+  {
+    "id": "caterpillar",
+    "displayName": "Caterpillar Pose",
+    "sanskritName": "Paschimottanasana Variation",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "caterpillar.webp"
+  },
+  {
+    "id": "chair-utkatasana",
+    "displayName": "Chair Pose",
+    "sanskritName": "Utkatasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "chair-utkatasana.webp"
+  },
+  {
+    "id": "childs-pose-balasana",
+    "displayName": "Child's Pose",
+    "sanskritName": "Balasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "childs-pose-balasana.webp"
+  },
+  {
+    "id": "chin-stand-ganda-bherundasana",
+    "displayName": "Chin Stand",
+    "sanskritName": "Ganda Bherundasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "filename": "chin-stand-ganda-bherundasana.webp"
+  },
+  {
+    "id": "cobra-bhujangasana",
+    "displayName": "Cobra Pose",
+    "sanskritName": "Bhujangasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "filename": "cobra-bhujangasana.webp"
+  },
+  {
+    "id": "corpse-savasana",
+    "displayName": "Corpse Pose",
+    "sanskritName": "Savasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "corpse-savasana.webp"
+  },
+  {
+    "id": "cow-bitilasana",
+    "displayName": "Cow Pose",
+    "sanskritName": "Bitilasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "cow-bitilasana.webp"
+  },
+  {
+    "id": "cow-face-gomukhasana",
+    "displayName": "Cow Face Pose",
+    "sanskritName": "Gomukhasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "cow-face-gomukhasana.webp"
+  },
+  {
+    "id": "crane-bakasana",
+    "displayName": "Crane Pose",
+    "sanskritName": "Bakasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "crane-bakasana.webp"
+  },
+  {
+    "id": "crescent-lunge-ashta-chandrasana",
+    "displayName": "Crescent Lunge",
+    "sanskritName": "Ashta Chandrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "crescent-lunge-ashta-chandrasana.webp"
+  },
+  {
+    "id": "crescent-lunge-on-knee-anjaneyasana",
+    "displayName": "Low Lunge",
+    "sanskritName": "Anjaneyasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "crescent-lunge-on-knee-anjaneyasana.webp"
+  },
+  {
+    "id": "crescent-moon-ardha-chandrasana",
+    "displayName": "Crescent Moon Pose",
+    "sanskritName": "Ardha Chandrasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "crescent-moon-ardha-chandrasana.webp"
+  },
+  {
+    "id": "crooked-monkey",
+    "displayName": "Crooked Monkey",
+    "sanskritName": "Markatasana Variation",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "crooked-monkey.webp"
+  },
+  {
+    "id": "crow-kakasana",
+    "displayName": "Crow Pose",
+    "sanskritName": "Kakasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "crow-kakasana.webp"
+  },
+  {
+    "id": "dancer-natarajasana",
+    "displayName": "Dancer Pose",
+    "sanskritName": "Natarajasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "dancer-natarajasana.webp"
+  },
+  {
+    "id": "deaf-mans-karna-pidasana",
+    "displayName": "Deaf Man's Pose",
+    "sanskritName": "Karnapidasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "filename": "deaf-mans-karna-pidasana.webp"
+  },
+  {
+    "id": "dolphin-shishumarasana",
+    "displayName": "Dolphin Pose",
+    "sanskritName": "Shishumarasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "filename": "dolphin-shishumarasana.webp"
+  },
+  {
+    "id": "downward-dog-adho-mukha-svanasana",
+    "displayName": "Downward-Facing Dog",
+    "sanskritName": "Adho Mukha Svanasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "downward-dog-adho-mukha-svanasana.webp"
+  },
+  {
+    "id": "eagle-garudasana",
+    "displayName": "Eagle Pose",
+    "sanskritName": "Garudasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "eagle-garudasana.webp"
+  },
+  {
+    "id": "easy-sukhasana",
+    "displayName": "Easy Pose",
+    "sanskritName": "Sukhasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "easy-sukhasana.webp"
+  },
+  {
+    "id": "eight-angle-ashtavakrasana",
+    "displayName": "Eight-Angle Pose",
+    "sanskritName": "Ashtavakrasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "eight-angle-ashtavakrasana.webp"
+  },
+  {
+    "id": "eight-point-ashtangasana",
+    "displayName": "Eight-Limbed Pose",
+    "sanskritName": "Ashtangasana",
+    "category": "core",
+    "difficulty": "beginner",
+    "filename": "eight-point-ashtangasana.webp"
+  },
+  {
+    "id": "elbow-balance-shayanasana",
+    "displayName": "Elbow Balance",
+    "sanskritName": "Shayanasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "filename": "elbow-balance-shayanasana.webp"
+  },
+  {
+    "id": "elephant-trunk-eka-hasta-bhujasana",
+    "displayName": "Elephant's Trunk Pose",
+    "sanskritName": "Eka Hasta Bhujasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "elephant-trunk-eka-hasta-bhujasana.webp"
+  },
+  {
+    "id": "embryo-in-womb-garbha-pindasana",
+    "displayName": "Embryo In Womb",
+    "sanskritName": "Garbha Pindasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "embryo-in-womb-garbha-pindasana.webp"
+  },
+  {
+    "id": "embryo-pindasana",
+    "displayName": "Embryo",
+    "sanskritName": "Pindasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "embryo-pindasana.webp"
+  },
+  {
+    "id": "extended-puppy-uttana-shishosana",
+    "displayName": "Extended Puppy Pose",
+    "sanskritName": "Uttana Shishosana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "extended-puppy-uttana-shishosana.webp"
+  },
+  {
+    "id": "extended-side-angle-utthita-parshvakonasana",
+    "displayName": "Extended Side Angle",
+    "sanskritName": "Utthita Parshvakonasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "extended-side-angle-utthita-parshvakonasana.webp"
+  },
+  {
+    "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b",
+    "displayName": "Extended Standing Hand To Big Toe Utthita",
+    "sanskritName": "Hasta Padangushthasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.webp"
+  },
+  {
+    "id": "extended-supine-hand-to-big-toe-supta-padangushthasana-b",
+    "displayName": "Extended Supine Hand To Big Toe",
+    "sanskritName": "Supta Padangushthasana B",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "filename": "extended-supine-hand-to-big-toe-supta-padangushthasana-b.webp"
+  },
+  {
+    "id": "fire-log-agnistambhasana",
+    "displayName": "Fire Log Pose",
+    "sanskritName": "Agnistambhasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "fire-log-agnistambhasana.webp"
+  },
+  {
+    "id": "firefly-i-tittibhasana-a",
+    "displayName": "Firefly I",
+    "sanskritName": "Tittibhasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "firefly-i-tittibhasana-a.webp"
+  },
+  {
+    "id": "firefly-ii-tittibhasana-b",
+    "displayName": "Firefly II",
+    "sanskritName": "Tittibhasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "firefly-ii-tittibhasana-b.webp"
+  },
+  {
+    "id": "firefly-iii-tittibhasana-c",
+    "displayName": "Firefly III",
+    "sanskritName": "Tittibhasana C",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "firefly-iii-tittibhasana-c.webp"
+  },
+  {
+    "id": "fish-matsyasana",
+    "displayName": "Fish Pose",
+    "sanskritName": "Matsyasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "filename": "fish-matsyasana.webp"
+  },
+  {
+    "id": "floating-stick-brahmacharyasana",
+    "displayName": "Floating Stick",
+    "sanskritName": "Brahmacharyasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "floating-stick-brahmacharyasana.webp"
+  },
+  {
+    "id": "flying-lizard",
+    "displayName": "Flying Lizard",
+    "sanskritName": null,
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "flying-lizard.webp"
+  },
+  {
+    "id": "flying-man-eka-pada-koundinyasana",
+    "displayName": "Flying Man",
+    "sanskritName": "Eka Pada Koundinyasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "flying-man-eka-pada-koundinyasana.webp"
+  },
+  {
+    "id": "flying-pigeon-eka-pada-galavasana",
+    "displayName": "Flying Pigeon",
+    "sanskritName": "Eka Pada Galavasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "flying-pigeon-eka-pada-galavasana.webp"
+  },
+  {
+    "id": "forearm-balance-pincha-mayurasana",
+    "displayName": "Forearm Stand",
+    "sanskritName": "Pincha Mayurasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "filename": "forearm-balance-pincha-mayurasana.webp"
+  },
+  {
+    "id": "frog-bhekasana",
+    "displayName": "Frog Pose",
+    "sanskritName": "Bhekasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "frog-bhekasana.webp"
+  },
+  {
+    "id": "front-splits-hanumanasana",
+    "displayName": "Front Splits",
+    "sanskritName": "Hanumanasana",
+    "category": "seated",
+    "difficulty": "advanced",
+    "filename": "front-splits-hanumanasana.webp"
+  },
+  {
+    "id": "garland-malasana",
+    "displayName": "Garland Pose",
+    "sanskritName": "Malasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "garland-malasana.webp"
+  },
+  {
+    "id": "gate-parighasana",
+    "displayName": "Gate Pose",
+    "sanskritName": "Parighasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "gate-parighasana.webp"
+  },
+  {
+    "id": "goddess-utkata-konasana",
+    "displayName": "Goddess Pose",
+    "sanskritName": "Utkata Konasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "goddess-utkata-konasana.webp"
+  },
+  {
+    "id": "gorilla-pada-hastasana",
+    "displayName": "Gorilla",
+    "sanskritName": "Pada Hastasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "gorilla-pada-hastasana.webp"
+  },
+  {
+    "id": "grasshopper-maksikanagasana",
+    "displayName": "Grasshopper",
+    "sanskritName": "Maksikanagasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "grasshopper-maksikanagasana.webp"
+  },
+  {
+    "id": "half-bow-ardha-dhanurasana",
+    "displayName": "Half Bow",
+    "sanskritName": "Ardha Dhanurasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "half-bow-ardha-dhanurasana.webp"
+  },
+  {
+    "id": "half-moon-ardha-chandrasana",
+    "displayName": "Half Moon Pose",
+    "sanskritName": "Ardha Chandrasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "half-moon-ardha-chandrasana.webp"
+  },
+  {
+    "id": "half-pigeon-ardha-kapotasana",
+    "displayName": "Half Pigeon Pose",
+    "sanskritName": "Ardha Kapotasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "half-pigeon-ardha-kapotasana.webp"
+  },
+  {
+    "id": "handstand-adho-mukha-vrksasana",
+    "displayName": "Handstand",
+    "sanskritName": "Adho Mukha Vrksasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "filename": "handstand-adho-mukha-vrksasana.webp"
+  },
+  {
+    "id": "happy-baby-ananda-balasana",
+    "displayName": "Happy Baby Pose",
+    "sanskritName": "Ananda Balasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "happy-baby-ananda-balasana.webp"
+  },
+  {
+    "id": "head-to-knee-janu-sirsasana",
+    "displayName": "Head To Knee Janu",
+    "sanskritName": "Sirsasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "filename": "head-to-knee-janu-sirsasana.webp"
+  },
+  {
+    "id": "headstand-sirsasana",
+    "displayName": "Headstand",
+    "sanskritName": "Sirsasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "filename": "headstand-sirsasana.webp"
+  },
+  {
+    "id": "hero-virasana",
+    "displayName": "Hero Pose",
+    "sanskritName": "Virasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "hero-virasana.webp"
+  },
+  {
+    "id": "heron-kraunchasana",
+    "displayName": "Heron",
+    "sanskritName": "Kraunchasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "heron-kraunchasana.webp"
+  },
+  {
+    "id": "himalayan-duck-karandavasana",
+    "displayName": "Himalayan Duck",
+    "sanskritName": "Karandavasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "himalayan-duck-karandavasana.webp"
+  },
+  {
+    "id": "horse-vatayanasana",
+    "displayName": "Horse",
+    "sanskritName": "Vatayanasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "horse-vatayanasana.webp"
+  },
+  {
+    "id": "humble-flamingo",
+    "displayName": "Humble Flamingo",
+    "sanskritName": null,
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "humble-flamingo.webp"
+  },
+  {
+    "id": "inverted-staff-dvi-pada-viparita-dandasana",
+    "displayName": "Inverted Staff Dvi Pada Viparita",
+    "sanskritName": "Dandasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "inverted-staff-dvi-pada-viparita-dandasana.webp"
+  },
+  {
+    "id": "king-pigeon-eka-pada-rajakapotasana",
+    "displayName": "King Pigeon Pose",
+    "sanskritName": "Eka Pada Rajakapotasana",
+    "category": "backbend",
+    "difficulty": "advanced",
+    "filename": "king-pigeon-eka-pada-rajakapotasana.webp"
+  },
+  {
+    "id": "legs-up-the-wall-viparita-karani",
+    "displayName": "Legs-Up-The-Wall Pose",
+    "sanskritName": "Viparita Karani",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "legs-up-the-wall-viparita-karani.webp"
+  },
+  {
+    "id": "little-thunderbolt-laghu-vajrasana",
+    "displayName": "Little Thunderbolt",
+    "sanskritName": "Laghu Vajrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "little-thunderbolt-laghu-vajrasana.webp"
+  },
+  {
+    "id": "lizard-uttana-pristhasana",
+    "displayName": "Lizard Pose",
+    "sanskritName": "Uttana Pristhasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "lizard-uttana-pristhasana.webp"
+  },
+  {
+    "id": "locust-i-shalabhasana-a",
+    "displayName": "Locust I",
+    "sanskritName": "Shalabhasana A",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "locust-i-shalabhasana-a.webp"
+  },
+  {
+    "id": "locust-ii-shalabhasana-b",
+    "displayName": "Locust II",
+    "sanskritName": "Shalabhasana B",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "locust-ii-shalabhasana-b.webp"
+  },
+  {
+    "id": "locust-iii-shalabhasana-c",
+    "displayName": "Locust III",
+    "sanskritName": "Shalabhasana C",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "locust-iii-shalabhasana-c.webp"
+  },
+  {
+    "id": "lord-of-the-fishes-paripurna-matsyendrasana",
+    "displayName": "Lord Of The Fishes'",
+    "sanskritName": "Paripurna Matsyendrasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "lord-of-the-fishes-paripurna-matsyendrasana.webp"
+  },
+  {
+    "id": "lotus-padmasana",
+    "displayName": "Lotus Pose",
+    "sanskritName": "Padmasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "lotus-padmasana.webp"
+  },
+  {
+    "id": "low-push-up-chaturanga-dandasana",
+    "displayName": "Four-Limbed Staff Pose",
+    "sanskritName": "Chaturanga Dandasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "filename": "low-push-up-chaturanga-dandasana.webp"
+  },
+  {
+    "id": "lunge-runner",
+    "displayName": "Lunge Runner",
+    "sanskritName": null,
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "lunge-runner.webp"
+  },
+  {
+    "id": "moon-bird-eka-pada-shirshasana-c",
+    "displayName": "Moon Bird",
+    "sanskritName": "Eka Pada Shirshasana C",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "moon-bird-eka-pada-shirshasana-c.webp"
+  },
+  {
+    "id": "mountain-tadasana",
+    "displayName": "Mountain Pose",
+    "sanskritName": "Tadasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "mountain-tadasana.webp"
+  },
+  {
+    "id": "noose-pashasana",
+    "displayName": "Noose",
+    "sanskritName": "Pashasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "noose-pashasana.webp"
+  },
+  {
+    "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a",
+    "displayName": "One Leg Behind The Head I",
+    "sanskritName": "Eka Pada Shirshasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.webp"
+  },
+  {
+    "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b",
+    "displayName": "One Leg Behind The Head II",
+    "sanskritName": "Eka Pada Shirshasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.webp"
+  },
+  {
+    "id": "peacock-mayurasana",
+    "displayName": "Peacock Pose",
+    "sanskritName": "Mayurasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "peacock-mayurasana.webp"
+  },
+  {
+    "id": "pendant-lolasana",
+    "displayName": "Pendant",
+    "sanskritName": "Lolasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "pendant-lolasana.webp"
+  },
+  {
+    "id": "pigeon-kapotasana",
+    "displayName": "Pigeon Pose",
+    "sanskritName": "Kapotasana",
+    "category": "backbend",
+    "difficulty": "advanced",
+    "filename": "pigeon-kapotasana.webp"
+  },
+  {
+    "id": "plank-phalakasana",
+    "displayName": "Plank Pose",
+    "sanskritName": "Phalakasana",
+    "category": "core",
+    "difficulty": "beginner",
+    "filename": "plank-phalakasana.webp"
+  },
+  {
+    "id": "plow-halasana",
+    "displayName": "Plow Pose",
+    "sanskritName": "Halasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "filename": "plow-halasana.webp"
+  },
+  {
+    "id": "pyramid-parshvottanasana",
+    "displayName": "Pyramid Pose",
+    "sanskritName": "Parshvottanasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "pyramid-parshvottanasana.webp"
+  },
+  {
+    "id": "rabbit-shashankasana",
+    "displayName": "Rabbit Pose",
+    "sanskritName": "Shashankasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "rabbit-shashankasana.webp"
+  },
+  {
+    "id": "reclined-bound-angle-supta-baddha-konasana",
+    "displayName": "Reclining Bound Angle",
+    "sanskritName": "Supta Baddha Konasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "reclined-bound-angle-supta-baddha-konasana.webp"
+  },
+  {
+    "id": "reverse-corpse-advasana",
+    "displayName": "Reverse Corpse",
+    "sanskritName": "Advasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "reverse-corpse-advasana.webp"
+  },
+  {
+    "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana",
+    "displayName": "Revolved Bird Of Paradise",
+    "sanskritName": "Parivritta Svarga Dvijasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "revolved-bird-of-paradise-parivritta-svarga-dvijasana.webp"
+  },
+  {
+    "id": "revolved-chair-parivrtta-utkatasana",
+    "displayName": "Revolved Chair",
+    "sanskritName": "Parivrtta Utkatasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "revolved-chair-parivrtta-utkatasana.webp"
+  },
+  {
+    "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana",
+    "displayName": "Revolved Flying Man",
+    "sanskritName": "Parivritta Eka Pada Koundinyasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "revolved-flying-man-parivritta-eka-pada-koundinyasana.webp"
+  },
+  {
+    "id": "revolved-half-moon-parivritta-ardha-chandrasana",
+    "displayName": "Revolved Half Moon",
+    "sanskritName": "Parivritta Ardha Chandrasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "revolved-half-moon-parivritta-ardha-chandrasana.webp"
+  },
+  {
+    "id": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana",
+    "displayName": "Revolved Seated Hand To Big Toe",
+    "sanskritName": "Upavishta Parivritta Hasta Padangushthasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.webp"
+  },
+  {
+    "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana",
+    "displayName": "Revolved Standing Hand To Big Toe",
+    "sanskritName": "Parivritta Hasta Padangushthasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.webp"
+  },
+  {
+    "id": "revolved-triangle-parivritta-trikonasana",
+    "displayName": "Revolved Triangle Pose",
+    "sanskritName": "Parivritta Trikonasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "revolved-triangle-parivritta-trikonasana.webp"
+  },
+  {
+    "id": "rock-the-baby",
+    "displayName": "Rock The Baby",
+    "sanskritName": null,
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "rock-the-baby.webp"
+  },
+  {
+    "id": "rooster-kukkutasana",
+    "displayName": "Rooster",
+    "sanskritName": "Kukkutasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "rooster-kukkutasana.webp"
+  },
+  {
+    "id": "sage-bharadvajas-twist-bharadvajasana",
+    "displayName": "Sage Bharadvaja's Twist",
+    "sanskritName": "Bharadvajasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-bharadvajas-twist-bharadvajasana.webp"
+  },
+  {
+    "id": "sage-gherandas-gherandasana",
+    "displayName": "Sage Gheranda's",
+    "sanskritName": "Gherandasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-gherandas-gherandasana.webp"
+  },
+  {
+    "id": "sage-marichis-i-marichyasana-a",
+    "displayName": "Sage Marichi's I",
+    "sanskritName": "Marichyasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-marichis-i-marichyasana-a.webp"
+  },
+  {
+    "id": "sage-marichis-ii-marichyasana-b",
+    "displayName": "Sage Marichi's II",
+    "sanskritName": "Marichyasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-marichis-ii-marichyasana-b.webp"
+  },
+  {
+    "id": "sage-marichis-iii-marichyasana-c",
+    "displayName": "Sage Marichi's III",
+    "sanskritName": "Marichyasana C",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-marichis-iii-marichyasana-c.webp"
+  },
+  {
+    "id": "sage-marichis-iv-marichyasana-d",
+    "displayName": "Sage Marichi's Iv",
+    "sanskritName": "Marichyasana D",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-marichis-iv-marichyasana-d.webp"
+  },
+  {
+    "id": "sage-visvamitras-vishvamitrasana",
+    "displayName": "Sage Visvamitra's",
+    "sanskritName": "Vishvamitrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sage-visvamitras-vishvamitrasana.webp"
+  },
+  {
+    "id": "scale-tolasana",
+    "displayName": "Scale Pose",
+    "sanskritName": "Tolasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "scale-tolasana.webp"
+  },
+  {
+    "id": "scorpion-vrischikasana-a",
+    "displayName": "Scorpion",
+    "sanskritName": "Vrischikasana A",
+    "category": "standing",
+    "difficulty": "advanced",
+    "filename": "scorpion-vrischikasana-a.webp"
+  },
+  {
+    "id": "seated-forward-fold-paschimottanasana",
+    "displayName": "Seated Forward Fold",
+    "sanskritName": "Paschimottanasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "seated-forward-fold-paschimottanasana.webp"
+  },
+  {
+    "id": "seated-gate-parighasana",
+    "displayName": "Seated Gate",
+    "sanskritName": "Parighasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "seated-gate-parighasana.webp"
+  },
+  {
+    "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana",
+    "displayName": "Seated Half Bound Lotus Forward Bend Ardha Baddha Padma",
+    "sanskritName": "Paschimottanasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.webp"
+  },
+  {
+    "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana",
+    "displayName": "Seated Three Limbed Forward Bend",
+    "sanskritName": "Trianga Mukha Eka Pada Paschimottanasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.webp"
+  },
+  {
+    "id": "seated-twist-ardha-matsyendrasana",
+    "displayName": "Seated Twist",
+    "sanskritName": "Ardha Matsyendrasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "seated-twist-ardha-matsyendrasana.webp"
+  },
+  {
+    "id": "shiva-squat",
+    "displayName": "Shiva Squat",
+    "sanskritName": null,
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "shiva-squat.webp"
+  },
+  {
+    "id": "shoelace",
+    "displayName": "Shoelace",
+    "sanskritName": null,
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "shoelace.webp"
+  },
+  {
+    "id": "shoulder-pressing-bhuja-pidasana",
+    "displayName": "Shoulder Pressing Bhuja",
+    "sanskritName": "Pidasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "shoulder-pressing-bhuja-pidasana.webp"
+  },
+  {
+    "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana",
+    "displayName": "Shoulder Stand With Lotus Legs Urdhva",
+    "sanskritName": "Padmasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "shoulder-stand-with-lotus-legs-urdhva-padmasana.webp"
+  },
+  {
+    "id": "shoulderstand-sarvangasana",
+    "displayName": "Shoulderstand",
+    "sanskritName": "Sarvangasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "filename": "shoulderstand-sarvangasana.webp"
+  },
+  {
+    "id": "side-crow-parsva-bakasana",
+    "displayName": "Side Crow Pose",
+    "sanskritName": "Parsva Bakasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "filename": "side-crow-parsva-bakasana.webp"
+  },
+  {
+    "id": "side-lunge-skandasana",
+    "displayName": "Side Lunge",
+    "sanskritName": "Skandasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "side-lunge-skandasana.webp"
+  },
+  {
+    "id": "side-plank-vasishthasana",
+    "displayName": "Side Plank Pose",
+    "sanskritName": "Vasishthasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "filename": "side-plank-vasishthasana.webp"
+  },
+  {
+    "id": "sleeping-yogi-yoga-nidrasana",
+    "displayName": "Sleeping Yogi Yoga",
+    "sanskritName": "Nidrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "sleeping-yogi-yoga-nidrasana.webp"
+  },
+  {
+    "id": "snake-sarpasana",
+    "displayName": "Snake",
+    "sanskritName": "Sarpasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "snake-sarpasana.webp"
+  },
+  {
+    "id": "sphinx-salamba-bhujangasana",
+    "displayName": "Sphinx Pose",
+    "sanskritName": "Salamba Bhujangasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "filename": "sphinx-salamba-bhujangasana.webp"
+  },
+  {
+    "id": "staff-dandasana",
+    "displayName": "Staff Pose",
+    "sanskritName": "Dandasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "staff-dandasana.webp"
+  },
+  {
+    "id": "standing-bow-dandayamana-dhanurasana",
+    "displayName": "Standing Bow",
+    "sanskritName": "Dandayamana Dhanurasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "standing-bow-dandayamana-dhanurasana.webp"
+  },
+  {
+    "id": "standing-foot-to-head-trivikramasana-a",
+    "displayName": "Standing Foot To Head",
+    "sanskritName": "Trivikramasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "standing-foot-to-head-trivikramasana-a.webp"
+  },
+  {
+    "id": "standing-forward-bend-uttanasana",
+    "displayName": "Standing Forward Bend",
+    "sanskritName": "Uttanasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "standing-forward-bend-uttanasana.webp"
+  },
+  {
+    "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana",
+    "displayName": "Standing Half Bound Lotus Forward Bend",
+    "sanskritName": "Ardha Baddha Padmottanasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.webp"
+  },
+  {
+    "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a",
+    "displayName": "Standing Hand To Big Toe Utthita",
+    "sanskritName": "Hasta Padangushthasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.webp"
+  },
+  {
+    "id": "standing-leg-behind-head-durvasasana",
+    "displayName": "Standing Leg Behind Head",
+    "sanskritName": "Durvasasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "standing-leg-behind-head-durvasasana.webp"
+  },
+  {
+    "id": "standing-leg-behind-head-forward-bend-richikasana",
+    "displayName": "Standing Leg Behind Head Forward Bend",
+    "sanskritName": "Richikasana",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "filename": "standing-leg-behind-head-forward-bend-richikasana.webp"
+  },
+  {
+    "id": "standing-splits-urdhva-prasarita-eka-padasana",
+    "displayName": "Standing Splits Urdhva",
+    "sanskritName": "Prasarita Eka Padasana",
+    "category": "forward_bend",
+    "difficulty": "advanced",
+    "filename": "standing-splits-urdhva-prasarita-eka-padasana.webp"
+  },
+  {
+    "id": "star-utthita-tadasana",
+    "displayName": "Star Utthita",
+    "sanskritName": "Tadasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "star-utthita-tadasana.webp"
+  },
+  {
+    "id": "supine-angle-supta-konasana",
+    "displayName": "Supine Angle",
+    "sanskritName": "Supta Konasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "filename": "supine-angle-supta-konasana.webp"
+  },
+  {
+    "id": "supine-foot-to-head-supta-trivikramasana",
+    "displayName": "Supine Foot To Head",
+    "sanskritName": "Supta Trivikramasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "filename": "supine-foot-to-head-supta-trivikramasana.webp"
+  },
+  {
+    "id": "supine-hand-to-big-toe-supta-padangushthasana-a",
+    "displayName": "Supine Hand To Big Toe",
+    "sanskritName": "Supta Padangushthasana A",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "filename": "supine-hand-to-big-toe-supta-padangushthasana-a.webp"
+  },
+  {
+    "id": "supine-straddle-supta-samakonasana",
+    "displayName": "Supine Straddle",
+    "sanskritName": "Supta Samakonasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "filename": "supine-straddle-supta-samakonasana.webp"
+  },
+  {
+    "id": "supine-twist-supta-matsyendrasana",
+    "displayName": "Supine Twist",
+    "sanskritName": "Supta Matsyendrasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "filename": "supine-twist-supta-matsyendrasana.webp"
+  },
+  {
+    "id": "thunderbolt-vajrasana",
+    "displayName": "Thunderbolt Pose",
+    "sanskritName": "Vajrasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "filename": "thunderbolt-vajrasana.webp"
+  },
+  {
+    "id": "tiger-vyaghrasana",
+    "displayName": "Tiger",
+    "sanskritName": "Vyaghrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "tiger-vyaghrasana.webp"
+  },
+  {
+    "id": "toe-stand-padangushthasana",
+    "displayName": "Toe Stand",
+    "sanskritName": "Padangushthasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "toe-stand-padangushthasana.webp"
+  },
+  {
+    "id": "tortoise-kurmasana",
+    "displayName": "Tortoise",
+    "sanskritName": "Kurmasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "tortoise-kurmasana.webp"
+  },
+  {
+    "id": "tree-vrksasana",
+    "displayName": "Tree Pose",
+    "sanskritName": "Vrksasana",
+    "category": "balancing",
+    "difficulty": "beginner",
+    "filename": "tree-vrksasana.webp"
+  },
+  {
+    "id": "triangle-trikonasana",
+    "displayName": "Triangle Pose",
+    "sanskritName": "Trikonasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "triangle-trikonasana.webp"
+  },
+  {
+    "id": "tripod-headstand-mukta-hasta-shirshasana-a",
+    "displayName": "Tripod Headstand",
+    "sanskritName": "Mukta Hasta Shirshasana A",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "filename": "tripod-headstand-mukta-hasta-shirshasana-a.webp"
+  },
+  {
+    "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a",
+    "displayName": "Two Legs Behind The Head I",
+    "sanskritName": "Dvi Pada Shirshasana A",
+    "category": "standing",
+    "difficulty": "advanced",
+    "filename": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.webp"
+  },
+  {
+    "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b",
+    "displayName": "Two Legs Behind The Head II",
+    "sanskritName": "Dvi Pada Shirshasana B",
+    "category": "standing",
+    "difficulty": "advanced",
+    "filename": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.webp"
+  },
+  {
+    "id": "upward-facing-dog-urdhva-mukha-shvanasana",
+    "displayName": "Upward-Facing Dog",
+    "sanskritName": "Urdhva Mukha Svanasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "upward-facing-dog-urdhva-mukha-shvanasana.webp"
+  },
+  {
+    "id": "upward-plank-purvottanasana",
+    "displayName": "Upward Plank Pose",
+    "sanskritName": "Purvottanasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "filename": "upward-plank-purvottanasana.webp"
+  },
+  {
+    "id": "warrior-i-virabhadrasana-a",
+    "displayName": "Warrior I",
+    "sanskritName": "Virabhadrasana I",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "warrior-i-virabhadrasana-a.webp"
+  },
+  {
+    "id": "warrior-ii-virabhadrasana-ii",
+    "displayName": "Warrior II",
+    "sanskritName": "Virabhadrasana II",
+    "category": "standing",
+    "difficulty": "beginner",
+    "filename": "warrior-ii-virabhadrasana-ii.webp"
+  },
+  {
+    "id": "warrior-iii-virabhadrasana-c",
+    "displayName": "Warrior III",
+    "sanskritName": "Virabhadrasana III",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "filename": "warrior-iii-virabhadrasana-c.webp"
+  },
+  {
+    "id": "waterfall-supta-dandasana",
+    "displayName": "Waterfall",
+    "sanskritName": "Supta Dandasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "filename": "waterfall-supta-dandasana.webp"
+  },
+  {
+    "id": "wheel-urdhva-dhanurasana",
+    "displayName": "Wheel Pose",
+    "sanskritName": "Urdhva Dhanurasana",
+    "category": "backbend",
+    "difficulty": "advanced",
+    "filename": "wheel-urdhva-dhanurasana.webp"
+  },
+  {
+    "id": "wide-angle-seated-forward-bend-upavistha-konasana",
+    "displayName": "Wide Angle Seated Forward Bend Upavistha",
+    "sanskritName": "Konasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "filename": "wide-angle-seated-forward-bend-upavistha-konasana.webp"
+  },
+  {
+    "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a",
+    "displayName": "Wide Legged Forward Bend I",
+    "sanskritName": "Prasarita Padottanasana A",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "filename": "wide-legged-forward-bend-i-prasarita-padottanasana-a.webp"
+  },
+  {
+    "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b",
+    "displayName": "Wide Legged Forward Bend II",
+    "sanskritName": "Prasarita Padottanasana B",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "filename": "wide-legged-forward-bend-ii-prasarita-padottanasana-b.webp"
+  },
+  {
+    "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c",
+    "displayName": "Wide Legged Forward Bend III",
+    "sanskritName": "Prasarita Padottanasana C",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "filename": "wide-legged-forward-bend-iii-prasarita-padottanasana-c.webp"
+  },
+  {
+    "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d",
+    "displayName": "Wide Legged Forward Bend Iv",
+    "sanskritName": "Prasarita Padottanasana D",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "filename": "wide-legged-forward-bend-iv-prasarita-padottanasana-d.webp"
+  },
+  {
+    "id": "wide-splits-samakonasana",
+    "displayName": "Wide Splits",
+    "sanskritName": "Samakonasana",
+    "category": "standing",
+    "difficulty": "advanced",
+    "filename": "wide-splits-samakonasana.webp"
+  },
+  {
+    "id": "wild-thing-chamatkarasana",
+    "displayName": "Wild Thing",
+    "sanskritName": "Camatkarasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "filename": "wild-thing-chamatkarasana.webp"
+  },
+  {
+    "id": "wind-removing-pavanamuktasana",
+    "displayName": "Wind-Relieving Pose",
+    "sanskritName": "Pavanamuktasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "filename": "wind-removing-pavanamuktasana.webp"
+  }
+]

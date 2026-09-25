@@ -1,4 +1,5 @@
-﻿import { ArrowRight, Award, X, Sparkles, LogOut, CheckCircle2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowRight, Award, X, Sparkles, LogOut, CheckCircle2, Clock } from "lucide-react";
 import type { Asana } from "../types/asana";
 
 interface PoseReviewModalProps {
@@ -8,6 +9,7 @@ interface PoseReviewModalProps {
   onStayHere: () => void;
   onEndSession?: () => void;
   isLastAsana?: boolean;
+  autoAdvanceSeconds?: number;
 }
 
 export function PoseReviewModal({
@@ -17,16 +19,52 @@ export function PoseReviewModal({
   onStayHere,
   onEndSession,
   isLastAsana = false,
+  autoAdvanceSeconds = 8,
 }: PoseReviewModalProps) {
+  const [secondsRemaining, setSecondsRemaining] = useState(autoAdvanceSeconds);
+  const [isPaused, setIsPaused] = useState(false);
+  const nextCallbackRef = useRef(onMoveToNext);
+  nextCallbackRef.current = onMoveToNext;
+
+  useEffect(() => {
+    if (isPaused || isLastAsana) return;
+
+    const timer = setInterval(() => {
+      setSecondsRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          nextCallbackRef.current();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isPaused, isLastAsana]);
+
+  const handleStay = () => {
+    setIsPaused(true);
+    onStayHere();
+  };
+
+  const handleEnd = () => {
+    setIsPaused(true);
+    onEndSession?.();
+  };
+
+  const progressPct = ((autoAdvanceSeconds - secondsRemaining) / autoAdvanceSeconds) * 100;
+
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-in fade-in zoom-in-95 duration-200">
       <div className="relative w-full max-w-sm rounded-3xl border border-emerald-100 bg-white p-6 shadow-2xl text-center">
         {/* Close / Stay Button */}
         <button
           type="button"
-          onClick={onStayHere}
-          className="absolute right-4 top-4 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+          onClick={handleStay}
+          className="absolute right-4 top-4 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition cursor-pointer"
           aria-label="Close"
+          title="Stay on this pose"
         >
           <X size={18} />
         </button>
@@ -54,16 +92,37 @@ export function PoseReviewModal({
         </h3>
 
         {/* Pose Accuracy Score */}
-        <div className="my-4 inline-flex items-center gap-2.5 rounded-2xl bg-emerald-50 px-5 py-2.5 border border-emerald-200 shadow-xs">
+        <div className="my-3.5 inline-flex items-center gap-2.5 rounded-2xl bg-emerald-50 px-5 py-2.5 border border-emerald-200 shadow-xs">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Final Accuracy:</span>
           <span className="text-3xl font-black text-emerald-700 tabular-nums">{score}%</span>
         </div>
 
-        <p className="text-xs text-slate-600 mb-5 leading-relaxed">
+        <p className="text-xs text-slate-600 mb-4 leading-relaxed">
           {score >= 80
             ? "Your alignment was steady and centered. Outstanding form!"
             : "You successfully completed the pose with strong alignment."}
         </p>
+
+        {/* 8-Second Auto-Advance Countdown Bar */}
+        {!isLastAsana && !isPaused && (
+          <div className="mb-4 flex flex-col gap-1.5 items-center bg-emerald-50/70 p-2.5 rounded-2xl border border-emerald-100">
+            <div className="flex items-center justify-between w-full text-[11px] font-semibold text-emerald-800">
+              <span className="flex items-center gap-1">
+                <Clock size={12} className="animate-pulse text-emerald-600" />
+                Auto-advancing
+              </span>
+              <span className="font-bold font-mono text-emerald-900 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                {secondsRemaining}s
+              </span>
+            </div>
+            <div className="w-full bg-emerald-200/60 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-emerald-600 h-full rounded-full transition-all duration-1000 ease-linear"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* User Choice Actions: Next Pose, Stay Here, End Session */}
         <div className="flex flex-col gap-2.5">
@@ -72,13 +131,19 @@ export function PoseReviewModal({
             onClick={onMoveToNext}
             className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white py-3 px-4 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
           >
-            <span>{isLastAsana ? "Finish Routine" : "Next Pose"}</span>
+            <span>
+              {isLastAsana
+                ? "Finish Routine"
+                : !isPaused
+                  ? `Next Pose (${secondsRemaining}s)`
+                  : "Next Pose"}
+            </span>
             <ArrowRight size={15} />
           </button>
           
           <button
             type="button"
-            onClick={onStayHere}
+            onClick={handleStay}
             className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 py-2.5 px-4 text-xs font-semibold transition shadow-xs active:scale-95 cursor-pointer"
           >
             <CheckCircle2 size={14} />
@@ -88,7 +153,7 @@ export function PoseReviewModal({
           {onEndSession && (
             <button
               type="button"
-              onClick={onEndSession}
+              onClick={handleEnd}
               className="flex items-center justify-center gap-2 w-full rounded-xl bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 py-2.5 px-4 text-xs font-medium transition shadow-xs active:scale-95 cursor-pointer"
             >
               <LogOut size={13} />

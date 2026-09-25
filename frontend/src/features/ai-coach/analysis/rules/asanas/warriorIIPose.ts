@@ -3,9 +3,11 @@ import type { AsanaDefinition } from "../../../types/asana-definition";
 export const warriorIIPose: AsanaDefinition = {
   id: "warrior-ii",
   name: "Warrior II",
+  displayName: "Warrior II",
   sanskritName: "Virabhadrasana II",
-  category: "Standing",
+  category: "standing",
   difficulty: "intermediate",
+  requiredLandmarks: [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28],
   description: "A powerful standing posture opening hips and chest while developing focus and stamina.",
   aliases: ["virabhadrasana-ii", "warrior-2"],
   rules: [

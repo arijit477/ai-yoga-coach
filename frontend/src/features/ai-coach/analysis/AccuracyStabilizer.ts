@@ -167,20 +167,12 @@ export class AccuracyStabilizer {
     const clampedRaw = Math.max(0, Math.min(100, rawScore));
     this.lastValidRaw = clampedRaw;
 
-    // 1. Initial frame: bootstrap stable value directly
+    // 1. Initial frame: bootstrap stable value smoothly from 0
     if (this.currentStable === null) {
-      this.currentStable = clampedRaw;
-      this.currentDisplayed = Math.round(clampedRaw);
+      this.currentStable = 0;
+      this.currentDisplayed = 0;
       this.candidateTarget = null;
       this.candidatePersistenceCount = 0;
-
-      return {
-        rawAccuracy: clampedRaw,
-        stableAccuracy: this.currentStable,
-        displayedAccuracy: this.currentDisplayed,
-        isStable: true,
-        confidence: 1.0,
-      };
     }
 
     // 2. Outlier rejection & persistence check

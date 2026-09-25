@@ -3,9 +3,11 @@ import type { AsanaDefinition } from "../../../types/asana-definition";
 export const mountainPose: AsanaDefinition = {
   id: "mountain-pose",
   name: "Mountain Pose",
+  displayName: "Mountain Pose",
   sanskritName: "Tadasana",
-  category: "Standing",
+  category: "standing",
   difficulty: "beginner",
+  requiredLandmarks: [11, 12, 23, 24, 25, 27],
   description: "The foundational standing posture establishing alignment, balance, and centered awareness.",
   aliases: ["tadasana", "step-12-mountain-tadasana"],
   rules: [

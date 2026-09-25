@@ -73,6 +73,9 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
     return "Getting Started";
   };
 
+  const isSmall = size < 65;
+  const isTiny = size < 44;
+
   const ringElement = (
     <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -100,22 +103,20 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
         />
       </svg>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none">
         <span
           className={`font-bold text-slate-800 tracking-tight leading-none ${
-            size < 70 ? "text-base" : "text-2xl"
+            isTiny ? "text-xs" : isSmall ? "text-sm" : "text-2xl"
           }`}
           style={{ fontFamily: "'Fraunces', Georgia, serif" }}
         >
           {integerScore !== null ? integerScore : "--"}
         </span>
-        <span
-          className={`text-slate-400 font-medium ${
-            size < 70 ? "text-[8px]" : "text-[10px]"
-          }`}
-        >
-          accuracy
-        </span>
+        {!isSmall && (
+          <span className="text-slate-400 font-medium text-[10px] mt-0.5">
+            accuracy
+          </span>
+        )}
       </div>
     </div>
   );

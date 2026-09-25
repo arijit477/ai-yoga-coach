@@ -3,9 +3,11 @@ import type { AsanaDefinition } from "../../../types/asana-definition";
 export const treePose: AsanaDefinition = {
   id: "tree-pose",
   name: "Tree Pose",
+  displayName: "Tree Pose",
   sanskritName: "Vrksasana",
-  category: "Balance",
+  category: "balancing",
   difficulty: "beginner",
+  requiredLandmarks: [11, 12, 23, 25, 27],
   description: "A single-leg standing balance cultivating poise, focus, and core stability.",
   aliases: ["vrksasana"],
   rules: [

@@ -398,12 +398,8 @@ export function AICoachPage() {
       !isCameraActive ||
       !stableEvaluation?.isValid ||
       sessionState === "get_ready" ||
-      sessionState === "camera_check" ||
-      sessionState === "hold_still" ||
-      sessionState === "calibrating" ||
       sessionState === "guide_video" ||
-      sessionState === "countdown" ||
-      sessionState === "idle"
+      sessionState === "countdown"
     ) {
       return null;
     }
@@ -415,20 +411,17 @@ export function AICoachPage() {
       !isCameraActive ||
       !stableEvaluation?.isValid ||
       sessionState === "get_ready" ||
-      sessionState === "camera_check" ||
-      sessionState === "hold_still" ||
-      sessionState === "calibrating" ||
       sessionState === "guide_video" ||
-      sessionState === "countdown" ||
-      sessionState === "idle"
+      sessionState === "countdown"
     ) {
       return null;
     }
     return (
       stableEvaluation.displayedScore ??
-      (stableEvaluation.stableScore !== null && stableEvaluation.stableScore !== undefined
+      (stableEvaluation.stableScore !== null &&
+      stableEvaluation.stableScore !== undefined
         ? Math.round(stableEvaluation.stableScore)
-        : null)
+        : stableEvaluation.score ?? null)
     );
   }, [isCameraActive, stableEvaluation, sessionState]);
 

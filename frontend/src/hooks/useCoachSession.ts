@@ -258,21 +258,28 @@ export function useCoachSession({
     clearTimers();
     setCountdown(HOLD_STILL_SECONDS);
     transitionTo("hold_still");
+  }, [clearTimers, transitionTo]);
 
-    countdownTimerRef.current = setInterval(() => {
+  useEffect(() => {
+    if (state !== "hold_still") return;
+
+    setCountdown(HOLD_STILL_SECONDS);
+
+    const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev === null || prev <= 1) {
-          if (countdownTimerRef.current) {
-            clearInterval(countdownTimerRef.current);
-            countdownTimerRef.current = null;
-          }
+          clearInterval(interval);
           startCalibrating();
           return null;
         }
         return prev - 1;
       });
     }, 1000);
-  }, [clearTimers, transitionTo, startCalibrating]);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [state, startCalibrating]);
 
   /**
    * 8. CAMERA CHECK Stage: Checks camera readiness before allowing hold still
@@ -291,21 +298,28 @@ export function useCoachSession({
     resetCurrentAsana();
     setCountdown(GET_READY_SECONDS);
     transitionTo("get_ready");
+  }, [clearTimers, resetCurrentAsana, transitionTo]);
 
-    countdownTimerRef.current = setInterval(() => {
+  useEffect(() => {
+    if (state !== "get_ready" && state !== "countdown") return;
+
+    setCountdown(GET_READY_SECONDS);
+
+    const interval = setInterval(() => {
       setCountdown((prev) => {
         if (prev === null || prev <= 1) {
-          if (countdownTimerRef.current) {
-            clearInterval(countdownTimerRef.current);
-            countdownTimerRef.current = null;
-          }
+          clearInterval(interval);
           startCameraCheck();
           return null;
         }
         return prev - 1;
       });
     }, 1000);
-  }, [clearTimers, resetCurrentAsana, transitionTo, startCameraCheck]);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [state, startCameraCheck]);
 
   /**
    * 6. GUIDE VIDEO / Session Startup
@@ -484,8 +498,8 @@ export function useCoachSession({
         highAccuracySinceRef.current = Date.now();
       }
 
-      // Complete asana once held steadily for 400ms (>= 75% threshold crossing)
-      if (Date.now() - highAccuracySinceRef.current >= 400) {
+      // Complete asana once held steadily for 1500ms (>= 75% threshold crossing)
+      if (Date.now() - highAccuracySinceRef.current >= 1500) {
         if (!hasCompletedCurrentAsanaRef.current) {
           hasCompletedCurrentAsanaRef.current = true;
           scoreBufferRef.current.setCompleted(true);
