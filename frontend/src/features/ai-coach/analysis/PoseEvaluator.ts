@@ -84,10 +84,10 @@ export function evaluatePose(
     totalRulesWeight += (rule.weight ?? 1);
   }
 
-  // Weighted score calculation against ALL defined rules for this asana
+  // Weighted score calculation against evaluable rules
   let rawScore = 0;
-  if (totalRulesWeight > 0) {
-    rawScore = weightedScoreSum / totalRulesWeight;
+  if (totalEvaluableWeight > 0) {
+    rawScore = weightedScoreSum / totalEvaluableWeight;
   }
   const score = Math.max(0, Math.min(100, rawScore));
 

@@ -455,8 +455,7 @@ export function useCoachSession({
     if (
       state !== "coaching" &&
       state !== "correcting" &&
-      state !== "holding" &&
-      state !== "camera_check"
+      state !== "holding"
     ) {
       hasPoseLostSinceRef.current = null;
       highAccuracySinceRef.current = null;
@@ -468,9 +467,7 @@ export function useCoachSession({
       if (hasPoseLostSinceRef.current === null) {
         hasPoseLostSinceRef.current = Date.now();
       } else if (Date.now() - hasPoseLostSinceRef.current > 7000) {
-        if (state !== "camera_check") {
-          transitionTo("camera_check");
-        }
+        transitionTo("camera_check");
         setHoldTime(0);
         holdScoresRef.current = [];
       }
@@ -498,8 +495,8 @@ export function useCoachSession({
         highAccuracySinceRef.current = Date.now();
       }
 
-      // Complete asana once held steadily for 1500ms (>= 75% threshold crossing)
-      if (Date.now() - highAccuracySinceRef.current >= 1500) {
+      // Complete asana once held steadily for 1000ms (>= 75% threshold crossing)
+      if (Date.now() - highAccuracySinceRef.current >= 1000) {
         if (!hasCompletedCurrentAsanaRef.current) {
           hasCompletedCurrentAsanaRef.current = true;
           scoreBufferRef.current.setCompleted(true);

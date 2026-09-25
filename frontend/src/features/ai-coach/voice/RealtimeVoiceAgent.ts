@@ -232,10 +232,44 @@ export class RealtimeVoiceAgent {
   }
 
   /**
+   * Browser Speech Synthesis fallback when OpenAI Realtime WebRTC is unavailable
+   */
+  private speakWithBrowserTTS(text: string) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      return;
+    }
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = this.currentCoachId === "kevin" ? 0.9 : 1.1;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const langVoices = voices.filter((v) => v.lang.startsWith("en"));
+        if (this.currentCoachId === "kevin") {
+          const maleVoice = langVoices.find((v) =>
+            /male|david|george|mark|alex|daniel|guy/i.test(v.name)
+          );
+          if (maleVoice) utterance.voice = maleVoice;
+        } else {
+          const femaleVoice = langVoices.find((v) =>
+            /female|zira|samantha|victoria|karen|alice|aria|jenny/i.test(v.name)
+          );
+          if (femaleVoice) utterance.voice = femaleVoice;
+        }
+      }
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn("[AI COACH] Browser TTS error:", e);
+    }
+  }
+
+  /**
    * High-fidelity speech synthesis using OpenAI Realtime or browser fallback
    */
   speak(text: string) {
-    if (this.isMuted) return;
+    if (!text || this.isMuted) return;
 
     if (this.dc && this.dc.readyState === "open") {
       try {
@@ -256,10 +290,12 @@ export class RealtimeVoiceAgent {
         this.dc.send(JSON.stringify(responseCreate));
         this.hasActiveServerResponse = true;
       } catch (err) {
-        console.warn("[AI COACH] Error asking OpenAI to speak:", err);
+        console.warn("[AI COACH] Error asking OpenAI to speak, falling back to browser TTS:", err);
+        this.speakWithBrowserTTS(text);
       }
     } else {
-      console.warn("[AI COACH] Data channel not ready, dropping speech request:", text);
+      // Reliable instant browser TTS fallback
+      this.speakWithBrowserTTS(text);
     }
 
     this.onTranscript?.({
@@ -273,14 +309,16 @@ export class RealtimeVoiceAgent {
   /**
    * Triggers or queues the pose start verbal cue.
    * If data channel is already open, speaks immediately.
-   * Otherwise, queues it to speak immediately upon connection open.
+   * Otherwise, queues it to speak immediately upon connection open and speaks via fallback.
    */
   triggerPoseStart(asanaId: string, asanaName: string, asanaDescription?: string) {
+    const desc = asanaDescription ? ` ${asanaDescription}` : '';
+    const message = `Let's begin ${asanaName}.${desc} Stand comfortably and check your posture.`;
     if (this.dc && this.dc.readyState === "open") {
-      const desc = asanaDescription ? ` ${asanaDescription}` : '';
-      this.speak(`Let's begin ${asanaName}.${desc} Stand comfortably and check your posture.`);
+      this.speak(message);
     } else {
       this.pendingPoseStart = { id: asanaId, name: asanaName, description: asanaDescription } as any;
+      this.speakWithBrowserTTS(message);
     }
   }
 
