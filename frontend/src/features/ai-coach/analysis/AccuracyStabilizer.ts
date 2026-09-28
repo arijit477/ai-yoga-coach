@@ -1,9 +1,16 @@
 export interface AccuracyStabilizerConfig {
   /**
-   * Exponential moving average smoothing factor.
-   * Default: 0.15 (smooth yet responsive)
+   * Exponential moving average smoothing factor for rising/holding accuracy.
+   * Default: 0.20 (smooth yet responsive)
    */
   smoothingAlpha: number;
+
+  /**
+   * Exponential moving average factor when score is decreasing (posture degraded/broken).
+   * Ensures natural and quick decrease when posture drops.
+   * Default: 0.35
+   */
+  decayAlpha?: number;
 
   /**
    * Threshold deviation for considering a change as large.
@@ -13,19 +20,19 @@ export interface AccuracyStabilizerConfig {
 
   /**
    * Threshold deviation for considering a change as severe.
-   * Default: 25 percentage points
+   * Default: 30 percentage points
    */
   severeChangeThreshold: number;
 
   /**
    * Number of consistent frames required for a large change to apply.
-   * Default: 6 frames (~200ms at 30fps)
+   * Default: 3 frames
    */
   largeChangePersistenceFrames: number;
 
   /**
    * Number of consistent frames required for a severe change to apply.
-   * Default: 4 frames (~133ms at 30fps)
+   * Default: 2 frames
    */
   severeChangePersistenceFrames: number;
 
@@ -37,16 +44,17 @@ export interface AccuracyStabilizerConfig {
 
   /**
    * Grace duration (ms) during temporary tracking failure before score drops to null.
-   * Default: 1500 ms (1.5 seconds)
+   * Default: 600 ms
    */
   invalidFrameGraceMs: number;
 }
 
 export const DEFAULT_STABILIZER_CONFIG: AccuracyStabilizerConfig = {
-  smoothingAlpha: 0.30, // Responsive exponential moving average for fluid live response
-  largeChangeThreshold: 20,
-  severeChangeThreshold: 35,
-  largeChangePersistenceFrames: 3, // Rapid response to genuine posture changes
+  smoothingAlpha: 0.20, // Smooth progression on rising/holding accuracy
+  decayAlpha: 0.35,     // Natural and quick decrease when posture drops
+  largeChangeThreshold: 15,
+  severeChangeThreshold: 30,
+  largeChangePersistenceFrames: 3,
   severeChangePersistenceFrames: 2,
   deadBand: 1.0, // Prevent integer text flicker
   invalidFrameGraceMs: 600, // Quick reset when posture tracking drops
@@ -85,11 +93,10 @@ export interface StableAccuracyState {
  * 
  * Manages frame-to-frame accuracy stabilization:
  * - Separates rawAccuracy (unfiltered float) from stableAccuracy.
- * - Applies Exponential Moving Average (EMA) smoothing (alpha = 0.15).
+ * - Applies Exponential Moving Average (EMA) smoothing.
  * - Filters transient single-frame landmark noise and tracking flickers.
- * - Requires temporal persistence (multi-frame confirmation) before accepting large/severe deviations.
+ * - Decreases naturally and quickly when posture breaks.
  * - Implements dead-band hysteresis on displayed integer percentage.
- * - Holds previous score gracefully during momentary tracking drops rather than jumping to 0%.
  */
 export class AccuracyStabilizer {
   private config: AccuracyStabilizerConfig;
@@ -167,19 +174,31 @@ export class AccuracyStabilizer {
     const clampedRaw = Math.max(0, Math.min(100, rawScore));
     this.lastValidRaw = clampedRaw;
 
-    // 1. Initial frame: bootstrap stable value smoothly from 0
+    // 1. Initial frame: bootstrap stable value smoothly from clampedRaw
     if (this.currentStable === null) {
-      this.currentStable = 0;
-      this.currentDisplayed = 0;
+      this.currentStable = clampedRaw;
+      this.currentDisplayed = Math.round(clampedRaw);
       this.candidateTarget = null;
       this.candidatePersistenceCount = 0;
+
+      return {
+        rawAccuracy: clampedRaw,
+        stableAccuracy: this.currentStable,
+        displayedAccuracy: this.currentDisplayed,
+        isStable: true,
+        confidence: 1.0,
+      };
     }
 
     // 2. Outlier rejection & persistence check
     const diff = clampedRaw - this.currentStable;
     const absDiff = Math.abs(diff);
+    const isDecreasing = clampedRaw < this.currentStable;
 
-    let effectiveAlpha = this.config.smoothingAlpha;
+    let effectiveAlpha = isDecreasing
+      ? (this.config.decayAlpha ?? 0.35)
+      : this.config.smoothingAlpha;
+
     let isStable = true;
 
     if (absDiff > this.config.largeChangeThreshold) {
@@ -204,11 +223,11 @@ export class AccuracyStabilizer {
       }
 
       if (this.candidatePersistenceCount >= requiredFrames) {
-        // Change has persisted! Accept the posture change and transition smoothly
-        effectiveAlpha = 0.45;
+        // Change has persisted! Accept the posture change and transition quickly
+        effectiveAlpha = isDecreasing ? 0.50 : 0.35;
       } else {
-        // Transient outlier: apply mild damping while awaiting confirmation
-        effectiveAlpha = 0.15;
+        // Transient outlier or initial frame of change
+        effectiveAlpha = isDecreasing ? 0.30 : 0.15;
       }
     } else {
       // Normal change within threshold: clear any candidate tracking

@@ -3,6 +3,16 @@ import type { Asana } from "../types/asana";
 import type { CoachPersona } from "../types/coach-session";
 import { SURYA_NAMASKAR_ASANAS } from "../data/suryaNamaskarAsanas";
 import { ensureAsanaRules } from "../analysis/rules/poseRulesRegistry";
+import { COACHES } from "../avatar/avatar.types";
+
+/** Pick a random outfit id for the given coach, avoiding the current one if possible */
+function pickRandomOutfit(coach: CoachPersona, currentOutfitId: string): string {
+  const outfits = COACHES[coach]?.outfits ?? [];
+  if (outfits.length <= 1) return outfits[0]?.id ?? "default";
+  const choices = outfits.filter((o) => o.id !== currentOutfitId);
+  const pool = choices.length > 0 ? choices : outfits;
+  return pool[Math.floor(Math.random() * pool.length)].id;
+}
 
 interface AICoachState {
   selectedCoach: CoachPersona;
@@ -19,6 +29,8 @@ interface AICoachState {
   // Actions
   setSelectedCoach: (coach: CoachPersona) => void;
   setSelectedOutfitId: (outfitId: string) => void;
+  /** Randomly rotate to a different outfit for the current coach (called between poses) */
+  rotateOutfit: () => void;
   setSessionLength: (length: number) => void;
   setCurrentAsana: (asana: Asana) => void;
   setCurrentAsanaIndex: (index: number) => void;
@@ -56,6 +68,10 @@ export const useAICoachStore = create<AICoachState>((set, get) => ({
 
   setSelectedCoach: (coach) => set({ selectedCoach: coach }),
   setSelectedOutfitId: (outfitId) => set({ selectedOutfitId: outfitId }),
+  rotateOutfit: () =>
+    set((state) => ({
+      selectedOutfitId: pickRandomOutfit(state.selectedCoach, state.selectedOutfitId),
+    })),
 
   setSessionLength: (length) => {
     const validLength = Math.max(1, Math.min(length, get().sessionAsanas.length));
@@ -152,7 +168,7 @@ export const useAICoachStore = create<AICoachState>((set, get) => ({
   },
 
   nextAsana: () => {
-    const { sessionAsanas, sessionLength, currentAsanaIndex } = get();
+    const { sessionAsanas, sessionLength, currentAsanaIndex, selectedCoach, selectedOutfitId } = get();
     const nextIndex = currentAsanaIndex + 1;
     if (nextIndex < sessionLength) {
       const next = sessionAsanas[nextIndex];
@@ -160,6 +176,8 @@ export const useAICoachStore = create<AICoachState>((set, get) => ({
       set({
         currentAsanaIndex: nextIndex,
         currentAsana: next,
+        // Rotate outfit naturally between poses
+        selectedOutfitId: pickRandomOutfit(selectedCoach, selectedOutfitId),
       });
       return next;
     }

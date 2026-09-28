@@ -91,11 +91,17 @@ export function evaluatePose(
   }
   const score = Math.max(0, Math.min(100, rawScore));
 
+
   // Determine Primary Issue
   const primaryIssue = selectPrimaryIssue(issues);
 
   // Overall Status
-  const overallStatus = determineOverallStatus(score, evaluatedRules, rules.length, issues);
+  const overallStatus = determineOverallStatus(
+    score,
+    evaluatedRules,
+    rules.length,
+    issues
+  );
 
   // Derive 8 body area posture statuses
   const posture = derivePostureStatuses(ruleEvaluations);

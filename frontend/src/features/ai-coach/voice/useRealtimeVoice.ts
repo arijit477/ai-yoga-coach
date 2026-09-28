@@ -4,7 +4,7 @@ import { CoachDecisionEngine, DEFAULT_COACHING_CONFIG } from "./CoachDecisionEng
 import type { VoiceState, CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 
 export function useRealtimeVoice() {
-  const rtcAgentRef = useRef<RealtimeVoiceAgent | null>(null);
+  const agentRef = useRef<RealtimeVoiceAgent | null>(null);
   const decisionEngineRef = useRef<CoachDecisionEngine | null>(null);
   
   const statusRef = useRef<VoiceConnectionState>("disconnected");
@@ -15,52 +15,48 @@ export function useRealtimeVoice() {
     isMuted: false,
     error: null,
     transcripts: [],
-    isConversationMode: true,
+    isConversationMode: false,
   });
 
-  if (!rtcAgentRef.current) {
-    rtcAgentRef.current = new RealtimeVoiceAgent(
-      (status: VoiceConnectionState, error?: string) => {
+  if (!agentRef.current) {
+    agentRef.current = new RealtimeVoiceAgent(
+      (status, error) => {
         statusRef.current = status;
-        setState((prev) => ({
-          ...prev,
-          status,
-          error: error ?? (status === "error" ? prev.error : null),
-        }));
+        setState((prev) => ({ ...prev, status, error: error || null }));
       },
       (item: VoiceTranscriptItem) => {
         setState((prev) => ({
           ...prev,
           transcripts: [...prev.transcripts.slice(-9), item],
         }));
-      },
+      }
     );
-
     decisionEngineRef.current = new CoachDecisionEngine(DEFAULT_COACHING_CONFIG);
   }
 
   const start = useCallback(async (coachId: string) => {
     lastActiveCoachRef.current = coachId;
     decisionEngineRef.current?.reset();
-    await rtcAgentRef.current?.connect(coachId);
+    await agentRef.current?.connect(coachId);
   }, []);
 
   const stop = useCallback(() => {
-    rtcAgentRef.current?.disconnect();
+    agentRef.current?.disconnect();
     decisionEngineRef.current?.reset();
+    statusRef.current = "disconnected";
     setState((prev) => ({ ...prev, status: "disconnected" }));
   }, []);
 
   const mute = useCallback(() => {
     setState((prev) => {
-      rtcAgentRef.current?.setMuted(true);
+      agentRef.current?.setMuted(true);
       return { ...prev, isMuted: true };
     });
   }, []);
 
   const unmute = useCallback(() => {
     setState((prev) => {
-      rtcAgentRef.current?.setMuted(false);
+      agentRef.current?.setMuted(false);
       return { ...prev, isMuted: false };
     });
   }, []);
@@ -68,8 +64,20 @@ export function useRealtimeVoice() {
   const toggleMute = useCallback(() => {
     setState((prev) => {
       const nextMuted = !prev.isMuted;
-      rtcAgentRef.current?.setMuted(nextMuted);
+      agentRef.current?.setMuted(nextMuted);
       return { ...prev, isMuted: nextMuted };
+    });
+  }, []);
+
+  const toggleConversationMode = useCallback(() => {
+    setState((prev) => {
+      const nextMode = !prev.isConversationMode;
+      if (nextMode) {
+        agentRef.current?.startListening();
+      } else {
+        agentRef.current?.stopListening();
+      }
+      return { ...prev, isConversationMode: nextMode };
     });
   }, []);
 
@@ -77,31 +85,31 @@ export function useRealtimeVoice() {
     const decision = decisionEngineRef.current?.evaluate(event, context);
     if (decision?.shouldSpeak) {
        console.log(`[AI COACH] Coaching event approved: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
-       rtcAgentRef.current?.sendCoachingEvent(event);
+       agentRef.current?.sendCoachingEvent(event);
     } else if (decision) {
        console.log(`[AI COACH] Coaching event suppressed: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
     }
   }, []);
 
   const triggerPoseStart = useCallback((asanaId: string, asanaName: string, asanaDescription?: string) => {
-    rtcAgentRef.current?.triggerPoseStart(asanaId, asanaName, asanaDescription);
+    agentRef.current?.triggerPoseStart(asanaId, asanaName, asanaDescription);
   }, []);
 
   const speakGreeting = useCallback(() => {
-    rtcAgentRef.current?.speakGreeting();
+    agentRef.current?.speakGreeting();
   }, []);
 
   const speak = useCallback((text: string) => {
-    rtcAgentRef.current?.speak(text);
+    agentRef.current?.speak(text);
   }, []);
 
   const updateSessionContext = useCallback((context: SessionContextData) => {
-    rtcAgentRef.current?.updateSessionContext(context);
+    agentRef.current?.updateSessionContext(context);
   }, []);
 
   useEffect(() => {
     return () => {
-      rtcAgentRef.current?.disconnect();
+      agentRef.current?.disconnect();
     };
   }, []);
 
@@ -115,13 +123,12 @@ export function useRealtimeVoice() {
     connect: start,
     disconnect: stop,
     toggleMute,
-    toggleConversationMode: () => {},
+    toggleConversationMode,
     dispatchEvent,
     updateSessionContext,
     triggerPoseStart,
     speakGreeting,
     speak,
-    getRemoteAudioStream: () => rtcAgentRef.current?.getRemoteAudioStream() ?? null,
+    getRemoteAudioStream: () => agentRef.current?.getRemoteAudioStream() || null,
   };
 }
-

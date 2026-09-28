@@ -88,8 +88,11 @@ export function PoseReviewModal({
         </div>
 
         <h3 className="mt-1 text-2xl font-bold text-slate-900 leading-tight">
-          Great work on {asana.name}!
+          🎉 Congratulations!
         </h3>
+        <p className="text-sm font-semibold text-emerald-900 mt-0.5">
+          Great work on {asana.name}
+        </p>
 
         {/* Pose Accuracy Score */}
         <div className="my-3.5 inline-flex items-center gap-2.5 rounded-2xl bg-emerald-50 px-5 py-2.5 border border-emerald-200 shadow-xs">

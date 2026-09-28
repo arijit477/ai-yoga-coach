@@ -1,81 +1,115 @@
 import React from "react";
 import type { CoachId, AvatarState } from "../avatar/avatar.types";
-import { AvatarPlayer } from "../avatar/AvatarPlayer";
+import { COACHES } from "../avatar/avatar.types";
 import { VoiceControls } from "./VoiceControls";
+import { AccuracyPanel } from "./AccuracyPanel";
 import type { VoiceState } from "../voice/voice.types";
+import type { Asana } from "../types/asana";
+import type { PostureCheckResult } from "../types/posture-check";
 
 interface CoachPanelProps {
   coach: CoachId;
   coachName: string;
   outfitId?: string;
-  avatarState: AvatarState;
+  avatarState?: AvatarState;
   guidanceMessage?: string;
-  isSpeaking: boolean;
+  isSpeaking?: boolean;
   voiceState?: VoiceState;
   isSessionActive?: boolean;
   onToggleMute?: () => void;
   onStopVoice?: () => void;
+  score?: number | null;
+  displayedScore?: number | null;
+  holdTime?: number;
+  targetHoldSeconds?: number;
+  isHolding?: boolean;
+  asana: Asana;
+  postureCheck?: PostureCheckResult;
   className?: string;
 }
 
 export const CoachPanel = React.memo(function CoachPanel({
   coach,
   coachName,
-  outfitId = "default",
-  avatarState,
-  isSpeaking,
+  outfitId,
+  isSpeaking = false,
   voiceState,
   isSessionActive = false,
   onToggleMute,
   onStopVoice,
+  score,
+  displayedScore,
+  holdTime = 0,
+  targetHoldSeconds = 5,
+  isHolding = false,
+  asana,
+  postureCheck,
   className = "",
 }: CoachPanelProps) {
+  // Resolve coach outfit image for the selected outfit
+  const coachData = COACHES[coach];
+  const outfit = outfitId
+    ? coachData?.outfits.find((o) => o.id === outfitId) ?? coachData?.outfits[0]
+    : coachData?.outfits[0];
+  const outfitImageSrc = outfit?.imageSrc ?? (coach === "alice" ? "/images/alice.png" : "/images/kevin.jpg");
+
   return (
     <div
-      className={`relative rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm flex flex-col gap-3.5 ${className}`}
+      className={`relative rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm flex flex-col gap-4 ${className}`}
     >
       {/* Header */}
       <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
-        <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            AI Coach
-          </h3>
-          <p className="text-sm font-bold text-slate-900">{coachName}</p>
+        <div className="flex items-center gap-2.5">
+          {/* Coach Portrait Thumbnail (outfit-aware) */}
+          <div className="relative shrink-0">
+            <div
+              className={`w-9 h-9 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                isSpeaking
+                  ? "border-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                  : "border-slate-200/60"
+              }`}
+            >
+              <img
+                src={outfitImageSrc}
+                alt={coachName}
+                className="w-full h-full object-cover object-top"
+                loading="lazy"
+              />
+            </div>
+            {/* Speaking pulse indicator */}
+            {isSpeaking && (
+              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border border-white animate-ping" />
+            )}
+          </div>
+
+          <div>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              AI Coach
+            </h3>
+            <p className="text-sm font-bold text-slate-900 leading-tight">{coachName}</p>
+          </div>
         </div>
-        <span className="rounded-full bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
-          Personal Guide
+
+        {/* Yogaverse Brand Badge */}
+        <span className="rounded-full bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 tracking-wide">
+          Yogaverse
         </span>
       </div>
 
-      {/* Avatar Stage: fixed dimensions, zero layout shifts */}
-      <div className="relative aspect-[4/5] sm:aspect-[3/4] w-full overflow-hidden rounded-2xl border border-emerald-100/80 bg-slate-900 shadow-inner">
-        <AvatarPlayer
-          coach={coach}
-          outfitId={outfitId}
-          state={avatarState}
-          autoPlay
-          muted={voiceState?.isMuted ?? false}
-          loop
-          className="h-full w-full object-cover object-top"
-        />
-
-        {/* Dynamic Voice Soundwave Indicator Overlay */}
-        {isSpeaking && (
-          <div className="absolute bottom-2.5 right-2.5 flex items-end gap-0.5 rounded-full bg-white/95 px-2 py-1 shadow-md border border-emerald-200/80 backdrop-blur-sm pointer-events-none">
-            <span className="h-3 w-0.5 rounded-full bg-emerald-600 animate-[bounce_0.8s_infinite_100ms]" />
-            <span className="h-4 w-0.5 rounded-full bg-emerald-700 animate-[bounce_0.8s_infinite_200ms]" />
-            <span className="h-2.5 w-0.5 rounded-full bg-emerald-500 animate-[bounce_0.8s_infinite_300ms]" />
-            <span className="h-4.5 w-0.5 rounded-full bg-emerald-800 animate-[bounce_0.8s_infinite_150ms]" />
-            <span className="ml-1 text-[9px] font-bold uppercase tracking-wider text-emerald-800">
-              Live
-            </span>
-          </div>
-        )}
-      </div>
+      {/* Accuracy & Guidance Panel Stage (Replaces video avatar with real-time pose guidance) */}
+      <AccuracyPanel
+        score={score}
+        displayedScore={displayedScore}
+        holdTime={holdTime}
+        targetHoldSeconds={targetHoldSeconds}
+        isHolding={isHolding}
+        asana={asana}
+        postureCheck={postureCheck}
+      />
 
       {/* Embedded Multi-Button Voice Assistant Control */}
       {voiceState && onToggleMute && (
-        <div className={!isSessionActive ? "opacity-90" : ""}>
+        <div className={`pt-1 border-t border-slate-100 ${!isSessionActive ? "opacity-90" : ""}`}>
           <VoiceControls
             voiceState={voiceState}
             isSessionActive={isSessionActive}
@@ -88,4 +122,3 @@ export const CoachPanel = React.memo(function CoachPanel({
     </div>
   );
 });
-

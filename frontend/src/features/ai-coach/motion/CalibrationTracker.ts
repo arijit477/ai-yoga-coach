@@ -162,36 +162,8 @@ export class CalibrationTracker {
   private checkVisibilityAndPosition(landmarks: PoseLandmarks): CalibrationFailureReason {
     if (!this.boundingBox) return "improve_visibility";
 
-    // Center body check
-    if (this.boundingBox.centerX < 0.3 || this.boundingBox.centerX > 0.7) {
-      return "center_body";
-    }
-
-    // Move back check
-    if (this.boundingBox.height > 0.9) {
-      return "move_back";
-    }
-
-    // Move forward check
-    if (this.boundingBox.height < 0.4) {
-      return "move_forward";
-    }
-
-    // Show feet check
-    const leftAnkle = landmarks[27];
-    const rightAnkle = landmarks[28];
-    const leftFoot = landmarks[31];
-    const rightFoot = landmarks[32];
-    const hasFeet = (leftAnkle && getLandmarkConfidence(leftAnkle) > this.confidenceThreshold) ||
-                    (rightAnkle && getLandmarkConfidence(rightAnkle) > this.confidenceThreshold) ||
-                    (leftFoot && getLandmarkConfidence(leftFoot) > this.confidenceThreshold) ||
-                    (rightFoot && getLandmarkConfidence(rightFoot) > this.confidenceThreshold);
-                    
-    if (!hasFeet && this.boundingBox.maxY > 0.9) {
-      return "move_back"; // Likely cut off at bottom
-    } else if (!hasFeet) {
-       return "show_feet";
-    }
+    // Relaxed calibration: If we have a bounding box, we calibrate successfully regardless of feet visibility
+    // to prevent users from getting stuck if their camera angle is tight.
 
     return null;
   }

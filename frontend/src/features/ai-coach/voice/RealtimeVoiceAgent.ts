@@ -232,37 +232,11 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * Browser Speech Synthesis fallback when OpenAI Realtime WebRTC is unavailable
+   * Browser Speech Synthesis fallback (Disabled per user request to purely use natural voice)
    */
-  private speakWithBrowserTTS(text: string) {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      return;
-    }
-    try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
-      utterance.pitch = this.currentCoachId === "kevin" ? 0.9 : 1.1;
-
-      const voices = window.speechSynthesis.getVoices();
-      if (voices && voices.length > 0) {
-        const langVoices = voices.filter((v) => v.lang.startsWith("en"));
-        if (this.currentCoachId === "kevin") {
-          const maleVoice = langVoices.find((v) =>
-            /male|david|george|mark|alex|daniel|guy/i.test(v.name)
-          );
-          if (maleVoice) utterance.voice = maleVoice;
-        } else {
-          const femaleVoice = langVoices.find((v) =>
-            /female|zira|samantha|victoria|karen|alice|aria|jenny/i.test(v.name)
-          );
-          if (femaleVoice) utterance.voice = femaleVoice;
-        }
-      }
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      console.warn("[AI COACH] Browser TTS error:", e);
-    }
+  private speakWithBrowserTTS(_text: string) {
+    // Intentionally disabled to ensure only the natural WebRTC voice is used.
+    // console.log("[AI COACH] Browser TTS disabled per user preference. Text:", text);
   }
 
   /**
@@ -290,12 +264,10 @@ export class RealtimeVoiceAgent {
         this.dc.send(JSON.stringify(responseCreate));
         this.hasActiveServerResponse = true;
       } catch (err) {
-        console.warn("[AI COACH] Error asking OpenAI to speak, falling back to browser TTS:", err);
-        this.speakWithBrowserTTS(text);
+        console.warn("[AI COACH] Error asking OpenAI to speak:", err);
       }
     } else {
-      // Reliable instant browser TTS fallback
-      this.speakWithBrowserTTS(text);
+      console.warn("[AI COACH] Cannot speak, WebRTC disconnected. Text:", text);
     }
 
     this.onTranscript?.({
@@ -313,7 +285,7 @@ export class RealtimeVoiceAgent {
    */
   triggerPoseStart(asanaId: string, asanaName: string, asanaDescription?: string) {
     const desc = asanaDescription ? ` ${asanaDescription}` : '';
-    const message = `Let's begin ${asanaName}.${desc} Stand comfortably and check your posture.`;
+    const message = `Let's begin ${asanaName}.${desc}`;
     if (this.dc && this.dc.readyState === "open") {
       this.speak(message);
     } else {
@@ -363,35 +335,42 @@ export class RealtimeVoiceAgent {
    * Dispatches a structured coaching event and speaks verbal instructions clearly to the user.
    */
   sendCoachingEvent(event: CoachingEvent) {
-    let spokenText = "";
-    if (event.type === "step_guidance" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "pose_started") {
-      spokenText = event.feedback || `Let's begin ${event.asanaName}.`;
-    } else if (event.type === "calibration_prompt" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "calibration_complete") {
-      spokenText = event.feedback || `Great, let's begin ${event.asanaName}.`;
-    } else if (event.type === "pose_correction" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "safety_warning" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "good_form") {
-      spokenText = event.feedback || "Good form! Hold this position.";
-    } else if (event.type === "pose_held") {
-      spokenText = "Posture aligned! Hold steady and breathe.";
-    } else if (event.type === "pose_completed") {
-      spokenText = event.feedback || `Congratulations! You have completed ${event.asanaName}.`;
-    } else if (event.type === "hold_countdown" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "user_out_of_frame") {
-      spokenText = event.feedback || "I can't see you. Step back into the frame so we can continue.";
-    } else if (event.type === "partial_body") {
-      spokenText = event.feedback || "I can only see part of your body. Take a small step back.";
-    } else if (event.type === "camera_unavailable") {
-      spokenText = event.feedback || "Please enable your camera so I can guide you.";
-    } else if (event.type === "camera_ready") {
-      spokenText = event.feedback || "Welcome back! I can see you clearly now.";
+    // Always prefer the natural language feedback from the event builder first.
+    let spokenText = event.feedback ?? "";
+
+    if (!spokenText) {
+      // Minimal fallbacks for events that may not carry feedback
+      switch (event.type) {
+        case "pose_started":
+          spokenText = `Let's begin ${event.asanaName}.`;
+          break;
+        case "calibration_complete":
+          spokenText = `Great, let's begin ${event.asanaName}.`;
+          break;
+        case "good_form":
+          spokenText = "Good form. Hold this position.";
+          break;
+        case "pose_held":
+          spokenText = "Posture aligned. Hold steady and breathe.";
+          break;
+        case "pose_completed":
+          spokenText = `Great job completing ${event.asanaName}!`;
+          break;
+        case "user_out_of_frame":
+          spokenText = "I can't see you. Step back into the frame so we can continue.";
+          break;
+        case "partial_body":
+          spokenText = "I can only see part of your body. Take a small step back.";
+          break;
+        case "camera_unavailable":
+          spokenText = "Please enable your camera so I can guide you.";
+          break;
+        case "camera_ready":
+          spokenText = "Welcome back! I can see you clearly now.";
+          break;
+        default:
+          break;
+      }
     }
 
     if (spokenText) {
@@ -484,12 +463,13 @@ export class RealtimeVoiceAgent {
   }
 
   private syncMuteState() {
-    // Microphone tracks removed
+    // We are routing audio through AudioContext for a volume boost.
+    // The raw audio element MUST stay muted to prevent double-audio (echo).
     if (this.audioEl) {
-      this.audioEl.muted = this.isMuted;
+      this.audioEl.muted = true;
     }
     if (this.gainNode) {
-      this.gainNode.gain.value = this.isMuted ? 0 : 2.5; // Mute or 2.5x volume boost
+      this.gainNode.gain.value = this.isMuted ? 0 : 4.0; // 4.0x volume boost
     }
   }
 
@@ -572,14 +552,20 @@ export class RealtimeVoiceAgent {
       const source = this.audioCtx.createMediaStreamSource(this.remoteAudioStream);
       
       this.gainNode = this.audioCtx.createGain();
-      this.gainNode.gain.value = this.isMuted ? 0 : 2.5; // Boost the incoming voice by 2.5x
+      this.gainNode.gain.value = this.isMuted ? 0 : 4.0; // Boost the incoming voice by 4.0x
 
       this.analyser = this.audioCtx.createAnalyser();
       this.analyser.fftSize = 256;
       
-      // Connect nodes: Source -> Gain -> Analyser (We don't connect to destination to avoid double audio since audioEl is playing)
+      // Route audio: Source -> Gain -> Analyser AND Destination (Speakers)
       source.connect(this.gainNode);
       this.gainNode.connect(this.analyser);
+      this.gainNode.connect(this.audioCtx.destination);
+      
+      // Mute the raw audio element to prevent double-audio echo
+      if (this.audioEl) {
+        this.audioEl.muted = true;
+      }
       
       this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
 

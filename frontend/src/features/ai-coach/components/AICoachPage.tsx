@@ -317,6 +317,9 @@ export function AICoachPage() {
       },
       [setCurrentAsanaIndex],
     ),
+    onPoseReviewReady: useCallback((score: number) => {
+      setFinalAsanaScore(score);
+    }, []),
     onCalibrationPrompt: useCallback(
       (promptMessage?: string) => {
         const msg =
@@ -370,9 +373,6 @@ export function AICoachPage() {
         voiceDispatch,
       ],
     ),
-    onPoseReviewReady: useCallback((score: number) => {
-      setFinalAsanaScore(score);
-    }, []),
   });
 
   const isSessionActive =
@@ -397,9 +397,13 @@ export function AICoachPage() {
     if (
       !isCameraActive ||
       !stableEvaluation?.isValid ||
+      sessionState === "idle" ||
       sessionState === "get_ready" ||
       sessionState === "guide_video" ||
-      sessionState === "countdown"
+      sessionState === "countdown" ||
+      sessionState === "camera_check" ||
+      sessionState === "hold_still" ||
+      sessionState === "calibrating"
     ) {
       return null;
     }
@@ -410,9 +414,13 @@ export function AICoachPage() {
     if (
       !isCameraActive ||
       !stableEvaluation?.isValid ||
+      sessionState === "idle" ||
       sessionState === "get_ready" ||
       sessionState === "guide_video" ||
-      sessionState === "countdown"
+      sessionState === "countdown" ||
+      sessionState === "camera_check" ||
+      sessionState === "hold_still" ||
+      sessionState === "calibrating"
     ) {
       return null;
     }
@@ -459,7 +467,7 @@ export function AICoachPage() {
         CoachingEventBuilder.buildPoseStartedEvent(
           currentAsana.id,
           currentAsana.name,
-          currentAsana.description
+          selectedCoach as "alice" | "kevin"
         ),
       );
     } else {
@@ -654,8 +662,7 @@ export function AICoachPage() {
       currentAsana.name,
       sessionState,
       cameraState,
-      stableEvaluation,
-      currentAsana.description
+      stableEvaluation
     );
 
     newEvents.forEach((event) => {
@@ -1181,7 +1188,7 @@ export function AICoachPage() {
                     />
                   )}
 
-                {/* Top-Left: LIVE Status Indicator, Asana Name Pill & Score Ring */}
+                {/* Top-Left: LIVE Status Indicator & Asana Name Pill */}
                 <div className="absolute top-3 left-3 sm:top-3.5 sm:left-3.5 z-20 flex items-center gap-2">
                   <span className="flex items-center gap-1.5 rounded-full bg-emerald-600/95 text-white px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md">
                     <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
@@ -1197,19 +1204,6 @@ export function AICoachPage() {
                       ? "Welcome to AI Yoga Coach"
                       : currentAsana.name}
                   </span>
-
-                  {isSessionActive &&
-                    sessionState !== "countdown" &&
-                    sessionState !== "guide_video" &&
-                    isCameraActive && (
-                      <CircularScoreRing
-                        score={effectiveScore}
-                        displayedScore={effectiveDisplayedScore}
-                        size={38}
-                        strokeWidth={4}
-                        compact
-                      />
-                    )}
                 </div>
 
                 {/* Left-Side Posture Check Overlay — compact floating panel inside camera */}
@@ -1372,7 +1366,10 @@ export function AICoachPage() {
                   <PoseReviewModal
                     asana={currentAsana}
                     score={
-                      completedAsanaScores[currentAsana.id] ?? stableScore ?? 80
+                      finalAsanaScore ??
+                      completedAsanaScores[currentAsana.id] ??
+                      stableScore ??
+                      80
                     }
                     onMoveToNext={moveToNextAsana}
                     onStayHere={stayHere}
@@ -1430,7 +1427,7 @@ export function AICoachPage() {
             {/* RIGHT: COACH PRESENCE, CORRECTIONS & TARGET POSE */}
             {/* ------------------------------------------------ */}
             <aside className="flex flex-col gap-4">
-              {/* Dedicated Coach Presence with Alice/Kevin & Integrated Multi-Button Voice Control */}
+              {/* Dedicated Coach Presence with Accuracy Panel & Integrated Multi-Button Voice Control */}
               <CoachPanel
                 coach={selectedCoach}
                 coachName={`Coach ${getCoachName(selectedCoach)}`}
@@ -1442,6 +1439,13 @@ export function AICoachPage() {
                 isSessionActive={isSessionActive}
                 onToggleMute={voiceToggleMute}
                 onStopVoice={voiceStop}
+                score={effectiveScore}
+                displayedScore={effectiveDisplayedScore}
+                holdTime={holdTime}
+                targetHoldSeconds={currentAsana.targetHoldSeconds}
+                isHolding={sessionState === "holding"}
+                asana={currentAsana}
+                postureCheck={postureCheck}
               />
 
               {/* On-Device Privacy Guarantee Notice */}

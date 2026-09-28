@@ -2,6 +2,20 @@ import type { PoseIssue } from "../types/pose-rules";
 import type { CoachSessionState } from "../types/CoachSessionState";
 import type { CameraReadinessState } from "../motion/CameraReadinessTracker";
 import type { CoachingEvent, CoachingEventPrimaryIssue } from "./voice.types";
+import {
+  getPoseStartedMessage,
+  getCalibrationPromptMessage,
+  getCalibrationCompleteMessage,
+  getGoodFormMessage,
+  getPoseHeldMessage,
+  getPoseCompletedMessage,
+  getIssueImprovingMessage,
+  getIssueResolvedMessage,
+  getPoseCorrectionMessage,
+  getUserOutOfFrameMessage,
+  getPartialBodyMessage,
+  getCameraReadyMessage,
+} from "./NaturalCoachLanguage";
 
 function generateEventId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -14,10 +28,13 @@ export class CoachingEventBuilder {
   static buildPoseStartedEvent(
     asanaId: string,
     asanaName: string,
-    asanaDescription?: string,
+
     coach?: "alice" | "kevin",
     cameraState?: CameraReadinessState
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getPoseStartedMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("start"),
       type: "pose_started",
@@ -26,7 +43,7 @@ export class CoachingEventBuilder {
       asanaName,
       sessionState: "coaching",
       cameraState: cameraState ?? "CAMERA_READY",
-      feedback: asanaDescription ? `Let's begin ${asanaName}. ${asanaDescription}` : `Let's begin ${asanaName}.`,
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -37,9 +54,12 @@ export class CoachingEventBuilder {
   static buildCalibrationPromptEvent(
     asanaId: string,
     asanaName: string,
-    message: string = "Hold still for a moment while I check your position.",
+    message?: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = message ?? getCalibrationPromptMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("calib_prompt"),
       type: "calibration_prompt",
@@ -47,7 +67,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       sessionState: "calibrating",
-      feedback: message,
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -60,6 +80,9 @@ export class CoachingEventBuilder {
     asanaName: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getCalibrationCompleteMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("calib_done"),
       type: "calibration_complete",
@@ -67,7 +90,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       sessionState: "coaching",
-      feedback: `Perfect. I can see you clearly. Let's begin ${asanaName}.`,
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -105,6 +128,8 @@ export class CoachingEventBuilder {
     cameraState?: CameraReadinessState,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+
     const primaryIssue: CoachingEventPrimaryIssue = {
       ruleId: issue.ruleId,
       joint: issue.joint,
@@ -118,6 +143,14 @@ export class CoachingEventBuilder {
       targetMin: issue.targetMin ?? issue.min,
       targetMax: issue.targetMax ?? issue.max,
     };
+
+    // Generate natural feedback message using the language system
+    const feedback = getPoseCorrectionMessage({
+      coach: coachPersona,
+      asanaName,
+      joint: issue.joint,
+      targetValue: issue.targetValue,
+    });
 
     return {
       id: generateEventId("corr"),
@@ -139,7 +172,7 @@ export class CoachingEventBuilder {
       max: issue.max,
       targetMin: issue.targetMin ?? issue.min,
       targetMax: issue.targetMax ?? issue.max,
-      feedback: issue.feedback,
+      feedback,
       score: score !== undefined ? Math.round(score) : undefined,
       timestamp: Date.now(),
     };
@@ -154,6 +187,9 @@ export class CoachingEventBuilder {
     ruleId: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getIssueImprovingMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("impr"),
       type: "issue_improving",
@@ -162,7 +198,7 @@ export class CoachingEventBuilder {
       asanaName,
       ruleId,
       sessionState: "coaching",
-      feedback: "Much better, keep going.",
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -176,6 +212,9 @@ export class CoachingEventBuilder {
     ruleId: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getIssueResolvedMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("resolv"),
       type: "issue_resolved",
@@ -184,7 +223,7 @@ export class CoachingEventBuilder {
       asanaName,
       ruleId,
       sessionState: "coaching",
-      feedback: "Great job, that looks perfect now.",
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -200,6 +239,9 @@ export class CoachingEventBuilder {
     cameraState?: CameraReadinessState,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getGoodFormMessage({ coach: coachPersona, asanaName, score });
+
     return {
       id: generateEventId("good"),
       type: "good_form",
@@ -210,7 +252,7 @@ export class CoachingEventBuilder {
       cameraState: cameraState ?? "CAMERA_READY",
       posture: "GOOD",
       score: score !== undefined ? Math.round(score) : undefined,
-      feedback: "Great form. Maintain this position.",
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -224,6 +266,9 @@ export class CoachingEventBuilder {
     score?: number,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getPoseHeldMessage({ coach: coachPersona, asanaName, score });
+
     return {
       id: generateEventId("held"),
       type: "pose_held",
@@ -233,7 +278,7 @@ export class CoachingEventBuilder {
       sessionState: "holding",
       posture: "GOOD",
       score: score !== undefined ? Math.round(score) : undefined,
-      feedback: `Excellent alignment. Achieving ${score ? Math.round(score) : 75}% accuracy is a great result! Now hold for 10 seconds.`,
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -247,6 +292,9 @@ export class CoachingEventBuilder {
     score?: number,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getPoseCompletedMessage({ coach: coachPersona, asanaName, score });
+
     return {
       id: generateEventId("comp"),
       type: "pose_completed",
@@ -256,7 +304,7 @@ export class CoachingEventBuilder {
       sessionState: "completed",
       posture: "GOOD",
       score: score !== undefined ? Math.round(score) : undefined,
-      feedback: `Congratulations! You have completed ${asanaName}.`,
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -356,6 +404,9 @@ export class CoachingEventBuilder {
     asanaName: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getUserOutOfFrameMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("cam_out"),
       type: "user_out_of_frame",
@@ -363,7 +414,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       cameraState: "NO_PERSON",
-      feedback: "I can't see you at the moment. Come back into the frame.",
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -373,6 +424,9 @@ export class CoachingEventBuilder {
     asanaName: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getPartialBodyMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("cam_part"),
       type: "partial_body",
@@ -380,7 +434,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       cameraState: "PARTIAL_BODY",
-      feedback: "I can only see part of your body. Please adjust your camera so your full body is visible.",
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -390,6 +444,9 @@ export class CoachingEventBuilder {
     asanaName: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
+    const coachPersona = coach ?? "alice";
+    const feedback = getCameraReadyMessage({ coach: coachPersona, asanaName });
+
     return {
       id: generateEventId("cam_rdy"),
       type: "camera_ready",
@@ -397,7 +454,7 @@ export class CoachingEventBuilder {
       asanaId,
       asanaName,
       cameraState: "CAMERA_READY",
-      feedback: "I can see you clearly now.",
+      feedback,
       timestamp: Date.now(),
     };
   }
@@ -465,4 +522,3 @@ export class CoachingEventBuilder {
     };
   }
 }
-

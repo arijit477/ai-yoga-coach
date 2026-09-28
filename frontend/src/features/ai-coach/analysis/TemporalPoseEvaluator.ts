@@ -41,16 +41,12 @@ export class TemporalPoseEvaluator {
     // Check if the pose is truly valid:
     // 1. Must have valid landmark array with >= 33 landmarks
     // 2. Evaluated rules must represent at least half the required rules
-    // 3. Overall status must not be "unknown"
-    const isPartialOrUnknown =
-      rawEvaluation.summary.totalRules > 0 &&
-      rawEvaluation.summary.evaluatedRules < Math.ceil(rawEvaluation.summary.totalRules * 0.5);
-
+    // 3. No high-severity rule should be unknown (missing critical body parts)
+    // 4. Overall status must not be "unknown"
     const hasUsableTracking =
       Boolean(context.landmarks &&
       context.landmarks.length >= 33 &&
       rawEvaluation.summary.evaluatedRules > 0 &&
-      !isPartialOrUnknown &&
       rawEvaluation.overallStatus !== "unknown");
 
     // Update the accuracy stabilizer
@@ -158,7 +154,7 @@ export class TemporalPoseEvaluator {
     const displayedScore = stabilized.displayedAccuracy ?? (stabilized.stableAccuracy !== null ? Math.round(stabilized.stableAccuracy) : undefined);
     const isValid = Boolean(hasUsableTracking && displayedScore !== undefined && displayedScore >= 75);
 
-    if (isValid && !primaryIssue) {
+    if (isValid) {
       this.holdFramesCount++;
     } else {
       this.holdFramesCount = Math.max(0, this.holdFramesCount - 2);

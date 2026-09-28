@@ -3,11 +3,16 @@ import type { CameraReadinessState } from "../motion/CameraReadinessTracker";
 import type { CoachSessionState } from "../types/CoachSessionState";
 import type { CoachingEvent } from "./voice.types";
 import { CoachingEventBuilder } from "./CoachingEventBuilder";
+import {
+  getMindfulnessReminder,
+  getMilestoneMessage,
+  shouldFireMilestone,
+} from "./NaturalCoachLanguage";
 
 export class CoachingEventEngine {
   private lastSessionState: CoachSessionState = "idle";
   private lastCameraState: CameraReadinessState = "CAMERA_DISABLED";
-  
+
   private activeIssue: {
     ruleId: string;
     initialDeviation: number;
@@ -19,6 +24,13 @@ export class CoachingEventEngine {
   private recentEvents: CoachingEvent[] = [];
   private lastOutOfFrameReminderTime: number = 0;
 
+  // Milestone tracking — reset per asana
+  private firedMilestones: Set<string> = new Set();
+
+  // Mindfulness reminder timing
+  private lastMindfulnessTime: number = 0;
+  private readonly MINDFULNESS_INTERVAL_MS = 45_000; // Every ~45 seconds during holding
+
   public reset(): void {
     this.lastSessionState = "idle";
     this.lastCameraState = "CAMERA_DISABLED";
@@ -27,6 +39,8 @@ export class CoachingEventEngine {
     this.hasAnnouncedCompletionForPose = false;
     this.recentEvents = [];
     this.lastOutOfFrameReminderTime = 0;
+    this.firedMilestones.clear();
+    this.lastMindfulnessTime = 0;
   }
 
   public process(
@@ -35,10 +49,12 @@ export class CoachingEventEngine {
     sessionState: CoachSessionState,
     cameraState: CameraReadinessState,
     evaluation: PoseEvaluationResult | null,
-    asanaDescription?: string,
+
     coachId?: "alice" | "kevin"
   ): CoachingEvent[] {
     const events: CoachingEvent[] = [];
+    const coach = coachId ?? "alice";
+    const now = Date.now();
 
     // 1. Camera State Transitions & Continuous Presence
     if (this.lastCameraState !== cameraState) {
@@ -46,7 +62,7 @@ export class CoachingEventEngine {
         events.push(CoachingEventBuilder.buildCameraUnavailableEvent(asanaId, asanaName, coachId));
       } else if (cameraState === "NO_PERSON") {
         events.push(CoachingEventBuilder.buildUserOutOfFrameEvent(asanaId, asanaName, coachId));
-        this.lastOutOfFrameReminderTime = Date.now();
+        this.lastOutOfFrameReminderTime = now;
       } else if (cameraState === "PARTIAL_BODY") {
         events.push(CoachingEventBuilder.buildPartialBodyEvent(asanaId, asanaName, coachId));
       } else if (cameraState === "CAMERA_READY") {
@@ -55,7 +71,6 @@ export class CoachingEventEngine {
       this.lastCameraState = cameraState;
     } else if (cameraState === "NO_PERSON" && sessionState !== "idle") {
       // Continuous presence: if user stays out of frame for >8s, give gentle reminder
-      const now = Date.now();
       if (now - this.lastOutOfFrameReminderTime >= 8000) {
         this.lastOutOfFrameReminderTime = now;
         events.push({
@@ -75,20 +90,22 @@ export class CoachingEventEngine {
     // 2. Session State Transitions
     if (this.lastSessionState !== sessionState) {
       if (sessionState === "calibrating") {
-         events.push(CoachingEventBuilder.buildCalibrationRequiredEvent(asanaId, asanaName, coachId));
+        events.push(CoachingEventBuilder.buildCalibrationRequiredEvent(asanaId, asanaName, coachId));
       } else if (sessionState === "coaching" && this.lastSessionState !== "holding") {
-         // Entered pose active coaching
-         events.push(CoachingEventBuilder.buildPoseStartedEvent(asanaId, asanaName, asanaDescription, coachId, cameraState));
-         this.hasAnnouncedGoodFormForPose = false;
-         this.hasAnnouncedCompletionForPose = false;
+        // Entered pose active coaching
+        events.push(CoachingEventBuilder.buildPoseStartedEvent(asanaId, asanaName, coachId, cameraState));
+        this.hasAnnouncedGoodFormForPose = false;
+        this.hasAnnouncedCompletionForPose = false;
+        this.firedMilestones.clear();
+        this.lastMindfulnessTime = 0;
       } else if (sessionState === "holding") {
-         events.push(CoachingEventBuilder.buildPoseHeldEvent(asanaId, asanaName, evaluation?.score, coachId));
+        events.push(CoachingEventBuilder.buildPoseHeldEvent(asanaId, asanaName, evaluation?.score, coachId));
       } else if (sessionState === "completed" || sessionState === "session_completed") {
-         if (!this.hasAnnouncedCompletionForPose) {
-           events.push(CoachingEventBuilder.buildPoseCompletedEvent(asanaId, asanaName, evaluation?.score, coachId));
-           this.hasAnnouncedCompletionForPose = true;
-         }
-         this.activeIssue = null;
+        if (!this.hasAnnouncedCompletionForPose) {
+          events.push(CoachingEventBuilder.buildPoseCompletedEvent(asanaId, asanaName, evaluation?.score, coachId));
+          this.hasAnnouncedCompletionForPose = true;
+        }
+        this.activeIssue = null;
       }
       this.lastSessionState = sessionState;
     }
@@ -96,12 +113,12 @@ export class CoachingEventEngine {
     // 3. Pose Evaluation (Issues & Form)
     if (sessionState === "coaching" || sessionState === "holding" || sessionState === "correcting") {
       if (evaluation) {
-        
+
         // Safety Warning check (explicit high severity / safety issues)
         const secondary = evaluation.secondaryIssues || [];
-        const safetyIssue = secondary.find(i => i.severity === "high") || 
-                           (evaluation.primaryIssue?.severity === "high" ? evaluation.primaryIssue : null);
-        
+        const safetyIssue = secondary.find(i => i.severity === "high") ||
+          (evaluation.primaryIssue?.severity === "high" ? evaluation.primaryIssue : null);
+
         if (safetyIssue) {
           events.push(CoachingEventBuilder.buildSafetyWarningEvent(asanaId, asanaName, safetyIssue, evaluation.score, sessionState, cameraState, coachId));
         }
@@ -122,14 +139,14 @@ export class CoachingEventEngine {
             events.push(CoachingEventBuilder.buildPoseCorrectionEvent(asanaId, asanaName, primary, evaluation.score, sessionState, cameraState, coachId));
             this.hasAnnouncedGoodFormForPose = false;
           } else {
-            // Existing issue
+            // Existing issue — check for improvement
             const initialDev = this.activeIssue.initialDeviation;
-            
+
             // If it improved by 30% from when it was first announced
             if (initialDev > 0 && currentDeviation < initialDev * 0.7 && currentDeviation < this.activeIssue.lastDeviation) {
-               events.push(CoachingEventBuilder.buildIssueImprovingEvent(asanaId, asanaName, primary.ruleId, coachId));
-               // Update initial to current so we don't spam 'improving' unless it improves another 30%
-               this.activeIssue.initialDeviation = currentDeviation;
+              events.push(CoachingEventBuilder.buildIssueImprovingEvent(asanaId, asanaName, primary.ruleId, coachId));
+              // Update initial to current so we don't spam 'improving' unless it improves another 30%
+              this.activeIssue.initialDeviation = currentDeviation;
             }
             this.activeIssue.lastDeviation = currentDeviation;
           }
@@ -143,6 +160,66 @@ export class CoachingEventEngine {
         if (!primary && evaluation.score >= 75 && !this.hasAnnouncedGoodFormForPose && sessionState === "coaching") {
           events.push(CoachingEventBuilder.buildGoodFormEvent(asanaId, asanaName, evaluation.score, sessionState, cameraState, coachId));
           this.hasAnnouncedGoodFormForPose = true;
+        }
+
+        // ── Milestone Encouragements ──────────────────────────────────────────
+        const score = evaluation.score;
+
+        if (shouldFireMilestone("score_above_90", score, this.firedMilestones, coach)) {
+          const milestoneKey = `${coach}_score_above_90`;
+          this.firedMilestones.add(milestoneKey);
+          events.push({
+            id: `milestone_90_${now}`,
+            type: "good_form",
+            coach: coachId,
+            asanaId,
+            asanaName,
+            sessionState,
+            cameraState,
+            posture: "GOOD",
+            score: Math.round(score),
+            feedback: getMilestoneMessage(coach, "score_above_90"),
+            timestamp: now,
+          });
+        } else if (shouldFireMilestone("score_above_75", score, this.firedMilestones, coach)) {
+          const milestoneKey = `${coach}_score_above_75`;
+          this.firedMilestones.add(milestoneKey);
+          // Only fire if good form hasn't already been announced for this pose
+          if (!this.hasAnnouncedGoodFormForPose) {
+            events.push({
+              id: `milestone_75_${now}`,
+              type: "good_form",
+              coach: coachId,
+              asanaId,
+              asanaName,
+              sessionState,
+              cameraState,
+              posture: "GOOD",
+              score: Math.round(score),
+              feedback: getMilestoneMessage(coach, "score_above_75"),
+              timestamp: now,
+            });
+          }
+        }
+      }
+
+      // ── Mindfulness / Breathing Reminders during holding ───────────────────
+      if (sessionState === "holding" && events.length === 0) {
+        const timeSinceMindfulness = now - this.lastMindfulnessTime;
+        if (timeSinceMindfulness >= this.MINDFULNESS_INTERVAL_MS) {
+          this.lastMindfulnessTime = now;
+          events.push({
+            id: `mindful_${now}`,
+            type: "good_form",
+            coach: coachId,
+            asanaId,
+            asanaName,
+            sessionState,
+            cameraState,
+            posture: "GOOD",
+            feedback: getMindfulnessReminder(coach),
+            timestamp: now,
+          });
         }
       }
     }
@@ -161,4 +238,3 @@ export class CoachingEventEngine {
     return this.recentEvents;
   }
 }
-

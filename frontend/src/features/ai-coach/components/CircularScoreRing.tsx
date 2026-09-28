@@ -19,6 +19,33 @@ interface CircularScoreRingProps {
   className?: string;
 }
 
+/** Returns the status label for a given integer score per spec thresholds */
+function getAccuracyLabel(integerScore: number | null): string {
+  if (integerScore === null) return "Adjust Position";
+  if (integerScore === 100) return "Perfect Hold";
+  if (integerScore >= 91) return "Excellent Form";
+  if (integerScore >= 81) return "Very Good Form";
+  if (integerScore >= 75) return "Great Alignment";
+  if (integerScore >= 61) return "Almost There";
+  if (integerScore >= 41) return "Looking Better";
+  return "Getting Started";
+}
+
+/**
+ * Returns a CSS color string based on the score:
+ * 0–40   → Red   (#ef4444)
+ * 41–60  → Orange (#f97316)
+ * 61–80  → Green  (#22c55e)
+ * 81–100 → Gold   (#eab308)
+ */
+function getAccuracyColor(integerScore: number | null): string {
+  if (integerScore === null) return "#94a3b8";
+  if (integerScore > 80) return "#eab308";  // Gold
+  if (integerScore > 60) return "#22c55e";  // Green
+  if (integerScore > 40) return "#f97316";  // Orange
+  return "#ef4444";                          // Red
+}
+
 export const CircularScoreRing = React.memo(function CircularScoreRing({
   score,
   displayedScore,
@@ -34,7 +61,7 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
     return () => clearTimeout(timer);
   }, []);
 
-  // Continuous float score for SVG arc (0 - 100)
+  // Continuous float score for SVG arc (0-100)
   const continuousScore = score !== null && !isNaN(score) ? Math.max(0, Math.min(100, score)) : null;
 
   // Discrete integer score for text label (respects dead-band if provided)
@@ -52,26 +79,9 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
       ? circumference - (continuousScore / 100) * circumference
       : circumference;
 
-  const color =
-    integerScore === null
-      ? "#94a3b8"
-      : integerScore >= 80
-      ? "#eab308" // Gold
-      : integerScore >= 60
-      ? "#22c55e" // Green
-      : integerScore >= 40
-      ? "#f97316" // Orange
-      : "#ef4444"; // Red
-
-  const getLabel = () => {
-    if (integerScore === null) return "Adjust Position";
-    if (integerScore === 100) return "Perfect Hold";
-    if (integerScore >= 90) return "Excellent Form";
-    if (integerScore >= 75) return "Great Alignment";
-    if (integerScore >= 60) return "Almost There";
-    if (integerScore >= 40) return "Looking Better";
-    return "Getting Started";
-  };
+  const color = getAccuracyColor(integerScore);
+  const label = getAccuracyLabel(integerScore);
+  const isPerfect = integerScore === 100;
 
   const isSmall = size < 65;
   const isTiny = size < 44;
@@ -79,7 +89,7 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
   const ringElement = (
     <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        {/* Background track circle */}
+        {/* Background track */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -88,7 +98,7 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Progress circle */}
+        {/* Progress arc */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -100,6 +110,7 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
           strokeLinecap="round"
           fill="none"
           className="transition-[stroke-dashoffset,stroke] duration-300 ease-out"
+          style={isPerfect ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined}
         />
       </svg>
 
@@ -114,7 +125,7 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
         </span>
         {!isSmall && (
           <span className="text-slate-400 font-medium text-[10px] mt-0.5">
-            accuracy
+            %
           </span>
         )}
       </div>
@@ -129,11 +140,8 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Alignment
           </span>
-          <span
-            className="text-xs font-bold"
-            style={{ color }}
-          >
-            {getLabel()}
+          <span className="text-xs font-bold" style={{ color }}>
+            {label}
           </span>
         </div>
       </div>
@@ -147,19 +155,13 @@ export const CircularScoreRing = React.memo(function CircularScoreRing({
           Alignment
         </span>
         <span
-          className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-          style={{
-            backgroundColor: `${color}15`,
-            color: color,
-          }}
+          className="text-[11px] font-semibold px-2 py-0.5 rounded-full transition-colors duration-300"
+          style={{ backgroundColor: `${color}20`, color }}
         >
-          {getLabel()}
+          {label}
         </span>
       </div>
-
-      <div className="my-1">
-        {ringElement}
-      </div>
+      <div className="my-1">{ringElement}</div>
     </div>
   );
 });

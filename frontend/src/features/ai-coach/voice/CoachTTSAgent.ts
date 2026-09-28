@@ -6,31 +6,52 @@ interface QueuedUtterance {
   eventType?: string;
 }
 
+type SpeakingStateCallback = (isSpeaking: boolean) => void;
+
 export class CoachTTSAgent {
   private isMuted: boolean = false;
   private queue: QueuedUtterance[] = [];
   private isSpeaking: boolean = false;
   private currentCoachId: string = "alice";
   private onTranscript?: (item: VoiceTranscriptItem) => void;
+  private onSpeakingChange?: SpeakingStateCallback;
   private audioElement: HTMLAudioElement | null = null;
   private currentObjectUrl: string | null = null;
 
-  constructor(onTranscript?: (item: VoiceTranscriptItem) => void) {
+  constructor(
+    onTranscript?: (item: VoiceTranscriptItem) => void,
+    onSpeakingChange?: SpeakingStateCallback
+  ) {
     this.onTranscript = onTranscript;
+    this.onSpeakingChange = onSpeakingChange;
     if (typeof window !== "undefined") {
       this.audioElement = new Audio();
+      this.audioElement.volume = 1.0;
       this.audioElement.onended = () => {
         this.cleanupCurrentAudio();
-        this.isSpeaking = false;
+        this.setSpeaking(false);
         this.processQueue();
       };
       this.audioElement.onerror = (e) => {
-        console.warn("[AI COACH] ElevenLabs audio playback error:", e);
+        console.warn("[AI COACH] TTS audio playback error:", e);
         this.cleanupCurrentAudio();
-        this.isSpeaking = false;
+        this.setSpeaking(false);
         this.processQueue();
       };
     }
+  }
+
+  unlockAudio() {
+    if (this.audioElement) {
+      // Synchronously play/pause on a user gesture to unblock autoplay
+      this.audioElement.play().catch(() => {});
+      this.audioElement.pause();
+    }
+  }
+
+  private setSpeaking(value: boolean) {
+    this.isSpeaking = value;
+    this.onSpeakingChange?.(value);
   }
 
   private cleanupCurrentAudio() {
@@ -52,35 +73,42 @@ export class CoachTTSAgent {
   }
 
   sendCoachingEvent(event: CoachingEvent, priority: number) {
-    let spokenText = "";
-    if (event.type === "step_guidance" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "pose_started") {
-      spokenText = `Let's begin ${event.asanaName}.`;
-    } else if (event.type === "calibration_prompt" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "calibration_complete") {
-      spokenText = event.feedback || `Great, let's begin ${event.asanaName}.`;
-    } else if (event.type === "pose_correction" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "safety_warning" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "good_form") {
-      spokenText = event.feedback || "Good form! Hold this position.";
-    } else if (event.type === "pose_held") {
-      spokenText = "Posture aligned! Hold steady and breathe.";
-    } else if (event.type === "pose_completed") {
-      spokenText = `Great job completing ${event.asanaName}!`;
-    } else if (event.type === "hold_countdown" && event.feedback) {
-      spokenText = event.feedback;
-    } else if (event.type === "user_out_of_frame") {
-      spokenText = event.feedback || "I can't see you. Step back into the frame so we can continue.";
-    } else if (event.type === "partial_body") {
-      spokenText = event.feedback || "I can only see part of your body. Take a small step back.";
-    } else if (event.type === "camera_unavailable") {
-      spokenText = event.feedback || "Please enable your camera so I can guide you.";
-    } else if (event.type === "camera_ready") {
-      spokenText = event.feedback || "Welcome back! I can see you clearly now.";
+    // Always prefer the natural language feedback from the event builder first.
+    // Fallbacks are minimal and only used if the event has no feedback set.
+    let spokenText = event.feedback ?? "";
+
+    if (!spokenText) {
+      switch (event.type) {
+        case "pose_started":
+          spokenText = `Let's begin ${event.asanaName}.`;
+          break;
+        case "calibration_complete":
+          spokenText = `Great, let's begin ${event.asanaName}.`;
+          break;
+        case "good_form":
+          spokenText = "Good form. Hold this position.";
+          break;
+        case "pose_held":
+          spokenText = "Posture aligned. Hold steady and breathe.";
+          break;
+        case "pose_completed":
+          spokenText = `Great job completing ${event.asanaName}!`;
+          break;
+        case "user_out_of_frame":
+          spokenText = "I can't see you. Step back into the frame so we can continue.";
+          break;
+        case "partial_body":
+          spokenText = "I can only see part of your body. Take a small step back.";
+          break;
+        case "camera_unavailable":
+          spokenText = "Please enable your camera so I can guide you.";
+          break;
+        case "camera_ready":
+          spokenText = "Welcome back! I can see you clearly now.";
+          break;
+        default:
+          break;
+      }
     }
 
     if (spokenText) {
@@ -111,10 +139,10 @@ export class CoachTTSAgent {
     if (this.audioElement) {
       this.audioElement.pause();
       this.audioElement.removeAttribute('src');
-      this.audioElement.load(); // Aborts the ongoing download
+      this.audioElement.load();
     }
     this.cleanupCurrentAudio();
-    this.isSpeaking = false;
+    this.setSpeaking(false);
     this.queue = [];
   }
 
@@ -131,7 +159,7 @@ export class CoachTTSAgent {
     const nextUtterance = this.queue.shift();
     if (!nextUtterance) return;
 
-    this.isSpeaking = true;
+    this.setSpeaking(true);
     
     this.onTranscript?.({
       id: `coach_tts_${Date.now()}`,
@@ -147,38 +175,32 @@ export class CoachTTSAgent {
       url.searchParams.set("coach_id", this.currentCoachId);
       
       this.cleanupCurrentAudio();
-      this.audioElement.src = url.toString();
-      
-      // Wait for it to be ready
-      await new Promise<void>((resolve, reject) => {
-        if (!this.audioElement) return reject(new Error("No audio element"));
-        const onCanPlay = () => {
-          this.audioElement?.removeEventListener('canplaythrough', onCanPlay);
-          resolve();
-        };
-        this.audioElement.addEventListener('canplaythrough', onCanPlay);
-        this.audioElement.addEventListener('error', (e) => reject(e), { once: true });
-        
-        // Timeout in case it hangs
-        setTimeout(() => resolve(), 3000);
-      });
-      
-      // If stopSpeaking was called while waiting for audio to load
-      if (!this.isSpeaking) return;
-      
-      try {
-        await this.audioElement.play();
-      } catch (playErr: any) {
-        // Ignore AbortError caused by pause() during play()
-        if (playErr.name !== "AbortError") {
-          throw playErr;
-        }
+
+      // Fetch audio as blob so playback is not blocked by streaming autoplay restrictions
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error(`TTS HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
+      const blob = await response.blob();
+
+      // Guard: check if stopSpeaking() was called while we were fetching
+      if (!this.isSpeaking || !this.audioElement) return;
+
+      const objectUrl = URL.createObjectURL(blob);
+      this.currentObjectUrl = objectUrl;
+      this.audioElement.src = objectUrl;
+
+      await this.audioElement.play();
+
     } catch (err: any) {
+      if (err?.name === "AbortError") {
+        // Interrupted intentionally — do nothing
+        return;
+      }
       console.error("[AI COACH] Failed to stream TTS:", err);
       this.cleanupCurrentAudio();
-      this.isSpeaking = false;
+      this.setSpeaking(false);
       this.processQueue();
     }
   }
