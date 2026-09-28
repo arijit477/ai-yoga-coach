@@ -159,7 +159,7 @@ export class CalibrationTracker {
     }
   }
 
-  private checkVisibilityAndPosition(landmarks: PoseLandmarks): CalibrationFailureReason {
+  private checkVisibilityAndPosition(_landmarks: PoseLandmarks): CalibrationFailureReason {
     if (!this.boundingBox) return "improve_visibility";
 
     // Relaxed calibration: If we have a bounding box, we calibrate successfully regardless of feet visibility
