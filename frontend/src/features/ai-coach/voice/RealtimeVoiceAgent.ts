@@ -521,6 +521,10 @@ export class RealtimeVoiceAgent {
         this.audioEl.pause();
       } catch (_) {}
       this.audioEl.srcObject = null;
+      if (this.audioEl.parentNode) {
+        this.audioEl.parentNode.removeChild(this.audioEl);
+      }
+      this.audioEl = null;
     }
 
     if (this.stream) {
@@ -559,9 +563,7 @@ export class RealtimeVoiceAgent {
     this.analyser = null;
     this.dataArray = null;
 
-    if (this.audioEl) {
-      this.audioEl.srcObject = null;
-    }
+
     this.remoteAudioStream = null;
     this.clientSecret = null;
     this.currentCoachId = null;

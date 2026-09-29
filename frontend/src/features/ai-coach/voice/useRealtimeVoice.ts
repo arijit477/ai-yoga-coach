@@ -129,6 +129,7 @@ export function useRealtimeVoice() {
     triggerPoseStart,
     speakGreeting,
     speak,
+    resetEngine: () => decisionEngineRef.current?.reset(),
     getRemoteAudioStream: () => agentRef.current?.getRemoteAudioStream() || null,
   };
 }

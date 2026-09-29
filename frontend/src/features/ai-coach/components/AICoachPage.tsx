@@ -235,6 +235,7 @@ export function AICoachPage() {
     updateSessionContext: voiceUpdateContext,
     triggerPoseStart: voiceTriggerPoseStart,
     dispatchEvent: voiceDispatch,
+    resetEngine: voiceResetEngine,
   } = useRealtimeVoice();
 
   // Keep coach connection updated when switching coach (Alice <-> Kevin) ONLY if voice is already active
@@ -305,7 +306,7 @@ export function AICoachPage() {
     currentAsanaIndex,
     totalAsanas: activeAsanas.length,
     hasGuideVideo: Boolean(currentAsana.videoUrl),
-    instructionsCount: currentAsana.instructions.length,
+    instructionsCount: (currentAsana.instructions || []).length,
     onAsanaComplete: useCallback(
       (idx: number, score?: number) => {
         markAsanaCompleted(activeAsanas[idx].id, score ?? 80);
@@ -356,7 +357,7 @@ export function AICoachPage() {
     }, [currentAsana.id, currentAsana.name, voiceDispatch]),
     onStepChange: useCallback(
       (stepIdx: number) => {
-        const stepInstruction = currentAsana.instructions[stepIdx];
+        const stepInstruction = currentAsana.instructions?.[stepIdx];
         if (stepInstruction) {
           voiceDispatch(
             CoachingEventBuilder.buildStepGuidanceEvent(
@@ -454,6 +455,7 @@ export function AICoachPage() {
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
     coachingEngineRef.current?.reset();
+    voiceResetEngine();
 
     if (!isCameraActive) {
       handleStartCamera();
@@ -502,6 +504,7 @@ export function AICoachPage() {
     hasDispatchedCalibrationCompleteRef.current = null;
     lastSentContextRef.current = null;
     coachingEngineRef.current?.reset();
+    voiceResetEngine();
   }, [stopSession, voiceStop]);
 
   // Reset per-asana dispatch locks when coach persona changes
@@ -1029,16 +1032,16 @@ export function AICoachPage() {
 
             {/* Step-by-Step Guidance Banner in Cinema Mode */}
             {sessionState === "coaching" &&
-              currentAsana.instructions[currentStepIndex] && (
+              currentAsana.instructions?.[currentStepIndex] && (
                 <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
                       Step {currentStepIndex + 1} of{" "}
-                      {currentAsana.instructions.length}
+                      {(currentAsana.instructions || []).length}
                     </span>
                     {/* Step Timeline Progress Indicator */}
                     <div className="flex items-center gap-1.5">
-                      {currentAsana.instructions.map((_, idx) => (
+                      {(currentAsana.instructions || []).map((_, idx) => (
                         <span
                           key={idx}
                           className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -1053,7 +1056,7 @@ export function AICoachPage() {
                     </div>
                   </div>
                   <p className="text-xs font-semibold leading-snug text-emerald-950">
-                    {currentAsana.instructions[currentStepIndex]}
+                    {currentAsana.instructions?.[currentStepIndex]}
                   </p>
                 </div>
               )}
@@ -1297,16 +1300,16 @@ export function AICoachPage() {
 
                 {/* Step-by-Step Guidance Banner in Camera View */}
                 {sessionState === "coaching" &&
-                  currentAsana.instructions[currentStepIndex] && (
+                  currentAsana.instructions?.[currentStepIndex] && (
                     <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-lg w-11/12 rounded-2xl bg-white/95 text-emerald-950 px-5 py-3 shadow-xl backdrop-blur-md border border-emerald-100 animate-in fade-in slide-in-from-top-2 duration-200">
                       <div className="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-emerald-50">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">
                           Step {currentStepIndex + 1} of{" "}
-                          {currentAsana.instructions.length}
+                          {(currentAsana.instructions || []).length}
                         </span>
                         {/* Step Timeline Progress Indicator */}
                         <div className="flex items-center gap-1.5">
-                          {currentAsana.instructions.map((_, idx) => (
+                          {(currentAsana.instructions || []).map((_, idx) => (
                             <span
                               key={idx}
                               className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -1321,7 +1324,7 @@ export function AICoachPage() {
                         </div>
                       </div>
                       <p className="text-xs font-semibold leading-snug text-emerald-950">
-                        {currentAsana.instructions[currentStepIndex]}
+                        {currentAsana.instructions?.[currentStepIndex]}
                       </p>
                     </div>
                   )}

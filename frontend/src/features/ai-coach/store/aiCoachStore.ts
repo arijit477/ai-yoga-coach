@@ -106,10 +106,24 @@ export const useAICoachStore = create<AICoachState>((set, get) => ({
   setCurrentAsana: (asana) => {
     ensureAsanaRules(asana.id);
     const index = get().sessionAsanas.findIndex((a) => a.id === asana.id);
-    set({
-      currentAsana: asana,
-      currentAsanaIndex: index !== -1 ? index : get().currentAsanaIndex,
-    });
+    
+    if (index !== -1) {
+      set({
+        currentAsana: asana,
+        currentAsanaIndex: index,
+      });
+    } else {
+      // User selected a custom pose from the dropdown not in the current session sequence.
+      // Replace the session with a focused 1-pose practice session.
+      set({
+        sessionAsanas: [asana],
+        sessionLength: 1,
+        currentAsanaIndex: 0,
+        currentAsana: asana,
+        completedAsanaIds: [],
+        skippedAsanaIds: [],
+      });
+    }
   },
 
   setCurrentAsanaIndex: (index) => {

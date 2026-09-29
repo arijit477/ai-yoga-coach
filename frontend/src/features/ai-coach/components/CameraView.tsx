@@ -6,6 +6,10 @@ interface CameraViewProps {
   score?: number | null;
 }
 
+let sharedStream: MediaStream | null = null;
+let streamUsers = 0;
+let cleanupTimeout: ReturnType<typeof setTimeout> | null = null;
+
 export const CameraView = React.memo(function CameraView({ videoRef, enabled = true, score }: CameraViewProps) {
   const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,8 +21,13 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
     }
 
     const videoEl = videoRef.current;
-    let stream: MediaStream | null = null;
     let cancelled = false;
+
+    streamUsers++;
+    if (cleanupTimeout) {
+      clearTimeout(cleanupTimeout);
+      cleanupTimeout = null;
+    }
 
     const startCamera = async () => {
       try {
@@ -26,10 +35,16 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
           throw new Error("Camera access is not supported by this browser.");
         }
 
-        // Avoid requesting if we already have a stream
-        if (videoRef.current && videoRef.current.srcObject) {
-          stream = videoRef.current.srcObject as MediaStream;
-          setCameraReady(true);
+        // Seamlessly reuse the global stream if it's already running
+        if (sharedStream) {
+          if (videoRef.current) {
+            videoRef.current.srcObject = sharedStream;
+            await videoRef.current.play().catch(e => console.warn("Play interrupted", e));
+          }
+          if (!cancelled) {
+            setCameraReady(true);
+            setError(null);
+          }
           return;
         }
 
@@ -37,7 +52,7 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
           (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
           window.innerWidth < 768);
 
-        stream = await navigator.mediaDevices.getUserMedia({
+        const newStream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
             width: {
@@ -51,16 +66,17 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
         });
 
         if (cancelled) {
-          stream.getTracks().forEach((track) => track.stop());
+          newStream.getTracks().forEach((track) => track.stop());
           return;
         }
+
+        sharedStream = newStream;
 
         if (!videoRef.current) {
           throw new Error("Video element not available.");
         }
 
-        videoRef.current.srcObject = stream;
-
+        videoRef.current.srcObject = sharedStream;
         await videoRef.current.play();
 
         if (!cancelled) {
@@ -69,12 +85,9 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
         }
       } catch (err) {
         console.error("Camera error:", err);
-
         if (!cancelled) {
           setCameraReady(false);
-          setError(
-            err instanceof Error ? err.message : "Failed to access camera.",
-          );
+          setError(err instanceof Error ? err.message : "Failed to access camera.");
         }
       }
     };
@@ -83,10 +96,18 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
 
     return () => {
       cancelled = true;
+      streamUsers--;
 
-      stream?.getTracks().forEach((track) => {
-        track.stop();
-      });
+      if (streamUsers === 0) {
+        // Give a short grace period before killing the camera hardware, 
+        // allowing another component (like Cinema Mode) to mount and claim it.
+        cleanupTimeout = setTimeout(() => {
+          if (streamUsers === 0 && sharedStream) {
+            sharedStream.getTracks().forEach((track) => track.stop());
+            sharedStream = null;
+          }
+        }, 500); 
+      }
 
       if (videoEl) {
         videoEl.srcObject = null;
