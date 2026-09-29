@@ -2,7 +2,7 @@ import type { AsanaCategory, AsanaDifficulty } from "../types/asana";
 import type { AsanaDefinition } from "../types/asana-definition";
 import type { PoseRule } from "../types/pose-rules";
 import { supabase } from "../../../lib/supabase";
-import { fetchRulesCache, ensureAsanaRules } from "../analysis/rules/poseRulesRegistry";
+import { fetchRulesCache } from "../analysis/rules/poseRulesRegistry";
 import { getAsanaImageUrl, getAsanaVideoUrl } from "./freeAsanas";
 
 let ALL_ASANAS: AsanaDefinition[] = [];
@@ -38,6 +38,7 @@ export async function initAsanaRegistry() {
       id: row.id,
       slug: row.slug,
       name: row.name,
+      displayName: row.name,
       sanskritName: row.sanskrit_name,
       category: row.category,
       difficulty: row.difficulty,

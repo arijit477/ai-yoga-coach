@@ -1,5 +1,5 @@
 import type { PoseRule } from "../../types/pose-rules";
-import { warriorIIRules } from "./WarriorIIRules";
+
 import { registerPoseRules, getPoseRules, hasPoseRules } from "../RuleEngine";
 
 let RULES_CACHE: Record<string, PoseRule[]> | null = null;

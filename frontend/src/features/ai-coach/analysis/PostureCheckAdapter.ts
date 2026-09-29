@@ -152,7 +152,7 @@ export function getPostureCheckResult(
       } else {
         rawStatus = evaluation.score >= 75 ? "good" : "unknown";
       }
-    } else if (evaluation.activeRules === 0 || evaluation.summary?.evaluatedRules === 0) {
+    } else if (("activeRules" in evaluation && evaluation.activeRules === 0) || ("summary" in evaluation && (evaluation as any).summary?.evaluatedRules === 0)) {
       rawStatus = "unknown";
     } else {
       rawStatus = evaluation.score >= 75 ? "good" : "unknown";

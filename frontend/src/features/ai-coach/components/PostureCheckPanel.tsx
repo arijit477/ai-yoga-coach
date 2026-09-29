@@ -15,6 +15,7 @@ const LABEL_CLASS: Record<PostureStatus, string> = {
   bad: "text-rose-800 font-bold",
   critical: "text-rose-800 font-bold",
   unknown: "text-slate-400",
+  not_required: "text-slate-300 italic",
 };
 
 const ROW_BG: Record<PostureStatus, string> = {
@@ -23,6 +24,7 @@ const ROW_BG: Record<PostureStatus, string> = {
   bad: "bg-rose-50 border border-rose-200",
   critical: "bg-rose-50 border border-rose-200",
   unknown: "bg-slate-50/60 border border-slate-100",
+  not_required: "bg-transparent border-dashed border-slate-200",
 };
 
 const ICON: Record<PostureStatus, string> = {
@@ -31,6 +33,7 @@ const ICON: Record<PostureStatus, string> = {
   bad: "\u2715",
   critical: "\u2715",
   unknown: "\u25cb",
+  not_required: "-",
 };
 
 // -- Sub-component: a single row ----------------------------------------------

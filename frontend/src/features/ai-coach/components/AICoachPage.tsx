@@ -286,7 +286,7 @@ export function AICoachPage() {
     countdown,
     holdTime,
     currentStepIndex,
-    cameraGuidanceMessage,
+
     startSession,
     skipGuideVideo,
     finishGuideVideo,

@@ -7,7 +7,7 @@
  * - "critical" -> Significant misalignment; red indicator.
  * - "unknown"  -> Landmarks are not visible or rule unapplicable; grey indicator.
  */
-export type PostureStatus = "good" | "warning" | "bad" | "critical" | "unknown";
+export type PostureStatus = "good" | "warning" | "bad" | "critical" | "unknown" | "not_required";
 
 export interface PostureCheckItem {
   /** Unique key for the body area */
