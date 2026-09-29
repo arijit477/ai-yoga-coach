@@ -47,6 +47,7 @@ export class TemporalPoseEvaluator {
       Boolean(context.landmarks &&
       context.landmarks.length >= 33 &&
       rawEvaluation.summary.evaluatedRules > 0 &&
+      rawEvaluation.overallStatus !== "not_ready" &&
       rawEvaluation.overallStatus !== "unknown");
 
     // Update the accuracy stabilizer
@@ -74,6 +75,7 @@ export class TemporalPoseEvaluator {
         completionEligible: false,
         activeRules: rules.length,
         evaluatedAt: Date.now(),
+        posture: rawEvaluation.posture,
       };
     }
 
@@ -179,6 +181,7 @@ export class TemporalPoseEvaluator {
       completionEligible,
       activeRules: rules.length,
       evaluatedAt: Date.now(),
+      posture: rawEvaluation.posture,
     };
   }
 }

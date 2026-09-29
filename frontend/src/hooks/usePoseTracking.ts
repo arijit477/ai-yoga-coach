@@ -24,6 +24,7 @@ export function usePoseTracking(
   const lastLandmarksRef = useRef<PoseLandmarks | null>(null);
   const lastWorldLandmarksRef = useRef<PoseLandmarks | null>(null);
   const lastRenderTimeRef = useRef<number>(0);
+  const lastVideoElementRef = useRef<HTMLVideoElement | null>(null);
 
   const [result, setResult] = useState<PoseTrackingResult | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -91,6 +92,13 @@ export function usePoseTracking(
       const video = videoRef.current;
       const processor = processorRef.current;
 
+      if (video && video !== lastVideoElementRef.current) {
+        lastVideoElementRef.current = video;
+        processor?.reset();
+        setResult(null);
+        readinessTrackerRef.current?.updatePoseDetection(null);
+      }
+
       const shouldUpdateUI = timestamp - lastRenderTimeRef.current >= 33; // ~30fps UI update throttle
 
       if (video && processor && video.readyState >= 2) {
@@ -117,6 +125,9 @@ export function usePoseTracking(
         } catch (err) {
           console.error("Pose detection error:", err);
         }
+      } else if (shouldUpdateUI) {
+        lastRenderTimeRef.current = timestamp;
+        setResult((prev) => (prev === null ? prev : null));
       }
 
       if (!cancelled && isRunningRef.current && isMountedRef.current && enabled) {

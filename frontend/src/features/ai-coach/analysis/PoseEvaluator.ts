@@ -30,7 +30,7 @@ export function evaluatePose(
   let passedRules = 0;
   let warningRules = 0;
   let failedRules = 0;
-  let unknownRules = 0;
+  let notEvaluableRules = 0;
 
   let totalEvaluableWeight = 0;
   let weightedScoreSum = 0;
@@ -72,8 +72,8 @@ export function evaluatePose(
       weightedScoreSum += result.score * rule.weight;
       if (result.issue) issues.push(result.issue);
     } else {
-      // status === "unknown"
-      unknownRules++;
+      // status === "not_evaluable" or "unknown"
+      notEvaluableRules++;
     }
   }
 
@@ -134,7 +134,7 @@ export function evaluatePose(
       passedRules,
       warningRules,
       failedRules,
-      unknownRules,
+      unknownRules: notEvaluableRules,
     },
     posture,
     completionEligible,
@@ -188,7 +188,7 @@ function determineOverallStatus(
   issues: PoseIssue[],
 ): OverallPoseStatus {
   if (evaluatedRules === 0 && totalRules > 0) {
-    return "unknown";
+    return "not_ready";
   }
 
   const hasSafetyIssue = issues.some((i) => i.isSafety);
@@ -261,18 +261,18 @@ function derivePostureStatuses(
     const hasFail = items.some((i) => i.status === "fail");
     const hasWarn = items.some((i) => i.status === "warning");
     const allPass = items.every((i) => i.status === "pass");
-    const allUnknown = items.every((i) => i.status === "unknown");
+    const allNotEvaluable = items.every((i) => i.status === "not_evaluable" || i.status === "unknown");
 
     if (hasFail) {
       result[key] = "bad";
     } else if (hasWarn) {
       result[key] = "warning";
+    } else if (allNotEvaluable) {
+      result[key] = "unknown";
     } else if (allPass) {
       result[key] = "good";
-    } else if (allUnknown) {
-      result[key] = "unknown";
     } else {
-      result[key] = "good";
+      result[key] = "unknown";
     }
   }
 

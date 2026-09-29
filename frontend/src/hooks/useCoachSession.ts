@@ -633,11 +633,7 @@ export function useCoachSession({
     }
 
     onAdvanceAsana?.(currentAsanaIndex + 1);
-    if (hasGuideVideo) {
-      transitionTo("guide_video");
-    } else {
-      startGetReady();
-    }
+    startGetReady();
   }, [
     clearTimers,
     resetCurrentAsana,

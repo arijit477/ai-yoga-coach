@@ -91,7 +91,7 @@ export class CoachingEventEngine {
     if (this.lastSessionState !== sessionState) {
       if (sessionState === "calibrating") {
         events.push(CoachingEventBuilder.buildCalibrationRequiredEvent(asanaId, asanaName, coachId));
-      } else if (sessionState === "coaching" && this.lastSessionState !== "holding") {
+      } else if (sessionState === "coaching" && this.lastSessionState !== "holding" && this.lastSessionState !== "user_choice") {
         // Entered pose active coaching
         events.push(CoachingEventBuilder.buildPoseStartedEvent(asanaId, asanaName, coachId, cameraState));
         this.hasAnnouncedGoodFormForPose = false;
@@ -100,7 +100,12 @@ export class CoachingEventEngine {
         this.lastMindfulnessTime = 0;
       } else if (sessionState === "holding") {
         events.push(CoachingEventBuilder.buildPoseHeldEvent(asanaId, asanaName, evaluation?.score, coachId));
-      } else if (sessionState === "completed" || sessionState === "session_completed") {
+      } else if (
+        sessionState === "completed" ||
+        sessionState === "session_completed" ||
+        sessionState === "pose_review" ||
+        sessionState === "user_choice"
+      ) {
         if (!this.hasAnnouncedCompletionForPose) {
           events.push(CoachingEventBuilder.buildPoseCompletedEvent(asanaId, asanaName, evaluation?.score, coachId));
           this.hasAnnouncedCompletionForPose = true;

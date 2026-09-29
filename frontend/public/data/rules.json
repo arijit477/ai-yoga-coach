@@ -1,0 +1,6106 @@
+{
+  "warrior-ii": [
+    {
+      "id": "warrior-ii-left-elbow-straight",
+      "name": "Left Arm Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend your left arm straight out to the side — reach through your fingertips."
+    },
+    {
+      "id": "warrior-ii-right-elbow-straight",
+      "name": "Right Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend your right arm straight out to the side — reach through your fingertips."
+    },
+    {
+      "id": "warrior-ii-left-shoulder-abduction",
+      "name": "Left Shoulder Lift",
+      "metric": "angle",
+      "points": [
+        13,
+        11,
+        23
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lift your left arm to shoulder height — parallel to the floor."
+    },
+    {
+      "id": "warrior-ii-right-shoulder-abduction",
+      "name": "Right Shoulder Lift",
+      "metric": "angle",
+      "points": [
+        14,
+        12,
+        24
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lift your right arm to shoulder height — parallel to the floor."
+    },
+    {
+      "id": "warrior-ii-left-knee-angle",
+      "name": "Front Knee Bend",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 125,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bend your front knee toward 90 degrees — stack it directly over your ankle."
+    },
+    {
+      "id": "warrior-ii-right-knee-straight",
+      "name": "Back Leg Straight",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your back leg straight — press through the outer edge of your foot."
+    },
+    {
+      "id": "warrior-ii-shoulder-alignment",
+      "name": "Shoulder Level",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.05,
+      "tolerance": 0.04,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders level — relax them away from your ears."
+    },
+    {
+      "id": "warrior-ii-hip-alignment",
+      "name": "Hip Stability",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "tolerance": 0.06,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep hips open and stable — square them toward the side of the room."
+    },
+    {
+      "id": "warrior-ii-torso-upright",
+      "name": "Torso Upright",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "tolerance": 0.06,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your torso tall and upright — do not lean forward or back."
+    }
+  ],
+  "tadasana": [
+    {
+      "id": "tadasana-shoulder-level",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.05,
+      "tolerance": 0.04,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders level and relaxed away from your ears."
+    },
+    {
+      "id": "tadasana-hip-level",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "target": 0.06,
+      "tolerance": 0.04,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Distribute your weight evenly and keep your hips level."
+    },
+    {
+      "id": "tadasana-left-knee-straight",
+      "name": "Left Leg Straight",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Stand tall with both legs fully straight."
+    }
+  ],
+  "t-pose": [
+    {
+      "id": "t-pose-left-elbow-straight",
+      "name": "Left Arm Straight",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend your left arm fully straight out to the side."
+    },
+    {
+      "id": "t-pose-right-elbow-straight",
+      "name": "Right Arm Straight",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend your right arm fully straight out to the side."
+    },
+    {
+      "id": "t-pose-left-shoulder-abduction",
+      "name": "Left Arm at Shoulder Height",
+      "metric": "angle",
+      "points": [
+        13,
+        11,
+        23
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Raise your left arm to shoulder height — parallel to the floor."
+    },
+    {
+      "id": "t-pose-right-shoulder-abduction",
+      "name": "Right Arm at Shoulder Height",
+      "metric": "angle",
+      "points": [
+        14,
+        12,
+        24
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Raise your right arm to shoulder height — parallel to the floor."
+    },
+    {
+      "id": "t-pose-left-knee-straight",
+      "name": "Left Leg Straight",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep both legs straight — stand tall."
+    },
+    {
+      "id": "t-pose-right-knee-straight",
+      "name": "Right Leg Straight",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep both legs straight — stand tall."
+    },
+    {
+      "id": "t-pose-shoulder-level",
+      "name": "Shoulder Level",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.05,
+      "tolerance": 0.04,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders level — both arms at the same height."
+    }
+  ],
+  "vrksasana": [
+    {
+      "id": "vrksasana-standing-knee",
+      "name": "Standing Leg Straight",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your standing leg fully straight and strong."
+    },
+    {
+      "id": "vrksasana-raised-knee",
+      "name": "Raised Knee Position",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 25,
+      "max": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bend your raised leg and press the sole of your foot against your inner thigh."
+    },
+    {
+      "id": "vrksasana-hip-level",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "target": 0.07,
+      "tolerance": 0.05,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Square your hips forward and keep them level."
+    },
+    {
+      "id": "vrksasana-shoulder-level",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.06,
+      "tolerance": 0.05,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Relax shoulders down and open your chest with hands in prayer."
+    },
+    {
+      "id": "vrksasana-torso-upright",
+      "name": "Torso Upright",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "less_than",
+      "target": 0.07,
+      "tolerance": 0.05,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lengthen your spine upward and avoid leaning to either side."
+    }
+  ],
+  "trikonasana": [
+    {
+      "id": "trikonasana-right-arm-extension",
+      "name": "Right Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend your top arm straight upward — stack wrist over shoulder."
+    },
+    {
+      "id": "trikonasana-torso-alignment",
+      "name": "Torso Side Extension",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.12,
+      "tolerance": 0.08,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep both sides of your waist long and open."
+    },
+    {
+      "id": "trikonasana-front-knee-straight",
+      "name": "Front Leg Straight",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Straighten your front leg fully — engage the thigh."
+    }
+  ],
+  "adho-mukha-svanasana": [
+    {
+      "id": "downward-dog-arm-extension",
+      "name": "Arm Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Straighten your arms and press firmly into your palms."
+    }
+  ],
+  "bhujangasana": [
+    {
+      "id": "cobra-shoulder-relaxed",
+      "name": "Shoulder Placement",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Draw shoulders down away from your ears as you lift."
+    }
+  ],
+  "balasana": [
+    {
+      "id": "childs-pose-hips",
+      "name": "Hip Grounding",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Let hips settle gently back toward your heels."
+    }
+  ],
+  "marjaryasana-bitilasana": [
+    {
+      "id": "cat-cow-shoulder-wrist",
+      "name": "Shoulder Stack",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Stack wrists under shoulders and keep hips balanced."
+    }
+  ],
+  "setu-bandhasana": [
+    {
+      "id": "bridge-knee-angle",
+      "name": "Knee Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 120,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep knees directly above ankles as you lift your hips."
+    }
+  ],
+  "savasana": [
+    {
+      "id": "savasana-relaxation",
+      "name": "Stillness & Relaxation",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.05,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Rest completely still, breathing naturally."
+    }
+  ],
+  "step-01-prayer-pranamasana": [
+    {
+      "id": "pranamasana-palms-together",
+      "name": "Palms at Heart Center",
+      "metric": "distance",
+      "points": [
+        15,
+        16,
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.65,
+      "tolerance": 0.25,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bring your palms together in prayer position (Anjali Mudra) at your heart."
+    },
+    {
+      "id": "pranamasana-left-elbow-bent",
+      "name": "Left Arm Position",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 25,
+      "max": 145,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Bend your left elbow to bring hand comfortably to heart center."
+    },
+    {
+      "id": "pranamasana-right-elbow-bent",
+      "name": "Right Arm Position",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 25,
+      "max": 145,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Bend your right elbow to bring hand comfortably to heart center."
+    },
+    {
+      "id": "pranamasana-shoulder-level",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "tolerance": 0.05,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders level and relaxed down away from ears."
+    },
+    {
+      "id": "pranamasana-hips-level",
+      "name": "Hips Level",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "tolerance": 0.05,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Stand tall and distribute weight evenly across hips."
+    }
+  ],
+  "step-02-raised-arms-hastauttanasana": [
+    {
+      "id": "hastauttanasana-left-arm-elevation",
+      "name": "Left Arm Overhead",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        13
+      ],
+      "comparison": "between",
+      "min": 135,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Raise your left arm straight up overhead alongside your ear."
+    },
+    {
+      "id": "hastauttanasana-right-arm-elevation",
+      "name": "Right Arm Overhead",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        14
+      ],
+      "comparison": "between",
+      "min": 135,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Raise your right arm straight up overhead alongside your ear."
+    },
+    {
+      "id": "hastauttanasana-left-elbow-straight",
+      "name": "Left Arm Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Straighten through your left elbow towards the ceiling."
+    },
+    {
+      "id": "hastauttanasana-right-elbow-straight",
+      "name": "Right Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Straighten through your right elbow towards the ceiling."
+    },
+    {
+      "id": "hastauttanasana-torso-extension",
+      "name": "Chest Elevation",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.06,
+      "tolerance": 0.04,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lift through your chest evenly as you arch gently back."
+    }
+  ],
+  "step-03-standing-forward-bend-hastapadasana": [
+    {
+      "id": "hastapadasana-hip-flexion",
+      "name": "Forward Hip Fold",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 30,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Hinge deeply from your hips, letting head release downward."
+    },
+    {
+      "id": "hastapadasana-knee-angle",
+      "name": "Leg Stance",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 140,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep legs long with a slight gentle micro-bend in knees."
+    }
+  ],
+  "step-04-equestrian-right-back-ashwa-sanchalanasana": [
+    {
+      "id": "ashwa-front-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep front knee stacked cleanly over your ankle at 90 degrees."
+    },
+    {
+      "id": "ashwa-chest-lift",
+      "name": "Chest Elevation",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Roll shoulders back and look forward with an open chest."
+    }
+  ],
+  "step-05-plank-dandasana": [
+    {
+      "id": "plank-torso-alignment",
+      "name": "Body Line Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Engage your core to maintain a straight line from head to heels."
+    },
+    {
+      "id": "plank-arm-extension",
+      "name": "Arm Stack",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Press firmly into hands with arms straight and shoulders broad."
+    }
+  ],
+  "step-06-eight-limbed-salute-ashtanga-namaskara": [
+    {
+      "id": "ashtanga-elbow-tuck",
+      "name": "Elbow Position",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 60,
+      "max": 120,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep elbows bent and hugged tightly in toward your ribs."
+    },
+    {
+      "id": "ashtanga-chest-grounded",
+      "name": "Chest Low & Hips Lifted",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Lower chest between hands while keeping hips gently elevated."
+    }
+  ],
+  "step-07-cobra-bhujangasana": [
+    {
+      "id": "cobra-shoulder-relaxed",
+      "name": "Shoulders Down",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.07,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Roll shoulders down away from ears as chest rises smoothly."
+    },
+    {
+      "id": "cobra-elbow-bend",
+      "name": "Elbow Tuck",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 160,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep a gentle bend in elbows close to your torso."
+    }
+  ],
+  "step-08-downward-dog-adho-mukha-svanasana": [
+    {
+      "id": "downward-dog-arm-extension",
+      "name": "Arm Straightening",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 155,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Extend through both arms, pressing through palms."
+    },
+    {
+      "id": "downward-dog-hip-angle",
+      "name": "Inverted V Hips",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 60,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Send hips high and back to lengthen the spine."
+    }
+  ],
+  "step-09-equestrian-left-back-ashwa-sanchalanasana": [
+    {
+      "id": "ashwa-front-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep front knee steady directly over your ankle at 90 degrees."
+    },
+    {
+      "id": "ashwa-chest-lift",
+      "name": "Chest Lift",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.08,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Open your chest and breathe into the front of your hip."
+    }
+  ],
+  "step-10-standing-forward-bend-hastapadasana": [
+    {
+      "id": "hastapadasana-hip-flexion",
+      "name": "Forward Hip Fold",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 30,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Hinge deeply from your hips with head releasing toward floor."
+    },
+    {
+      "id": "hastapadasana-knee-angle",
+      "name": "Leg Stance",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 140,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep legs long, letting gravity traction the spine."
+    }
+  ],
+  "step-11-raised-arms-hastauttanasana": [
+    {
+      "id": "hastauttanasana-left-arm-elevation",
+      "name": "Left Arm Overhead",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        13
+      ],
+      "comparison": "between",
+      "min": 135,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Raise your left arm straight up overhead alongside your ear."
+    },
+    {
+      "id": "hastauttanasana-right-arm-elevation",
+      "name": "Right Arm Overhead",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        14
+      ],
+      "comparison": "between",
+      "min": 135,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Raise your right arm straight up overhead alongside your ear."
+    },
+    {
+      "id": "hastauttanasana-left-elbow-straight",
+      "name": "Left Arm Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Straighten through your left elbow towards the ceiling."
+    },
+    {
+      "id": "hastauttanasana-right-elbow-straight",
+      "name": "Right Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Straighten through your right elbow towards the ceiling."
+    },
+    {
+      "id": "hastauttanasana-torso-extension",
+      "name": "Spinal Extension",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.06,
+      "tolerance": 0.04,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lift tall through both sides of waist as you greet the sun."
+    }
+  ],
+  "step-12-mountain-tadasana": [
+    {
+      "id": "tadasana-shoulder-level",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "target": 0.05,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders level and relaxed away from your ears."
+    },
+    {
+      "id": "tadasana-hip-level",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "target": 0.06,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Stand steady and grounded, distributing weight evenly."
+    }
+  ],
+  "archers-akarna-dhanurasana": [
+    {
+      "id": "archers-akarna-dhanurasana-pr1",
+      "name": "Arm Pull Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        16
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the drawing arm is fully extended and aligned."
+    },
+    {
+      "id": "archers-akarna-dhanurasana-pr2",
+      "name": "Leg Extension Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "above",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Extend the extended leg to achieve a straight form."
+    }
+  ],
+  "banana-supta-nitambasana": [
+    {
+      "id": "banana-supta-nitambasana-pr1",
+      "name": "Body Curvature",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "below",
+      "min": 0,
+      "max": 50,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep a gentle curve through your side body."
+    }
+  ],
+  "big-toe-padangushthasana": [
+    {
+      "id": "big-toe-padangushthasana-pr1",
+      "name": "Forward Bend Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "below",
+      "min": 90,
+      "max": 130,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bend from your hips, keeping the spine extended."
+    }
+  ],
+  "bird-of-paradise-svarga-dvijasana": [
+    {
+      "id": "bird-of-paradise-svarga-dvijasana-pr1",
+      "name": "Leg Lift Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "above",
+      "min": 150,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Elevate the leg to a straight position for balance."
+    },
+    {
+      "id": "bird-of-paradise-svarga-dvijasana-pr2",
+      "name": "Hip Stability",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "below",
+      "min": 0,
+      "max": 30,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep hips stable and aligned with torso."
+    }
+  ],
+  "boat-navasana": [
+    {
+      "id": "boat-navasana-pr1",
+      "name": "Torso Angle",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 100,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain a slight lean back with a firm core."
+    },
+    {
+      "id": "boat-navasana-pr2",
+      "name": "Leg Elevation",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift the legs to create a V-shape with the body."
+    }
+  ],
+  "bound-angle-baddha-konasana": [
+    {
+      "id": "bound-angle-rule-1",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep your spine elongated and extended upwards."
+    },
+    {
+      "id": "bound-angle-rule-2",
+      "name": "Knee Distance",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "less_than_or_equal_to",
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Allow your knees to gently fall towards the ground."
+    }
+  ],
+  "bow-dhanurasana": [
+    {
+      "id": "bow-rule-1",
+      "name": "Spinal Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "less_than",
+      "max": 150,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift your chest and thighs further off the ground."
+    },
+    {
+      "id": "bow-rule-2",
+      "name": "Arm and Leg Alignment",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "less_than",
+      "max": 45,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep arms straight and aligned with your legs."
+    }
+  ],
+  "box-chakravakasana": [
+    {
+      "id": "box-rule-1",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Ensure your back stays flat and elongated."
+    },
+    {
+      "id": "box-rule-2",
+      "name": "Shoulder and Hip Height",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "equal_to",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep shoulders and hips level."
+    }
+  ],
+  "bridge-setu-bandha-sarvangasana": [
+    {
+      "id": "bridge-rule-1",
+      "name": "Hip Lift",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        25
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift your hips high to form a gentle arch."
+    },
+    {
+      "id": "bridge-rule-2",
+      "name": "Knee Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        25,
+        26
+      ],
+      "comparison": "equal_to",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep your knees in line with your hips."
+    }
+  ],
+  "butterfly": [
+    {
+      "id": "butterfly-rule-1",
+      "name": "Spine Lengthening",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep your spine elongated upwards."
+    },
+    {
+      "id": "butterfly-rule-2",
+      "name": "Leg Opening",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "less_than_or_equal_to",
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Allow your knees to open wide towards the ground."
+    }
+  ],
+  "camel-ustrasana": [
+    {
+      "id": "camel-ustrasana-pr1",
+      "name": "Spine Curve",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "between",
+      "min": 100,
+      "max": 130,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your spine is arched evenly, keep lengthening through the crown."
+    },
+    {
+      "id": "camel-ustrasana-pr2",
+      "name": "Hip Flexion",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Hips should be forward, keep extending your spine."
+    }
+  ],
+  "cat-marjariasana": [
+    {
+      "id": "cat-marjariasana-pr1",
+      "name": "Spine Rounding",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Round your spine towards the ceiling, tuck your chin."
+    },
+    {
+      "id": "cat-marjariasana-pr2",
+      "name": "Shoulder Over Wrist",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        15
+      ],
+      "comparison": "less_than_or_equal_to",
+      "max": 20,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your shoulders aligned over your wrists."
+    }
+  ],
+  "caterpillar": [
+    {
+      "id": "caterpillar-pr1",
+      "name": "Forward Fold",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "between",
+      "min": 45,
+      "max": 70,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lean forward, extend through the crown for a deeper fold."
+    },
+    {
+      "id": "caterpillar-pr2",
+      "name": "Leg Extension",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep legs extended and active."
+    }
+  ],
+  "chair-utkatasana": [
+    {
+      "id": "chair-utkatasana-pr1",
+      "name": "Knee Flexion",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Bend your knees as if sitting back, keep them over ankles."
+    },
+    {
+      "id": "chair-utkatasana-pr2",
+      "name": "Torso Upright",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Engage your core to keep your torso upright."
+    }
+  ],
+  "childs-pose-balasana": [
+    {
+      "id": "childs-pose-balasana-pr1",
+      "name": "Hip Flexion",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 60,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Sink your hips back towards your heels, keep your spine long."
+    },
+    {
+      "id": "childs-pose-balasana-pr2",
+      "name": "Extended Spine",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        27
+      ],
+      "comparison": "greater_than_or_equal_to",
+      "min": 110,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Extend through the arms, lengthen through the spine."
+    }
+  ],
+  "chin-stand-ganda-bherundasana": [
+    {
+      "id": "chin-stand-rule-1",
+      "name": "Shoulder Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 0.05,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Align your shoulders to ensure balance."
+    },
+    {
+      "id": "chin-stand-rule-2",
+      "name": "Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 0.1,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your hips aligned to maintain posture."
+    }
+  ],
+  "cobra-bhujangasana": [
+    {
+      "id": "cobra-rule-1",
+      "name": "Spine Arch Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        0
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 190,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure you elongate your spine rather than compressing."
+    },
+    {
+      "id": "cobra-rule-2",
+      "name": "Elbow Angle",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Soften your elbows for comfort."
+    }
+  ],
+  "corpse-savasana": [
+    {
+      "id": "corpse-rule-1",
+      "name": "Body Symmetry",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 0.05,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Position your body symmetrically."
+    }
+  ],
+  "cow-bitilasana": [
+    {
+      "id": "cow-rule-1",
+      "name": "Spine Arch",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "less_than",
+      "min": 170,
+      "max": 190,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Deepen the arch of your back slightly."
+    },
+    {
+      "id": "cow-rule-2",
+      "name": "Knee Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        27
+      ],
+      "comparison": "less_than",
+      "max": 0.1,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep your knees aligned."
+    }
+  ],
+  "cow-face-gomukhasana": [
+    {
+      "id": "cow-face-rule-1",
+      "name": "Knee Stacking",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        26
+      ],
+      "comparison": "less_than",
+      "max": 0.1,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Stack your knees for better alignment."
+    },
+    {
+      "id": "cow-face-rule-2",
+      "name": "Arm Reach",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "greater_than",
+      "min": 90,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Reach your arm comfortably behind you."
+    }
+  ],
+  "crane-bakasana": [
+    {
+      "id": "crane-bakasana-rule1",
+      "name": "Wrist-Elbow-Shoulder Angle",
+      "metric": "angle",
+      "points": [
+        16,
+        14,
+        12
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep elbows bent and close to your sides."
+    },
+    {
+      "id": "crane-bakasana-rule2",
+      "name": "Knee-Elbow Proximity",
+      "metric": "vertical_alignment",
+      "points": [
+        27,
+        14
+      ],
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure knees are in contact with the elbows."
+    }
+  ],
+  "crescent-lunge-ashta-chandrasana": [
+    {
+      "id": "crescent-lunge-ashta-chandrasana-rule1",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Align your front knee over your ankle."
+    },
+    {
+      "id": "crescent-lunge-ashta-chandrasana-rule2",
+      "name": "Back Leg Straightness",
+      "metric": "angle",
+      "points": [
+        24,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Extend your back leg."
+    }
+  ],
+  "crescent-lunge-on-knee-anjaneyasana": [
+    {
+      "id": "crescent-lunge-on-knee-anjaneyasana-rule1",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Align your front knee over your ankle."
+    },
+    {
+      "id": "crescent-lunge-on-knee-anjaneyasana-rule2",
+      "name": "Back Knee Down",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        27
+      ],
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep the back knee touching the ground."
+    }
+  ],
+  "crescent-moon-ardha-chandrasana": [
+    {
+      "id": "crescent-moon-ardha-chandrasana-rule1",
+      "name": "Torso Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your torso vertical."
+    }
+  ],
+  "crooked-monkey": [
+    {
+      "id": "crooked-monkey-rule1",
+      "name": "Hip-Knee-Ankle Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 120,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure back leg is bent properly."
+    },
+    {
+      "id": "crooked-monkey-rule2",
+      "name": "Torso Upright",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your torso upright."
+    }
+  ],
+  "crow-kakasana": [
+    {
+      "id": "crow-kakasana-arm-angle",
+      "name": "Elbow Angle",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 45,
+      "max": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your elbows bent at an optimal angle to maintain balance."
+    },
+    {
+      "id": "crow-kakasana-hip-height",
+      "name": "Hip Height",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lift your hips high to engage your core fully."
+    }
+  ],
+  "dancer-natarajasana": [
+    {
+      "id": "dancer-natarajasana-back-leg-angle",
+      "name": "Back Leg Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Extend your back leg to create a full arch."
+    },
+    {
+      "id": "dancer-natarajasana-torso-alignment",
+      "name": "Torso Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your torso upright and open your chest."
+    }
+  ],
+  "deaf-mans-karna-pidasana": [
+    {
+      "id": "deaf-mans-karna-pidasana-hip-flexion",
+      "name": "Hip Flexion",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 45,
+      "max": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Fold deeply at the hips to achieve the posture."
+    },
+    {
+      "id": "deaf-mans-karna-pidasana-knee-shoulder-alignment",
+      "name": "Knee-Shoulder Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        25
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Bring your knees as close to your shoulders as possible."
+    }
+  ],
+  "dolphin-shishumarasana": [
+    {
+      "id": "dolphin-shishumarasana-forearm-alignment",
+      "name": "Forearm Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        13,
+        14
+      ],
+      "comparison": "max",
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your forearms are parallel for stability."
+    },
+    {
+      "id": "dolphin-shishumarasana-hip-height",
+      "name": "Hip Height",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lift your hips upward to form an inverted 'V' shape."
+    }
+  ],
+  "downward-dog-adho-mukha-svanasana": [
+    {
+      "id": "downward-dog-adho-mukha-svanasana-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lengthen through your spine to form a straight line."
+    },
+    {
+      "id": "downward-dog-adho-mukha-svanasana-leg-angle",
+      "name": "Leg Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your legs are fully extended and strong."
+    }
+  ],
+  "eagle-garudasana": [
+    {
+      "id": "eagle-garudasana-rule-1",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your spine elongated upwards."
+    },
+    {
+      "id": "eagle-garudasana-rule-2",
+      "name": "Arm Wrap",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 20,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure arms are wrapped correctly."
+    }
+  ],
+  "easy-sukhasana": [
+    {
+      "id": "easy-sukhasana-rule-1",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "low",
+      "feedback": "Maintain length from the base of the spine through the head."
+    }
+  ],
+  "eight-angle-ashtavakrasana": [
+    {
+      "id": "eight-angle-ashtavakrasana-rule-1",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Elongate through your spine while balancing."
+    },
+    {
+      "id": "eight-angle-ashtavakrasana-rule-2",
+      "name": "Arm Support",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 120,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain a stable base with your arms."
+    }
+  ],
+  "eight-point-ashtangasana": [
+    {
+      "id": "eight-point-ashtangasana-rule-1",
+      "name": "Spine and Hip Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your body aligned similar to a plank."
+    }
+  ],
+  "elbow-balance-shayanasana": [
+    {
+      "id": "elbow-balance-shayanasana-rule-1",
+      "name": "Body Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        13,
+        23
+      ],
+      "comparison": "max",
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Align your elbows under your shoulders."
+    }
+  ],
+  "elephant-trunk-eka-hasta-bhujasana": [
+    {
+      "id": "elephant-trunk-eka-hasta-bhujasana-spine-alignment",
+      "name": "Spine Lengthening",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        0
+      ],
+      "comparison": "less_than",
+      "max": 30,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "embryo-in-womb-garbha-pindasana": [
+    {
+      "id": "embryo-in-womb-garbha-pindasana-spine-alignment",
+      "name": "Spine Lengthening",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "embryo-pindasana": [
+    {
+      "id": "embryo-pindasana-spine-alignment",
+      "name": "Spine Lengthening",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "extended-puppy-uttana-shishosana": [
+    {
+      "id": "extended-puppy-uttana-shishosana-spine-alignment",
+      "name": "Spine Lengthening",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        0
+      ],
+      "target": -10,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "extended-side-angle-utthita-parshvakonasana": [
+    {
+      "id": "extended-side-angle-utthita-parshvakonasana-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 90,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep front knee stacked over your ankle."
+    },
+    {
+      "id": "extended-side-angle-utthita-parshvakonasana-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through your side body and open your chest."
+    }
+  ],
+  "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b": [
+    {
+      "id": "pose-rule-1",
+      "name": "Raised Leg Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        24,
+        28
+      ],
+      "comparison": "max",
+      "min": 0,
+      "max": 5,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your raised leg straight and aligned vertically."
+    },
+    {
+      "id": "pose-rule-2",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "max",
+      "min": 0,
+      "max": 5,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure shoulders are level and aligned."
+    },
+    {
+      "id": "pose-rule-3",
+      "name": "Standing Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "above",
+      "min": 170,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep the standing knee straight but not locked."
+    }
+  ],
+  "extended-supine-hand-to-big-toe-supta-padangushthasana-b": [
+    {
+      "id": "pose-rule-4",
+      "name": "Raised Leg Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        24,
+        28
+      ],
+      "comparison": "max",
+      "min": 0,
+      "max": 5,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your raised leg straight and aligned vertically."
+    },
+    {
+      "id": "pose-rule-5",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "max",
+      "min": 0,
+      "max": 5,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure shoulders are level with the floor."
+    }
+  ],
+  "fire-log-agnistambhasana": [
+    {
+      "id": "pose-rule-6",
+      "name": "Knee Over Ankle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Align knee over ankle in the seated position."
+    },
+    {
+      "id": "pose-rule-7",
+      "name": "Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "max",
+      "min": 0,
+      "max": 5,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep hips level and aligned."
+    }
+  ],
+  "firefly-i-tittibhasana-a": [
+    {
+      "id": "pose-rule-8",
+      "name": "Arm Angle",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Bend the elbows to form a stable base."
+    },
+    {
+      "id": "pose-rule-9",
+      "name": "Hip Height",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "above",
+      "min": 0,
+      "max": 5,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure your hips are lifted."
+    }
+  ],
+  "firefly-ii-tittibhasana-b": [
+    {
+      "id": "pose-rule-10",
+      "name": "Arm Angle",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Bend the elbows to form a stable base."
+    },
+    {
+      "id": "pose-rule-11",
+      "name": "Hip Height",
+      "metric": "vertical_alignment",
+      "points": [
+        24,
+        12
+      ],
+      "comparison": "above",
+      "min": 0,
+      "max": 5,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure your hips are lifted."
+    }
+  ],
+  "firefly-iii-tittibhasana-c": [
+    {
+      "id": "firefly-iii-core-spine-alignment",
+      "name": "Core/Spine Crown Lengthening",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure your body maintains a horizontal line from shoulders to hips."
+    },
+    {
+      "id": "firefly-iii-shoulder-elbow-alignment",
+      "name": "Shoulder Elbow Angle",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Bend your elbows and engage your shoulder muscles."
+    }
+  ],
+  "fish-matsyasana": [
+    {
+      "id": "fish-spine-curvature",
+      "name": "Upper Spine Curvature",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Extend the thoracic region to create an open chest."
+    },
+    {
+      "id": "fish-head-tilt",
+      "name": "Head Tilt",
+      "metric": "angle",
+      "points": [
+        0,
+        11,
+        23
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "floating-stick-brahmacharyasana": [
+    {
+      "id": "floating-stick-core-spine-alignment",
+      "name": "Core/Spine Crown Lengthening",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Engage your core to maintain a straight line from shoulders to hips."
+    },
+    {
+      "id": "floating-stick-shoulder-elbow-alignment",
+      "name": "Shoulder Elbow Angle",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep elbows near your body and extend through your arms."
+    }
+  ],
+  "flying-lizard": [
+    {
+      "id": "flying-lizard-core-spine-alignment",
+      "name": "Core/Spine Crown Lengthening",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lift your chest and keep your spine engaged."
+    },
+    {
+      "id": "flying-lizard-front-leg-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your front knee aligned over your ankle."
+    }
+  ],
+  "flying-man-eka-pada-koundinyasana": [
+    {
+      "id": "flying-man-core-spine-alignment",
+      "name": "Core/Spine Crown Lengthening",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Maintain spine extension through the crown."
+    },
+    {
+      "id": "flying-man-elbow-knee-alignment",
+      "name": "Elbow Knee Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        14,
+        26
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Align your elbow with the knee to support your body."
+    }
+  ],
+  "flying-pigeon-eka-pada-galavasana": [
+    {
+      "id": "fp-r1",
+      "name": "Front Arm-Bent Leg Angle",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 105,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your front elbow is bent approximately 90 degrees."
+    },
+    {
+      "id": "fp-r2",
+      "name": "Bent Knee Lift",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your knee lifted above the hip height."
+    }
+  ],
+  "forearm-balance-pincha-mayurasana": [
+    {
+      "id": "fb-r1",
+      "name": "Shoulder to Elbow Line",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        13
+      ],
+      "comparison": "min",
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain shoulders stacked directly over the elbows."
+    },
+    {
+      "id": "fb-r2",
+      "name": "Core Stability",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Engage your core to keep your body in straight alignment."
+    }
+  ],
+  "frog-bhekasana": [
+    {
+      "id": "frog-r1",
+      "name": "Knee to Ankle Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 120,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure knees and ankles form a right angle."
+    },
+    {
+      "id": "frog-r2",
+      "name": "Hip-Knee Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        25
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Open your hips so that the knees align horizontally with your hips."
+    }
+  ],
+  "front-splits-hanumanasana": [
+    {
+      "id": "fs-r1",
+      "name": "Front Leg Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep the front leg straight."
+    },
+    {
+      "id": "fs-r2",
+      "name": "Back Leg Alignment",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep the back leg straight."
+    }
+  ],
+  "garland-malasana": [
+    {
+      "id": "g-r1",
+      "name": "Knee and Ankle Line",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 50,
+      "max": 80,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure that knees are in line with the ankles."
+    },
+    {
+      "id": "g-r2",
+      "name": "Spine-Head Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head to keep the spine neutral."
+    }
+  ],
+  "gate-parighasana": [
+    {
+      "id": "gate-parighasana-rule1",
+      "name": "Side Body Stretch",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        0
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your side body is elongated."
+    },
+    {
+      "id": "gate-parighasana-rule2",
+      "name": "Torso Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "target": 0,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep your torso upright."
+    }
+  ],
+  "goddess-utkata-konasana": [
+    {
+      "id": "goddess-utkata-konasana-rule1",
+      "name": "Knee Bend",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 120,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your knees are bent at approximately 90 degrees."
+    },
+    {
+      "id": "goddess-utkata-konasana-rule2",
+      "name": "Torso Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your torso upright and straight."
+    }
+  ],
+  "gorilla-pada-hastasana": [
+    {
+      "id": "gorilla-pada-hastasana-rule1",
+      "name": "Forward Fold",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        27
+      ],
+      "comparison": "less_than",
+      "max": 45,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bend forward as much as you can, bringing your chest close to your thighs."
+    },
+    {
+      "id": "gorilla-pada-hastasana-rule2",
+      "name": "Arm to Leg Contact",
+      "metric": "vertical_alignment",
+      "points": [
+        15,
+        27
+      ],
+      "target": 0,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Try to place your hands under your feet."
+    }
+  ],
+  "grasshopper-maksikanagasana": [
+    {
+      "id": "grasshopper-maksikanagasana-rule1",
+      "name": "Leg Cross Angle",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        14
+      ],
+      "comparison": "between",
+      "min": 45,
+      "max": 75,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your body is twisted with a diagonal line formed by the elbows."
+    },
+    {
+      "id": "grasshopper-maksikanagasana-rule2",
+      "name": "Hand Support Angle",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "less_than",
+      "max": 60,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your elbows at a moderate bend to support your weight."
+    }
+  ],
+  "half-bow-ardha-dhanurasana": [
+    {
+      "id": "half-bow-ardha-dhanurasana-rule1",
+      "name": "Backbend Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 150,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lift your chest and arch your back as much as comfortable."
+    },
+    {
+      "id": "half-bow-ardha-dhanurasana-rule2",
+      "name": "Front Leg Extension",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your front leg straightened and extended."
+    }
+  ],
+  "half-moon-ardha-chandrasana": [
+    {
+      "id": "half-moon-core-spine-alignment",
+      "name": "Core/Spine Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your spine lengthened and aligned."
+    },
+    {
+      "id": "half-moon-leg-alignment",
+      "name": "Standing Leg Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        24,
+        28
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your standing leg is straight and vertical."
+    },
+    {
+      "id": "half-moon-arm-alignment",
+      "name": "Raised Arm Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        16
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your raised arm perpendicular to the floor."
+    }
+  ],
+  "half-pigeon-ardha-kapotasana": [
+    {
+      "id": "half-pigeon-hip-alignment",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 15,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your hips square and level."
+    },
+    {
+      "id": "half-pigeon-spine-extension",
+      "name": "Spine Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "greater_than",
+      "min": 160,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Maintain length in your spine."
+    }
+  ],
+  "handstand-adho-mukha-vrksasana": [
+    {
+      "id": "handstand-arm-vertical",
+      "name": "Arm Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your arms are straight and vertical."
+    },
+    {
+      "id": "handstand-body-alignment",
+      "name": "Body Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Maintain a straight body line from your hands to your feet."
+    }
+  ],
+  "happy-baby-ananda-balasana": [
+    {
+      "id": "happy-baby-knee-alignment",
+      "name": "Knee Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 135,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your knees bent at an optimal angle."
+    },
+    {
+      "id": "happy-baby-spine-alignment",
+      "name": "Spine Neutral Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        12
+      ],
+      "comparison": "greater_than",
+      "min": 150,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure your spine rests on the mat."
+    }
+  ],
+  "head-to-knee-janu-sirsasana": [
+    {
+      "id": "head-to-knee-spine-flexion",
+      "name": "Spine Flexion",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 90,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Flex your spine to bring head closer to knee."
+    },
+    {
+      "id": "head-to-knee-hip-alignment",
+      "name": "Hip Square Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your hips squared towards the front."
+    }
+  ],
+  "headstand-sirsasana": [
+    {
+      "id": "headstand-sirsasana-pr1",
+      "name": "Vertical Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your spine and hips in a straight line with your head."
+    },
+    {
+      "id": "headstand-sirsasana-pr2",
+      "name": "Leg Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        27,
+        28
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure legs are vertically aligned in line with your body."
+    }
+  ],
+  "hero-virasana": [
+    {
+      "id": "hero-virasana-pr1",
+      "name": "Knee and Ankle Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your knees aligned with your ankles, creating a right angle."
+    },
+    {
+      "id": "hero-virasana-pr2",
+      "name": "Spine Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain a straight spine extending through the crown of your head."
+    }
+  ],
+  "heron-kraunchasana": [
+    {
+      "id": "heron-kraunchasana-pr1",
+      "name": "Extended Leg Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        15
+      ],
+      "comparison": "above",
+      "min": 150,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your extended leg straight."
+    },
+    {
+      "id": "heron-kraunchasana-pr2",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your spine is straight and tall."
+    }
+  ],
+  "himalayan-duck-karandavasana": [
+    {
+      "id": "himalayan-duck-karandavasana-pr1",
+      "name": "Core Stability",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        24
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 110,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Maintain core stability with bent knees in line with hips."
+    },
+    {
+      "id": "himalayan-duck-karandavasana-pr2",
+      "name": "Neck and Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your shoulders aligned horizontally."
+    }
+  ],
+  "horse-vatayanasana": [
+    {
+      "id": "horse-vatayanasana-pr1",
+      "name": "Front Knee Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 85,
+      "max": 95,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Front knee should be aligned directly over the ankle."
+    },
+    {
+      "id": "horse-vatayanasana-pr2",
+      "name": "Spine Straightness",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain a straight spine extending through the crown of your head."
+    }
+  ],
+  "humble-flamingo": [
+    {
+      "id": "humble-flamingo-core-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your spine is extended and your head is lengthened."
+    }
+  ],
+  "inverted-staff-dvi-pada-viparita-dandasana": [
+    {
+      "id": "inverted-staff-spine-alignment",
+      "name": "Spine Extension",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "greater_than",
+      "min": 160,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lengthen the torso to maintain spine extension."
+    },
+    {
+      "id": "inverted-staff-shoulder-and-hip-alignment",
+      "name": "Shoulder and Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your shoulders aligned with your hips."
+    }
+  ],
+  "king-pigeon-eka-pada-rajakapotasana": [
+    {
+      "id": "king-pigeon-spine-and-crown-extension",
+      "name": "Spine Extension",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "greater_than",
+      "min": 135,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Maintain the arch by extending through the crown of your head."
+    }
+  ],
+  "legs-up-the-wall-viparita-karani": [
+    {
+      "id": "legs-up-the-wall-vertical-alignment",
+      "name": "Legs Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        27,
+        25
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your legs are straight and aligned with the wall."
+    },
+    {
+      "id": "legs-up-the-wall-hip-alignment",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Hips should be level and stable."
+    }
+  ],
+  "little-thunderbolt-laghu-vajrasana": [
+    {
+      "id": "little-thunderbolt-neck-spine-alignment",
+      "name": "Neck and Spine Alignment",
+      "metric": "angle",
+      "points": [
+        0,
+        11,
+        23
+      ],
+      "comparison": "between",
+      "min": 130,
+      "max": 160,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your neck aligned with your spine."
+    }
+  ],
+  "lizard-uttana-pristhasana": [
+    {
+      "id": "lizard-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the front knee is close to a right angle."
+    },
+    {
+      "id": "lizard-hip-height",
+      "name": "Hip Height",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 0.1,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your hips squared and low."
+    }
+  ],
+  "locust-i-shalabhasana-a": [
+    {
+      "id": "locust-i-spinal-lift",
+      "name": "Spinal Lift",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "greater_than",
+      "min": 160,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift the spine and legs high to deepen the pose."
+    }
+  ],
+  "locust-ii-shalabhasana-b": [
+    {
+      "id": "locust-ii-spinal-lift",
+      "name": "Spinal Lift with Arms",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "greater_than",
+      "min": 150,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift the spine and legs high while extending arms forward."
+    },
+    {
+      "id": "locust-ii-arm-alignment",
+      "name": "Arm Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        15
+      ],
+      "comparison": "less_than",
+      "max": 0.1,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your arms aligned with your shoulders."
+    }
+  ],
+  "locust-iii-shalabhasana-c": [
+    {
+      "id": "locust-iii-spinal-lift",
+      "name": "Spinal Lift",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "greater_than",
+      "min": 160,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift the spine and legs high to deepen the pose."
+    },
+    {
+      "id": "locust-iii-arm-backward",
+      "name": "Arm Position Backward",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "greater_than",
+      "min": 170,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Extend arms backward parallel to the body."
+    }
+  ],
+  "lord-of-the-fishes-paripurna-matsyendrasana": [
+    {
+      "id": "lord-of-the-fishes-twist",
+      "name": "Spine Twist",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 100,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Maximize the twist in your spine while maintaining lumbar length."
+    },
+    {
+      "id": "lord-of-the-fishes-shoulder-alignment",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 0.2,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep shoulders squared despite the twist."
+    }
+  ],
+  "lotus-padmasana": [
+    {
+      "id": "lotus-padmasana-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your spine straight and elongated upwards."
+    }
+  ],
+  "low-push-up-chaturanga-dandasana": [
+    {
+      "id": "chaturanga-shoulder-elbow-alignment",
+      "name": "Shoulder to Elbow Alignment",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 100,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain a straight line from shoulder to elbow to wrist."
+    },
+    {
+      "id": "chaturanga-hip-alignment",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your hips aligned with your shoulders."
+    }
+  ],
+  "lunge-runner": [
+    {
+      "id": "lunge-front-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 115,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep front knee stacked over your ankle."
+    },
+    {
+      "id": "lunge-hip-to-shoulder-alignment",
+      "name": "Hip to Shoulder Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep spine elongated and aligned with your hips."
+    }
+  ],
+  "moon-bird-eka-pada-shirshasana-c": [
+    {
+      "id": "moon-bird-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Maintain a straight spine and avoid slouching."
+    },
+    {
+      "id": "moon-bird-leg-extension",
+      "name": "Leg Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        26
+      ],
+      "comparison": "over",
+      "min": 150,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure extended leg is straight and active."
+    }
+  ],
+  "mountain-tadasana": [
+    {
+      "id": "mountain-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your spine elongated and balanced."
+    },
+    {
+      "id": "mountain-shoulder-alignment",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Relax shoulders and keep them in line."
+    }
+  ],
+  "noose-pashasana": [
+    {
+      "id": "noose-pashasana-spinal-twist",
+      "name": "Spinal Twist",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 10,
+      "max": 30,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your spine maintains a gentle twist."
+    },
+    {
+      "id": "noose-pashasana-hip-alignment",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep hips relatively aligned."
+    }
+  ],
+  "one-leg-behind-the-head-i-eka-pada-shirshasana-a": [
+    {
+      "id": "eka-pada-shirshasana-a-leg-position",
+      "name": "Leg Behind Head Position",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "max",
+      "max": 45,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your foot is comfortably behind your head."
+    },
+    {
+      "id": "eka-pada-shirshasana-a-spinal-length",
+      "name": "Spinal Length",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "max",
+      "max": 15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain an upright spine."
+    }
+  ],
+  "one-leg-behind-the-head-ii-eka-pada-shirshasana-b": [
+    {
+      "id": "eka-pada-shirshasana-b-leg-position",
+      "name": "Leg Modified Position",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        26
+      ],
+      "comparison": "max",
+      "max": 45,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure foot remains stable behind the head."
+    },
+    {
+      "id": "eka-pada-shirshasana-b-spinal-length",
+      "name": "Spinal Length",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "comparison": "max",
+      "max": 15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain an upright spine."
+    }
+  ],
+  "peacock-mayurasana": [
+    {
+      "id": "mayurasana-arm-alignment",
+      "name": "Elbow Support",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 105,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Your elbows should be bent to support weight."
+    },
+    {
+      "id": "mayurasana-body-level",
+      "name": "Body Level",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your body parallel to the ground."
+    }
+  ],
+  "pendant-lolasana": [
+    {
+      "id": "lolasana-arm-support",
+      "name": "Arm Support",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        15
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 110,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure arms are slightly bent for proper support."
+    },
+    {
+      "id": "lolasana-body-lift",
+      "name": "Body Lift",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "max",
+      "max": 15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lift through the core, keeping shoulders away from the ears."
+    }
+  ],
+  "pigeon-kapotasana": [
+    {
+      "id": "pigeon-kapotasana-r1",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 120,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your front knee comfortably bent."
+    },
+    {
+      "id": "pigeon-kapotasana-r2",
+      "name": "Back Leg Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your back leg extended."
+    }
+  ],
+  "plank-phalakasana": [
+    {
+      "id": "plank-phalakasana-r1",
+      "name": "Shoulder to Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "max": 10,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain a straight line from shoulders to hips."
+    },
+    {
+      "id": "plank-phalakasana-r2",
+      "name": "Hip to Ankle Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        27
+      ],
+      "max": 10,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep a straight line from hips to ankles."
+    }
+  ],
+  "plow-halasana": [
+    {
+      "id": "plow-halasana-r1",
+      "name": "Hip Over Shoulders",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "max": 10,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Align your hips over your shoulders."
+    },
+    {
+      "id": "plow-halasana-r2",
+      "name": "Leg Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        27
+      ],
+      "max": 10,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your legs are straight and toes are reaching towards the floor."
+    }
+  ],
+  "pyramid-parshvottanasana": [
+    {
+      "id": "pyramid-parshvottanasana-r1",
+      "name": "Front Leg Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 170,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your front leg straight but not locked."
+    },
+    {
+      "id": "pyramid-parshvottanasana-r2",
+      "name": "Back Leg Alignment",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 150,
+      "max": 170,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Both legs should be straight and firmly grounded."
+    }
+  ],
+  "rabbit-shashankasana": [
+    {
+      "id": "rabbit-shashankasana-r1",
+      "name": "Hip to Forehead Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "max": 10,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bring your forehead in alignment with your knees."
+    },
+    {
+      "id": "rabbit-shashankasana-r2",
+      "name": "Knee to Ankle Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        27
+      ],
+      "max": 10,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your lower legs remain perpendicular to the floor."
+    }
+  ],
+  "reclined-bound-angle-supta-baddha-konasana": [
+    {
+      "id": "reclined-bound-angle-supta-baddha-konasana-pr1",
+      "name": "Leg Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 30,
+      "max": 60,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Allow your knees to relax outward and towards the ground."
+    },
+    {
+      "id": "reclined-bound-angle-supta-baddha-konasana-pr2",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Align your spine, keeping it flat on the ground."
+    }
+  ],
+  "reverse-corpse-advasana": [
+    {
+      "id": "reverse-corpse-advasana-pr1",
+      "name": "Spine and Leg Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        27
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your body in a straight line from head to heels."
+    },
+    {
+      "id": "reverse-corpse-advasana-pr2",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Relax your shoulders evenly to the ground."
+    }
+  ],
+  "revolved-bird-of-paradise-parivritta-svarga-dvijasana": [
+    {
+      "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana-pr1",
+      "name": "Standing Leg Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Engage your standing leg, keeping it straight and strong."
+    },
+    {
+      "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana-pr2",
+      "name": "Torso Twist",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 90,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Twist your torso while maintaining balance."
+    }
+  ],
+  "revolved-chair-parivrtta-utkatasana": [
+    {
+      "id": "revolved-chair-parivrtta-utkatasana-pr1",
+      "name": "Knee Alignment",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 110,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Bend your knees deeply and evenly."
+    },
+    {
+      "id": "revolved-chair-parivrtta-utkatasana-pr2",
+      "name": "Torso Twist",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        11
+      ],
+      "comparison": "between",
+      "min": 50,
+      "max": 70,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Twist your torso towards the opposite knee."
+    }
+  ],
+  "revolved-flying-man-parivritta-eka-pada-koundinyasana": [
+    {
+      "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana-pr1",
+      "name": "Torso Horizontal Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "equal",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your torso directly parallel to the ground."
+    },
+    {
+      "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana-pr2",
+      "name": "Leg Extension",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend and straighten your back leg fully."
+    }
+  ],
+  "revolved-half-moon-parivritta-ardha-chandrasana": [
+    {
+      "id": "rule-1",
+      "name": "Torso Twist",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        11
+      ],
+      "comparison": "greater_than",
+      "min": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Rotate your torso further towards the standing leg."
+    },
+    {
+      "id": "rule-2",
+      "name": "Standing Leg Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        24,
+        28
+      ],
+      "comparison": "min",
+      "threshold": 0.05,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your standing leg is vertically aligned."
+    }
+  ],
+  "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana": [
+    {
+      "id": "rule-3",
+      "name": "Seated Leg Extension",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "greater_than",
+      "min": 160,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Extend your leg fully out to the side."
+    },
+    {
+      "id": "rule-4",
+      "name": "Spinal Twist",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        11
+      ],
+      "comparison": "greater_than",
+      "min": 90,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain a deeper spinal twist."
+    }
+  ],
+  "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana": [
+    {
+      "id": "rule-5",
+      "name": "Extended Arm Alignment",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "close_to",
+      "target": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your extended arm in alignment with your shoulder."
+    },
+    {
+      "id": "rule-6",
+      "name": "Standing Leg Stability",
+      "metric": "vertical_alignment",
+      "points": [
+        24,
+        28
+      ],
+      "comparison": "min",
+      "threshold": 0.05,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the standing leg is straight and stable."
+    }
+  ],
+  "revolved-triangle-parivritta-trikonasana": [
+    {
+      "id": "rule-7",
+      "name": "Rear Leg Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "close_to",
+      "target": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your rear leg straight and firm."
+    },
+    {
+      "id": "rule-8",
+      "name": "Forward Torso Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        24
+      ],
+      "comparison": "min",
+      "threshold": 0.05,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your torso aligned over the front leg."
+    }
+  ],
+  "rock-the-baby": [
+    {
+      "id": "rule-9",
+      "name": "Cradle Arm Elbow Angle",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 60,
+      "max": 100,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Gently cradle the leg, maintaining a soft elbow bend."
+    },
+    {
+      "id": "rule-10",
+      "name": "Spine Straight",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        0
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your spine upright."
+    }
+  ],
+  "rooster-kukkutasana": [
+    {
+      "id": "rooster-kukkutasana-armed-balance",
+      "name": "Arm Balance",
+      "metric": "vertical_alignment",
+      "points": [
+        12,
+        24
+      ],
+      "min": 0,
+      "max": 0.1,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your shoulders aligned vertically above your hips."
+    },
+    {
+      "id": "rooster-kukkutasana-upright-spine",
+      "name": "Upright Spine",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "min": 0,
+      "max": 0.15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain an upright spine; lengthen through the crown of your head."
+    }
+  ],
+  "sage-bharadvajas-twist-bharadvajasana": [
+    {
+      "id": "sage-bharadvajas-twist-spinal-alignment",
+      "name": "Spinal Twist Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Twist your spine evenly; ensure that both shoulders are engaged in the twist."
+    },
+    {
+      "id": "sage-bharadvajas-twist-upright-spine",
+      "name": "Upright Spine",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "min": 0,
+      "max": 0.15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your spine upright and long, extending through the crown of your head."
+    }
+  ],
+  "sage-gherandas-gherandasana": [
+    {
+      "id": "sage-gherandas-back-flexion",
+      "name": "Back Flexion",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        28
+      ],
+      "comparison": "between",
+      "min": 110,
+      "max": 160,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Engage your lower back to maintain the intended backbend without collapsing."
+    },
+    {
+      "id": "sage-gherandas-upright-spine",
+      "name": "Upright Spine",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "min": 0,
+      "max": 0.15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your spine upright, lengthening through the crown of your head."
+    }
+  ],
+  "sage-marichis-i-marichyasana-a": [
+    {
+      "id": "sage-marichis-i-spinal-rotation",
+      "name": "Spinal Rotation",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Deepen the twist by engaging both sides of the back evenly."
+    },
+    {
+      "id": "sage-marichis-i-upright-spine",
+      "name": "Upright Spine",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "min": 0,
+      "max": 0.15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen the spine upwards throughout the twist."
+    }
+  ],
+  "sage-marichis-ii-marichyasana-b": [
+    {
+      "id": "sage-marichis-ii-spinal-rotation",
+      "name": "Spinal Rotation",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 110,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure a balanced twist with evenly engaged shoulders."
+    },
+    {
+      "id": "sage-marichis-ii-upright-spine",
+      "name": "Upright Spine",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "min": 0,
+      "max": 0.15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Strive for a long spine, lengthening upwards."
+    }
+  ],
+  "sage-marichis-iii-marichyasana-c": [
+    {
+      "id": "sage-marichis-iii-marichyasana-c-pr1",
+      "name": "Spinal Twist Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        0,
+        24
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 90,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the spine maintains a healthy twist without over-rotating."
+    },
+    {
+      "id": "sage-marichis-iii-marichyasana-c-pr2",
+      "name": "Upper Body Horizontal Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "below",
+      "min": 0,
+      "max": 10,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders aligned horizontally."
+    }
+  ],
+  "sage-marichis-iv-marichyasana-d": [
+    {
+      "id": "sage-marichis-iv-marichyasana-d-pr1",
+      "name": "Spinal Twist Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        0,
+        24
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 90,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the spine maintains a healthy twist without over-rotating."
+    },
+    {
+      "id": "sage-marichis-iv-marichyasana-d-pr2",
+      "name": "Upper Body Horizontal Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "below",
+      "min": 0,
+      "max": 10,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep shoulders aligned horizontally."
+    }
+  ],
+  "sage-visvamitras-vishvamitrasana": [
+    {
+      "id": "sage-visvamitras-vishvamitrasana-pr1",
+      "name": "Torso Lengthening",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "below",
+      "min": 0,
+      "max": 15,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Elongate the spine from hips to the crown of the head."
+    },
+    {
+      "id": "sage-visvamitras-vishvamitrasana-pr2",
+      "name": "Side Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure the extended arm is straight and strong."
+    }
+  ],
+  "scale-tolasana": [
+    {
+      "id": "scale-tolasana-pr1",
+      "name": "Core Elevation",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        25
+      ],
+      "comparison": "above",
+      "min": 5,
+      "max": null,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Lift through the core, keeping the knees together."
+    },
+    {
+      "id": "scale-tolasana-pr2",
+      "name": "Shoulder Engagement",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Engage shoulders effectively to lift the body."
+    }
+  ],
+  "scorpion-vrischikasana-a": [
+    {
+      "id": "scorpion-vrischikasana-a-pr1",
+      "name": "Upper Back Bend",
+      "metric": "angle",
+      "points": [
+        11,
+        0,
+        12
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Maintain an open chest and upper back."
+    },
+    {
+      "id": "scorpion-vrischikasana-a-pr2",
+      "name": "Lower Back Bend",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        26
+      ],
+      "comparison": "between",
+      "min": 130,
+      "max": 160,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Arch the lower back, ensuring a smooth curve."
+    }
+  ],
+  "seated-forward-fold-paschimottanasana": [
+    {
+      "id": "seated-forward-fold-core-spine-alignment",
+      "name": "Core / Spine Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "seated-gate-parighasana": [
+    {
+      "id": "seated-gate-core-spine-alignment",
+      "name": "Core / Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 8,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana": [
+    {
+      "id": "seated-half-bound-lotus-core-spine-alignment",
+      "name": "Core / Spine Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana": [
+    {
+      "id": "seated-three-limbed-forward-bend-core-spine-alignment",
+      "name": "Core / Spine Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "seated-twist-ardha-matsyendrasana": [
+    {
+      "id": "seated-twist-core-spine-alignment",
+      "name": "Core / Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "shiva-squat": [
+    {
+      "id": "shiva-squat-pr1",
+      "name": "Right Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 70,
+      "max": 100,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Bend your knee and maintain balance."
+    },
+    {
+      "id": "shiva-squat-pr2",
+      "name": "Torso-Crown Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "shoelace": [
+    {
+      "id": "shoelace-pr1",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "less_than",
+      "max": 15,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep hips aligned."
+    },
+    {
+      "id": "shoelace-pr2",
+      "name": "Spine Length",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "less_than",
+      "max": 20,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "shoulder-pressing-bhuja-pidasana": [
+    {
+      "id": "shoulder-pressing-bhuja-pidasana-pr1",
+      "name": "Elbow-Knee Angle",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        26
+      ],
+      "comparison": "between",
+      "min": 40,
+      "max": 70,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Press elbows into knees."
+    },
+    {
+      "id": "shoulder-pressing-bhuja-pidasana-pr2",
+      "name": "Spine Length",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        23
+      ],
+      "comparison": "less_than",
+      "max": 15,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "shoulder-stand-with-lotus-legs-urdhva-padmasana": [
+    {
+      "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana-pr1",
+      "name": "Vertical Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure hips align over shoulders."
+    },
+    {
+      "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana-pr2",
+      "name": "Spine-Crown Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "shoulderstand-sarvangasana": [
+    {
+      "id": "shoulderstand-sarvangasana-pr1",
+      "name": "Vertical Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure hips align over shoulders."
+    },
+    {
+      "id": "shoulderstand-sarvangasana-pr2",
+      "name": "Ankle Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        27,
+        23
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Stack ankles over hips."
+    },
+    {
+      "id": "shoulderstand-sarvangasana-pr3",
+      "name": "Spine-Crown Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        12
+      ],
+      "comparison": "less_than",
+      "max": 10,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "side-crow-parsva-bakasana": [
+    {
+      "id": "side-crow-parsva-bakasana-r1",
+      "name": "Elbow Knee Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        13,
+        25
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure elbows and knees are at a right angle during the pose."
+    }
+  ],
+  "side-lunge-skandasana": [
+    {
+      "id": "side-lunge-skandasana-r1",
+      "name": "Front Knee Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "greater_than",
+      "min": 90,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep the front knee over or slightly behind the ankle."
+    },
+    {
+      "id": "side-lunge-skandasana-r2",
+      "name": "Back Leg Extension",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "greater_than",
+      "min": 150,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure the back leg is extended straight."
+    }
+  ],
+  "side-plank-vasishthasana": [
+    {
+      "id": "side-plank-vasishthasana-r1",
+      "name": "Body Line",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        0
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your body is in a straight line from head to heels."
+    },
+    {
+      "id": "side-plank-vasishthasana-r2",
+      "name": "Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Ensure the supporting arm is vertical and aligned with your shoulder."
+    }
+  ],
+  "sleeping-yogi-yoga-nidrasana": [
+    {
+      "id": "sleeping-yogi-yoga-nidrasana-r1",
+      "name": "Knee Behind Head",
+      "metric": "vertical_alignment",
+      "points": [
+        25,
+        0
+      ],
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Reach the knees towards the ground behind the head."
+    },
+    {
+      "id": "sleeping-yogi-yoga-nidrasana-r2",
+      "name": "Hip Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 120,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure hips are flexed properly to support the knees behind the head."
+    }
+  ],
+  "snake-sarpasana": [
+    {
+      "id": "snake-sarpasana-r1",
+      "name": "Back Bend",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "greater_than",
+      "min": 120,
+      "max": 150,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift the chest and engage the back muscles for a safe backbend."
+    },
+    {
+      "id": "snake-sarpasana-r2",
+      "name": "Arm Extension",
+      "metric": "angle",
+      "points": [
+        12,
+        24,
+        16
+      ],
+      "comparison": "greater_than",
+      "min": 150,
+      "max": 180,
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Extend your arms backward, keeping them close to the body."
+    }
+  ],
+  "sphinx-salamba-bhujangasana": [
+    {
+      "id": "sphinx-salamba-bhujangasana-spine-alignment",
+      "name": "Spine Alignment",
+      "metric": "angle",
+      "points": [
+        24,
+        12,
+        11
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 190,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your spine is elongated and shoulders are drawn back."
+    },
+    {
+      "id": "sphinx-salamba-bhujangasana-elbow-shoulder-line",
+      "name": "Elbows under shoulders",
+      "metric": "vertical_alignment",
+      "points": [
+        14,
+        12
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Keep your elbows under your shoulders."
+    }
+  ],
+  "staff-dandasana": [
+    {
+      "id": "staff-dandasana-back-alignment",
+      "name": "Back Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        12
+      ],
+      "comparison": "between",
+      "min": 85,
+      "max": 95,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure your back is straight and perpendicular to the ground."
+    },
+    {
+      "id": "staff-dandasana-leg-alignment",
+      "name": "Leg Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 175,
+      "max": 185,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your legs straight and engaged."
+    }
+  ],
+  "standing-bow-dandayamana-dhanurasana": [
+    {
+      "id": "standing-bow-dandayamana-dhanurasana-back-leg",
+      "name": "Back Leg Elevation",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift your back leg higher while keeping it straight."
+    },
+    {
+      "id": "standing-bow-dandayamana-dhanurasana-spine-elongation",
+      "name": "Spine Elongation",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        0
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 210,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain an elongated spine position."
+    }
+  ],
+  "standing-foot-to-head-trivikramasana-a": [
+    {
+      "id": "standing-foot-to-head-trivikramasana-a-raised-leg",
+      "name": "Raised Leg Straightness",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your raised leg straight and engaged."
+    },
+    {
+      "id": "standing-foot-to-head-trivikramasana-a-upper-body",
+      "name": "Upper Body Alignment",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Maintain an upright and elongated spine."
+    }
+  ],
+  "standing-forward-bend-uttanasana": [
+    {
+      "id": "standing-forward-bend-uttanasana-forward-fold",
+      "name": "Forward Fold Depth",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        25
+      ],
+      "comparison": "between",
+      "min": 0,
+      "max": 40,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Reach forward to deepen your fold."
+    },
+    {
+      "id": "standing-forward-bend-uttanasana-knee-alignment",
+      "name": "Knee Straightness",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 170,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Keep your knees straight but not locked."
+    }
+  ],
+  "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana": [
+    {
+      "id": "shblfb-angle-ankle-knee-hip",
+      "name": "Crossed Leg Angle",
+      "metric": "angle",
+      "points": [
+        27,
+        25,
+        23
+      ],
+      "comparison": "between",
+      "min": 45,
+      "max": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your crossed leg forms a right angle."
+    },
+    {
+      "id": "shblfb-vertical-alignment-hip-shoulder",
+      "name": "Vertical Alignment Hip to Shoulder",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen your spine to keep the hip and shoulder aligned vertically."
+    }
+  ],
+  "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a": [
+    {
+      "id": "shtbta-leg-lift-angle",
+      "name": "Extended Leg Lift Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 75,
+      "max": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your extended leg as straight as possible."
+    },
+    {
+      "id": "shtbta-horizontal-alignment-hips",
+      "name": "Horizontal Alignment of Hips",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your hips square and aligned."
+    }
+  ],
+  "standing-leg-behind-head-durvasasana": [
+    {
+      "id": "slbhh-leg-behind-head-angle",
+      "name": "Leg Behind Head Angle",
+      "metric": "angle",
+      "points": [
+        28,
+        26,
+        12
+      ],
+      "comparison": "between",
+      "min": 30,
+      "max": 60,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your leg is positioned appropriately behind your head."
+    },
+    {
+      "id": "slbhh-spine-alignment",
+      "name": "Vertical Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through your spine while maintaining balance."
+    }
+  ],
+  "standing-leg-behind-head-forward-bend-richikasana": [
+    {
+      "id": "slbhf-leg-behind-head-angle",
+      "name": "Leg Behind Head Angle",
+      "metric": "angle",
+      "points": [
+        28,
+        26,
+        12
+      ],
+      "comparison": "between",
+      "min": 30,
+      "max": 60,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure your leg is positioned behind your head."
+    },
+    {
+      "id": "slbhf-forward-bend-full-angle",
+      "name": "Forward Bend Full Angle",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "between",
+      "min": 45,
+      "max": 90,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Bend forward from your hips, not your waist."
+    }
+  ],
+  "standing-splits-urdhva-prasarita-eka-padasana": [
+    {
+      "id": "ssupe-leg-lift-angle",
+      "name": "Leg Lift Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 120,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift your extended leg as close to vertical as possible."
+    },
+    {
+      "id": "ssupe-vertical-alignment-hip-shoulder",
+      "name": "Vertical Alignment Hip to Shoulder",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        11
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure hip and shoulder are vertically aligned to maintain balance."
+    }
+  ],
+  "star-utthita-tadasana": [
+    {
+      "id": "star-utthita-tadasana-rule1",
+      "name": "Spinal Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the hips are level to maintain proper spinal alignment."
+    },
+    {
+      "id": "star-utthita-tadasana-rule2",
+      "name": "Head Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        11
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "supine-angle-supta-konasana": [
+    {
+      "id": "supine-angle-supta-konasana-rule1",
+      "name": "Lower Limb Position",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "greater_than",
+      "min": 90,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure knees are open wide and aligned with ankles."
+    },
+    {
+      "id": "supine-angle-supta-konasana-rule2",
+      "name": "Spinal Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "supine-foot-to-head-supta-trivikramasana": [
+    {
+      "id": "supine-foot-to-head-supta-trivikramasana-rule1",
+      "name": "Leg Lift",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "less_than",
+      "max": 20,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Raise your leg high, aiming for the foot to reach near the head without losing spine alignment."
+    },
+    {
+      "id": "supine-foot-to-head-supta-trivikramasana-rule2",
+      "name": "Spinal Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 2,
+      "severity": "low",
+      "feedback": "Lengthen through the crown of your head."
+    }
+  ],
+  "supine-hand-to-big-toe-supta-padangushthasana-a": [
+    {
+      "id": "supine-hand-to-big-toe-supta-padangushthasana-a-rule1",
+      "name": "Arm Stretch",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        15
+      ],
+      "comparison": "less_than",
+      "max": 180,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Extend your arm towards your toe, ensuring a straight line from shoulder to wrist."
+    },
+    {
+      "id": "supine-hand-to-big-toe-supta-padangushthasana-a-rule2",
+      "name": "Leg Position",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "less_than",
+      "max": 20,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep the extended leg straight, reaching towards your head."
+    }
+  ],
+  "supine-straddle-supta-samakonasana": [
+    {
+      "id": "supine-straddle-supta-samakonasana-rule1",
+      "name": "Leg Spread",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "greater_than",
+      "min": 90,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Open your legs wide, forming a straight line from hip to heel."
+    },
+    {
+      "id": "supine-straddle-supta-samakonasana-rule2",
+      "name": "Spinal Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        0
+      ],
+      "comparison": "max",
+      "max": 10,
+      "weight": 2,
+      "severity": "low",
+      "feedback": "Relax your spine and keep the torso aligned."
+    }
+  ],
+  "supine-twist-supta-matsyendrasana": [
+    {
+      "id": "supine-twist-supta-matsyendrasana-pr1",
+      "name": "Spinal Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure both shoulders remain on the mat when twisting."
+    },
+    {
+      "id": "supine-twist-supta-matsyendrasana-pr2",
+      "name": "Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        23,
+        25
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your hips stacked while twisting."
+    }
+  ],
+  "thunderbolt-vajrasana": [
+    {
+      "id": "thunderbolt-vajrasana-pr1",
+      "name": "Spinal Length",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        0
+      ],
+      "comparison": "between",
+      "min": 165,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Sit tall and lengthen through the spine."
+    }
+  ],
+  "tiger-vyaghrasana": [
+    {
+      "id": "tiger-vyaghrasana-pr1",
+      "name": "Shoulder-Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        12,
+        24
+      ],
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure the shoulders and hips are in line, chest parallel to the floor."
+    },
+    {
+      "id": "tiger-vyaghrasana-pr2",
+      "name": "Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 90,
+      "max": 135,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Bend the knee to engage the hamstrings and glutes."
+    }
+  ],
+  "toe-stand-padangushthasana": [
+    {
+      "id": "toe-stand-padangushthasana-pr1",
+      "name": "Body Upright",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        24
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Maintain an upright spine balancing on toes."
+    },
+    {
+      "id": "toe-stand-padangushthasana-pr2",
+      "name": "Proper Knee Bend",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 30,
+      "max": 60,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Bend your knees appropriately for balance."
+    }
+  ],
+  "tortoise-kurmasana": [
+    {
+      "id": "tortoise-kurmasana-pr1",
+      "name": "Forward Bend",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        0
+      ],
+      "comparison": "less_than",
+      "target": 45,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Fold forward deeply, extending your spine."
+    },
+    {
+      "id": "tortoise-kurmasana-pr2",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep shoulders aligned and level in the folded position."
+    }
+  ],
+  "tree-vrksasana": [
+    {
+      "id": "tree-vrksasana-rule-1",
+      "name": "Standing Leg Vertical Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        12,
+        24
+      ],
+      "comparison": "max",
+      "target": 0,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Ensure the standing leg's hip and shoulder are aligned vertically."
+    },
+    {
+      "id": "tree-vrksasana-rule-2",
+      "name": "Bent Leg Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 50,
+      "max": 90,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Balance on the standing leg while placing the foot on the inner thigh."
+    }
+  ],
+  "triangle-trikonasana": [
+    {
+      "id": "triangle-trikonasana-rule-1",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep the front knee straight or slightly bent."
+    },
+    {
+      "id": "triangle-trikonasana-rule-2",
+      "name": "Torso Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Ensure the torso is parallel to the ground."
+    }
+  ],
+  "tripod-headstand-mukta-hasta-shirshasana-a": [
+    {
+      "id": "tripod-headstand-mukta-hasta-shirshasana-a-rule-1",
+      "name": "Forearm Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        13,
+        15
+      ],
+      "comparison": "max",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Align forearms vertically under the shoulder."
+    },
+    {
+      "id": "tripod-headstand-mukta-hasta-shirshasana-a-rule-2",
+      "name": "Body Balance",
+      "metric": "vertical_alignment",
+      "points": [
+        0,
+        24
+      ],
+      "comparison": "max",
+      "target": 0,
+      "weight": 4,
+      "severity": "high",
+      "feedback": "Ensure the body is straight and stable."
+    }
+  ],
+  "two-legs-behind-the-head-i-dvi-pada-shirshasana-a": [
+    {
+      "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a-rule-1",
+      "name": "Spinal Curvature",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 100,
+      "max": 140,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Aim for a gentle curve in the spine."
+    }
+  ],
+  "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b": [
+    {
+      "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b-rule-1",
+      "name": "Spinal Curvature",
+      "metric": "angle",
+      "points": [
+        11,
+        23,
+        12
+      ],
+      "comparison": "between",
+      "min": 100,
+      "max": 140,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Maintain a gentle curve in the spine."
+    }
+  ],
+  "upward-facing-dog-urdhva-mukha-shvanasana": [
+    {
+      "id": "upward-facing-dog-lower-back-arch",
+      "name": "Lower Back Arch",
+      "metric": "angle",
+      "points": [
+        23,
+        11,
+        0
+      ],
+      "comparison": "between",
+      "min": 180,
+      "max": 200,
+      "weight": 3,
+      "severity": "medium",
+      "feedback": "Ensure a gentle curve in your lower back."
+    },
+    {
+      "id": "upward-facing-dog-shoulder-alignment",
+      "name": "Shoulder Alignment",
+      "metric": "angle",
+      "points": [
+        12,
+        14,
+        16
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep elbows straight and shoulders away from ears."
+    }
+  ],
+  "upward-plank-purvottanasana": [
+    {
+      "id": "upward-plank-body-line",
+      "name": "Body Line",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        27
+      ],
+      "comparison": "equals",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep body in a straight line from shoulders to ankles."
+    },
+    {
+      "id": "upward-plank-shoulder-wrist-alignment",
+      "name": "Shoulder-Wrist Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        15
+      ],
+      "comparison": "less_than",
+      "max": 5,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Align shoulders directly over wrists."
+    }
+  ],
+  "warrior-i-virabhadrasana-a": [
+    {
+      "id": "warrior-i-front-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep front knee stacked over your ankle."
+    },
+    {
+      "id": "warrior-i-rear-leg-straight",
+      "name": "Rear Leg Straight",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Extend through the back leg."
+    }
+  ],
+  "warrior-ii-virabhadrasana-ii": [
+    {
+      "id": "warrior-ii-front-knee-angle",
+      "name": "Front Knee Angle",
+      "metric": "angle",
+      "points": [
+        24,
+        26,
+        28
+      ],
+      "comparison": "between",
+      "min": 80,
+      "max": 100,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Align front knee above ankle."
+    },
+    {
+      "id": "warrior-ii-arms-alignment",
+      "name": "Arms Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        13,
+        14
+      ],
+      "comparison": "equals",
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Extend arms parallel to the floor."
+    }
+  ],
+  "warrior-iii-virabhadrasana-c": [
+    {
+      "id": "warrior-iii-body-level",
+      "name": "Body Level",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        27
+      ],
+      "comparison": "equals",
+      "target": 0,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your body parallel to the ground."
+    },
+    {
+      "id": "warrior-iii-hip-alignment",
+      "name": "Hip Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        23,
+        24
+      ],
+      "comparison": "equals",
+      "target": 0,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Hips squared to the ground."
+    }
+  ],
+  "waterfall-supta-dandasana": [
+    {
+      "id": "waterfall-supta-dandasana-r1",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "within",
+      "min": 0,
+      "max": 20,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your spine straight and lengthen through the crown of your head."
+    },
+    {
+      "id": "waterfall-supta-dandasana-r2",
+      "name": "Leg Extension",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 165,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Ensure your legs are extended straight on the ground."
+    }
+  ],
+  "wheel-urdhva-dhanurasana": [
+    {
+      "id": "wheel-urdhva-dhanurasana-r1",
+      "name": "Shoulder Opening",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        14
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Open your shoulders as you lift into the wheel pose."
+    },
+    {
+      "id": "wheel-urdhva-dhanurasana-r2",
+      "name": "Hip Lift",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        26
+      ],
+      "comparison": "between",
+      "min": 130,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lift your hips high while maintaining stability in the core."
+    }
+  ],
+  "wide-angle-seated-forward-bend-upavistha-konasana": [
+    {
+      "id": "wide-angle-seated-forward-bend-upavistha-konasana-r1",
+      "name": "Leg Stretch",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Stretch your legs fully extended to the sides."
+    },
+    {
+      "id": "wide-angle-seated-forward-bend-upavistha-konasana-r2",
+      "name": "Spine Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "within",
+      "min": 0,
+      "max": 20,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Keep your spine straight and lengthen through the crown of your head."
+    }
+  ],
+  "wide-legged-forward-bend-i-prasarita-padottanasana-a": [
+    {
+      "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a-r1",
+      "name": "Leg Spread",
+      "metric": "horizontal_alignment",
+      "points": [
+        25,
+        26
+      ],
+      "comparison": "within",
+      "min": 0,
+      "max": 20,
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your legs spread wide, maintaining alignment through your ankles."
+    },
+    {
+      "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a-r2",
+      "name": "Spine Lengthening",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "within",
+      "min": 0,
+      "max": 20,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Lengthen your spine and engage the core."
+    }
+  ],
+  "wide-legged-forward-bend-ii-prasarita-padottanasana-b": [
+    {
+      "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b-r1",
+      "name": "Shoulder Isolation",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        14
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Isolate your shoulder movement while bending forward."
+    },
+    {
+      "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b-r2",
+      "name": "Core Engagement",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "within",
+      "min": 0,
+      "max": 20,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Engage your core to support your forward bend."
+    }
+  ],
+  "wide-legged-forward-bend-iii-prasarita-padottanasana-c": [
+    {
+      "id": "wlb-iii-spine",
+      "name": "Spine Length",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Keep your spine lengthened and your body aligned.",
+      "target": "min"
+    },
+    {
+      "id": "wlb-iii-legs",
+      "name": "Legs Spread",
+      "metric": "angle",
+      "points": [
+        25,
+        23,
+        27
+      ],
+      "comparison": "between",
+      "min": 160,
+      "max": 180,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Ensure legs are widely spaced, forming a straight angle."
+    }
+  ],
+  "wide-legged-forward-bend-iv-prasarita-padottanasana-d": [
+    {
+      "id": "wlb-iv-spine",
+      "name": "Spine Length",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Extend through your spine."
+    },
+    {
+      "id": "wlb-iv-arms",
+      "name": "Arms Length",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Engage and lengthen through your arms."
+    }
+  ],
+  "wide-splits-samakonasana": [
+    {
+      "id": "ws-hip-alignment",
+      "name": "Hip Alignment",
+      "metric": "angle",
+      "points": [
+        23,
+        24,
+        11
+      ],
+      "comparison": "close_to",
+      "min": 90,
+      "max": 110,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Align your hips, keeping them squared."
+    },
+    {
+      "id": "ws-width",
+      "name": "Spread Width",
+      "metric": "horizontal_alignment",
+      "points": [
+        25,
+        27
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "medium",
+      "feedback": "Keep your legs widely spread and aligned."
+    }
+  ],
+  "wild-thing-chamatkarasana": [
+    {
+      "id": "wt-shoulder-hip-alignment",
+      "name": "Shoulder to Hip Alignment",
+      "metric": "vertical_alignment",
+      "points": [
+        11,
+        23
+      ],
+      "comparison": "max",
+      "weight": 2,
+      "severity": "high",
+      "feedback": "Create a strong arch in the back."
+    },
+    {
+      "id": "wt-arm-reach",
+      "name": "Arm Reach",
+      "metric": "angle",
+      "points": [
+        11,
+        12,
+        16
+      ],
+      "comparison": "greater_than",
+      "min": 150,
+      "weight": 1,
+      "severity": "medium",
+      "feedback": "Fully extend your reaching arm."
+    }
+  ],
+  "wind-removing-pavanamuktasana": [
+    {
+      "id": "wr-knee-to-chest",
+      "name": "Knee to Chest",
+      "metric": "angle",
+      "points": [
+        23,
+        25,
+        27
+      ],
+      "comparison": "less_than",
+      "max": 45,
+      "weight": 3,
+      "severity": "high",
+      "feedback": "Draw your knee closely to your chest for full wind-relieving effect."
+    },
+    {
+      "id": "wr-shoulder-alignment",
+      "name": "Shoulder Alignment",
+      "metric": "horizontal_alignment",
+      "points": [
+        11,
+        12
+      ],
+      "comparison": "max",
+      "weight": 1,
+      "severity": "low",
+      "feedback": "Maintain shoulders leveled and grounded."
+    }
+  ]
+}

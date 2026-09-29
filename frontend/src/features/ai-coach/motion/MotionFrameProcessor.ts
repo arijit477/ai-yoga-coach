@@ -213,10 +213,7 @@ export class MotionFrameProcessor {
      * monotonically increasing milliseconds.
      */
 
-    const timestamp =
-      Math.round(
-        videoTime * 1000,
-      );
+    const timestamp = performance.now();
 
     /*
      * --------------------------------------------

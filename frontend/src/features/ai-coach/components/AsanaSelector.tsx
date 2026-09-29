@@ -48,7 +48,7 @@ export function AsanaSelector({
 
   const filteredAsanas = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
-    return asanas.filter((a) => {
+    const filtered = asanas.filter((a) => {
       const matchesQuery =
         !q ||
         a.name.toLowerCase().includes(q) ||
@@ -60,6 +60,22 @@ export function AsanaSelector({
         a.category.toLowerCase() === selectedCategory.toLowerCase();
 
       return matchesQuery && matchesCat;
+    });
+
+    const difficultyWeights: Record<string, number> = {
+      beginner: 1,
+      intermediate: 2,
+      advanced: 3,
+    };
+
+    return filtered.sort((a, b) => {
+      const weightA = difficultyWeights[a.difficulty.toLowerCase()] || 99;
+      const weightB = difficultyWeights[b.difficulty.toLowerCase()] || 99;
+
+      if (weightA !== weightB) {
+        return weightA - weightB;
+      }
+      return a.name.localeCompare(b.name);
     });
   }, [asanas, searchQuery, selectedCategory]);
 

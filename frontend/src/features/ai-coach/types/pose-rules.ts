@@ -22,19 +22,24 @@ export type RuleEvaluationStatus =
   | "pass"
   | "warning"
   | "fail"
+  | "not_evaluable"
   | "unknown";
 
 export type OverallPoseStatus =
-  | "excellent"
+  | "not_ready"
+  | "calibrating"
+  | "evaluating"
   | "good"
   | "needs_adjustment"
-  | "unsafe"
-  | "unknown";
+  | "excellent" // kept for backward compatibility
+  | "unsafe" // kept for backward compatibility
+  | "unknown"; // kept for backward compatibility
 
 export type PostureAreaStatus =
   | "good"
   | "warning"
   | "bad"
+  | "not_required"
   | "unknown";
 
 export interface PoseRule {
@@ -139,6 +144,7 @@ export interface PoseEvaluationResult {
   completionEligible: boolean;
   activeRules: number;
   evaluatedAt: number;
+  posture?: PoseEvaluation["posture"];
 }
 
 export interface PoseEvaluatorContext {

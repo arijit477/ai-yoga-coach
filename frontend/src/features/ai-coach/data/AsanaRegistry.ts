@@ -1,11 +1,11 @@
 import type { AsanaCategory, AsanaDifficulty } from "../types/asana";
 import type { AsanaDefinition } from "../types/asana-definition";
 import type { PoseRule } from "../types/pose-rules";
-import { ALL_ASANAS_CATALOG } from "./allAsanasCatalog";
+import { supabase } from "../../../lib/supabase";
+import { fetchRulesCache, ensureAsanaRules } from "../analysis/rules/poseRulesRegistry";
+import { getAsanaImageUrl, getAsanaVideoUrl } from "./freeAsanas";
 
-/**
- * High-performance lookup Map for all Asana definitions keyed by normalized ID and all known aliases.
- */
+let ALL_ASANAS: AsanaDefinition[] = [];
 const ASANA_REGISTRY_MAP = new Map<string, AsanaDefinition>();
 
 /**
@@ -13,21 +13,64 @@ const ASANA_REGISTRY_MAP = new Map<string, AsanaDefinition>();
  */
 export function normalizeAsanaId(filenameOrId: string): string {
   if (!filenameOrId) return "";
-  // Strip URL paths, query parameters, and extensions
   const clean = filenameOrId.split("?")[0].split("/").pop() || filenameOrId;
   return clean.replace(/\.(webp|png|jpg|jpeg)$/i, "").trim().toLowerCase();
 }
 
-// Populate the registry and index all aliases
-for (const asana of ALL_ASANAS_CATALOG) {
-  const primaryKey = normalizeAsanaId(asana.id);
-  ASANA_REGISTRY_MAP.set(primaryKey, asana);
+// Duplicate declarations removed
 
-  if (asana.aliases) {
-    for (const alias of asana.aliases) {
-      const aliasKey = normalizeAsanaId(alias);
-      if (aliasKey && !ASANA_REGISTRY_MAP.has(aliasKey)) {
-        ASANA_REGISTRY_MAP.set(aliasKey, asana);
+export async function initAsanaRegistry() {
+  const [supabaseRes, rulesCache] = await Promise.all([
+    supabase.from("asanas").select("*").order("order_index", { ascending: true }),
+    fetchRulesCache()
+  ]);
+
+  const { data, error } = supabaseRes;
+  if (error) {
+    console.error("Failed to fetch asanas from Supabase:", error);
+    // Fallback if needed could go here
+    return;
+  }
+  
+  const mapped = data.map(row => {
+    const rules = (rulesCache && (rulesCache[row.id] || rulesCache[row.slug])) || [];
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      sanskritName: row.sanskrit_name,
+      category: row.category,
+      difficulty: row.difficulty,
+      storagePath: row.storage_path,
+      imageUrl: row.image_url || getAsanaImageUrl(`${row.slug || row.id}.webp`),
+      videoUrl: row.video_url || getAsanaVideoUrl(`${row.slug || row.id}.mp4`),
+      description: row.description,
+      benefits: row.benefits || [],
+      instructions: row.instructions || [],
+      cues: row.cues || [],
+      targetHoldSeconds: row.target_hold_seconds,
+      ruleIds: row.rule_ids || [],
+      isPremium: row.is_premium,
+      orderIndex: row.order_index,
+      aliases: [],
+      rules: rules,
+      requiredLandmarks: [],
+    };
+  }) as AsanaDefinition[];
+
+  ALL_ASANAS = mapped;
+
+  ASANA_REGISTRY_MAP.clear();
+  for (const asana of ALL_ASANAS) {
+    const primaryKey = normalizeAsanaId(asana.id);
+    ASANA_REGISTRY_MAP.set(primaryKey, asana);
+
+    if (asana.aliases) {
+      for (const alias of asana.aliases) {
+        const aliasKey = normalizeAsanaId(alias);
+        if (aliasKey && !ASANA_REGISTRY_MAP.has(aliasKey)) {
+          ASANA_REGISTRY_MAP.set(aliasKey, asana);
+        }
       }
     }
   }
@@ -52,38 +95,38 @@ export function hasAsana(idOrAlias: string): boolean {
 }
 
 /**
- * Returns all registered asanas (all 170 Supabase assets).
+ * Returns all registered asanas
  */
 export function getAllAsanas(): AsanaDefinition[] {
-  return ALL_ASANAS_CATALOG;
+  return ALL_ASANAS;
 }
 
 /**
  * Returns the free beginner asanas.
  */
 export function getFreeAsanas(): AsanaDefinition[] {
-  return ALL_ASANAS_CATALOG.filter((a) => !a.isPremium);
+  return ALL_ASANAS.filter((a) => !a.isPremium);
 }
 
 /**
  * Returns premium asanas.
  */
 export function getPremiumAsanas(): AsanaDefinition[] {
-  return ALL_ASANAS_CATALOG.filter((a) => a.isPremium);
+  return ALL_ASANAS.filter((a) => a.isPremium);
 }
 
 /**
  * Filters asanas by anatomical/movement category.
  */
 export function getAsanasByCategory(category: AsanaCategory): AsanaDefinition[] {
-  return ALL_ASANAS_CATALOG.filter((a) => a.category === category);
+  return ALL_ASANAS.filter((a) => a.category === category);
 }
 
 /**
  * Filters asanas by difficulty level.
  */
 export function getAsanasByDifficulty(difficulty: AsanaDifficulty): AsanaDefinition[] {
-  return ALL_ASANAS_CATALOG.filter((a) => a.difficulty === difficulty);
+  return ALL_ASANAS.filter((a) => a.difficulty === difficulty);
 }
 
 /**

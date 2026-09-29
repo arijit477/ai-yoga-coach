@@ -73,7 +73,8 @@ export const PostureCheckOverlay = React.memo(function PostureCheckOverlay({
   const issueCount = items.filter(
     (i) => i.status === "warning" || i.status === "bad" || i.status === "critical",
   ).length;
-  const allGood = issueCount === 0;
+  const hasGoodItem = items.some((i) => i.status === "good");
+  const allGood = issueCount === 0 && hasGoodItem;
 
   const handleToggle = () => {
     setIsOpen((prev) => {
@@ -104,9 +105,9 @@ export const PostureCheckOverlay = React.memo(function PostureCheckOverlay({
               Posture Check
             </span>
             <span
-              className={`text-[8px] font-semibold ml-1.5 shrink-0 ${allGood ? "text-emerald-400" : "text-amber-400"}`}
+              className={`text-[8px] font-semibold ml-1.5 shrink-0 ${allGood ? "text-emerald-400" : issueCount > 0 ? "text-amber-400" : "text-white/50"}`}
             >
-              {allGood ? "\u2713 Good" : `${issueCount} issue${issueCount > 1 ? "s" : ""}`}
+              {allGood ? "\u2713 Good" : issueCount > 0 ? `${issueCount} issue${issueCount > 1 ? "s" : ""}` : "Waiting"}
             </span>
           </div>
 
@@ -140,7 +141,9 @@ export const PostureCheckOverlay = React.memo(function PostureCheckOverlay({
                       ? "\u26a0"
                       : item.status === "bad" || item.status === "critical"
                         ? "\u2715"
-                        : "\u25cb"}
+                        : item.status === "not_required"
+                          ? "\u2014"
+                          : "\u25cb"}
                 </span>
                 <span
                   className={`text-[10px] font-medium truncate transition-colors duration-300 ${
@@ -150,10 +153,12 @@ export const PostureCheckOverlay = React.memo(function PostureCheckOverlay({
                         ? "text-amber-200/90"
                         : item.status === "bad" || item.status === "critical"
                           ? "text-rose-200/90"
-                          : "text-white/25"
+                          : item.status === "not_required"
+                            ? "text-white/25 italic"
+                            : "text-white/25"
                   }`}
                 >
-                  {item.label}
+                  {item.label} {item.status === "not_required" ? "(not required)" : ""}
                 </span>
               </div>
             ))}
@@ -196,7 +201,7 @@ export const PostureCheckOverlay = React.memo(function PostureCheckOverlay({
             className="text-[7px] font-bold uppercase text-white/40"
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", letterSpacing: "0.1em" }}
           >
-            {allGood ? "\u2713" : issueCount}
+            {allGood ? "\u2713" : issueCount > 0 ? issueCount : "..."}
           </span>
         )}
       </button>

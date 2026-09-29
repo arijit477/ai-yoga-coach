@@ -17,6 +17,7 @@ export type CameraGuidanceKey =
   | "feet_missing"
   | "head_missing"
   | "poor_confidence"
+  | "partial_pose"
   | "camera_ready"
   | "camera_disabled"
   | "camera_error";
@@ -51,6 +52,7 @@ export const CAMERA_GUIDANCE_MESSAGES: Record<CameraGuidanceKey, string> = {
   feet_missing: "Make sure your feet are visible.",
   head_missing: "Make sure your head is visible.",
   poor_confidence: "Adjust your position or lighting.",
+  partial_pose: "Adjust your position so I can see your pose.",
   camera_ready: "Ready for Yoga.",
   camera_disabled: "Camera is off.",
   camera_error: "Camera error. Please check permissions.",

@@ -112,6 +112,7 @@ function matchesArea(areaKey: string, ruleOrJoint: string): boolean {
 export function getPostureCheckResult(
   evaluation: PoseEvaluation | PoseEvaluationResult | null,
   debouncer?: PostureStatusDebouncer,
+  requiredRegions?: string[],
 ): PostureCheckResult {
   if (!evaluation) {
     return {
@@ -130,7 +131,17 @@ export function getPostureCheckResult(
 
   const items: PostureCheckItem[] = BODY_AREAS.map((area) => {
     let rawStatus: PostureStatus = "unknown";
-    if (posture && posture[area.key]) {
+    
+    // Determine if this area is required by the current asana rules
+    const isRequired = requiredRegions ? requiredRegions.includes(area.key.toLowerCase().replace(/s$/, "")) || requiredRegions.includes(area.key.toLowerCase()) || 
+      (area.key === "spine" && requiredRegions.includes("torso")) || 
+      (area.key === "elbows" && requiredRegions.includes("wrists")) ||
+      (area.key === "ankles" && requiredRegions.includes("feet"))
+      : true;
+
+    if (!isRequired) {
+      rawStatus = "not_required";
+    } else if (posture && posture[area.key] && posture[area.key] !== "unknown") {
       rawStatus = mapAreaStatus(posture[area.key]);
     } else if (primaryIssue) {
       // Check if primary issue relates to this area
@@ -139,13 +150,15 @@ export function getPostureCheckResult(
       if (matchesArea(area.key, ruleId) || matchesArea(area.key, joint)) {
         rawStatus = primaryIssue.severity === "high" ? "bad" : "warning";
       } else {
-        rawStatus = evaluation.score >= 75 ? "good" : "warning";
+        rawStatus = evaluation.score >= 75 ? "good" : "unknown";
       }
+    } else if (evaluation.activeRules === 0 || evaluation.summary?.evaluatedRules === 0) {
+      rawStatus = "unknown";
     } else {
-      rawStatus = evaluation.score >= 75 ? "good" : "warning";
+      rawStatus = evaluation.score >= 75 ? "good" : "unknown";
     }
 
-    const stabilizedStatus = debouncer ? debouncer.debounce(area.key, rawStatus) : rawStatus;
+    const stabilizedStatus = debouncer && rawStatus !== "not_required" ? debouncer.debounce(area.key, rawStatus) : rawStatus;
 
     let hint: string | undefined;
     if (primaryIssue) {

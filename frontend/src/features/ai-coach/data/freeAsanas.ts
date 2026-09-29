@@ -1,7 +1,7 @@
 import type { Asana } from "../types/asana";
 
 const SUPABASE_BASE_URL =
-  import.meta.env.VITE_SUPABASE_URL ||
+  (import.meta as any).env?.VITE_SUPABASE_URL ||
   "https://gelmugbsyhgcluqigrad.supabase.co";
 
 const BUCKET_NAME = "asana-images";

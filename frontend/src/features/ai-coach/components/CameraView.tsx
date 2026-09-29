@@ -33,14 +33,18 @@ export const CameraView = React.memo(function CameraView({ videoRef, enabled = t
           return;
         }
 
+        const isMobile = typeof window !== 'undefined' && 
+          (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+          window.innerWidth < 768);
+
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
             width: {
-              ideal: 1280,
+              ideal: isMobile ? 640 : 1280,
             },
             height: {
-              ideal: 720,
+              ideal: isMobile ? 480 : 720,
             },
           },
           audio: false,

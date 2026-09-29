@@ -232,11 +232,32 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * Browser Speech Synthesis fallback (Disabled per user request to purely use natural voice)
+   * Browser Speech Synthesis fallback (Used when WebRTC fails or limits hit)
    */
-  private speakWithBrowserTTS(_text: string) {
-    // Intentionally disabled to ensure only the natural WebRTC voice is used.
-    // console.log("[AI COACH] Browser TTS disabled per user preference. Text:", text);
+  private speakWithBrowserTTS(text: string) {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    
+    // Cancel any ongoing speech to avoid queuing delays
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Try to match voice gender based on coach
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      const isKevin = this.currentCoachId === "kevin";
+      const preferred = voices.find(v => 
+        isKevin 
+          ? v.name.toLowerCase().includes("male") || v.name.toLowerCase().includes("david")
+          : v.name.toLowerCase().includes("female") || v.name.toLowerCase().includes("zira") || v.name.toLowerCase().includes("samantha")
+      );
+      if (preferred) {
+        utterance.voice = preferred;
+      }
+    }
+    
+    utterance.rate = 1.05; // slightly faster for coaching
+    window.speechSynthesis.speak(utterance);
   }
 
   /**
@@ -265,9 +286,11 @@ export class RealtimeVoiceAgent {
         this.hasActiveServerResponse = true;
       } catch (err) {
         console.warn("[AI COACH] Error asking OpenAI to speak:", err);
+        this.speakWithBrowserTTS(text);
       }
     } else {
-      console.warn("[AI COACH] Cannot speak, WebRTC disconnected. Text:", text);
+      console.warn("[AI COACH] WebRTC disconnected, falling back to Browser TTS. Text:", text);
+      this.speakWithBrowserTTS(text);
     }
 
     this.onTranscript?.({

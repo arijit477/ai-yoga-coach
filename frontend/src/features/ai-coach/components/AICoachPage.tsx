@@ -28,6 +28,8 @@ import { PrivacyNotice } from "./PrivacyNotice";
 import { SafetyGuideBanner } from "./SafetyGuideBanner";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
+import { getAllAsanas } from "../data/AsanaRegistry";
+import type { Asana } from "../types/asana";
 import { PostureCheckOverlay } from "./PostureCheckOverlay";
 import { getPostureCheckResult, PostureStatusDebouncer } from "../analysis/PostureCheckAdapter";
 import { getAsanaLandmarkRequirements } from "../analysis/AsanaLandmarkRequirements";
@@ -221,8 +223,8 @@ export function AICoachPage() {
    * UI components do NOT calculate angles or alignments independently.
    */
   const postureCheck = useMemo(
-    () => getPostureCheckResult(stableEvaluation, postureDebouncerRef.current ?? undefined),
-    [stableEvaluation],
+    () => getPostureCheckResult(stableEvaluation, postureDebouncerRef.current ?? undefined, asanaRequirements.requiredRegions),
+    [stableEvaluation, asanaRequirements.requiredRegions],
   );
 
   const {
@@ -456,7 +458,7 @@ export function AICoachPage() {
     if (!isCameraActive) {
       handleStartCamera();
     }
-    startSession();
+    startSession({ skipVideo: true });
 
     // When practice starts, trigger active coaching guidance
     if (
@@ -836,7 +838,7 @@ export function AICoachPage() {
 
               {!isIntroVideoActive && (
                 <AsanaSelector
-                  asanas={sessionAsanas}
+                  asanas={getAllAsanas() as unknown as Asana[]}
                   currentAsana={currentAsana}
                   onSelectAsana={(asana) => {
                     resetSession();
@@ -1023,17 +1025,7 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Camera Check Guidance Overlay in Cinema Mode */}
-            {sessionState === "camera_check" && (
-              <div className="absolute top-16 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-amber-500/95 text-white px-5 py-3 shadow-xl backdrop-blur-md border border-amber-300 z-30 animate-in fade-in slide-in-from-top-2">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-white animate-pulse shrink-0" />
-                  <p className="text-xs font-bold leading-snug">
-                    {cameraGuidanceMessage}
-                  </p>
-                </div>
-              </div>
-            )}
+
 
             {/* Step-by-Step Guidance Banner in Cinema Mode */}
             {sessionState === "coaching" &&
@@ -1301,17 +1293,7 @@ export function AICoachPage() {
                   </div>
                 )}
 
-                {/* Camera Check Guidance Overlay */}
-                {sessionState === "camera_check" && (
-                  <div className="absolute top-14 left-1/2 -translate-x-1/2 max-w-md w-11/12 rounded-2xl bg-amber-500/95 text-white px-5 py-3 shadow-xl backdrop-blur-md border border-amber-300 z-30 animate-in fade-in slide-in-from-top-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-white animate-pulse shrink-0" />
-                      <p className="text-xs font-bold leading-snug">
-                        {cameraGuidanceMessage}
-                      </p>
-                    </div>
-                  </div>
-                )}
+
 
                 {/* Step-by-Step Guidance Banner in Camera View */}
                 {sessionState === "coaching" &&
@@ -1408,7 +1390,7 @@ export function AICoachPage() {
                 coachName={getCoachName(selectedCoach)}
               >
                 <AsanaSelector
-                  asanas={sessionAsanas}
+                  asanas={getAllAsanas() as unknown as Asana[]}
                   currentAsana={currentAsana}
                   onSelectAsana={(asana) => {
                     resetSession();

@@ -214,8 +214,10 @@ export function evaluateCameraReadiness(
     guidanceKey = "head_missing";
   } else if (avgConfidence < 0.3) {
     guidanceKey = "poor_confidence";
-  } else {
+  } else if (required.includes("feet") && required.includes("head")) {
     guidanceKey = "partial_body";
+  } else {
+    guidanceKey = "partial_pose";
   }
 
   return {
