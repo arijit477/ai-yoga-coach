@@ -144,8 +144,8 @@ export class CoachingEventBuilder {
       targetMax: issue.targetMax ?? issue.max,
     };
 
-    // Generate natural feedback message using the language system
-    const feedback = getPoseCorrectionMessage({
+    // Prioritize the specific, actionable posture feedback from the rule definition
+    const feedback = issue.feedback || getPoseCorrectionMessage({
       coach: coachPersona,
       asanaName,
       joint: issue.joint,

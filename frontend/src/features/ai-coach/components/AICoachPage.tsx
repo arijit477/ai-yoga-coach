@@ -517,14 +517,51 @@ export function AICoachPage() {
     lastSentContextRef.current = null;
   }, [selectedCoach]);
 
-  // Reset per-asana dispatch locks and handle throttled session context updates
+  // Reset per-asana dispatch locks and trigger instant voice guidance on asana change
+  const prevAsanaIdRef = useRef<string>(currentAsana.id);
   useEffect(() => {
-    hasDispatchedStartRef.current = null;
-    hasDispatchedHeldRef.current = null;
-    hasDispatchedCompletedRef.current = null;
-    hasDispatchedThresholdRef.current = null;
-    lastAnnouncedCountdownRef.current = null;
-  }, [currentAsana.id]);
+    if (prevAsanaIdRef.current !== currentAsana.id) {
+      prevAsanaIdRef.current = currentAsana.id;
+      hasDispatchedStartRef.current = null;
+      hasDispatchedHeldRef.current = null;
+      hasDispatchedCompletedRef.current = null;
+      hasDispatchedThresholdRef.current = null;
+      lastAnnouncedCountdownRef.current = null;
+      coachingEngineRef.current?.reset();
+      voiceResetEngine();
+
+      if (
+        voiceState.status === "connected" ||
+        voiceState.status === "speaking" ||
+        isSessionActive
+      ) {
+        voiceTriggerPoseStart(
+          currentAsana.id,
+          currentAsana.name,
+          currentAsana.description,
+        );
+      }
+    }
+  }, [
+    currentAsana.id,
+    currentAsana.name,
+    currentAsana.description,
+    voiceState.status,
+    isSessionActive,
+    voiceTriggerPoseStart,
+    voiceResetEngine,
+  ]);
+
+  const handleSelectAsana = useCallback(
+    (asana: Asana) => {
+      resetSession();
+      setCurrentAsana(asana);
+      coachingEngineRef.current?.reset();
+      voiceResetEngine();
+      voiceTriggerPoseStart(asana.id, asana.name, asana.description);
+    },
+    [resetSession, setCurrentAsana, voiceResetEngine, voiceTriggerPoseStart],
+  );
 
   // Dispatch camera state changes as voice events
   // Now handled by CoachingEventEngine in the main pipeline
@@ -667,7 +704,8 @@ export function AICoachPage() {
       currentAsana.name,
       sessionState,
       cameraState,
-      stableEvaluation
+      stableEvaluation,
+      selectedCoach as "alice" | "kevin",
     );
 
     newEvents.forEach((event) => {
@@ -680,6 +718,7 @@ export function AICoachPage() {
     cameraState,
     stableEvaluation,
     currentAsana,
+    selectedCoach,
     voiceDispatch,
     voiceState.status,
   ]);
@@ -843,10 +882,7 @@ export function AICoachPage() {
                 <AsanaSelector
                   asanas={getAllAsanas() as unknown as Asana[]}
                   currentAsana={currentAsana}
-                  onSelectAsana={(asana) => {
-                    resetSession();
-                    setCurrentAsana(asana);
-                  }}
+                  onSelectAsana={handleSelectAsana}
                   disabled={isSessionActive}
                   isDark
                   align="left"
@@ -1395,10 +1431,7 @@ export function AICoachPage() {
                 <AsanaSelector
                   asanas={getAllAsanas() as unknown as Asana[]}
                   currentAsana={currentAsana}
-                  onSelectAsana={(asana) => {
-                    resetSession();
-                    setCurrentAsana(asana);
-                  }}
+                  onSelectAsana={handleSelectAsana}
                   disabled={isSessionActive}
                   align="right"
                 />

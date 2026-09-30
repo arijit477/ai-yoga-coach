@@ -1,14 +1,15 @@
 import os
 from pathlib import Path
 
-from app.core.supabase import supabase
+from app.core.supabase import get_supabase_client
 
 
 BUCKET_NAME = os.getenv("SUPABASE_ASANA_BUCKET", "asana-images")
 
 
 def get_public_image_url(file_path: str) -> str:
-    response = supabase.storage \
+    client = get_supabase_client()
+    response = client.storage \
         .from_(BUCKET_NAME) \
         .get_public_url(file_path)
 
@@ -20,8 +21,8 @@ def upload_asana_image(
     file_path: str,
     content_type: str,
 ) -> str:
-
-    supabase.storage \
+    client = get_supabase_client()
+    client.storage \
         .from_(BUCKET_NAME) \
         .upload(
             path=file_path,

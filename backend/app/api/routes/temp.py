@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.core.supabase import supabase
+from app.core.supabase import get_supabase_client
 
 router = APIRouter(
     prefix="/api/asanas",
@@ -10,8 +10,9 @@ router = APIRouter(
 @router.get("/assets")
 def get_asana_assets():
     try:
+        client = get_supabase_client()
         result = (
-            supabase
+            client
             .storage
             .from_("asana-images")
             .list("yogaverse-model-asanas")

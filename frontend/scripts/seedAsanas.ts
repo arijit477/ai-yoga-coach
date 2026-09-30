@@ -1,15 +1,33 @@
 import { createClient } from "@supabase/supabase-js";
 import { ALL_ASANAS_CATALOG } from "../src/features/ai-coach/data/allAsanasCatalog";
 import { ASANA_RULES_CATALOG } from "../src/features/ai-coach/analysis/rules/poseRulesRegistry";
+import path from "path";
 import dotenv from "dotenv";
 
-// Load env vars
+// Load env vars from frontend/.env and backend/.env
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../backend/.env") });
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL || "https://gelmugbsyhgcluqigrad.supabase.co";
-const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || ""; // We might need a service role key for inserting, but if RLS allows anon insert or we disable it for seeding, this works.
+const supabaseUrl =
+  process.env.VITE_SUPABASE_URL ||
+  process.env.SUPABASE_URL ||
+  "https://gelmugbsyhgcluqigrad.supabase.co";
+
+const supabaseKey =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  "";
+
+if (!supabaseKey) {
+  console.error(
+    "Error: No Supabase key found!\nPlease provide SUPABASE_SERVICE_ROLE_KEY or VITE_SUPABASE_PUBLISHABLE_KEY in frontend/.env or backend/.env."
+  );
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 
 async function seed() {
   console.log("Seeding asanas into Supabase...");

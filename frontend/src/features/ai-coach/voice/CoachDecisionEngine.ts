@@ -12,6 +12,18 @@ export const DEFAULT_COACHING_CONFIG: CoachingEngineConfig = {
   goodFormCooldownMs: 6000,
 };
 
+/**
+ * CoachDecisionEngine
+ * 
+ * Gatekeeper that arbitrates whether a structured coaching event
+ * should be verbalized by the voice agent.
+ * 
+ * Core Responsibilities:
+ * - Priority hierarchy enforcement (Safety 1 > Camera 2-4 > Form Correction 6 > Validation 7 > Completed 8 > Good Form 9).
+ * - Cooldown enforcement (4s baseline, 10s repeat rule, 6s good form).
+ * - Anti-spam & duplicate suppression.
+ * - Recovery & regression state management.
+ */
 export class CoachDecisionEngine {
   private config: CoachingEngineConfig;
   private lastEventTime: number = 0;
@@ -35,7 +47,6 @@ export class CoachDecisionEngine {
       case "camera_unavailable": return 2;
       case "user_out_of_frame": return 3;
       case "partial_body": return 4;
-      // 5 is reserved for user speech / user questions
       case "pose_correction":
         if (event.severity === "high") return 6;
         if (event.severity === "medium") return 6.1;
@@ -57,14 +68,18 @@ export class CoachDecisionEngine {
   public evaluate(event: CoachingEvent, context?: any): CoachDecision {
     const now = context?.now ?? Date.now();
     const priority = this.getEventPriority(event);
-    const isUserSpeaking = context?.isUserSpeaking === true;
 
     // 1. Safety Warnings always pass through immediately
     if (priority === 1) {
       return this.approve(event, priority, true, "Safety warning requires immediate interruption.", "Correct safety issue", now);
     }
 
-    // 2. Camera states bypass standard rule cooldowns but have minimal cooldown
+    // 2. Suppress non-critical coaching events if isUserSpeaking context is active
+    if (context?.isUserSpeaking === true && priority > 4) {
+      return this.reject(event, priority, "User is currently speaking. Suppressing non-critical event.");
+    }
+
+    // 2. Camera states bypass standard rule cooldowns but have minimal debounce
     if (priority <= 4) {
       if (this.lastEventType === event.type && now - this.lastEventTime < this.config.cooldownMs) {
         return this.reject(event, priority, "Already recently announced this camera state.");
@@ -72,12 +87,7 @@ export class CoachDecisionEngine {
       return this.approve(event, priority, true, "Camera/visibility issues must be addressed immediately.", "Fix camera/position", now);
     }
 
-    // 3. Prevent interrupting the user while user is actively speaking (unless priority <= 4)
-    if (isUserSpeaking) {
-      return this.reject(event, priority, "User is currently speaking. Suppressing non-critical event.");
-    }
-
-    // 4. Pose Completed: fire exactly once per asana
+    // 3. Pose Completed: fire exactly once per asana
     if (event.type === "pose_completed") {
       if (this.completedAsanas.has(event.asanaId)) {
         return this.reject(event, priority, `Pose ${event.asanaId} completion already announced.`);
@@ -86,7 +96,7 @@ export class CoachDecisionEngine {
       return this.approve(event, priority, false, "Pose completion achieved.", "Complete pose", now);
     }
 
-    // 5. Good Form: respect dedicated good form cooldown
+    // 4. Good Form: respect dedicated good form cooldown
     if (event.type === "good_form" && this.lastGoodFormTime > 0) {
       const timeSinceGoodForm = now - this.lastGoodFormTime;
       if (timeSinceGoodForm < this.config.goodFormCooldownMs) {
@@ -94,7 +104,7 @@ export class CoachDecisionEngine {
       }
     }
 
-    // 6. Duplicate identical rule suppression (e.g. repeated same knee issue)
+    // 5. Duplicate identical rule suppression (e.g. repeated same knee issue)
     if (event.type === "pose_correction" && event.ruleId) {
       const lastTime = this.ruleTimestamps.get(event.ruleId) || 0;
       if (lastTime > 0) {
@@ -105,17 +115,17 @@ export class CoachDecisionEngine {
       }
     }
 
-    // 7. Preemption / Active baseline cooldown
+    // 6. Preemption / Active baseline cooldown
     if (this.lastEventTime > 0) {
       const timeSinceLastEvent = now - this.lastEventTime;
-      const isHigherPriority = priority < this.lastEventPriority; // Note: lower number = higher priority
+      const isHigherPriority = priority < this.lastEventPriority; // Lower number = higher priority
 
       if (!isHigherPriority && timeSinceLastEvent < this.config.cooldownMs) {
         return this.reject(event, priority, `Baseline cooldown active (${timeSinceLastEvent}ms). Current priority ${priority} does not preempt last priority ${this.lastEventPriority}.`);
       }
     }
 
-    // 8. Duplicate event types for state-driven one-time lifecycle events
+    // 7. Duplicate event types for state-driven one-time lifecycle events
     const oneTimeEvents = [
       "pose_started", "calibration_prompt", "calibration_complete", "calibration_required",
       "pose_held", "camera_ready"
@@ -130,7 +140,7 @@ export class CoachDecisionEngine {
     }
 
     // Approve the event
-    return this.approve(event, priority, false, "Event meets all criteria to be spoken.", "Improve posture/form", now);
+    return this.approve(event, priority, priority <= 6, "Event meets all criteria to be spoken.", "Improve posture/form", now);
   }
 
   private approve(
@@ -147,6 +157,10 @@ export class CoachDecisionEngine {
     
     if (event.type === "pose_correction" && event.ruleId) {
       this.ruleTimestamps.set(event.ruleId, now);
+    }
+    if (event.type === "issue_resolved" && event.ruleId) {
+      // Clear rule cooldown upon explicit recovery so future regressions can be flagged
+      this.ruleTimestamps.delete(event.ruleId);
     }
     if (event.type === "good_form") {
       this.lastGoodFormTime = now;
@@ -176,7 +190,7 @@ export class CoachDecisionEngine {
     };
   }
 
-  public reset() {
+  public reset(): void {
     this.lastEventTime = 0;
     this.lastGoodFormTime = 0;
     this.ruleTimestamps.clear();
@@ -185,4 +199,3 @@ export class CoachDecisionEngine {
     this.completedAsanas.clear();
   }
 }
-

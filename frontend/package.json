@@ -10,6 +10,7 @@
     "lint": "oxlint",
     "test": "tsx --test \"src/**/__tests__/*.test.ts\"",
     "validate:asanas": "tsx scripts/validateAsanas.ts",
+    "seed:asanas": "tsx scripts/seedAsanas.ts",
     "preview": "vite preview"
   },
   "dependencies": {

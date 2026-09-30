@@ -69,16 +69,8 @@ export function useRealtimeVoice() {
     });
   }, []);
 
-  const toggleConversationMode = useCallback(() => {
-    setState((prev) => {
-      const nextMode = !prev.isConversationMode;
-      if (nextMode) {
-        agentRef.current?.startListening();
-      } else {
-        agentRef.current?.stopListening();
-      }
-      return { ...prev, isConversationMode: nextMode };
-    });
+  const unlockAudio = useCallback(() => {
+    agentRef.current?.unlockAudio();
   }, []);
 
   const dispatchEvent = useCallback((event: CoachingEvent, context?: any) => {
@@ -123,7 +115,7 @@ export function useRealtimeVoice() {
     connect: start,
     disconnect: stop,
     toggleMute,
-    toggleConversationMode,
+    unlockAudio,
     dispatchEvent,
     updateSessionContext,
     triggerPoseStart,
