@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { RealtimeVoiceAgent, type SessionContextData } from "./RealtimeVoiceAgent";
 import { CoachDecisionEngine, DEFAULT_COACHING_CONFIG } from "./CoachDecisionEngine";
 import type { VoiceState, CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
+import type { FeedbackOutput } from "../analysis/FeedbackEngine";
 
 export function useRealtimeVoice() {
   const agentRef = useRef<RealtimeVoiceAgent | null>(null);
@@ -9,6 +10,7 @@ export function useRealtimeVoice() {
   
   const statusRef = useRef<VoiceConnectionState>("disconnected");
   const lastActiveCoachRef = useRef<string>("alice");
+  const isMutedRef = useRef<boolean>(false);
 
   const [state, setState] = useState<VoiceState>({
     status: "disconnected",
@@ -38,6 +40,9 @@ export function useRealtimeVoice() {
     lastActiveCoachRef.current = coachId;
     decisionEngineRef.current?.reset();
     await agentRef.current?.connect(coachId);
+    if (isMutedRef.current) {
+      agentRef.current?.setMuted(true);
+    }
   }, []);
 
   const stop = useCallback(() => {
@@ -48,25 +53,22 @@ export function useRealtimeVoice() {
   }, []);
 
   const mute = useCallback(() => {
-    setState((prev) => {
-      agentRef.current?.setMuted(true);
-      return { ...prev, isMuted: true };
-    });
+    isMutedRef.current = true;
+    agentRef.current?.setMuted(true);
+    setState((prev) => ({ ...prev, isMuted: true }));
   }, []);
 
   const unmute = useCallback(() => {
-    setState((prev) => {
-      agentRef.current?.setMuted(false);
-      return { ...prev, isMuted: false };
-    });
+    isMutedRef.current = false;
+    agentRef.current?.setMuted(false);
+    setState((prev) => ({ ...prev, isMuted: false }));
   }, []);
 
   const toggleMute = useCallback(() => {
-    setState((prev) => {
-      const nextMuted = !prev.isMuted;
-      agentRef.current?.setMuted(nextMuted);
-      return { ...prev, isMuted: nextMuted };
-    });
+    const nextMuted = !isMutedRef.current;
+    isMutedRef.current = nextMuted;
+    agentRef.current?.setMuted(nextMuted);
+    setState((prev) => ({ ...prev, isMuted: nextMuted }));
   }, []);
 
   const unlockAudio = useCallback(() => {
@@ -81,6 +83,10 @@ export function useRealtimeVoice() {
     } else if (decision) {
        console.log(`[AI COACH] Coaching event suppressed: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
     }
+  }, []);
+
+  const sendFeedback = useCallback((feedback: FeedbackOutput) => {
+    agentRef.current?.sendFeedback(feedback);
   }, []);
 
   const triggerPoseStart = useCallback((asanaId: string, asanaName: string, asanaDescription?: string) => {
@@ -117,6 +123,7 @@ export function useRealtimeVoice() {
     toggleMute,
     unlockAudio,
     dispatchEvent,
+    sendFeedback,
     updateSessionContext,
     triggerPoseStart,
     speakGreeting,

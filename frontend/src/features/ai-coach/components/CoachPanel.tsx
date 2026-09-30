@@ -17,7 +17,6 @@ interface CoachPanelProps {
   voiceState?: VoiceState;
   isSessionActive?: boolean;
   onToggleMute?: () => void;
-  onStopVoice?: () => void;
   score?: number | null;
   displayedScore?: number | null;
   holdTime?: number;
@@ -36,7 +35,6 @@ export const CoachPanel = React.memo(function CoachPanel({
   voiceState,
   isSessionActive = false,
   onToggleMute,
-  onStopVoice,
   score,
   displayedScore,
   holdTime = 0,
@@ -107,7 +105,7 @@ export const CoachPanel = React.memo(function CoachPanel({
         postureCheck={postureCheck}
       />
 
-      {/* Embedded Multi-Button Voice Assistant Control */}
+      {/* Embedded Voice Assistant Control (Mute/Unmute Coach) */}
       {voiceState && onToggleMute && (
         <div className={`pt-1 border-t border-slate-100 ${!isSessionActive ? "opacity-90" : ""}`}>
           <VoiceControls
@@ -115,7 +113,6 @@ export const CoachPanel = React.memo(function CoachPanel({
             isSessionActive={isSessionActive}
             coachName={coach === "alice" ? "Alice" : "Kevin"}
             onToggleMute={onToggleMute}
-            onStopVoice={onStopVoice}
           />
         </div>
       )}

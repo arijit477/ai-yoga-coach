@@ -12,15 +12,19 @@ import {
   type CameraReadinessResult,
   type BodyRegion,
 } from "../features/ai-coach/types/camera";
+import { evaluateCompletionGate } from "../features/ai-coach/analysis/AsanaCompletionGate";
 
 interface UseCoachSessionOptions {
   evaluation: PoseEvaluation | PoseEvaluationResult | null;
+  asanaId?: string;
   landmarks?: PoseLandmarks | null;
   requiredLandmarks?: number[];
   requiredRegions?: BodyRegion[];
   isInitialized: boolean;
   hasPose: boolean;
   targetHoldSeconds?: number;
+  completionHoldMs?: number;
+  completionAccuracyThreshold?: number;
   currentAsanaIndex: number;
   totalAsanas: number;
   hasGuideVideo?: boolean;
@@ -34,7 +38,7 @@ interface UseCoachSessionOptions {
   onPoseReviewReady?: (score: number) => void;
 }
 
-interface UseCoachSessionResult {
+export interface UseCoachSessionResult {
   state: CoachSessionState;
   countdown: number | null;
   holdTime: number;
@@ -60,19 +64,23 @@ interface UseCoachSessionResult {
   endSession: () => void;
 }
 
-const GET_READY_SECONDS = 3;
-const HOLD_STILL_SECONDS = 2;
-const DEFAULT_REQUIRED_HOLD_SECONDS = 5;
-const COMPLETION_ACCURACY_THRESHOLD = 75;
+export const GET_READY_SECONDS = 3;
+export const HOLD_STILL_SECONDS = 2;
+export const DEFAULT_REQUIRED_HOLD_SECONDS = 5;
+export const COMPLETION_ACCURACY_THRESHOLD = 75;
+export const COMPLETION_HOLD_MS = 5000;
 
 export function useCoachSession({
   evaluation,
+  asanaId,
   landmarks,
   requiredLandmarks,
   requiredRegions,
   isInitialized: _isInitialized,
   hasPose,
   targetHoldSeconds = DEFAULT_REQUIRED_HOLD_SECONDS,
+  completionHoldMs = COMPLETION_HOLD_MS,
+  completionAccuracyThreshold = COMPLETION_ACCURACY_THRESHOLD,
   currentAsanaIndex,
   totalAsanas,
   hasGuideVideo = false,
@@ -135,6 +143,8 @@ export function useCoachSession({
   const hasPromptedCalibrationRef = useRef(false);
   const lastPromptedWarningRef = useRef<string | null>(null);
   const hasCompletedCurrentAsanaRef = useRef(false);
+  const completionCandidateSinceRef = useRef<number | null>(null);
+  const lastDebugLogTimeRef = useRef<number>(0);
   const holdScoresRef = useRef<number[]>([]);
 
   const clearTimers = useCallback(() => {
@@ -168,6 +178,7 @@ export function useCoachSession({
     calibrationTrackerRef.current?.reset();
     scoreBufferRef.current.reset();
     hasCompletedCurrentAsanaRef.current = false;
+    completionCandidateSinceRef.current = null;
     setHoldTime(0);
     setCalibrationProgress(0);
     setVisibilityWarning(null);
@@ -441,9 +452,16 @@ export function useCoachSession({
   }, [state, evaluation, instructionsCount, currentStepIndex, onStepChange]);
 
   const hasPoseLostSinceRef = useRef<number | null>(null);
-  const highAccuracySinceRef = useRef<number | null>(null);
 
-  // Reset completion flag and buffers when moving to a new asana index
+  // Reset completion flag and buffers when moving to a new asana index or asana ID
+  const prevAsanaIdRef = useRef<string | undefined>(asanaId);
+  useEffect(() => {
+    if (prevAsanaIdRef.current !== asanaId) {
+      prevAsanaIdRef.current = asanaId;
+      resetCurrentAsana();
+    }
+  }, [asanaId, resetCurrentAsana]);
+
   useEffect(() => {
     resetCurrentAsana();
   }, [currentAsanaIndex, resetCurrentAsana]);
@@ -458,12 +476,19 @@ export function useCoachSession({
       state !== "holding"
     ) {
       hasPoseLostSinceRef.current = null;
-      highAccuracySinceRef.current = null;
+      completionCandidateSinceRef.current = null;
+      return;
+    }
+
+    // If already completed for this asana, ignore all subsequent completion frames (one-shot guard)
+    if (hasCompletedCurrentAsanaRef.current) {
+      completionCandidateSinceRef.current = null;
       return;
     }
 
     if (!hasPose) {
-      highAccuracySinceRef.current = null;
+      completionCandidateSinceRef.current = null;
+      setHoldTime(0);
       if (hasPoseLostSinceRef.current === null) {
         hasPoseLostSinceRef.current = Date.now();
       } else if (Date.now() - hasPoseLostSinceRef.current > 7000) {
@@ -477,32 +502,64 @@ export function useCoachSession({
     }
 
     if (!evaluation) {
-      highAccuracySinceRef.current = null;
+      completionCandidateSinceRef.current = null;
+      setHoldTime(0);
       return;
     }
 
-    // Push valid score to rolling buffer
-    const isValidFrame = hasPose && evaluation.score >= 0;
-    scoreBufferRef.current.push(evaluation.score, isValidFrame);
+    // Push valid score to rolling buffer only on valid tracking frames
+    const isEvalValid = "isValid" in evaluation ? evaluation.isValid !== false : true;
+    const isValidFrame = hasPose && isEvalValid && evaluation.score !== null && evaluation.score !== undefined && evaluation.score >= 0;
+    if (isValidFrame) {
+      scoreBufferRef.current.push(evaluation.score, true);
+    }
 
-    if (state === "holding") {
+    if (state === "holding" && isValidFrame) {
       holdScoresRef.current.push(evaluation.score);
     }
 
-    // 14. 75% Completion Threshold
-    if (evaluation.score >= COMPLETION_ACCURACY_THRESHOLD) {
-      if (highAccuracySinceRef.current === null) {
-        highAccuracySinceRef.current = Date.now();
+    // Evaluate Completion Gate (Physical stance, required body regions, critical rules, accuracy threshold)
+    const activeAsanaId = asanaId || ("asanaId" in evaluation ? evaluation.asanaId : "") || "";
+    const gateResult = evaluateCompletionGate({
+      asanaId: activeAsanaId,
+      evaluation,
+      landmarks,
+      cameraReady: cameraReadiness.ready,
+      completionAccuracyThreshold,
+    });
+
+    const isPoseValidForCompletion = gateResult.isEligible;
+
+    if (isPoseValidForCompletion) {
+      const now = Date.now();
+      if (completionCandidateSinceRef.current === null) {
+        completionCandidateSinceRef.current = now;
       }
 
-      // Complete asana once held steadily for 1000ms (>= 75% threshold crossing)
-      if (Date.now() - highAccuracySinceRef.current >= 1000) {
+      const elapsedHold = now - completionCandidateSinceRef.current;
+      const currentHoldSeconds = Math.min(
+        targetHoldSeconds,
+        Math.round((elapsedHold / 1000) * 10) / 10
+      );
+      setHoldTime(currentHoldSeconds);
+
+      // Throttled debug output (once per second)
+      if (now - lastDebugLogTimeRef.current >= 1000) {
+        lastDebugLogTimeRef.current = now;
+        console.debug(
+          `[AI Coach Completion Gate] Asana: ${activeAsanaId} (${gateResult.requiredStance}), Score: ${evaluation.score.toFixed(1)}% (Threshold: ${completionAccuracyThreshold}%), ` +
+          `CriticalRules: ${gateResult.criticalRulesPassed}/${gateResult.criticalRulesEvaluated}, StanceValid: ${gateResult.stanceValid}, ` +
+          `Continuous Hold: ${elapsedHold}ms / ${completionHoldMs}ms, State: ${state}`
+        );
+      }
+
+      // Complete asana only once valid pose is held continuously for completionHoldMs (5000ms)
+      if (elapsedHold >= completionHoldMs) {
         if (!hasCompletedCurrentAsanaRef.current) {
           hasCompletedCurrentAsanaRef.current = true;
+          completionCandidateSinceRef.current = null;
           scoreBufferRef.current.setCompleted(true);
-          const finalScore =
-            scoreBufferRef.current.getFinalScore() ??
-            Math.max(75, Math.min(100, Math.round(evaluation.score)));
+          const finalScore = Math.max(0, Math.min(100, Math.round(evaluation.score)));
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);
           transitionTo("pose_review");
@@ -512,31 +569,40 @@ export function useCoachSession({
           }, 50);
         }
       } else {
-        if (state !== "coaching" && state !== "holding") {
-          transitionTo("coaching");
+        if (state !== "holding") {
+          transitionTo("holding");
         }
       }
     } else {
-      highAccuracySinceRef.current = null;
-      // 12. Correcting state when primary issue exists
-      if (evaluation.primaryIssue && state !== "correcting" && state !== "holding") {
+      // RESET candidate hold immediately on ANY signal invalidation (e.g. 75% -> 77% -> 73% or issue detected)
+      completionCandidateSinceRef.current = null;
+      setHoldTime(0);
+
+      // Correcting state when primary issue exists
+      if (evaluation.primaryIssue && state !== "correcting") {
         transitionTo("correcting");
-      } else if (!evaluation.primaryIssue && state === "correcting") {
+      } else if (!evaluation.primaryIssue && state !== "coaching") {
         transitionTo("coaching");
       }
     }
   }, [
     evaluation,
     hasPose,
+    landmarks,
+    cameraReadiness.ready,
     state,
     currentAsanaIndex,
+    asanaId,
+    targetHoldSeconds,
+    completionAccuracyThreshold,
+    completionHoldMs,
     onAsanaComplete,
     onPoseReviewReady,
     transitionTo,
   ]);
 
   /**
-   * 13. Optional Hold timer count-up (does NOT block 75% completion)
+   * 13. Hold timer cleanup
    */
   useEffect(() => {
     if (state !== "holding") {
@@ -544,71 +610,14 @@ export function useCoachSession({
         clearInterval(holdTimerRef.current);
         holdTimerRef.current = null;
       }
-      return;
     }
-
-    if (holdTimerRef.current) {
-      return;
-    }
-
-    holdTimerRef.current = setInterval(() => {
-      setHoldTime((previous) => {
-        const next = Math.round((previous + 0.1) * 10) / 10;
-
-        if (next >= targetHoldSeconds) {
-          if (holdTimerRef.current) {
-            clearInterval(holdTimerRef.current);
-            holdTimerRef.current = null;
-          }
-
-          if (!hasCompletedCurrentAsanaRef.current) {
-            hasCompletedCurrentAsanaRef.current = true;
-            scoreBufferRef.current.setCompleted(true);
-            const samples = holdScoresRef.current;
-            const finalScore =
-              samples.length > 0
-                ? Math.max(
-                    50,
-                    Math.min(
-                      100,
-                      Math.round(
-                        samples.reduce((sum, s) => sum + s, 0) / samples.length
-                      )
-                    )
-                  )
-                : (scoreBufferRef.current.getFinalScore() ??
-                  Math.round(evaluation?.score ?? 80));
-
-            onAsanaComplete?.(currentAsanaIndex, finalScore);
-            onPoseReviewReady?.(finalScore);
-            transitionTo("pose_review");
-            setTimeout(() => {
-              transitionTo("user_choice");
-            }, 50);
-          }
-
-          return targetHoldSeconds;
-        }
-
-        return next;
-      });
-    }, 100);
-
     return () => {
       if (holdTimerRef.current) {
         clearInterval(holdTimerRef.current);
         holdTimerRef.current = null;
       }
     };
-  }, [
-    state,
-    targetHoldSeconds,
-    evaluation?.score,
-    currentAsanaIndex,
-    onAsanaComplete,
-    onPoseReviewReady,
-    transitionTo,
-  ]);
+  }, [state]);
 
   /**
    * 15. User Choice Actions:
@@ -654,6 +663,9 @@ export function useCoachSession({
    * "Stay Here" (STAY HERE)
    */
   const stayHere = useCallback(() => {
+    hasCompletedCurrentAsanaRef.current = false;
+    completionCandidateSinceRef.current = null;
+    scoreBufferRef.current.reset();
     transitionTo("coaching");
   }, [transitionTo]);
 

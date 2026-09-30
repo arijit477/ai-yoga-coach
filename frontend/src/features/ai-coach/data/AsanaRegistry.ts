@@ -5,7 +5,9 @@ import { supabase } from "../../../lib/supabase";
 import { fetchRulesCache } from "../analysis/rules/poseRulesRegistry";
 import { getAsanaImageUrl, getAsanaVideoUrl } from "./freeAsanas";
 
-let ALL_ASANAS: AsanaDefinition[] = [];
+import { ALL_ASANAS_CATALOG } from "./allAsanasCatalog";
+
+let ALL_ASANAS: AsanaDefinition[] = [...ALL_ASANAS_CATALOG];
 const ASANA_REGISTRY_MAP = new Map<string, AsanaDefinition>();
 
 /**
@@ -16,6 +18,33 @@ export function normalizeAsanaId(filenameOrId: string): string {
   const clean = filenameOrId.split("?")[0].split("/").pop() || filenameOrId;
   return clean.replace(/\.(webp|png|jpg|jpeg)$/i, "").trim().toLowerCase();
 }
+
+function populateRegistryMap(asanas: AsanaDefinition[]) {
+  ASANA_REGISTRY_MAP.clear();
+  for (const asana of asanas) {
+    const primaryKey = normalizeAsanaId(asana.id);
+    ASANA_REGISTRY_MAP.set(primaryKey, asana);
+
+    if (asana.slug) {
+      const slugKey = normalizeAsanaId(asana.slug);
+      if (slugKey && !ASANA_REGISTRY_MAP.has(slugKey)) {
+        ASANA_REGISTRY_MAP.set(slugKey, asana);
+      }
+    }
+
+    if (asana.aliases) {
+      for (const alias of asana.aliases) {
+        const aliasKey = normalizeAsanaId(alias);
+        if (aliasKey && !ASANA_REGISTRY_MAP.has(aliasKey)) {
+          ASANA_REGISTRY_MAP.set(aliasKey, asana);
+        }
+      }
+    }
+  }
+}
+
+// Initial populate from bundled authoritative catalog
+populateRegistryMap(ALL_ASANAS);
 
 // Duplicate declarations removed
 
@@ -60,21 +89,7 @@ export async function initAsanaRegistry() {
   }) as AsanaDefinition[];
 
   ALL_ASANAS = mapped;
-
-  ASANA_REGISTRY_MAP.clear();
-  for (const asana of ALL_ASANAS) {
-    const primaryKey = normalizeAsanaId(asana.id);
-    ASANA_REGISTRY_MAP.set(primaryKey, asana);
-
-    if (asana.aliases) {
-      for (const alias of asana.aliases) {
-        const aliasKey = normalizeAsanaId(alias);
-        if (aliasKey && !ASANA_REGISTRY_MAP.has(aliasKey)) {
-          ASANA_REGISTRY_MAP.set(aliasKey, asana);
-        }
-      }
-    }
-  }
+  populateRegistryMap(ALL_ASANAS);
 }
 
 /**
@@ -83,7 +98,8 @@ export async function initAsanaRegistry() {
 export function getAsana(idOrAlias: string): AsanaDefinition | null {
   if (!idOrAlias) return null;
   const key = normalizeAsanaId(idOrAlias);
-  return ASANA_REGISTRY_MAP.get(key) ?? null;
+  const asana = ASANA_REGISTRY_MAP.get(key);
+  return asana ?? null;
 }
 
 /**

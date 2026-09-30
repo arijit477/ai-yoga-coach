@@ -6,8 +6,14 @@ import {
 
 import { PoseLandmarkerService } from "../features/ai-coach/motion/PoseLandmarkerService";
 import { MotionFrameProcessor } from "../features/ai-coach/motion/MotionFrameProcessor";
-import { CameraReadinessTracker, type CameraReadinessState } from "../features/ai-coach/motion/CameraReadinessTracker";
-import type { PoseTrackingResult, PoseLandmarks } from "../features/ai-coach/types/landmarks";
+import {
+  CameraReadinessTracker,
+  type CameraReadinessState,
+} from "../features/ai-coach/motion/CameraReadinessTracker";
+import type {
+  PoseTrackingResult,
+  PoseLandmarks,
+} from "../features/ai-coach/types/landmarks";
 
 export function usePoseTracking(
   videoRef: React.RefObject<HTMLVideoElement | null>,
@@ -16,201 +22,477 @@ export function usePoseTracking(
 ) {
   const serviceRef = useRef<PoseLandmarkerService | null>(null);
   const processorRef = useRef<MotionFrameProcessor | null>(null);
+
   const isInitializingRef = useRef(false);
   const isMountedRef = useRef(true);
 
   const animationFrameRef = useRef<number | null>(null);
   const isRunningRef = useRef(false);
+
   const lastLandmarksRef = useRef<PoseLandmarks | null>(null);
   const lastWorldLandmarksRef = useRef<PoseLandmarks | null>(null);
+
   const lastRenderTimeRef = useRef<number>(0);
   const lastVideoElementRef = useRef<HTMLVideoElement | null>(null);
 
   const [result, setResult] = useState<PoseTrackingResult | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [cameraState, setCameraState] = useState<CameraReadinessState>("CAMERA_DISABLED");
+  const [cameraState, setCameraState] =
+    useState<CameraReadinessState>("CAMERA_DISABLED");
 
-  // Keep latest state setter in ref to ensure stable callback identity
-  const onCameraStateChangeRef = useRef<(newState: CameraReadinessState) => void>(setCameraState);
+  /*
+   * Keep the latest React state setter in a ref.
+   *
+   * CameraReadinessTracker may live for the entire lifetime of this hook,
+   * so it must never capture a stale setState reference.
+   */
+  const onCameraStateChangeRef =
+    useRef<(newState: CameraReadinessState) => void>(setCameraState);
+
   onCameraStateChangeRef.current = setCameraState;
 
-  const readinessTrackerRef = useRef<CameraReadinessTracker | null>(null);
+  /*
+   * Camera readiness tracker is intentionally created once.
+   */
+  const readinessTrackerRef =
+    useRef<CameraReadinessTracker | null>(null);
+
   if (!readinessTrackerRef.current) {
-    readinessTrackerRef.current = new CameraReadinessTracker((newState) => {
-      onCameraStateChangeRef.current(newState);
-    });
+    readinessTrackerRef.current = new CameraReadinessTracker(
+      (newState) => {
+        onCameraStateChangeRef.current(newState);
+      },
+    );
   }
 
-  // Update asana-specific required landmarks
+  /*
+   * Update asana-specific required landmarks.
+   *
+   * NOTE:
+   * The caller should preferably pass a stable array.
+   * Example:
+   *
+   * const requiredLandmarks = useMemo(
+   *   () => [11, 12, 23, 24],
+   *   []
+   * );
+   *
+   * This effect itself does not start/stop the RAF loop.
+   */
   useEffect(() => {
-    readinessTrackerRef.current?.setRequiredLandmarks(requiredLandmarks ?? null);
+    readinessTrackerRef.current?.setRequiredLandmarks(
+      requiredLandmarks ?? null,
+    );
   }, [requiredLandmarks]);
 
-  // 1. MediaPipe Service Lifecycle (Clean up on unmount)
+  /*
+   * MediaPipe service lifecycle.
+   */
   useEffect(() => {
     isMountedRef.current = true;
 
     return () => {
       isMountedRef.current = false;
+
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
+
       isRunningRef.current = false;
+
       processorRef.current?.reset();
       processorRef.current = null;
+
       serviceRef.current?.close();
       serviceRef.current = null;
+
       readinessTrackerRef.current?.reset();
+
+      lastLandmarksRef.current = null;
+      lastWorldLandmarksRef.current = null;
+      lastVideoElementRef.current = null;
+      lastRenderTimeRef.current = 0;
     };
   }, []);
 
-  // 2. Camera & Single RAF Loop Control
+  /*
+   * Camera + single RAF loop.
+   *
+   * IMPORTANT:
+   * This effect intentionally depends ONLY on `enabled`.
+   *
+   * Pose `result` updates must NOT recreate this loop.
+   */
   useEffect(() => {
     let cancelled = false;
 
-    const stopLoop = () => {
+    const clearScheduledFrame = () => {
       if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
+    };
+
+    const stopLoop = () => {
+      cancelled = true;
+
+      clearScheduledFrame();
+
       isRunningRef.current = false;
+
       processorRef.current?.reset();
+
       lastLandmarksRef.current = null;
       lastWorldLandmarksRef.current = null;
+
+      lastVideoElementRef.current = null;
+      lastRenderTimeRef.current = 0;
+
       readinessTrackerRef.current?.updateCameraStatus("disabled");
       readinessTrackerRef.current?.updatePoseDetection(null);
-      setResult((prev) => (prev === null ? prev : null));
+
+      /*
+       * Do not trigger a React render if the result is already null.
+       */
+      setResult((prev) => {
+        if (prev === null) {
+          return prev;
+        }
+
+        return null;
+      });
     };
 
     const loop = (timestamp: number) => {
-      if (cancelled || !isRunningRef.current || !isMountedRef.current) {
+      /*
+       * Never allow a cancelled/stopped callback to schedule another RAF.
+       */
+      if (
+        cancelled ||
+        !isRunningRef.current ||
+        !isMountedRef.current
+      ) {
+        animationFrameRef.current = null;
         return;
       }
 
       const video = videoRef.current;
       const processor = processorRef.current;
 
+      /*
+       * Handle a changed video element.
+       */
       if (video && video !== lastVideoElementRef.current) {
         lastVideoElementRef.current = video;
+
         processor?.reset();
-        setResult(null);
+
+        lastLandmarksRef.current = null;
+        lastWorldLandmarksRef.current = null;
+
         readinessTrackerRef.current?.updatePoseDetection(null);
+
+        /*
+         * Only clear result if necessary.
+         */
+        setResult((prev) => {
+          if (prev === null) {
+            return prev;
+          }
+
+          return null;
+        });
       }
 
-      const shouldUpdateUI = timestamp - lastRenderTimeRef.current >= 33; // ~30fps UI update throttle
+      /*
+       * Throttle React/UI updates to approximately 30 FPS.
+       *
+       * Pose processing itself can continue at RAF frequency.
+       */
+      const shouldUpdateUI =
+        timestamp - lastRenderTimeRef.current >= 33;
 
-      if (video && processor && video.readyState >= 2) {
+      if (
+        video &&
+        processor &&
+        video.readyState >= 2
+      ) {
         try {
           const detection = processor.processFrame(video);
 
+          /*
+           * Update internal tracking refs on every valid frame.
+           *
+           * These refs do NOT trigger React renders.
+           */
           if (detection && !cancelled) {
             lastLandmarksRef.current = detection.landmarks;
-            lastWorldLandmarksRef.current = detection.worldLandmarks;
-            readinessTrackerRef.current?.updatePoseDetection(detection.landmarks);
+            lastWorldLandmarksRef.current =
+              detection.worldLandmarks;
+
+            readinessTrackerRef.current?.updatePoseDetection(
+              detection.landmarks,
+            );
           } else if (!detection && !cancelled) {
             lastLandmarksRef.current = null;
             lastWorldLandmarksRef.current = null;
-            readinessTrackerRef.current?.updatePoseDetection(null);
+
+            readinessTrackerRef.current?.updatePoseDetection(
+              null,
+            );
           }
 
-          if (detection && !cancelled && shouldUpdateUI) {
+          /*
+           * Only update React state at the UI throttle rate.
+           */
+          if (
+            detection &&
+            !cancelled &&
+            shouldUpdateUI
+          ) {
             lastRenderTimeRef.current = timestamp;
+
             setResult(detection);
-          } else if (!detection && !cancelled && shouldUpdateUI) {
+          } else if (
+            !detection &&
+            !cancelled &&
+            shouldUpdateUI
+          ) {
             lastRenderTimeRef.current = timestamp;
-            setResult((prev) => (prev === null ? prev : null));
+
+            setResult((prev) => {
+              if (prev === null) {
+                return prev;
+              }
+
+              return null;
+            });
           }
         } catch (err) {
-          console.error("Pose detection error:", err);
+          /*
+           * Do not terminate the RAF loop because of a single
+           * pose-processing exception.
+           */
+          console.error(
+            "Pose detection error:",
+            err,
+          );
         }
       } else if (shouldUpdateUI) {
         lastRenderTimeRef.current = timestamp;
-        setResult((prev) => (prev === null ? prev : null));
+
+        setResult((prev) => {
+          if (prev === null) {
+            return prev;
+          }
+
+          return null;
+        });
       }
 
-      if (!cancelled && isRunningRef.current && isMountedRef.current && enabled) {
-        animationFrameRef.current = requestAnimationFrame(loop);
+      /*
+       * Schedule EXACTLY ONE next frame.
+       *
+       * Check every lifecycle condition again before scheduling.
+       */
+      if (
+        !cancelled &&
+        isRunningRef.current &&
+        isMountedRef.current &&
+        enabled
+      ) {
+        animationFrameRef.current =
+          requestAnimationFrame(loop);
+      } else {
+        animationFrameRef.current = null;
       }
     };
 
     const startLoop = () => {
-      if (isRunningRef.current || animationFrameRef.current !== null) {
+      /*
+       * Prevent duplicate RAF loops.
+       */
+      if (
+        isRunningRef.current ||
+        animationFrameRef.current !== null
+      ) {
         if (process.env.NODE_ENV !== "production") {
-          console.warn("[PoseTracking] DUPLICATE RAF LOOP DETECTED");
+          console.warn(
+            "[PoseTracking] DUPLICATE RAF LOOP DETECTED",
+          );
         }
+
         return;
       }
-      if (!enabled || cancelled) return;
+
+      if (!enabled || cancelled) {
+        return;
+      }
+
+      /*
+       * Reset timing whenever a new loop starts.
+       */
+      lastRenderTimeRef.current = 0;
 
       isRunningRef.current = true;
-      readinessTrackerRef.current?.updateCameraStatus("enabled");
-      animationFrameRef.current = requestAnimationFrame(loop);
+
+      readinessTrackerRef.current?.updateCameraStatus(
+        "enabled",
+      );
+
+      animationFrameRef.current =
+        requestAnimationFrame(loop);
     };
 
     const initializeAndStart = async () => {
+      /*
+       * MediaPipe already initialized.
+       * Only start the existing loop.
+       */
       if (serviceRef.current) {
         startLoop();
         return;
       }
 
-      if (isInitializingRef.current) return;
+      /*
+       * Prevent duplicate initialization.
+       */
+      if (isInitializingRef.current) {
+        return;
+      }
+
       isInitializingRef.current = true;
-      readinessTrackerRef.current?.updateCameraStatus("requesting");
+
+      readinessTrackerRef.current?.updateCameraStatus(
+        "requesting",
+      );
 
       try {
         setError(null);
+
         const service = new PoseLandmarkerService();
+
         await service.initialize();
 
-        if (cancelled || !isMountedRef.current) {
+        /*
+         * Component/effect may have been cleaned up
+         * while MediaPipe was initializing.
+         */
+        if (
+          cancelled ||
+          !isMountedRef.current
+        ) {
           service.close();
+
           isInitializingRef.current = false;
+
           return;
         }
 
-        const processor = new MotionFrameProcessor(service);
+        const processor =
+          new MotionFrameProcessor(service);
+
         serviceRef.current = service;
         processorRef.current = processor;
+
         isInitializingRef.current = false;
+
         setIsInitialized(true);
 
-        if (enabled && !cancelled && isMountedRef.current) {
+        if (
+          enabled &&
+          !cancelled &&
+          isMountedRef.current
+        ) {
           startLoop();
         }
       } catch (err) {
         isInitializingRef.current = false;
-        if (!cancelled && isMountedRef.current) {
-          console.error("Failed to initialize MediaPipe:", err);
-          setError("Unable to initialize pose detection.");
-          readinessTrackerRef.current?.updateCameraStatus("error");
+
+        if (
+          !cancelled &&
+          isMountedRef.current
+        ) {
+          console.error(
+            "Failed to initialize MediaPipe:",
+            err,
+          );
+
+          setError(
+            "Unable to initialize pose detection.",
+          );
+
+          readinessTrackerRef.current?.updateCameraStatus(
+            "error",
+          );
         }
       }
     };
 
+    /*
+     * Start tracking when enabled.
+     */
     if (enabled) {
       const video = videoRef.current;
-      if (video && video.readyState >= 2) {
+
+      if (
+        video &&
+        video.readyState >= 2
+      ) {
         initializeAndStart();
       } else if (video) {
         const onLoaded = () => {
-          if (!cancelled && isMountedRef.current && enabled) {
+          if (
+            !cancelled &&
+            isMountedRef.current &&
+            enabled
+          ) {
             initializeAndStart();
           }
-          video.removeEventListener("loadeddata", onLoaded);
+
+          video.removeEventListener(
+            "loadeddata",
+            onLoaded,
+          );
         };
-        video.addEventListener("loadeddata", onLoaded);
+
+        video.addEventListener(
+          "loadeddata",
+          onLoaded,
+        );
       } else {
         initializeAndStart();
       }
     } else {
+      /*
+       * Disable tracking.
+       */
       stopLoop();
     }
 
+    /*
+     * Cleanup for this enabled-state lifecycle.
+     */
     return () => {
       cancelled = true;
-      stopLoop();
+
+      clearScheduledFrame();
+
+      isRunningRef.current = false;
+
+      processorRef.current?.reset();
+
+      lastLandmarksRef.current = null;
+      lastWorldLandmarksRef.current = null;
+
+      lastVideoElementRef.current = null;
+      lastRenderTimeRef.current = 0;
+
+      readinessTrackerRef.current?.updatePoseDetection(
+        null,
+      );
     };
   }, [enabled]);
 

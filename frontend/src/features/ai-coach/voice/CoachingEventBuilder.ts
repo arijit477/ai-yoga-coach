@@ -3,8 +3,6 @@ import type { CoachSessionState } from "../types/CoachSessionState";
 import type { CameraReadinessState } from "../motion/CameraReadinessTracker";
 import type { CoachingEvent, CoachingEventPrimaryIssue } from "./voice.types";
 import {
-  getPoseStartedMessage,
-  getCalibrationPromptMessage,
   getCalibrationCompleteMessage,
   getGoodFormMessage,
   getPoseHeldMessage,
@@ -16,6 +14,10 @@ import {
   getPartialBodyMessage,
   getCameraReadyMessage,
 } from "./NaturalCoachLanguage";
+import {
+  getAsanaStartingInstruction,
+  getAsanaCalibrationInstruction,
+} from "../services/AsanaStartingInstructionService";
 
 function generateEventId(prefix: string): string {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -28,12 +30,10 @@ export class CoachingEventBuilder {
   static buildPoseStartedEvent(
     asanaId: string,
     asanaName: string,
-
     coach?: "alice" | "kevin",
     cameraState?: CameraReadinessState
   ): CoachingEvent {
-    const coachPersona = coach ?? "alice";
-    const feedback = getPoseStartedMessage({ coach: coachPersona, asanaName });
+    const feedback = getAsanaStartingInstruction(asanaId);
 
     return {
       id: generateEventId("start"),
@@ -57,8 +57,7 @@ export class CoachingEventBuilder {
     message?: string,
     coach?: "alice" | "kevin"
   ): CoachingEvent {
-    const coachPersona = coach ?? "alice";
-    const feedback = message ?? getCalibrationPromptMessage({ coach: coachPersona, asanaName });
+    const feedback = message ?? getAsanaCalibrationInstruction(asanaId);
 
     return {
       id: generateEventId("calib_prompt"),

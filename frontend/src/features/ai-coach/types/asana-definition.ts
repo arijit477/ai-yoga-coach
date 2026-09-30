@@ -1,6 +1,7 @@
 import type { AsanaAlignmentCue, AsanaCategory, AsanaDifficulty } from "./asana";
 import type { BodyRegion } from "./camera";
 import type { PoseRule } from "./pose-rules";
+import type { AsanaCoachingProfile } from "./coaching-profile";
 
 export interface AsanaValidationMetadata {
   status: "draft" | "validated" | "production";
@@ -40,4 +41,5 @@ export interface AsanaDefinition {
   requiredLandmarks: number[];
   requiredRegions?: BodyRegion[];
   validation?: AsanaValidationMetadata;
+  coachingProfile?: AsanaCoachingProfile;
 }

@@ -143,7 +143,9 @@ export interface PoseEvaluationResult {
   holdProgress: number;
   completionEligible: boolean;
   activeRules: number;
-  evaluatedAt: number;
+  summary?: PoseEvaluationSummary;
+  confidence?: number;
+  evaluatedAt?: number;
   posture?: PoseEvaluation["posture"];
 }
 

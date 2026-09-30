@@ -1,0 +1,3273 @@
+[
+  {
+    "index": 1,
+    "id": "archers-akarna-dhanurasana",
+    "name": "Archer's Pose",
+    "sanskritName": "Akarna Dhanurasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Foot pulled to ear; foot-hand-ear binding creates depth occlusion across facial and shoulder landmarks."
+  },
+  {
+    "index": 2,
+    "id": "banana-supta-nitambasana",
+    "name": "Banana Pose",
+    "sanskritName": "Supta Nitambasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 3,
+    "id": "big-toe-padangushthasana",
+    "name": "Big Toe Pose",
+    "sanskritName": "Padangushthasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 4,
+    "id": "bird-of-paradise-svarga-dvijasana",
+    "name": "Bird of Paradise",
+    "sanskritName": "Svarga Dvijasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Standing leg balance with bound clasped hands behind standing thigh; clasped wrist occlusion."
+  },
+  {
+    "index": 5,
+    "id": "boat-navasana",
+    "name": "Boat Pose",
+    "sanskritName": "Navasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Torso Line",
+      "Shoulder Stability"
+    ],
+    "criticalRequirements": "Torso Line, Shoulder Stability",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Torso-thigh V-angle is evaluable; arm extension angle varies across variations."
+  },
+  {
+    "index": 6,
+    "id": "bound-angle-baddha-konasana",
+    "name": "Bound Angle Pose",
+    "sanskritName": "Baddha Konasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 7,
+    "id": "bow-dhanurasana",
+    "name": "Bow Pose",
+    "sanskritName": "Dhanurasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest lift is evaluable; ankle grip hold angle depends on practitioner shoulder flexibility."
+  },
+  {
+    "index": 8,
+    "id": "box-chakravakasana",
+    "name": "Box Pose",
+    "sanskritName": "Chakravakasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic all_fours alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 9,
+    "id": "bridge-setu-bandha-sarvangasana",
+    "name": "Bridge Pose",
+    "sanskritName": "Setu Bandha Sarvangasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Vertical torso line is evaluable; neck angle safety is critical and requires caution."
+  },
+  {
+    "index": 10,
+    "id": "butterfly",
+    "name": "Butterfly Pose",
+    "sanskritName": "Baddha Konasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 11,
+    "id": "camel-ustrasana",
+    "name": "Camel Pose",
+    "sanskritName": "Ustrasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Thigh verticality is evaluable; hand-to-heel reach depth has profile perspective variation."
+  },
+  {
+    "index": 12,
+    "id": "cat-marjariasana",
+    "name": "Cat Pose",
+    "sanskritName": "Marjariasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic all_fours alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 13,
+    "id": "caterpillar",
+    "name": "Caterpillar Pose",
+    "sanskritName": "Paschimottanasana Variation",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic all_fours alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 14,
+    "id": "chair-utkatasana",
+    "name": "Chair Pose",
+    "sanskritName": "Utkatasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 15,
+    "id": "childs-pose-balasana",
+    "name": "Child's Pose",
+    "sanskritName": "Balasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Shoulder Alignment"
+    ],
+    "criticalRequirements": "Generic kneeling alignment (Shoulder Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 16,
+    "id": "chin-stand-ganda-bherundasana",
+    "name": "Chin Stand",
+    "sanskritName": "Ganda Bherundasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Vertical Line, Shoulder Base",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 17,
+    "id": "cobra-bhujangasana",
+    "name": "Cobra Pose",
+    "sanskritName": "Bhujangasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Shoulder Level",
+      "Elbows Bent"
+    ],
+    "criticalRequirements": "Generic prone alignment (Shoulder Level, Elbows Bent)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 18,
+    "id": "corpse-savasana",
+    "name": "Corpse Pose",
+    "sanskritName": "Savasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 19,
+    "id": "cow-bitilasana",
+    "name": "Cow Pose",
+    "sanskritName": "Bitilasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic all_fours alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 20,
+    "id": "cow-face-gomukhasana",
+    "name": "Cow Face Pose",
+    "sanskritName": "Gomukhasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Spine Length, Relaxed Shoulders",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Spine verticality is evaluable; behind-the-back finger clasp is occluded from front camera."
+  },
+  {
+    "index": 21,
+    "id": "crane-bakasana",
+    "name": "Crane Pose",
+    "sanskritName": "Bakasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Knees resting on triceps; extreme compaction obscures hip-knee joint angles from front camera."
+  },
+  {
+    "index": 22,
+    "id": "crescent-lunge-ashta-chandrasana",
+    "name": "Crescent Lunge",
+    "sanskritName": "Ashta Chandrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 23,
+    "id": "crescent-lunge-on-knee-anjaneyasana",
+    "name": "Low Lunge",
+    "sanskritName": "Anjaneyasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 24,
+    "id": "crescent-moon-ardha-chandrasana",
+    "name": "Crescent Moon Pose",
+    "sanskritName": "Ardha Chandrasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Standing Leg Stability, Shoulder Level",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Standing leg and extended arm are evaluable; horizontal pelvic opening requires strict camera alignment."
+  },
+  {
+    "index": 25,
+    "id": "crooked-monkey",
+    "name": "Crooked Monkey",
+    "sanskritName": "Markatasana Variation",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 26,
+    "id": "crow-kakasana",
+    "name": "Crow Pose",
+    "sanskritName": "Kakasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Knees resting on triceps; extreme compaction obscures hip-knee joint angles from front camera."
+  },
+  {
+    "index": 27,
+    "id": "dancer-natarajasana",
+    "name": "Dancer Pose",
+    "sanskritName": "Natarajasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Standing Leg Stability, Shoulder Level",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Standing leg and chest opening are evaluable; overhead foot grip depth requires profile view."
+  },
+  {
+    "index": 28,
+    "id": "deaf-mans-karna-pidasana",
+    "name": "Deaf Man's Pose",
+    "sanskritName": "Karnapidasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Vertical Line, Shoulder Base",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 29,
+    "id": "dolphin-shishumarasana",
+    "name": "Dolphin Pose",
+    "sanskritName": "Shishumarasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Generic standing alignment (Vertical Line, Shoulder Base)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 30,
+    "id": "downward-dog-adho-mukha-svanasana",
+    "name": "Downward-Facing Dog",
+    "sanskritName": "Adho Mukha Svanasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic inverted alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 31,
+    "id": "eagle-garudasana",
+    "name": "Eagle Pose",
+    "sanskritName": "Garudasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Standing Leg Stability, Shoulder Level",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Shoulder and hip levels are evaluable; intertwined forearms and wrapped calves cause limb tracking crossover."
+  },
+  {
+    "index": 32,
+    "id": "easy-sukhasana",
+    "name": "Easy Pose",
+    "sanskritName": "Sukhasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 33,
+    "id": "eight-angle-ashtavakrasana",
+    "name": "Eight-Angle Pose",
+    "sanskritName": "Ashtavakrasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Lateral arm balance with entwined legs causing severe hip and knee depth ambiguity."
+  },
+  {
+    "index": 34,
+    "id": "eight-point-ashtangasana",
+    "name": "Eight-Limbed Pose",
+    "sanskritName": "Ashtangasana",
+    "category": "core",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Torso Line",
+      "Shoulder Stability"
+    ],
+    "criticalRequirements": "Generic standing alignment (Torso Line, Shoulder Stability)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 35,
+    "id": "elbow-balance-shayanasana",
+    "name": "Elbow Balance",
+    "sanskritName": "Shayanasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Vertical Line, Shoulder Base",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest lift is evaluable; ankle grip hold angle depends on practitioner shoulder flexibility."
+  },
+  {
+    "index": 36,
+    "id": "elephant-trunk-eka-hasta-bhujasana",
+    "name": "Elephant's Trunk Pose",
+    "sanskritName": "Eka Hasta Bhujasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Standing Leg Stability, Shoulder Level",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 37,
+    "id": "embryo-in-womb-garbha-pindasana",
+    "name": "Embryo In Womb",
+    "sanskritName": "Garbha Pindasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Arms threaded through lotus binding hands to ears; complete joint self-occlusion."
+  },
+  {
+    "index": 38,
+    "id": "embryo-pindasana",
+    "name": "Embryo",
+    "sanskritName": "Pindasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Arms threaded through lotus binding hands to ears; complete joint self-occlusion."
+  },
+  {
+    "index": 39,
+    "id": "extended-puppy-uttana-shishosana",
+    "name": "Extended Puppy Pose",
+    "sanskritName": "Uttana Shishosana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 40,
+    "id": "extended-side-angle-utthita-parshvakonasana",
+    "name": "Extended Side Angle",
+    "sanskritName": "Utthita Parshvakonasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 41,
+    "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b",
+    "name": "Extended Standing Hand To Big Toe Utthita",
+    "sanskritName": "Hasta Padangushthasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Standing leg stability is evaluable; raised foot grab distance may vary with arm/leg length ratios."
+  },
+  {
+    "index": 42,
+    "id": "extended-supine-hand-to-big-toe-supta-padangushthasana-b",
+    "name": "Extended Supine Hand To Big Toe",
+    "sanskritName": "Supta Padangushthasana B",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 43,
+    "id": "fire-log-agnistambhasana",
+    "name": "Fire Log Pose",
+    "sanskritName": "Agnistambhasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 44,
+    "id": "firefly-i-tittibhasana-a",
+    "name": "Firefly I",
+    "sanskritName": "Tittibhasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Legs draped over shoulders; shoulder-hip-knee joints heavily overlap in 2D perspective."
+  },
+  {
+    "index": 45,
+    "id": "firefly-ii-tittibhasana-b",
+    "name": "Firefly II",
+    "sanskritName": "Tittibhasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Legs draped over shoulders; shoulder-hip-knee joints heavily overlap in 2D perspective."
+  },
+  {
+    "index": 46,
+    "id": "firefly-iii-tittibhasana-c",
+    "name": "Firefly III",
+    "sanskritName": "Tittibhasana C",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Legs draped over shoulders; shoulder-hip-knee joints heavily overlap in 2D perspective."
+  },
+  {
+    "index": 47,
+    "id": "fish-matsyasana",
+    "name": "Fish Pose",
+    "sanskritName": "Matsyasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest expansion is evaluable; crown-to-floor contact angle is prone to supine occlusion."
+  },
+  {
+    "index": 48,
+    "id": "floating-stick-brahmacharyasana",
+    "name": "Floating Stick",
+    "sanskritName": "Brahmacharyasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 49,
+    "id": "flying-lizard",
+    "name": "Flying Lizard",
+    "sanskritName": "",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Suspended flying arm balances; limb overlapping prevents reliable automated angle computation."
+  },
+  {
+    "index": 50,
+    "id": "flying-man-eka-pada-koundinyasana",
+    "name": "Flying Man",
+    "sanskritName": "Eka Pada Koundinyasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Advanced asymmetrical arm balance; side-body torsion obscures hip and knee tracking."
+  },
+  {
+    "index": 51,
+    "id": "flying-pigeon-eka-pada-galavasana",
+    "name": "Flying Pigeon",
+    "sanskritName": "Eka Pada Galavasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Suspended flying arm balances; limb overlapping prevents reliable automated angle computation."
+  },
+  {
+    "index": 52,
+    "id": "forearm-balance-pincha-mayurasana",
+    "name": "Forearm Stand",
+    "sanskritName": "Pincha Mayurasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Elbows dug into abdomen; severe forearm and torso self-occlusion in single-camera view."
+  },
+  {
+    "index": 53,
+    "id": "frog-bhekasana",
+    "name": "Frog Pose",
+    "sanskritName": "Bhekasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Generic standing alignment (Chest Opening, Arm Support)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 54,
+    "id": "front-splits-hanumanasana",
+    "name": "Front Splits",
+    "sanskritName": "Hanumanasana",
+    "category": "seated",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Spine Length, Relaxed Shoulders",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 55,
+    "id": "garland-malasana",
+    "name": "Garland Pose",
+    "sanskritName": "Malasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 56,
+    "id": "gate-parighasana",
+    "name": "Gate Pose",
+    "sanskritName": "Parighasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 57,
+    "id": "goddess-utkata-konasana",
+    "name": "Goddess Pose",
+    "sanskritName": "Utkata Konasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 58,
+    "id": "gorilla-pada-hastasana",
+    "name": "Gorilla",
+    "sanskritName": "Pada Hastasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 59,
+    "id": "grasshopper-maksikanagasana",
+    "name": "Grasshopper",
+    "sanskritName": "Maksikanagasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 60,
+    "id": "half-bow-ardha-dhanurasana",
+    "name": "Half Bow",
+    "sanskritName": "Ardha Dhanurasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest lift is evaluable; ankle grip hold angle depends on practitioner shoulder flexibility."
+  },
+  {
+    "index": 61,
+    "id": "half-moon-ardha-chandrasana",
+    "name": "Half Moon Pose",
+    "sanskritName": "Ardha Chandrasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Standing Leg Stability, Shoulder Level",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Standing leg and extended arm are evaluable; horizontal pelvic opening requires strict camera alignment."
+  },
+  {
+    "index": 62,
+    "id": "half-pigeon-ardha-kapotasana",
+    "name": "Half Pigeon Pose",
+    "sanskritName": "Ardha Kapotasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Spine Length, Relaxed Shoulders",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Front hip leveling is evaluable; back leg quad stretch depth requires side perspective."
+  },
+  {
+    "index": 63,
+    "id": "handstand-adho-mukha-vrksasana",
+    "name": "Handstand",
+    "sanskritName": "Adho Mukha Vrksasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Dynamic arm balance inversion; wrist load and balance micro-adjustments exceed standard 2D pose tracking."
+  },
+  {
+    "index": 64,
+    "id": "happy-baby-ananda-balasana",
+    "name": "Happy Baby Pose",
+    "sanskritName": "Ananda Balasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic kneeling alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 65,
+    "id": "head-to-knee-janu-sirsasana",
+    "name": "Head To Knee Janu",
+    "sanskritName": "Sirsasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Full body inversion with crowned head; neck compression safety and verticality require multi-camera or expert setup."
+  },
+  {
+    "index": 66,
+    "id": "headstand-sirsasana",
+    "name": "Headstand",
+    "sanskritName": "Sirsasana",
+    "category": "inversion",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Full body inversion with crowned head; neck compression safety and verticality require multi-camera or expert setup."
+  },
+  {
+    "index": 67,
+    "id": "hero-virasana",
+    "name": "Hero Pose",
+    "sanskritName": "Virasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 68,
+    "id": "heron-kraunchasana",
+    "name": "Heron",
+    "sanskritName": "Kraunchasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 69,
+    "id": "himalayan-duck-karandavasana",
+    "name": "Himalayan Duck",
+    "sanskritName": "Karandavasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 70,
+    "id": "horse-vatayanasana",
+    "name": "Horse",
+    "sanskritName": "Vatayanasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 71,
+    "id": "humble-flamingo",
+    "name": "Humble Flamingo",
+    "sanskritName": "",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 72,
+    "id": "inverted-staff-dvi-pada-viparita-dandasana",
+    "name": "Inverted Staff Dvi Pada Viparita",
+    "sanskritName": "Dandasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 73,
+    "id": "king-pigeon-eka-pada-rajakapotasana",
+    "name": "King Pigeon Pose",
+    "sanskritName": "Eka Pada Rajakapotasana",
+    "category": "backbend",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Front hip leveling is evaluable; back leg quad stretch depth requires side perspective."
+  },
+  {
+    "index": 74,
+    "id": "legs-up-the-wall-viparita-karani",
+    "name": "Legs-Up-The-Wall Pose",
+    "sanskritName": "Viparita Karani",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic inverted alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 75,
+    "id": "little-thunderbolt-laghu-vajrasana",
+    "name": "Little Thunderbolt",
+    "sanskritName": "Laghu Vajrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic kneeling alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 76,
+    "id": "lizard-uttana-pristhasana",
+    "name": "Lizard Pose",
+    "sanskritName": "Uttana Pristhasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 77,
+    "id": "locust-i-shalabhasana-a",
+    "name": "Locust I",
+    "sanskritName": "Shalabhasana A",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest and leg elevation are evaluable; prone floor contact dampens subtle joint visibility."
+  },
+  {
+    "index": 78,
+    "id": "locust-ii-shalabhasana-b",
+    "name": "Locust II",
+    "sanskritName": "Shalabhasana B",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest and leg elevation are evaluable; prone floor contact dampens subtle joint visibility."
+  },
+  {
+    "index": 79,
+    "id": "locust-iii-shalabhasana-c",
+    "name": "Locust III",
+    "sanskritName": "Shalabhasana C",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest and leg elevation are evaluable; prone floor contact dampens subtle joint visibility."
+  },
+  {
+    "index": 80,
+    "id": "lord-of-the-fishes-paripurna-matsyendrasana",
+    "name": "Lord Of The Fishes'",
+    "sanskritName": "Paripurna Matsyendrasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 81,
+    "id": "lotus-padmasana",
+    "name": "Lotus Pose",
+    "sanskritName": "Padmasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 82,
+    "id": "low-push-up-chaturanga-dandasana",
+    "name": "Four-Limbed Staff Pose",
+    "sanskritName": "Chaturanga Dandasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Torso Line",
+      "Shoulder Stability"
+    ],
+    "criticalRequirements": "Generic plank alignment (Torso Line, Shoulder Stability)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 83,
+    "id": "lunge-runner",
+    "name": "Lunge Runner",
+    "sanskritName": "",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 84,
+    "id": "moon-bird-eka-pada-shirshasana-c",
+    "name": "Moon Bird",
+    "sanskritName": "Eka Pada Shirshasana C",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 85,
+    "id": "mountain-tadasana",
+    "name": "Mountain Pose",
+    "sanskritName": "Tadasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Alignment",
+      "Hip Alignment",
+      "Leg Extension"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Alignment, Hip Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 86,
+    "id": "noose-pashasana",
+    "name": "Noose",
+    "sanskritName": "Pashasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Full squat spinal twist with arm wrap around both shins; severe limb overlap."
+  },
+  {
+    "index": 87,
+    "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a",
+    "name": "One Leg Behind The Head I",
+    "sanskritName": "Eka Pada Shirshasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 88,
+    "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b",
+    "name": "One Leg Behind The Head II",
+    "sanskritName": "Eka Pada Shirshasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 89,
+    "id": "peacock-mayurasana",
+    "name": "Peacock Pose",
+    "sanskritName": "Mayurasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Elbows dug into abdomen; severe forearm and torso self-occlusion in single-camera view."
+  },
+  {
+    "index": 90,
+    "id": "pendant-lolasana",
+    "name": "Pendant",
+    "sanskritName": "Lolasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Suspended lotus/tuck; floor clearance and inner wrist angles require specialized side-view profiling."
+  },
+  {
+    "index": 91,
+    "id": "pigeon-kapotasana",
+    "name": "Pigeon Pose",
+    "sanskritName": "Kapotasana",
+    "category": "backbend",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Front hip leveling is evaluable; back leg quad stretch depth requires side perspective."
+  },
+  {
+    "index": 92,
+    "id": "plank-phalakasana",
+    "name": "Plank Pose",
+    "sanskritName": "Phalakasana",
+    "category": "core",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Torso Line",
+      "Shoulder Stability"
+    ],
+    "criticalRequirements": "Generic plank alignment (Torso Line, Shoulder Stability)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 93,
+    "id": "plow-halasana",
+    "name": "Plow Pose",
+    "sanskritName": "Halasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Vertical Line, Shoulder Base",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Vertical torso line is evaluable; neck angle safety is critical and requires caution."
+  },
+  {
+    "index": 94,
+    "id": "pyramid-parshvottanasana",
+    "name": "Pyramid Pose",
+    "sanskritName": "Parshvottanasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 95,
+    "id": "rabbit-shashankasana",
+    "name": "Rabbit Pose",
+    "sanskritName": "Shashankasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 96,
+    "id": "reclined-bound-angle-supta-baddha-konasana",
+    "name": "Reclining Bound Angle",
+    "sanskritName": "Supta Baddha Konasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 97,
+    "id": "reverse-corpse-advasana",
+    "name": "Reverse Corpse",
+    "sanskritName": "Advasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 98,
+    "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana",
+    "name": "Revolved Bird Of Paradise",
+    "sanskritName": "Parivritta Svarga Dvijasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Standing leg balance with bound clasped hands behind standing thigh; clasped wrist occlusion."
+  },
+  {
+    "index": 99,
+    "id": "revolved-chair-parivrtta-utkatasana",
+    "name": "Revolved Chair",
+    "sanskritName": "Parivrtta Utkatasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 100,
+    "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana",
+    "name": "Revolved Flying Man",
+    "sanskritName": "Parivritta Eka Pada Koundinyasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Advanced asymmetrical arm balance; side-body torsion obscures hip and knee tracking."
+  },
+  {
+    "index": 101,
+    "id": "revolved-half-moon-parivritta-ardha-chandrasana",
+    "name": "Revolved Half Moon",
+    "sanskritName": "Parivritta Ardha Chandrasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Standing Leg Stability, Shoulder Level",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 102,
+    "id": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana",
+    "name": "Revolved Seated Hand To Big Toe",
+    "sanskritName": "Upavishta Parivritta Hasta Padangushthasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Spine Length, Relaxed Shoulders",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 103,
+    "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana",
+    "name": "Revolved Standing Hand To Big Toe",
+    "sanskritName": "Parivritta Hasta Padangushthasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 104,
+    "id": "revolved-triangle-parivritta-trikonasana",
+    "name": "Revolved Triangle Pose",
+    "sanskritName": "Parivritta Trikonasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 105,
+    "id": "rock-the-baby",
+    "name": "Rock The Baby",
+    "sanskritName": "",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 106,
+    "id": "rooster-kukkutasana",
+    "name": "Rooster",
+    "sanskritName": "Kukkutasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Arms threaded through lotus legs; MediaPipe cannot resolve occluded limb joints."
+  },
+  {
+    "index": 107,
+    "id": "sage-bharadvajas-twist-bharadvajasana",
+    "name": "Sage Bharadvaja's Twist",
+    "sanskritName": "Bharadvajasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 108,
+    "id": "sage-gherandas-gherandasana",
+    "name": "Sage Gheranda's",
+    "sanskritName": "Gherandasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 109,
+    "id": "sage-marichis-i-marichyasana-a",
+    "name": "Sage Marichi's I",
+    "sanskritName": "Marichyasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 110,
+    "id": "sage-marichis-ii-marichyasana-b",
+    "name": "Sage Marichi's II",
+    "sanskritName": "Marichyasana B",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 111,
+    "id": "sage-marichis-iii-marichyasana-c",
+    "name": "Sage Marichi's III",
+    "sanskritName": "Marichyasana C",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 112,
+    "id": "sage-marichis-iv-marichyasana-d",
+    "name": "Sage Marichi's Iv",
+    "sanskritName": "Marichyasana D",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 113,
+    "id": "sage-visvamitras-vishvamitrasana",
+    "name": "Sage Visvamitra's",
+    "sanskritName": "Vishvamitrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 114,
+    "id": "scale-tolasana",
+    "name": "Scale Pose",
+    "sanskritName": "Tolasana",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Suspended lotus/tuck; floor clearance and inner wrist angles require specialized side-view profiling."
+  },
+  {
+    "index": 115,
+    "id": "scorpion-vrischikasana-a",
+    "name": "Scorpion",
+    "sanskritName": "Vrischikasana A",
+    "category": "standing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Extreme spinal hyperextension with feet over head; landmark inversion and spine curvature exceed single-camera reliability."
+  },
+  {
+    "index": 116,
+    "id": "seated-forward-fold-paschimottanasana",
+    "name": "Seated Forward Fold",
+    "sanskritName": "Paschimottanasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 117,
+    "id": "seated-gate-parighasana",
+    "name": "Seated Gate",
+    "sanskritName": "Parighasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 118,
+    "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana",
+    "name": "Seated Half Bound Lotus Forward Bend Ardha Baddha Padma",
+    "sanskritName": "Paschimottanasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 119,
+    "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana",
+    "name": "Seated Three Limbed Forward Bend",
+    "sanskritName": "Trianga Mukha Eka Pada Paschimottanasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 120,
+    "id": "seated-twist-ardha-matsyendrasana",
+    "name": "Seated Twist",
+    "sanskritName": "Ardha Matsyendrasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Spine Length, Relaxed Shoulders",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 121,
+    "id": "shiva-squat",
+    "name": "Shiva Squat",
+    "sanskritName": "",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 122,
+    "id": "shoelace",
+    "name": "Shoelace",
+    "sanskritName": "",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 123,
+    "id": "shoulder-pressing-bhuja-pidasana",
+    "name": "Shoulder Pressing Bhuja",
+    "sanskritName": "Pidasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Legs crossed over ankles on shoulders; hand placement under body creates full joint occlusion."
+  },
+  {
+    "index": 124,
+    "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana",
+    "name": "Shoulder Stand With Lotus Legs Urdhva",
+    "sanskritName": "Padmasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 125,
+    "id": "shoulderstand-sarvangasana",
+    "name": "Shoulderstand",
+    "sanskritName": "Sarvangasana",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Vertical Line, Shoulder Base",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Vertical torso line is evaluable; neck angle safety is critical and requires caution."
+  },
+  {
+    "index": 126,
+    "id": "side-crow-parsva-bakasana",
+    "name": "Side Crow Pose",
+    "sanskritName": "Parsva Bakasana",
+    "category": "balancing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Knees resting on triceps; extreme compaction obscures hip-knee joint angles from front camera."
+  },
+  {
+    "index": 127,
+    "id": "side-lunge-skandasana",
+    "name": "Side Lunge",
+    "sanskritName": "Skandasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Bent knee depth is evaluable; extended leg foot turnout may encounter floor plane occlusion."
+  },
+  {
+    "index": 128,
+    "id": "side-plank-vasishthasana",
+    "name": "Side Plank Pose",
+    "sanskritName": "Vasishthasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Torso Line",
+      "Shoulder Stability"
+    ],
+    "criticalRequirements": "Generic plank alignment (Torso Line, Shoulder Stability)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 129,
+    "id": "sleeping-yogi-yoga-nidrasana",
+    "name": "Sleeping Yogi Yoga",
+    "sanskritName": "Nidrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 130,
+    "id": "snake-sarpasana",
+    "name": "Snake",
+    "sanskritName": "Sarpasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 131,
+    "id": "sphinx-salamba-bhujangasana",
+    "name": "Sphinx Pose",
+    "sanskritName": "Salamba Bhujangasana",
+    "category": "backbend",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Generic prone alignment (Chest Opening, Arm Support)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 132,
+    "id": "staff-dandasana",
+    "name": "Staff Pose",
+    "sanskritName": "Dandasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 133,
+    "id": "standing-bow-dandayamana-dhanurasana",
+    "name": "Standing Bow",
+    "sanskritName": "Dandayamana Dhanurasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Chest lift is evaluable; ankle grip hold angle depends on practitioner shoulder flexibility."
+  },
+  {
+    "index": 134,
+    "id": "standing-foot-to-head-trivikramasana-a",
+    "name": "Standing Foot To Head",
+    "sanskritName": "Trivikramasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 135,
+    "id": "standing-forward-bend-uttanasana",
+    "name": "Standing Forward Bend",
+    "sanskritName": "Uttanasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic bending alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 136,
+    "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana",
+    "name": "Standing Half Bound Lotus Forward Bend",
+    "sanskritName": "Ardha Baddha Padmottanasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 137,
+    "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a",
+    "name": "Standing Hand To Big Toe Utthita",
+    "sanskritName": "Hasta Padangushthasana A",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Standing leg stability is evaluable; raised foot grab distance may vary with arm/leg length ratios."
+  },
+  {
+    "index": 138,
+    "id": "standing-leg-behind-head-durvasasana",
+    "name": "Standing Leg Behind Head",
+    "sanskritName": "Durvasasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 139,
+    "id": "standing-leg-behind-head-forward-bend-richikasana",
+    "name": "Standing Leg Behind Head Forward Bend",
+    "sanskritName": "Richikasana",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 140,
+    "id": "standing-splits-urdhva-prasarita-eka-padasana",
+    "name": "Standing Splits Urdhva",
+    "sanskritName": "Prasarita Eka Padasana",
+    "category": "forward_bend",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Symmetric Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 141,
+    "id": "star-utthita-tadasana",
+    "name": "Star Utthita",
+    "sanskritName": "Tadasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 142,
+    "id": "supine-angle-supta-konasana",
+    "name": "Supine Angle",
+    "sanskritName": "Supta Konasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 143,
+    "id": "supine-foot-to-head-supta-trivikramasana",
+    "name": "Supine Foot To Head",
+    "sanskritName": "Supta Trivikramasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 144,
+    "id": "supine-hand-to-big-toe-supta-padangushthasana-a",
+    "name": "Supine Hand To Big Toe",
+    "sanskritName": "Supta Padangushthasana A",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 145,
+    "id": "supine-straddle-supta-samakonasana",
+    "name": "Supine Straddle",
+    "sanskritName": "Supta Samakonasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 146,
+    "id": "supine-twist-supta-matsyendrasana",
+    "name": "Supine Twist",
+    "sanskritName": "Supta Matsyendrasana",
+    "category": "restorative",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Symmetric Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Core spine alignment is evaluable; rotational torso angle and bound hands have slight 2D depth ambiguity."
+  },
+  {
+    "index": 147,
+    "id": "thunderbolt-vajrasana",
+    "name": "Thunderbolt Pose",
+    "sanskritName": "Vajrasana",
+    "category": "seated",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 148,
+    "id": "tiger-vyaghrasana",
+    "name": "Tiger",
+    "sanskritName": "Vyaghrasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 149,
+    "id": "toe-stand-padangushthasana",
+    "name": "Toe Stand",
+    "sanskritName": "Padangushthasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 150,
+    "id": "tortoise-kurmasana",
+    "name": "Tortoise",
+    "sanskritName": "Kurmasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 151,
+    "id": "tree-vrksasana",
+    "name": "Tree Pose",
+    "sanskritName": "Vrksasana",
+    "category": "balancing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Straight",
+      "Shoulders Level"
+    ],
+    "criticalRequirements": "Generic standing alignment (Standing Leg Straight, Shoulders Level)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 152,
+    "id": "triangle-trikonasana",
+    "name": "Triangle Pose",
+    "sanskritName": "Trikonasana",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 153,
+    "id": "tripod-headstand-mukta-hasta-shirshasana-a",
+    "name": "Tripod Headstand",
+    "sanskritName": "Mukta Hasta Shirshasana A",
+    "category": "inversion",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Vertical Line",
+      "Shoulder Base"
+    ],
+    "criticalRequirements": "Complex limb bindings, suspended balance, or extreme multi-joint self-occlusion",
+    "coverage": "Not Evaluated (Camera Occlusion / 3D Depth)",
+    "status": "E — SPECIAL CASE",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Full body inversion with crowned head; neck compression safety and verticality require multi-camera or expert setup."
+  },
+  {
+    "index": 154,
+    "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a",
+    "name": "Two Legs Behind The Head I",
+    "sanskritName": "Dvi Pada Shirshasana A",
+    "category": "standing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 155,
+    "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b",
+    "name": "Two Legs Behind The Head II",
+    "sanskritName": "Dvi Pada Shirshasana B",
+    "category": "standing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 156,
+    "id": "upward-facing-dog-urdhva-mukha-shvanasana",
+    "name": "Upward-Facing Dog",
+    "sanskritName": "Urdhva Mukha Svanasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Generic standing alignment (Chest Opening, Arm Support)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 157,
+    "id": "upward-plank-purvottanasana",
+    "name": "Upward Plank Pose",
+    "sanskritName": "Purvottanasana",
+    "category": "core",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Torso Line",
+      "Shoulder Stability"
+    ],
+    "criticalRequirements": "Generic plank alignment (Torso Line, Shoulder Stability)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 158,
+    "id": "warrior-i-virabhadrasana-a",
+    "name": "Warrior I",
+    "sanskritName": "Virabhadrasana I",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 159,
+    "id": "warrior-ii-virabhadrasana-ii",
+    "name": "Warrior II",
+    "sanskritName": "Virabhadrasana II",
+    "category": "standing",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 6,
+    "ruleNames": [
+      "Left Arm Extension",
+      "Right Arm Extension",
+      "Front Knee Bend",
+      "Back Leg Straight",
+      "Shoulder Level",
+      "Hip Stability"
+    ],
+    "criticalRequirements": "Generic standing alignment (Left Arm Extension, Right Arm Extension)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 160,
+    "id": "warrior-iii-virabhadrasana-c",
+    "name": "Warrior III",
+    "sanskritName": "Virabhadrasana III",
+    "category": "balancing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Standing Leg Stability",
+      "Shoulder Level"
+    ],
+    "criticalRequirements": "Generic standing alignment (Standing Leg Stability, Shoulder Level)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 161,
+    "id": "waterfall-supta-dandasana",
+    "name": "Waterfall",
+    "sanskritName": "Supta Dandasana",
+    "category": "standing",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Generic supine alignment (Shoulder Balance, Spinal Alignment)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 162,
+    "id": "wheel-urdhva-dhanurasana",
+    "name": "Wheel Pose",
+    "sanskritName": "Urdhva Dhanurasana",
+    "category": "backbend",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Arm and leg extension are evaluable; head-neck floor clearance and lumbar curvature need manual calibration."
+  },
+  {
+    "index": 163,
+    "id": "wide-angle-seated-forward-bend-upavistha-konasana",
+    "name": "Wide Angle Seated Forward Bend Upavistha",
+    "sanskritName": "Konasana",
+    "category": "seated",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Spine Length",
+      "Relaxed Shoulders"
+    ],
+    "criticalRequirements": "Generic seated alignment (Spine Length, Relaxed Shoulders)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 164,
+    "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a",
+    "name": "Wide Legged Forward Bend I",
+    "sanskritName": "Prasarita Padottanasana A",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic bending alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 165,
+    "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b",
+    "name": "Wide Legged Forward Bend II",
+    "sanskritName": "Prasarita Padottanasana B",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic bending alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 166,
+    "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c",
+    "name": "Wide Legged Forward Bend III",
+    "sanskritName": "Prasarita Padottanasana C",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic bending alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 167,
+    "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d",
+    "name": "Wide Legged Forward Bend Iv",
+    "sanskritName": "Prasarita Padottanasana D",
+    "category": "forward_bend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic bending alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  },
+  {
+    "index": 168,
+    "id": "wide-splits-samakonasana",
+    "name": "Wide Splits",
+    "sanskritName": "Samakonasana",
+    "category": "standing",
+    "difficulty": "advanced",
+    "targetHoldSeconds": 5,
+    "ruleCount": 3,
+    "ruleNames": [
+      "Shoulder Balance",
+      "Spinal Alignment",
+      "Hip Balance"
+    ],
+    "criticalRequirements": "Shoulder Balance, Spinal Alignment, Hip Balance",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Advanced multi-joint posture requiring careful camera framing and custom joint tolerances."
+  },
+  {
+    "index": 169,
+    "id": "wild-thing-chamatkarasana",
+    "name": "Wild Thing",
+    "sanskritName": "Camatkarasana",
+    "category": "backbend",
+    "difficulty": "intermediate",
+    "targetHoldSeconds": 5,
+    "ruleCount": 2,
+    "ruleNames": [
+      "Chest Opening",
+      "Arm Support"
+    ],
+    "criticalRequirements": "Chest Opening, Arm Support",
+    "coverage": "Medium (Partial Stance Metrics)",
+    "status": "B — NEEDS IMPROVEMENT",
+    "priority": "P1 — HIGH",
+    "rationale": "Supporting arm stability is evaluable; backbend rotation causes partial torso perspective distortion."
+  },
+  {
+    "index": 170,
+    "id": "wind-removing-pavanamuktasana",
+    "name": "Wind-Relieving Pose",
+    "sanskritName": "Pavanamuktasana",
+    "category": "restorative",
+    "difficulty": "beginner",
+    "targetHoldSeconds": 5,
+    "ruleCount": 1,
+    "ruleNames": [
+      "Symmetric Balance"
+    ],
+    "criticalRequirements": "Generic standing alignment (Symmetric Balance)",
+    "coverage": "Low (Generic Stance Profile Only)",
+    "status": "C — WEAK",
+    "priority": "P0 — CRITICAL",
+    "rationale": "Relies on generic baseline stance template without unique limb articulation angles distinguishing this specific pose."
+  }
+]

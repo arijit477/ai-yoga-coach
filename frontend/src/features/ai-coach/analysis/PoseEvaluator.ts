@@ -116,7 +116,18 @@ export function evaluatePose(
     confidence = confSum / context.landmarks.length;
   }
 
-  const completionEligible = score >= 75 && primaryIssue === null && evaluatedRules > 0;
+  const minRequiredEvaluable =
+    rules.length > 0 ? Math.min(2, Math.ceil(rules.length * 0.5)) : 0;
+  const hasSufficientRuleCoverage =
+    evaluatedRules >= minRequiredEvaluable && failedRules === 0;
+  const hasSufficientConfidence =
+    context.landmarks && context.landmarks.length > 0 ? confidence >= 0.5 : true;
+
+  const completionEligible =
+    score >= 75 &&
+    primaryIssue === null &&
+    hasSufficientRuleCoverage &&
+    hasSufficientConfidence;
 
   return {
     asanaId,
@@ -188,7 +199,7 @@ function determineOverallStatus(
   issues: PoseIssue[],
 ): OverallPoseStatus {
   if (evaluatedRules === 0 && totalRules > 0) {
-    return "not_ready";
+    return "unknown";
   }
 
   const hasSafetyIssue = issues.some((i) => i.isSafety);

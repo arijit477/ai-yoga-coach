@@ -141,7 +141,7 @@ export function getPostureCheckResult(
 
     if (!isRequired) {
       rawStatus = "not_required";
-    } else if (posture && posture[area.key] && posture[area.key] !== "unknown") {
+    } else if (posture && posture[area.key] !== undefined) {
       rawStatus = mapAreaStatus(posture[area.key]);
     } else if (primaryIssue) {
       // Check if primary issue relates to this area

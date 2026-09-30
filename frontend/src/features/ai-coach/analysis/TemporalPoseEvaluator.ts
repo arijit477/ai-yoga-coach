@@ -181,6 +181,8 @@ export class TemporalPoseEvaluator {
       completionEligible,
       activeRules: rules.length,
       evaluatedAt: Date.now(),
+      summary: rawEvaluation.summary,
+      confidence: rawEvaluation.confidence,
       posture: rawEvaluation.posture,
     };
   }

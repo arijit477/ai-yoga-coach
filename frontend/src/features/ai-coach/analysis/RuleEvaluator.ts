@@ -38,7 +38,7 @@ export function evaluateRule(
   if (!imageLandmarks || imageLandmarks.length < 33) {
     return {
       passed: false,
-      status: "not_evaluable",
+      status: "unknown",
       score: 0,
       measuredValue: null,
       ignored: true,
@@ -49,7 +49,7 @@ export function evaluateRule(
   if (!rule || !rule.id || !rule.metric || !rule.points || !rule.comparison) {
     return {
       passed: false,
-      status: "not_evaluable",
+      status: "unknown",
       score: 0,
       measuredValue: null,
       ignored: true,
@@ -61,7 +61,7 @@ export function evaluateRule(
     if (rule.min === undefined || rule.max === undefined || rule.min > rule.max) {
       return {
         passed: false,
-        status: "not_evaluable",
+        status: "unknown",
         score: 0,
         measuredValue: null,
         ignored: true,
@@ -71,7 +71,7 @@ export function evaluateRule(
     if (rule.target === undefined && rule.min === undefined) {
       return {
         passed: false,
-        status: "not_evaluable",
+        status: "unknown",
         score: 0,
         measuredValue: null,
         ignored: true,
@@ -81,7 +81,7 @@ export function evaluateRule(
     if (rule.target === undefined && rule.max === undefined) {
       return {
         passed: false,
-        status: "not_evaluable",
+        status: "unknown",
         score: 0,
         measuredValue: null,
         ignored: true,
@@ -95,7 +95,7 @@ export function evaluateRule(
     if (!lm || !isLandmarkUsable(lm)) {
       return {
         passed: false,
-        status: "not_evaluable",
+        status: "unknown",
         score: 0,
         measuredValue: null,
         ignored: true,
@@ -126,7 +126,7 @@ export function evaluateRule(
     default:
       return {
         passed: false,
-        status: "not_evaluable",
+        status: "unknown",
         score: 0,
         measuredValue: null,
         ignored: true,
@@ -136,7 +136,7 @@ export function evaluateRule(
   if (value === null || !Number.isFinite(value)) {
     return {
       passed: false,
-      status: "not_evaluable",
+      status: "unknown",
       score: 0,
       measuredValue: null,
       ignored: true,

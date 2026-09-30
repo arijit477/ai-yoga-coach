@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { Maximize, Minimize, Camera, CameraOff } from "lucide-react";
+import { Maximize, Minimize, Camera, CameraOff, Square, Volume2, VolumeX } from "lucide-react";
 
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
@@ -297,6 +297,7 @@ export function AICoachPage() {
     stayHere,
   } = useCoachSession({
     evaluation: stableEvaluation,
+    asanaId: currentAsana.id,
     landmarks: result?.landmarks ?? null,
     requiredLandmarks: asanaRequirements.requiredLandmarks,
     requiredRegions: asanaRequirements.requiredRegions,
@@ -913,7 +914,7 @@ export function AICoachPage() {
               />
             </div>
 
-            {/* Top-Right Controls: Start/Stop Camera, Exit Fullscreen Button & Compact Score Ring */}
+            {/* Top-Right Controls: Start/Stop Camera, End Routine, Exit Fullscreen Button & Compact Score Ring */}
             <div className="absolute right-[180px] xs:right-[195px] sm:right-[220px] lg:right-[235px] top-4 sm:top-6 z-20 flex items-center gap-2.5">
               {/* Start / Stop Camera Toggle Button in Cinema Mode */}
               {!isCameraActive ? (
@@ -935,6 +936,20 @@ export function AICoachPage() {
                 >
                   <CameraOff size={13} />
                   <span className="hidden sm:inline">Stop camera</span>
+                </button>
+              )}
+
+              {/* End Routine Button in Fullscreen / Cinema Mode */}
+              {isSessionActive && (
+                <button
+                  type="button"
+                  onClick={handleStopSession}
+                  className="flex items-center gap-1.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white border border-rose-400/40 px-3 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
+                  title="End Routine"
+                  aria-label="End Routine"
+                >
+                  <Square size={11} className="fill-white" />
+                  <span>End Routine</span>
                 </button>
               )}
 
@@ -987,38 +1002,58 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Floating Mini Coach Presence Card (Cinema Mode: uses lightweight presence badge to avoid duplicate video conflict) */}
-            <div className="absolute bottom-5 right-5 w-48 sm:w-56 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 z-20">
-              <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10 relative">
-                <img
-                  src={
-                    selectedCoach === "alice"
-                      ? "/images/alice.png"
-                      : "/images/kevin.jpg"
-                  }
-                  alt={`Coach ${getCoachName(selectedCoach)}`}
-                  className="w-full h-full object-cover object-top"
-                />
-                {voiceState.status === "speaking" && (
-                  <div className="absolute inset-0 bg-emerald-500/20 ring-2 ring-emerald-400/50 rounded-xl" />
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                    Coach {getCoachName(selectedCoach)}
-                  </span>
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      voiceState.status === "speaking"
-                        ? "bg-emerald-400 animate-ping"
-                        : voiceState.status === "listening"
-                          ? "bg-teal-400 animate-pulse"
-                          : "bg-emerald-500"
-                    }`}
+            {/* Floating Mini Coach Presence Card (Cinema Mode: uses lightweight presence badge with mute/unmute control) */}
+            <div className="absolute bottom-5 right-5 w-52 sm:w-60 overflow-hidden rounded-2xl border border-white/20 bg-slate-900/85 backdrop-blur-md shadow-2xl p-2.5 flex items-center justify-between gap-2.5 animate-in fade-in slide-in-from-bottom-2 z-20">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-white/10 relative">
+                  <img
+                    src={
+                      selectedCoach === "alice"
+                        ? "/images/alice.png"
+                        : "/images/kevin.jpg"
+                    }
+                    alt={`Coach ${getCoachName(selectedCoach)}`}
+                    className="w-full h-full object-cover object-top"
                   />
+                  {voiceState.status === "speaking" && (
+                    <div className="absolute inset-0 bg-emerald-500/20 ring-2 ring-emerald-400/50 rounded-xl" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                      Coach {getCoachName(selectedCoach)}
+                    </span>
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        voiceState.status === "speaking"
+                          ? "bg-emerald-400 animate-ping"
+                          : voiceState.status === "listening"
+                            ? "bg-teal-400 animate-pulse"
+                            : "bg-emerald-500"
+                      }`}
+                    />
+                  </div>
+                  <span className="text-[10px] text-slate-300 capitalize">
+                    {voiceState.isMuted ? "Muted" : voiceState.status === "speaking" ? "Speaking" : "Active"}
+                  </span>
                 </div>
               </div>
+
+              {/* Coach Mute/Unmute toggle button directly in cinema mode */}
+              <button
+                type="button"
+                onClick={voiceToggleMute}
+                className={`p-1.5 rounded-lg border transition cursor-pointer active:scale-95 shrink-0 ${
+                  voiceState.isMuted
+                    ? "bg-amber-500/20 border-amber-400/40 text-amber-300 hover:bg-amber-500/30"
+                    : "bg-white/10 border-white/20 text-white/80 hover:bg-white/20 hover:text-white"
+                }`}
+                title={voiceState.isMuted ? "Unmute voice coach" : "Mute voice coach"}
+                aria-label={voiceState.isMuted ? "Unmute voice coach" : "Mute voice coach"}
+              >
+                {voiceState.isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              </button>
             </div>
 
             {/* Introductory Guide Video on Page Load (Cinema Mode) */}
@@ -1119,7 +1154,10 @@ export function AICoachPage() {
               <PoseReviewModal
                 asana={currentAsana}
                 score={
-                  completedAsanaScores[currentAsana.id] ?? stableScore ?? 80
+                  finalAsanaScore ??
+                  completedAsanaScores[currentAsana.id] ??
+                  stableScore ??
+                  80
                 }
                 onMoveToNext={moveToNextAsana}
                 onStayHere={stayHere}
@@ -1382,7 +1420,7 @@ export function AICoachPage() {
                   </div>
                 )}
 
-                {/* Pose Review / User Choice Modal (>= 75% accuracy threshold achieved) */}
+                {/* Pose Review / User Choice Modal */}
                 {(sessionState === "completed" || sessionState === "pose_review" || sessionState === "user_choice") && (
                   <PoseReviewModal
                     asana={currentAsana}
@@ -1456,7 +1494,6 @@ export function AICoachPage() {
                 voiceState={voiceState}
                 isSessionActive={isSessionActive}
                 onToggleMute={voiceToggleMute}
-                onStopVoice={voiceStop}
                 score={effectiveScore}
                 displayedScore={effectiveDisplayedScore}
                 holdTime={holdTime}

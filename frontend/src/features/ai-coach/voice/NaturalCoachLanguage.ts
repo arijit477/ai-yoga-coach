@@ -53,7 +53,7 @@ const POSE_STARTED: Record<CoachPersona, string[]> = {
     "Wonderful. Let's explore {asana} together.",
     "Take a breath and ease into {asana}. There is no rush.",
     "Let us begin {asana}. Focus on how it feels, not just how it looks.",
-    "Step into {asana} mindfully. Remember to breathe.",
+    "Ease into {asana} mindfully. Remember to breathe.",
     "We are starting {asana}. Let the posture feel natural.",
     "Let's begin {asana}. Listen to your body as we move.",
   ],
@@ -61,7 +61,7 @@ const POSE_STARTED: Record<CoachPersona, string[]> = {
     "Alright, let's go! Starting {asana} — let's make it count.",
     "Here we go — {asana}. Give it your best shot.",
     "Time for {asana}. You can do this.",
-    "Let's step into {asana}. Focus and commit.",
+    "Let's move into {asana}. Focus and commit.",
     "Starting {asana} — stay strong, stay present.",
     "Get into {asana}. I know you have got this.",
     "We're doing {asana}. Let's crush it together.",
@@ -72,13 +72,13 @@ const CALIBRATION_PROMPT: Record<CoachPersona, string[]> = {
   alice: [
     "Please hold still for a moment while I check your position.",
     "Just a moment — I am checking your alignment.",
-    "Stand tall and hold still so I can calibrate.",
+    "Stay steady and hold still so I can calibrate.",
     "Stay steady for a second while I get a clear read on your posture.",
   ],
   kevin: [
     "Hold still for a sec — I am locking in your position.",
     "Freeze for a moment while I calibrate.",
-    "Stand firm — just getting a quick read on your stance.",
+    "Hold steady — just getting a quick read on your alignment.",
     "Don't move — calibrating your position right now.",
   ],
 };

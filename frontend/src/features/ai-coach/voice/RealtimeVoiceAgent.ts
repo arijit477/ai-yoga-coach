@@ -1,4 +1,6 @@
 import type { CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
+import { getAsanaStartingInstruction } from "../services/AsanaStartingInstructionService";
+import type { FeedbackOutput } from "../analysis/FeedbackEngine";
 
 export interface SessionContextData {
   coach: string;
@@ -392,14 +394,14 @@ export class RealtimeVoiceAgent {
   /**
    * Triggers the pose entry cue when an asana starts.
    */
-  public triggerPoseStart(asanaId: string, asanaName: string, asanaDescription?: string): void {
-    const desc = asanaDescription ? ` ${asanaDescription}` : '';
-    const message = `Let's begin ${asanaName}.${desc} Stand tall, find your breath, and let's align.`;
+  public triggerPoseStart(asanaId: string, asanaName: string, _asanaDescription?: string): void {
+    const instruction = getAsanaStartingInstruction(asanaId);
+    const message = `Let's begin ${asanaName}. ${instruction}`;
     
     if (this.dc && this.dc.readyState === "open") {
       this.speak(message);
     } else {
-      this.pendingPoseStart = { id: asanaId, name: asanaName, description: asanaDescription };
+      this.pendingPoseStart = { id: asanaId, name: asanaName, description: instruction };
     }
   }
 
@@ -417,9 +419,76 @@ export class RealtimeVoiceAgent {
       } else if (ctx.cameraState === "partial_body") {
         greeting = "I can see you, but not your full posture. Take a small step back.";
       } else {
-        greeting = `Perfect. Let's get you ready for ${ctx.asanaName || "your pose"}. Stand comfortably and take a deep breath.`;
+        const instruction = ctx.asanaId ? getAsanaStartingInstruction(ctx.asanaId) : `Settle into your foundation and take a deep breath.`;
+        greeting = `Perfect. ${instruction}`;
       }
       this.speak(greeting);
+    }
+  }
+
+  /**
+   * Dispatches an asana-specific feedback message from FeedbackEngine.
+   */
+  public sendFeedback(feedback: FeedbackOutput): void {
+    if (!feedback || !feedback.message || this.isMuted) return;
+
+    if (this.dc && this.dc.readyState === "open") {
+      if (this.hasActiveServerResponse) {
+        this.pendingSpeechText = feedback.message;
+        if (!this.isCancelling) {
+          this.isCancelling = true;
+          try {
+            this.dc.send(JSON.stringify({ type: "response.cancel" }));
+          } catch (_) {
+            this.hasActiveServerResponse = false;
+            this.isCancelling = false;
+          }
+        }
+      } else {
+        this.pendingSpeechText = null;
+        this.sendFeedbackResponse(feedback);
+      }
+
+      this.onTranscript?.({
+        id: `coach_feedback_${Date.now()}`,
+        role: "coach",
+        text: feedback.message,
+        timestamp: Date.now(),
+      });
+    } else {
+      console.warn("[AI COACH] Realtime DataChannel not open. Feedback suppressed:", feedback.message);
+    }
+  }
+
+  /**
+   * Sends a structured instruction payload ensuring the Realtime model speaks the exact coaching cue.
+   */
+  public sendFeedbackResponse(feedback: FeedbackOutput): void {
+    if (!this.dc || this.dc.readyState !== "open" || this.isMuted) return;
+
+    const asanaName = feedback.asanaName || this.currentSessionContext?.asanaName || "this pose";
+    const isAlice = this.currentCoachId !== "kevin";
+    const coachName = isAlice ? "Alice" : "Kevin";
+    const toneStyle = isAlice
+      ? "calm, warm, graceful British tone with natural breath pauses"
+      : "grounded, confident, motivating British tone with athletic focus";
+
+    const prompt = `As Coach ${coachName} for ${asanaName}, speak this exact yoga coaching guidance with a ${toneStyle}. Do not add conversational filler, do not ask questions, and do not explain biomechanics. Speak only the instruction: "${feedback.message}"`;
+
+    const responseCreate = {
+      type: "response.create",
+      response: {
+        instructions: prompt,
+      },
+    };
+
+    try {
+      this.dc.send(JSON.stringify(responseCreate));
+      this.hasActiveServerResponse = true;
+      this.isCancelling = false;
+    } catch (err) {
+      console.warn("[AI COACH] Failed to send feedback response.create:", err);
+      this.hasActiveServerResponse = false;
     }
   }
 
@@ -432,7 +501,7 @@ export class RealtimeVoiceAgent {
     if (!spokenText) {
       switch (event.type) {
         case "pose_started":
-          spokenText = `Let's step into ${event.asanaName}. Find your foundation.`;
+          spokenText = getAsanaStartingInstruction(event.asanaId);
           break;
         case "calibration_complete":
           spokenText = `Alignment looks ready. Let's begin ${event.asanaName}.`;
