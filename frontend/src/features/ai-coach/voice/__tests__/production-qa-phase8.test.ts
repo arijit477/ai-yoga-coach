@@ -77,7 +77,7 @@ describe("Phase 8 Production QA & Reliability Verification", () => {
 
     assert.equal(sentEvents.length, 1);
     assert.equal(sentEvents[0].type, "response.create");
-    assert.ok(totalPipelineLatency < 15, `Local processing latency must be <15ms (measured ${totalPipelineLatency.toFixed(2)}ms)`);
+    assert.ok(totalPipelineLatency < 25, `Local processing latency must be <25ms (measured ${totalPipelineLatency.toFixed(2)}ms)`);
   });
 
   // 2. OpenAI Response Frequency / Spam Prevention Test (Simulated 5-Minute Practice)

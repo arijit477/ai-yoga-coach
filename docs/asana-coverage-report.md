@@ -39,101 +39,101 @@ These asanas feature well-separated joint landmarks, distinct geometry, and high
 
 | # | Asana Name | Sanskrit Name | Category | Stance | Key Evaluated Landmarks |
 |---|---|---|---|---|---|
-| 1 | **Banana Pose** | *Supta Nitambasana* | `restorative` | `supine` | shoulders |
-| 2 | **Big Toe Pose** | *Padangushthasana* | `standing` | `standing` | shoulders, hips |
-| 3 | **Bound Angle Pose** | *Baddha Konasana* | `seated` | `seated` | shoulders, hips |
-| 4 | **Box Pose** | *Chakravakasana* | `restorative` | `all_fours` | shoulders |
-| 5 | **Butterfly Pose** | *Baddha Konasana* | `seated` | `seated` | shoulders, hips |
-| 6 | **Cat Pose** | *Marjariasana* | `restorative` | `all_fours` | shoulders |
-| 7 | **Caterpillar Pose** | *Paschimottanasana Variation* | `restorative` | `all_fours` | shoulders |
-| 8 | **Chair Pose** | *Utkatasana* | `standing` | `standing` | shoulders, hips |
-| 9 | **Child's Pose** | *Balasana* | `restorative` | `kneeling` | shoulders |
-| 10 | **Cobra Pose** | *Bhujangasana* | `backbend` | `prone` | shoulders, elbows, wrists |
-| 11 | **Corpse Pose** | *Savasana* | `restorative` | `supine` | shoulders |
-| 12 | **Cow Pose** | *Bitilasana* | `restorative` | `all_fours` | shoulders |
-| 13 | **Crescent Lunge** | *Ashta Chandrasana* | `standing` | `standing` | shoulders, hips |
-| 14 | **Low Lunge** | *Anjaneyasana* | `standing` | `standing` | shoulders, hips |
-| 15 | **Crooked Monkey** | *Markatasana Variation* | `seated` | `seated` | shoulders, hips |
-| 16 | **Dolphin Pose** | *Shishumarasana* | `inversion` | `inverted` | shoulders, hips, ankles |
-| 17 | **Downward-Facing Dog** | *Adho Mukha Svanasana* | `standing` | `inverted` | shoulders, hips |
-| 18 | **Easy Pose** | *Sukhasana* | `seated` | `seated` | shoulders, hips |
-| 19 | **Eight-Limbed Pose** | *Ashtangasana* | `core` | `standing` | shoulders, hips, knees |
-| 20 | **Extended Puppy Pose** | *Uttana Shishosana* | `restorative` | `standing` | shoulders |
-| 21 | **Extended Side Angle** | *Utthita Parshvakonasana* | `standing` | `standing` | shoulders, hips |
-| 22 | **Extended Supine Hand To Big Toe** | *Supta Padangushthasana B* | `restorative` | `supine` | shoulders |
-| 23 | **Fire Log Pose** | *Agnistambhasana* | `seated` | `seated` | shoulders, hips |
-| 24 | **Floating Stick** | *Brahmacharyasana* | `standing` | `standing` | shoulders, hips |
-| 25 | **Frog Pose** | *Bhekasana* | `backbend` | `standing` | shoulders, elbows, wrists |
-| 26 | **Garland Pose** | *Malasana* | `standing` | `standing` | shoulders, hips |
-| 27 | **Gate Pose** | *Parighasana* | `standing` | `kneeling` | shoulders, hips |
-| 28 | **Goddess Pose** | *Utkata Konasana* | `standing` | `standing` | shoulders, hips |
-| 29 | **Gorilla** | *Pada Hastasana* | `standing` | `standing` | shoulders, hips |
-| 30 | **Grasshopper** | *Maksikanagasana* | `standing` | `standing` | shoulders, hips |
-| 31 | **Happy Baby Pose** | *Ananda Balasana* | `restorative` | `supine` | shoulders |
-| 32 | **Hero Pose** | *Virasana* | `seated` | `seated` | shoulders, hips |
-| 33 | **Heron** | *Kraunchasana* | `seated` | `seated` | shoulders, hips |
-| 34 | **Himalayan Duck** | *Karandavasana* | `standing` | `standing` | shoulders, hips |
-| 35 | **Horse** | *Vatayanasana* | `standing` | `standing` | shoulders, hips |
-| 36 | **Humble Flamingo** | *—* | `standing` | `standing` | shoulders, hips |
-| 37 | **Inverted Staff Dvi Pada Viparita** | *Dandasana* | `seated` | `seated` | shoulders, hips |
-| 38 | **Legs-Up-The-Wall Pose** | *Viparita Karani* | `restorative` | `inverted` | shoulders |
-| 39 | **Little Thunderbolt** | *Laghu Vajrasana* | `standing` | `kneeling` | shoulders, hips |
-| 40 | **Lizard Pose** | *Uttana Pristhasana* | `standing` | `standing` | shoulders, hips |
-| 41 | **Lotus Pose** | *Padmasana* | `seated` | `seated` | shoulders, hips |
-| 42 | **Four-Limbed Staff Pose** | *Chaturanga Dandasana* | `core` | `plank` | shoulders, hips, knees |
-| 43 | **Lunge Runner** | *—* | `standing` | `standing` | shoulders, hips |
-| 44 | **Moon Bird** | *Eka Pada Shirshasana C* | `standing` | `standing` | shoulders, hips |
+| 1 | **Banana Pose** | *Supta Nitambasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 2 | **Big Toe Pose** | *Padangushthasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 3 | **Bound Angle Pose** | *Baddha Konasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 4 | **Box Pose** | *Chakravakasana* | `restorative` | `all_fours` | shoulders, hips, ankles |
+| 5 | **Butterfly Pose** | *Baddha Konasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 6 | **Cat Pose** | *Marjariasana* | `restorative` | `all_fours` | shoulders, hips, ankles |
+| 7 | **Caterpillar Pose** | *Paschimottanasana Variation* | `restorative` | `all_fours` | shoulders, hips, knees, ankles |
+| 8 | **Chair Pose** | *Utkatasana* | `standing` | `standing` | shoulders, elbows, hips, knees, ankles |
+| 9 | **Child's Pose** | *Balasana* | `restorative` | `kneeling` | shoulders, hips, ankles |
+| 10 | **Cobra Pose** | *Bhujangasana* | `backbend` | `prone` | shoulders, elbows, wrists, hips, knees, ankles |
+| 11 | **Corpse Pose** | *Savasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 12 | **Cow Pose** | *Bitilasana* | `restorative` | `all_fours` | shoulders, hips, ankles |
+| 13 | **Crescent Lunge** | *Ashta Chandrasana* | `standing` | `standing` | shoulders, elbows, hips, knees, ankles |
+| 14 | **Low Lunge** | *Anjaneyasana* | `standing` | `standing` | shoulders, elbows, hips, knees, ankles |
+| 15 | **Crooked Monkey** | *Markatasana Variation* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 16 | **Dolphin Pose** | *Shishumarasana* | `inversion` | `inverted` | shoulders, elbows, wrists, hips, knees, ankles |
+| 17 | **Downward-Facing Dog** | *Adho Mukha Svanasana* | `standing` | `inverted` | shoulders, elbows, wrists, hips, knees, ankles |
+| 18 | **Easy Pose** | *Sukhasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 19 | **Eight-Limbed Pose** | *Ashtangasana* | `core` | `standing` | shoulders, elbows, hips, knees, ankles |
+| 20 | **Extended Puppy Pose** | *Uttana Shishosana* | `restorative` | `standing` | shoulders, hips, ankles |
+| 21 | **Extended Side Angle** | *Utthita Parshvakonasana* | `standing` | `standing` | shoulders, wrists, hips, knees, ankles |
+| 22 | **Extended Supine Hand To Big Toe** | *Supta Padangushthasana B* | `restorative` | `supine` | shoulders, hips, ankles |
+| 23 | **Fire Log Pose** | *Agnistambhasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 24 | **Floating Stick** | *Brahmacharyasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 25 | **Frog Pose** | *Bhekasana* | `backbend` | `standing` | shoulders, hips, knees |
+| 26 | **Garland Pose** | *Malasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 27 | **Gate Pose** | *Parighasana* | `standing` | `kneeling` | shoulders, wrists, hips, knees |
+| 28 | **Goddess Pose** | *Utkata Konasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 29 | **Gorilla** | *Pada Hastasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 30 | **Grasshopper** | *Maksikanagasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 31 | **Happy Baby Pose** | *Ananda Balasana* | `restorative` | `supine` | shoulders, hips, knees, ankles |
+| 32 | **Hero Pose** | *Virasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 33 | **Heron** | *Kraunchasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 34 | **Himalayan Duck** | *Karandavasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 35 | **Horse** | *Vatayanasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 36 | **Humble Flamingo** | *—* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 37 | **Inverted Staff Dvi Pada Viparita** | *Dandasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 38 | **Legs-Up-The-Wall Pose** | *Viparita Karani* | `restorative` | `inverted` | shoulders, hips, knees, ankles |
+| 39 | **Little Thunderbolt** | *Laghu Vajrasana* | `standing` | `kneeling` | shoulders, wrists, hips, knees |
+| 40 | **Lizard Pose** | *Uttana Pristhasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 41 | **Lotus Pose** | *Padmasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 42 | **Four-Limbed Staff Pose** | *Chaturanga Dandasana* | `core` | `plank` | shoulders, elbows, wrists, hips, ankles |
+| 43 | **Lunge Runner** | *—* | `standing` | `standing` | shoulders, elbows, hips, knees, ankles |
+| 44 | **Moon Bird** | *Eka Pada Shirshasana C* | `standing` | `standing` | shoulders, hips, knees, ankles |
 | 45 | **Mountain Pose** | *Tadasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
-| 46 | **One Leg Behind The Head I** | *Eka Pada Shirshasana A* | `standing` | `standing` | shoulders, hips |
-| 47 | **One Leg Behind The Head II** | *Eka Pada Shirshasana B* | `standing` | `standing` | shoulders, hips |
-| 48 | **Plank Pose** | *Phalakasana* | `core` | `plank` | shoulders, hips, knees |
-| 49 | **Pyramid Pose** | *Parshvottanasana* | `standing` | `standing` | shoulders, hips |
-| 50 | **Rabbit Pose** | *Shashankasana* | `restorative` | `standing` | shoulders |
-| 51 | **Reclining Bound Angle** | *Supta Baddha Konasana* | `restorative` | `supine` | shoulders |
-| 52 | **Reverse Corpse** | *Advasana* | `restorative` | `supine` | shoulders |
-| 53 | **Rock The Baby** | *—* | `standing` | `standing` | shoulders, hips |
-| 54 | **Sage Gheranda's** | *Gherandasana* | `standing` | `standing` | shoulders, hips |
-| 55 | **Sage Visvamitra's** | *Vishvamitrasana* | `standing` | `standing` | shoulders, hips |
-| 56 | **Seated Forward Fold** | *Paschimottanasana* | `seated` | `seated` | shoulders, hips |
-| 57 | **Seated Gate** | *Parighasana* | `seated` | `seated` | shoulders, hips |
-| 58 | **Seated Half Bound Lotus Forward Bend Ardha Baddha Padma** | *Paschimottanasana* | `seated` | `seated` | shoulders, hips |
-| 59 | **Seated Three Limbed Forward Bend** | *Trianga Mukha Eka Pada Paschimottanasana* | `seated` | `seated` | shoulders, hips |
-| 60 | **Shiva Squat** | *—* | `standing` | `standing` | shoulders, hips |
-| 61 | **Shoelace** | *—* | `seated` | `seated` | shoulders, hips |
-| 62 | **Shoulder Stand With Lotus Legs Urdhva** | *Padmasana* | `seated` | `seated` | shoulders, hips |
-| 63 | **Side Plank Pose** | *Vasishthasana* | `core` | `plank` | shoulders, hips, knees |
-| 64 | **Sleeping Yogi Yoga** | *Nidrasana* | `standing` | `standing` | shoulders, hips |
-| 65 | **Snake** | *Sarpasana* | `standing` | `standing` | shoulders, hips |
-| 66 | **Sphinx Pose** | *Salamba Bhujangasana* | `backbend` | `prone` | shoulders, elbows, wrists |
-| 67 | **Staff Pose** | *Dandasana* | `seated` | `seated` | shoulders, hips |
-| 68 | **Standing Foot To Head** | *Trivikramasana A* | `standing` | `standing` | shoulders, hips |
-| 69 | **Standing Forward Bend** | *Uttanasana* | `standing` | `bending` | shoulders, hips |
-| 70 | **Standing Half Bound Lotus Forward Bend** | *Ardha Baddha Padmottanasana* | `seated` | `seated` | shoulders, hips |
-| 71 | **Standing Leg Behind Head** | *Durvasasana* | `standing` | `standing` | shoulders, hips |
-| 72 | **Standing Leg Behind Head Forward Bend** | *Richikasana* | `forward_bend` | `bending` | shoulders |
-| 73 | **Star Utthita** | *Tadasana* | `standing` | `standing` | shoulders, hips |
-| 74 | **Supine Angle** | *Supta Konasana* | `restorative` | `supine` | shoulders |
-| 75 | **Supine Foot To Head** | *Supta Trivikramasana* | `restorative` | `supine` | shoulders |
-| 76 | **Supine Hand To Big Toe** | *Supta Padangushthasana A* | `restorative` | `supine` | shoulders |
-| 77 | **Supine Straddle** | *Supta Samakonasana* | `restorative` | `supine` | shoulders |
-| 78 | **Thunderbolt Pose** | *Vajrasana* | `seated` | `seated` | shoulders, hips |
-| 79 | **Tiger** | *Vyaghrasana* | `standing` | `standing` | shoulders, hips |
-| 80 | **Toe Stand** | *Padangushthasana* | `standing` | `standing` | shoulders, hips |
-| 81 | **Tortoise** | *Kurmasana* | `standing` | `standing` | shoulders, hips |
+| 46 | **One Leg Behind The Head I** | *Eka Pada Shirshasana A* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 47 | **One Leg Behind The Head II** | *Eka Pada Shirshasana B* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 48 | **Plank Pose** | *Phalakasana* | `core` | `plank` | shoulders, elbows, hips, knees, ankles |
+| 49 | **Pyramid Pose** | *Parshvottanasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 50 | **Rabbit Pose** | *Shashankasana* | `restorative` | `standing` | shoulders, hips, ankles |
+| 51 | **Reclining Bound Angle** | *Supta Baddha Konasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 52 | **Reverse Corpse** | *Advasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 53 | **Rock The Baby** | *—* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 54 | **Sage Gheranda's** | *Gherandasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 55 | **Sage Visvamitra's** | *Vishvamitrasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 56 | **Seated Forward Fold** | *Paschimottanasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 57 | **Seated Gate** | *Parighasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 58 | **Seated Half Bound Lotus Forward Bend Ardha Baddha Padma** | *Paschimottanasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 59 | **Seated Three Limbed Forward Bend** | *Trianga Mukha Eka Pada Paschimottanasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 60 | **Shiva Squat** | *—* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 61 | **Shoelace** | *—* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 62 | **Shoulder Stand With Lotus Legs Urdhva** | *Padmasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 63 | **Side Plank Pose** | *Vasishthasana* | `core` | `plank` | shoulders, elbows, hips, knees, ankles |
+| 64 | **Sleeping Yogi Yoga** | *Nidrasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 65 | **Snake** | *Sarpasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 66 | **Sphinx Pose** | *Salamba Bhujangasana* | `backbend` | `prone` | shoulders, elbows, wrists, hips, knees, ankles |
+| 67 | **Staff Pose** | *Dandasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 68 | **Standing Foot To Head** | *Trivikramasana A* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 69 | **Standing Forward Bend** | *Uttanasana* | `standing` | `bending` | shoulders, hips, knees, ankles |
+| 70 | **Standing Half Bound Lotus Forward Bend** | *Ardha Baddha Padmottanasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 71 | **Standing Leg Behind Head** | *Durvasasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 72 | **Standing Leg Behind Head Forward Bend** | *Richikasana* | `forward_bend` | `bending` | shoulders, hips, knees, ankles |
+| 73 | **Star Utthita** | *Tadasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 74 | **Supine Angle** | *Supta Konasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 75 | **Supine Foot To Head** | *Supta Trivikramasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 76 | **Supine Hand To Big Toe** | *Supta Padangushthasana A* | `restorative` | `supine` | shoulders, hips, ankles |
+| 77 | **Supine Straddle** | *Supta Samakonasana* | `restorative` | `supine` | shoulders, hips, ankles |
+| 78 | **Thunderbolt Pose** | *Vajrasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 79 | **Tiger** | *Vyaghrasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 80 | **Toe Stand** | *Padangushthasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
+| 81 | **Tortoise** | *Kurmasana* | `standing` | `standing` | shoulders, hips, knees, ankles |
 | 82 | **Tree Pose** | *Vrksasana* | `balancing` | `standing` | shoulders, hips, knees, ankles |
-| 83 | **Triangle Pose** | *Trikonasana* | `standing` | `standing` | shoulders, hips |
-| 84 | **Upward-Facing Dog** | *Urdhva Mukha Svanasana* | `backbend` | `standing` | shoulders, elbows, wrists |
-| 85 | **Upward Plank Pose** | *Purvottanasana* | `core` | `plank` | shoulders, hips, knees |
-| 86 | **Warrior I** | *Virabhadrasana I* | `standing` | `standing` | shoulders, hips |
+| 83 | **Triangle Pose** | *Trikonasana* | `standing` | `standing` | shoulders, wrists, hips, knees, ankles |
+| 84 | **Upward-Facing Dog** | *Urdhva Mukha Svanasana* | `backbend` | `standing` | shoulders, hips, knees |
+| 85 | **Upward Plank Pose** | *Purvottanasana* | `core` | `plank` | shoulders, elbows, hips, knees, ankles |
+| 86 | **Warrior I** | *Virabhadrasana I* | `standing` | `standing` | shoulders, elbows, hips, knees, ankles |
 | 87 | **Warrior II** | *Virabhadrasana II* | `standing` | `standing` | shoulders, elbows, wrists, hips, knees, ankles |
 | 88 | **Warrior III** | *Virabhadrasana III* | `balancing` | `standing` | shoulders, hips, knees, ankles |
-| 89 | **Waterfall** | *Supta Dandasana* | `standing` | `supine` | shoulders, hips |
-| 90 | **Wide Angle Seated Forward Bend Upavistha** | *Konasana* | `seated` | `seated` | shoulders, hips |
-| 91 | **Wide Legged Forward Bend I** | *Prasarita Padottanasana A* | `forward_bend` | `bending` | shoulders |
-| 92 | **Wide Legged Forward Bend II** | *Prasarita Padottanasana B* | `forward_bend` | `bending` | shoulders |
-| 93 | **Wide Legged Forward Bend III** | *Prasarita Padottanasana C* | `forward_bend` | `bending` | shoulders |
-| 94 | **Wide Legged Forward Bend Iv** | *Prasarita Padottanasana D* | `forward_bend` | `bending` | shoulders |
-| 95 | **Wind-Relieving Pose** | *Pavanamuktasana* | `restorative` | `standing` | shoulders |
+| 89 | **Waterfall** | *Supta Dandasana* | `standing` | `supine` | shoulders, hips, ankles |
+| 90 | **Wide Angle Seated Forward Bend Upavistha** | *Konasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
+| 91 | **Wide Legged Forward Bend I** | *Prasarita Padottanasana A* | `forward_bend` | `bending` | shoulders, hips, knees, ankles |
+| 92 | **Wide Legged Forward Bend II** | *Prasarita Padottanasana B* | `forward_bend` | `bending` | shoulders, hips, knees, ankles |
+| 93 | **Wide Legged Forward Bend III** | *Prasarita Padottanasana C* | `forward_bend` | `bending` | shoulders, hips, knees, ankles |
+| 94 | **Wide Legged Forward Bend Iv** | *Prasarita Padottanasana D* | `forward_bend` | `bending` | shoulders, hips, knees, ankles |
+| 95 | **Wind-Relieving Pose** | *Pavanamuktasana* | `restorative` | `standing` | shoulders, hips, ankles |
 
 ---
 

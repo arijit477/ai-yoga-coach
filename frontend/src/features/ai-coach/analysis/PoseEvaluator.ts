@@ -10,6 +10,7 @@ import type {
 
 import { evaluateRule } from "./RuleEvaluator";
 import { getLandmarkConfidence } from "./LandmarkUtils";
+import { validatePoseIdentity } from "./PoseIdentityValidator";
 
 const SEVERITY_WEIGHTS: Record<RuleSeverity, number> = {
   high: 4,
@@ -84,10 +85,17 @@ export function evaluatePose(
     totalRulesWeight += (rule.weight ?? 1);
   }
 
+  const coverage = totalRulesWeight > 0 ? totalEvaluableWeight / totalRulesWeight : (rules.length === 0 ? 1 : 0);
+
   // Weighted score calculation against evaluable rules
   let rawScore = 0;
   if (totalEvaluableWeight > 0) {
     rawScore = weightedScoreSum / totalEvaluableWeight;
+
+    // If coverage is low when multiple rules are defined, scale score to prevent 1 rule false-100%
+    if (rules.length > 1 && coverage < 0.40) {
+      rawScore = rawScore * (coverage / 0.40);
+    }
   }
   const score = Math.max(0, Math.min(100, rawScore));
 
@@ -129,11 +137,15 @@ export function evaluatePose(
     hasSufficientRuleCoverage &&
     hasSufficientConfidence;
 
+  const identity = validatePoseIdentity(asanaId, context, context.features, rules);
+
   return {
     asanaId,
     timestamp,
     score,
     rawScore,
+    coverage,
+    scoreCoverage: coverage,
     overallStatus,
     status: overallStatus,
     rules: ruleEvaluations,
@@ -151,6 +163,7 @@ export function evaluatePose(
     completionEligible,
     confidence,
     evaluatedAt: timestamp,
+    identity,
   };
 }
 

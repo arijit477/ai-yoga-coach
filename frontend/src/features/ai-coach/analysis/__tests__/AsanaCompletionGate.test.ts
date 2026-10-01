@@ -67,8 +67,13 @@ function createSeatedLandmarks(): PoseLandmarks {
  */
 function createProneLandmarks(): PoseLandmarks {
   return createLandmarks({
-    [P.LEFT_SHOULDER]: { x: 0.30, y: 0.60, visibility: 0.95 },
-    [P.RIGHT_SHOULDER]: { x: 0.30, y: 0.62, visibility: 0.95 },
+    [P.NOSE]: { x: 0.20, y: 0.45, visibility: 0.95 },
+    [P.LEFT_SHOULDER]: { x: 0.28, y: 0.52, visibility: 0.95 },
+    [P.RIGHT_SHOULDER]: { x: 0.28, y: 0.54, visibility: 0.95 },
+    [P.LEFT_ELBOW]: { x: 0.38, y: 0.68, visibility: 0.95 },
+    [P.RIGHT_ELBOW]: { x: 0.38, y: 0.70, visibility: 0.95 },
+    [P.LEFT_WRIST]: { x: 0.30, y: 0.75, visibility: 0.95 },
+    [P.RIGHT_WRIST]: { x: 0.30, y: 0.77, visibility: 0.95 },
     [P.LEFT_HIP]: { x: 0.55, y: 0.75, visibility: 0.95 },
     [P.RIGHT_HIP]: { x: 0.55, y: 0.77, visibility: 0.95 },
     [P.LEFT_KNEE]: { x: 0.70, y: 0.78, visibility: 0.95 },
@@ -95,11 +100,20 @@ function createSupineLandmarks(): PoseLandmarks {
 }
 
 function createMockEvaluation(overrides: Partial<PoseEvaluationResult> = {}): PoseEvaluationResult {
+  const asanaId = overrides.asanaId || "bhujangasana";
   return {
-    asanaId: "bhujangasana",
+    asanaId,
     score: 85,
     rawScore: 85,
     isValid: true,
+    identity: {
+      isMatch: true,
+      confidence: 0.92,
+      canonicalAsanaId: asanaId,
+      passedRequirements: ["stance:valid"],
+      failedRequirements: [],
+      criticalFailures: [],
+    },
     primaryIssue: null,
     secondaryIssues: [],
     resolvedIssues: [],

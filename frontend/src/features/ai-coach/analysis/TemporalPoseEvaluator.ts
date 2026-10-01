@@ -8,6 +8,8 @@ import type {
 import { evaluatePose } from "./PoseEvaluator";
 import { AccuracyStabilizer } from "./AccuracyStabilizer";
 
+import { evaluateCompletionGate } from "./AsanaCompletionGate";
+
 const ISSUE_PERSISTENCE_THRESHOLD = 10; // Frames an issue must persist to become primary
 
 export class TemporalPoseEvaluator {
@@ -76,6 +78,9 @@ export class TemporalPoseEvaluator {
         activeRules: rules.length,
         evaluatedAt: Date.now(),
         posture: rawEvaluation.posture,
+        identity: rawEvaluation.identity,
+        coverage: rawEvaluation.coverage,
+        scoreCoverage: rawEvaluation.scoreCoverage,
       };
     }
 
@@ -152,18 +157,33 @@ export class TemporalPoseEvaluator {
     }
     this.previouslyFailingRules = currentIssueIds;
 
-    // 5. Hold Progress & Completion Eligibility
+    // 5. Hold Progress & Completion Eligibility (Phase 4 single authoritative gate)
     const displayedScore = stabilized.displayedAccuracy ?? (stabilized.stableAccuracy !== null ? Math.round(stabilized.stableAccuracy) : undefined);
-    const isValid = Boolean(hasUsableTracking && displayedScore !== undefined && displayedScore >= 75);
+    
+    const gateResult = evaluateCompletionGate({
+      asanaId,
+      evaluation: rawEvaluation,
+      landmarks: hasUsableTracking ? context.landmarks : null,
+      cameraReady: hasUsableTracking,
+      completionAccuracyThreshold: 75,
+    });
 
-    if (isValid) {
+    const isEligibleNow = Boolean(
+      hasUsableTracking &&
+      gateResult.isEligible &&
+      rawEvaluation.identity?.isMatch &&
+      displayedScore !== undefined &&
+      displayedScore >= 75
+    );
+
+    if (isEligibleNow) {
       this.holdFramesCount++;
     } else {
-      this.holdFramesCount = Math.max(0, this.holdFramesCount - 2);
+      this.holdFramesCount = 0; // True continuous hold: immediate reset to 0
     }
 
     const holdProgress = Math.min(100, (this.holdFramesCount / this.targetHoldFrames) * 100);
-    const completionEligible = holdProgress >= 100;
+    const completionEligible = isEligibleNow && holdProgress >= 100;
 
     return {
       asanaId,
@@ -183,7 +203,10 @@ export class TemporalPoseEvaluator {
       evaluatedAt: Date.now(),
       summary: rawEvaluation.summary,
       confidence: rawEvaluation.confidence,
+      coverage: rawEvaluation.coverage,
+      scoreCoverage: rawEvaluation.scoreCoverage,
       posture: rawEvaluation.posture,
+      identity: rawEvaluation.identity,
     };
   }
 }

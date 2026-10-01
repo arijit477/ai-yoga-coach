@@ -102,11 +102,25 @@ export interface PoseEvaluationSummary {
   unknownRules: number;
 }
 
+export interface PoseIdentityResult {
+  isMatch: boolean;
+  confidence: number;
+  canonicalAsanaId: string;
+  requiredStance?: string;
+  detectedStance?: string;
+  passedRequirements: string[];
+  failedRequirements: string[];
+  criticalFailures: string[];
+  reason?: string;
+}
+
 export interface PoseEvaluation {
   asanaId: string;
   timestamp: number;
   score: number;
   rawScore?: number;
+  coverage?: number;
+  scoreCoverage?: number;
   overallStatus: OverallPoseStatus;
   status?: OverallPoseStatus; // alias for backwards compatibility
   rules: RuleEvaluation[];
@@ -126,6 +140,7 @@ export interface PoseEvaluation {
   completionEligible: boolean;
   confidence: number;
   evaluatedAt: number;
+  identity?: PoseIdentityResult;
 }
 
 export interface PoseEvaluationResult {
@@ -134,6 +149,8 @@ export interface PoseEvaluationResult {
   rawScore?: number;
   stableScore?: number;
   displayedScore?: number;
+  coverage?: number;
+  scoreCoverage?: number;
   isValid: boolean;
   primaryIssue: PoseIssue | null;
   secondaryIssues: PoseIssue[];
@@ -147,6 +164,7 @@ export interface PoseEvaluationResult {
   confidence?: number;
   evaluatedAt?: number;
   posture?: PoseEvaluation["posture"];
+  identity?: PoseIdentityResult;
 }
 
 export interface PoseEvaluatorContext {

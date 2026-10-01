@@ -12,7 +12,7 @@
 
 import type { AsanaStartingStance } from "../types/coaching-profile";
 import type { BodyRegion } from "../types/camera";
-import type { PoseEvaluation, PoseEvaluationResult } from "../types/pose-rules";
+import type { PoseEvaluation, PoseEvaluationResult, PoseIdentityResult } from "../types/pose-rules";
 import type { PoseLandmarks } from "../types/landmarks";
 import { isStanceMatching } from "./StanceDetector";
 import { getAsanaCoachingProfile } from "../services/AsanaCoachingProfileService";
@@ -22,6 +22,7 @@ import { ensureAsanaRules } from "./rules/poseRulesRegistry";
 import { normalizeAsanaId } from "../data/AsanaRegistry";
 import { ALL_ASANAS_CATALOG } from "../data/allAsanasCatalog";
 import { resolveCanonicalAsanaId } from "./AsanaCanonicalIdResolver";
+import { validatePoseIdentity } from "./PoseIdentityValidator";
 
 export interface AsanaCompletionRequirements {
   asanaId: string;
@@ -40,6 +41,8 @@ export interface AsanaCompletionRequirements {
 export interface AsanaCompletionGateResult {
   isEligible: boolean;
   asanaId: string;
+  identityValid: boolean;
+  identityResult?: PoseIdentityResult;
   stanceValid: boolean;
   requiredStance: AsanaStartingStance;
   detectedStance?: AsanaStartingStance | "unknown";
@@ -58,96 +61,57 @@ export interface AsanaCompletionGateResult {
 /**
  * Hand-authored, pose-defining critical completion rule IDs for foundational asanas.
  */
-const KNOWN_CRITICAL_RULES: Record<string, string[]> = {
-  // Cobra Pose: chest lift and elbow tuck
-  "bhujangasana": ["bhujangasana.chest.lift", "bhujangasana.elbows.tuck"],
-  "cobra": ["bhujangasana.chest.lift", "bhujangasana.elbows.tuck"],
-  "cobra-pose": ["bhujangasana.chest.lift", "bhujangasana.elbows.tuck"],
-
-  // Bridge Pose: hip elevation and knee bend
-  "setu-bandhasana": ["bridge.hips.lift", "bridge.left_knee.angle"],
-  "bridge": ["bridge.hips.lift", "bridge.left_knee.angle"],
-  "bridge-pose": ["bridge.hips.lift", "bridge.left_knee.angle"],
-
-  // Lotus Pose: upright vertical spine and grounded hips
-  "padmasana": ["padmasana.spine.vertical", "padmasana.hips.level"],
-  "lotus": ["padmasana.spine.vertical", "padmasana.hips.level"],
-  "lotus-pose": ["padmasana.spine.vertical", "padmasana.hips.level"],
-
-  // Warrior II: front knee bend
-  "warrior-ii": ["warrior-ii-left-knee-angle"],
-  "warrior_ii": ["warrior_ii.front_knee.angle"],
-
-  // Mountain Pose: vertical spine and level shoulders
-  "mountain-pose": ["mountain.spine.vertical", "mountain.shoulders.level"],
-  "tadasana": ["mountain.spine.vertical", "mountain.shoulders.level"],
-
-  // Tree Pose: bent knee abduction and straight standing leg
-  "tree-pose": ["tree.bent_knee.abduction", "tree.standing_leg.straight"],
-  "vrksasana": ["tree.bent_knee.abduction", "tree.standing_leg.straight"],
-
-  // Downward Dog: spine extension and hip elevation
-  "downward-dog": ["downward-dog.spine.extension", "downward-dog.hips.elevation"],
-  "adho-mukha-svanasana": ["downward-dog.spine.extension", "downward-dog.hips.elevation"],
-
-  // Child's Pose: hips to heels fold
-  "balasana": ["balasana.hips.heels", "balasana.torso.fold"],
-  "childs-pose": ["balasana.hips.heels", "balasana.torso.fold"],
-
-  // Chaturanga: 90 degree elbows and straight body line
-  "chaturanga-dandasana": ["chaturanga.elbows.90", "chaturanga.body.line"],
-  "chaturanga": ["chaturanga.elbows.90", "chaturanga.body.line"],
-
-  // Cow Pose / Bitilasana: all-fours tabletop symmetry
-  "bitilasana": ["cow-bitilasana.body.symmetry", "cat-cow-shoulder-wrist"],
-  "cow-bitilasana": ["cow-bitilasana.body.symmetry", "cat-cow-shoulder-wrist"],
-  "cow": ["cow-bitilasana.body.symmetry", "cat-cow-shoulder-wrist"],
-  "cow-pose": ["cow-bitilasana.body.symmetry", "cat-cow-shoulder-wrist"],
-
-  // Cat Pose / Marjaryasana: all-fours spinal curve
-  "marjaryasana": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
-  "cat-marjaryasana": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
-  "cat": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
-  "cat-pose": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
-
-  // Corpse Pose / Savasana: supine relaxation
-  "savasana": ["savasana-relaxation"],
-  "corpse-savasana": ["savasana-relaxation"],
+export const KNOWN_CRITICAL_RULES: Record<string, string[]> = {
+  "adho-mukha-svanasana": ["downward-dog.spine.extension","downward-dog.hips.elevation"],
+  "balasana": ["balasana.hips.heels","balasana.torso.fold"],
+  "bhujangasana": ["bhujangasana.chest.lift","bhujangasana.elbows.tuck"],
+  "bitilasana": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "boat-navasana": ["navasana.torso.vshape"],
+  "bow-dhanurasana": ["dhanurasana.bow.arc"],
+  "bridge": ["bridge.hips.lift","bridge.left_knee.angle"],
+  "bridge-pose": ["bridge.hips.lift","bridge.left_knee.angle"],
+  "camel-ustrasana": ["ustrasana.chest.lift"],
+  "cat": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "cat-marjaryasana": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "cat-pose": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "chaturanga": ["chaturanga.elbows.90","chaturanga.body.line"],
+  "chaturanga-dandasana": ["chaturanga.elbows.90","chaturanga.body.line"],
+  "childs-pose": ["balasana.hips.heels","balasana.torso.fold"],
+  "cobra": ["bhujangasana.chest.lift","bhujangasana.elbows.tuck"],
+  "cobra-pose": ["bhujangasana.chest.lift","bhujangasana.elbows.tuck"],
   "corpse-pose": ["savasana-relaxation"],
-
-  // Plank / Phalakasana
-  "plank": ["plank.body.line"],
+  "corpse-savasana": ["savasana-relaxation"],
+  "cow": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "cow-bitilasana": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "cow-pose": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "dhanurasana": ["dhanurasana.bow.arc"],
+  "downward-dog": ["downward-dog.spine.extension","downward-dog.hips.elevation"],
+  "locust-salabhasana": ["salabhasana.leg.lift"],
+  "lotus": ["padmasana.spine.vertical","padmasana.hips.level"],
+  "lotus-pose": ["padmasana.spine.vertical","padmasana.hips.level"],
+  "marjaryasana": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "mountain-pose": ["mountain.spine.vertical","mountain.shoulders.level"],
+  "navasana": ["navasana.torso.vshape"],
+  "padmasana": ["padmasana.spine.vertical","padmasana.hips.level"],
+  "paschimottanasana": ["paschimottanasana.spine.extension"],
   "phalakasana": ["plank.body.line"],
+  "plank": ["plank.body.line"],
   "plank-phalakasana": ["plank.body.line"],
-
-  // Triangle / Trikonasana
-  "trikonasana": ["trikonasana.knee.straight"],
-  "triangle-trikonasana": ["trikonasana.knee.straight"],
+  "salabhasana": ["salabhasana.leg.lift"],
+  "savasana": ["savasana-relaxation"],
+  "seated-forward-bend-paschimottanasana": ["paschimottanasana.spine.extension"],
+  "setu-bandhasana": ["bridge.hips.lift","bridge.left_knee.angle"],
+  "tadasana": ["mountain.spine.vertical","mountain.shoulders.level"],
+  "tree-pose": ["tree.bent_knee.abduction","tree.standing_leg.straight"],
   "triangle": ["trikonasana.knee.straight"],
-
-  // Warrior I
+  "triangle-trikonasana": ["trikonasana.knee.straight"],
+  "trikonasana": ["trikonasana.knee.straight"],
+  "ustrasana": ["ustrasana.chest.lift"],
+  "vrksasana": ["tree.bent_knee.abduction","tree.standing_leg.straight"],
+  "warrior_ii": ["warrior_ii.front_knee.angle"],
   "warrior-i": ["warrior-i-front-knee-angle"],
   "warrior-i-virabhadrasana-i": ["warrior-i-front-knee-angle"],
-
-  // Seated Forward Bend / Paschimottanasana
-  "paschimottanasana": ["paschimottanasana.spine.extension"],
-  "seated-forward-bend-paschimottanasana": ["paschimottanasana.spine.extension"],
-
-  // Boat Pose / Navasana
-  "navasana": ["navasana.torso.vshape"],
-  "boat-navasana": ["navasana.torso.vshape"],
-
-  // Camel Pose / Ustrasana
-  "ustrasana": ["ustrasana.chest.lift"],
-  "camel-ustrasana": ["ustrasana.chest.lift"],
-
-  // Locust Pose / Salabhasana
-  "salabhasana": ["salabhasana.leg.lift"],
-  "locust-salabhasana": ["salabhasana.leg.lift"],
-
-  // Bow Pose / Dhanurasana
-  "dhanurasana": ["dhanurasana.bow.arc"],
-  "bow-dhanurasana": ["dhanurasana.bow.arc"],
+  "warrior-ii": ["warrior-ii-left-knee-angle"],
 };
 
 // In-memory cache for completion requirements per asanaId
@@ -251,6 +215,7 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
   const baseResult: AsanaCompletionGateResult = {
     isEligible: false,
     asanaId: requirements.asanaId,
+    identityValid: false,
     stanceValid: false,
     requiredStance: requirements.requiredStance,
     regionsValid: false,
@@ -276,7 +241,7 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
     return baseResult;
   }
 
-  // FAIL-CLOSED GUARD (pmt.md Phase 10A — Steps 3 & 4):
+  // 2. FAIL-CLOSED GUARD (pmt.md Phase 10A — Steps 3 & 4):
   // If no reliable pose-defining critical rules exist for this asana, block completion entirely.
   // The user continues to receive coaching guidance, but the system will never claim completion
   // without sufficient pose-specific evidence. Generic accuracy alone cannot establish pose identity.
@@ -285,7 +250,7 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
     return baseResult;
   }
 
-  // 2. Physical Stance Validation (Prevents Cobra completion from sitting/standing)
+  // 3. Physical Stance Validation (Prevents Cobra completion from sitting/standing)
   const stanceMatch = isStanceMatching(requirements.requiredStance, landmarks);
   baseResult.stanceValid = stanceMatch.matches;
   baseResult.detectedStance = stanceMatch.detectedStance;
@@ -295,10 +260,10 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
     return baseResult;
   }
 
-  // 3. Body Regions Check
+  // 4. Body Regions Check
   baseResult.regionsValid = true;
 
-  // 4. Critical Rules Validation
+  // 5. Critical Rules Validation
   const ruleEvaluations = "rules" in evaluation ? evaluation.rules : [];
   const ruleMap = new Map(ruleEvaluations.map((r) => [r.ruleId, r]));
 
@@ -342,7 +307,22 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
     return baseResult;
   }
 
-  // 5. Overall Accuracy & Issue Verification
+  // 6. Pose Identity Validation (Phase 1 & Phase 1.5 single source of truth)
+  // Hold timer & completion MUST NEVER start unless pose identity is confirmed (isMatch === true).
+  const identityResult: PoseIdentityResult =
+    ("identity" in evaluation && evaluation.identity)
+      ? evaluation.identity
+      : validatePoseIdentity(asanaId, { landmarks });
+
+  baseResult.identityValid = identityResult.isMatch;
+  baseResult.identityResult = identityResult;
+
+  if (!identityResult.isMatch) {
+    baseResult.reason = identityResult.reason || `Pose identity not confirmed for ${requirements.asanaId}`;
+    return baseResult;
+  }
+
+  // 7. Overall Accuracy & Issue Verification
   baseResult.accuracyValid = normalizedScore >= completionAccuracyThreshold;
   if (!baseResult.accuracyValid) {
     baseResult.reason = `Accuracy ${normalizedScore}% below completion threshold ${completionAccuracyThreshold}%`;

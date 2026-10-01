@@ -12,7 +12,7 @@ import {
   type CameraReadinessResult,
   type BodyRegion,
 } from "../features/ai-coach/types/camera";
-import { evaluateCompletionGate } from "../features/ai-coach/analysis/AsanaCompletionGate";
+import { evaluatePoseFrameState } from "../features/ai-coach/analysis/PoseFrameState";
 
 interface UseCoachSessionOptions {
   evaluation: PoseEvaluation | PoseEvaluationResult | null;
@@ -518,9 +518,9 @@ export function useCoachSession({
       holdScoresRef.current.push(evaluation.score);
     }
 
-    // Evaluate Completion Gate (Physical stance, required body regions, critical rules, accuracy threshold)
+    // Authoritative Pose Frame State & Completion Gate (Physical stance, identity, critical rules, accuracy threshold)
     const activeAsanaId = asanaId || ("asanaId" in evaluation ? evaluation.asanaId : "") || "";
-    const gateResult = evaluateCompletionGate({
+    const frameState = evaluatePoseFrameState({
       asanaId: activeAsanaId,
       evaluation,
       landmarks,
@@ -528,7 +528,7 @@ export function useCoachSession({
       completionAccuracyThreshold,
     });
 
-    const isPoseValidForCompletion = gateResult.isEligible;
+    const isPoseValidForCompletion = frameState.isCompletionEligible;
 
     if (isPoseValidForCompletion) {
       const now = Date.now();
@@ -547,8 +547,8 @@ export function useCoachSession({
       if (now - lastDebugLogTimeRef.current >= 1000) {
         lastDebugLogTimeRef.current = now;
         console.debug(
-          `[AI Coach Completion Gate] Asana: ${activeAsanaId} (${gateResult.requiredStance}), Score: ${evaluation.score.toFixed(1)}% (Threshold: ${completionAccuracyThreshold}%), ` +
-          `CriticalRules: ${gateResult.criticalRulesPassed}/${gateResult.criticalRulesEvaluated}, StanceValid: ${gateResult.stanceValid}, ` +
+          `[AI Coach Completion Gate] Asana: ${activeAsanaId} (${frameState.requiredStance}), Score: ${evaluation.score.toFixed(1)}% (Threshold: ${completionAccuracyThreshold}%), ` +
+          `CriticalRules: ${frameState.gateResult.criticalRulesPassed}/${frameState.gateResult.criticalRulesEvaluated}, StanceValid: ${frameState.stanceValid}, IdentityValid: ${frameState.identityValid}, ` +
           `Continuous Hold: ${elapsedHold}ms / ${completionHoldMs}ms, State: ${state}`
         );
       }

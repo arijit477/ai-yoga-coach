@@ -40,52 +40,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "archers-akarna-dhanurasana.spine.erect",
-      "archers-akarna-dhanurasana.shoulder.relaxation"
+      "archers-akarna-dhanurasana.bow.arc",
+      "archers-akarna-dhanurasana.knees.bent",
+      "archers-akarna-dhanurasana.chest.centered"
     ],
     "isPremium": true,
     "orderIndex": 1,
     "aliases": [],
     "rules": [
       {
-        "id": "archers-akarna-dhanurasana.spine.erect",
-        "name": "Spine Length",
-        "metric": "vertical_alignment",
+        "id": "archers-akarna-dhanurasana.bow.arc",
+        "name": "Torso & Leg Bow Arc",
+        "metric": "angle",
         "points": [
           11,
-          23
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "comparison": "between",
+        "min": 100,
+        "max": 150,
+        "target": 125,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Kick feet into hands to lift chest and thighs off mat.",
+        "isSafety": true
       },
       {
-        "id": "archers-akarna-dhanurasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
+        "id": "archers-akarna-dhanurasana.knees.bent",
+        "name": "Knees Flexed",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 45,
+        "max": 95,
+        "target": 70,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold ankles firmly with knees hip-width apart.",
+        "isSafety": false
+      },
+      {
+        "id": "archers-akarna-dhanurasana.chest.centered",
+        "name": "Chest Balanced",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Lift evenly through both shoulders.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -125,35 +152,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "banana-supta-nitambasana.body.symmetry"
+      "banana-supta-nitambasana.body.supine_line",
+      "banana-supta-nitambasana.shoulders.grounded",
+      "banana-supta-nitambasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 2,
     "aliases": [],
     "rules": [
       {
-        "id": "banana-supta-nitambasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "banana-supta-nitambasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "banana-supta-nitambasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "banana-supta-nitambasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -193,69 +261,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "big-toe-padangushthasana.shoulder.level",
-      "big-toe-padangushthasana.spine.vertical",
-      "big-toe-padangushthasana.hip.level"
+      "big-toe-padangushthasana.knee.straight",
+      "big-toe-padangushthasana.hip.alignment",
+      "big-toe-padangushthasana.spine.erect",
+      "big-toe-padangushthasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 3,
     "aliases": [],
     "rules": [
       {
-        "id": "big-toe-padangushthasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "big-toe-padangushthasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": false
       },
       {
-        "id": "big-toe-padangushthasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "big-toe-padangushthasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "big-toe-padangushthasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "big-toe-padangushthasana.hip.level",
-        "name": "Hip Balance",
+        "id": "big-toe-padangushthasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -295,56 +390,80 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "bird-of-paradise-svarga-dvijasana.standing.leg",
-      "bird-of-paradise-svarga-dvijasana.shoulder.alignment"
+      "bird-of-paradise-svarga-dvijasana.standing_knee.straight",
+      "bird-of-paradise-svarga-dvijasana.lifted_hip.flexion",
+      "bird-of-paradise-svarga-dvijasana.spine.balance"
     ],
     "isPremium": true,
     "orderIndex": 4,
     "aliases": [],
     "rules": [
       {
-        "id": "bird-of-paradise-svarga-dvijasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "bird-of-paradise-svarga-dvijasana.standing_knee.straight",
+        "name": "Standing Leg Strong",
         "metric": "angle",
         "points": [
-          23,
-          25,
-          27
+          24,
+          26,
+          28
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Keep standing leg straight and stable.",
+        "isSafety": true
       },
       {
-        "id": "bird-of-paradise-svarga-dvijasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "bird-of-paradise-svarga-dvijasana.lifted_hip.flexion",
+        "name": "Lifted Leg Elevated",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 80,
+        "max": 140,
+        "target": 110,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Maintain high lifted leg position.",
+        "isSafety": false
+      },
+      {
+        "id": "bird-of-paradise-svarga-dvijasana.spine.balance",
+        "name": "Vertical Alignment",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Keep your torso tall and centered.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -384,8 +503,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "boat-navasana.core.alignment",
-      "boat-navasana.shoulder.stability"
+      "boat-navasana.v_sit.angle",
+      "boat-navasana.knees.extension",
+      "boat-navasana.arms.parallel",
+      "boat-navasana.chest.lift"
     ],
     "isPremium": false,
     "orderIndex": 5,
@@ -395,8 +516,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "boat-navasana.core.alignment",
-        "name": "Torso Line",
+        "id": "boat-navasana.v_sit.angle",
+        "name": "V-Sit Body Angle",
         "metric": "angle",
         "points": [
           11,
@@ -404,38 +525,80 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           25
         ],
         "comparison": "between",
-        "min": 150,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 2,
+        "min": 45,
+        "max": 85,
+        "target": 65,
+        "tolerance": 20,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Engage abdominal muscles to maintain straight body line."
+        "feedback": "Balance on sit bones with torso and thighs forming a V.",
+        "isSafety": true
       },
       {
-        "id": "boat-navasana.shoulder.stability",
-        "name": "Shoulder Stability",
-        "metric": "horizontal_alignment",
+        "id": "boat-navasana.knees.extension",
+        "name": "Leg Extension",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 150,
+        "max": 180,
+        "target": 170,
+        "tolerance": 20,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Extend legs straight or parallel to the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "boat-navasana.arms.parallel",
+        "name": "Arms Reaching Forward",
+        "metric": "angle",
+        "points": [
+          13,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 110,
+        "target": 90,
+        "tolerance": 20,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach arms forward parallel to the mat.",
+        "isSafety": false
+      },
+      {
+        "id": "boat-navasana.chest.lift",
+        "name": "Open Chest",
+        "metric": "vertical_alignment",
         "points": [
           11,
-          12
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Press through hands and keep shoulder girdle firm."
+        "feedback": "Keep spine long and chest proud.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      25
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -475,52 +638,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "bound-angle-baddha-konasana.spine.erect",
-      "bound-angle-baddha-konasana.shoulder.relaxation"
+      "bound-angle-baddha-konasana.knees.open",
+      "bound-angle-baddha-konasana.feet.together",
+      "bound-angle-baddha-konasana.spine.tall"
     ],
     "isPremium": true,
     "orderIndex": 6,
     "aliases": [],
     "rules": [
       {
-        "id": "bound-angle-baddha-konasana.spine.erect",
-        "name": "Spine Length",
+        "id": "bound-angle-baddha-konasana.knees.open",
+        "name": "Knees Open Wide",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 20,
+        "max": 70,
+        "target": 45,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let knees relax open toward the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "bound-angle-baddha-konasana.feet.together",
+        "name": "Soles of Feet Pressed",
+        "metric": "distance",
+        "points": [
+          27,
+          28
+        ],
+        "comparison": "less_than",
+        "target": 0.12,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Bring soles of feet together near pelvis.",
+        "isSafety": false
+      },
+      {
+        "id": "bound-angle-baddha-konasana.spine.tall",
+        "name": "Tall Seated Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
-      },
-      {
-        "id": "bound-angle-baddha-konasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Sit upright with lengthened spine.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
-      23
+      23,
+      25,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -560,55 +747,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "bow-dhanurasana.chest.opening",
-      "bow-dhanurasana.arm.extension"
+      "bow-dhanurasana.bow.arc",
+      "bow-dhanurasana.knees.bent",
+      "bow-dhanurasana.chest.centered"
     ],
     "isPremium": true,
     "orderIndex": 7,
     "aliases": [],
     "rules": [
       {
-        "id": "bow-dhanurasana.chest.opening",
-        "name": "Chest Opening",
+        "id": "bow-dhanurasana.bow.arc",
+        "name": "Torso & Leg Bow Arc",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 100,
+        "max": 150,
+        "target": 125,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Kick feet into hands to lift chest and thighs off mat.",
+        "isSafety": true
+      },
+      {
+        "id": "bow-dhanurasana.knees.bent",
+        "name": "Knees Flexed",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 45,
+        "max": 95,
+        "target": 70,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold ankles firmly with knees hip-width apart.",
+        "isSafety": false
+      },
+      {
+        "id": "bow-dhanurasana.chest.centered",
+        "name": "Chest Balanced",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "bow-dhanurasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Lift evenly through both shoulders.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      13,
-      15
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -648,35 +859,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "box-chakravakasana.body.symmetry"
+      "box-chakravakasana.body.supine_line",
+      "box-chakravakasana.shoulders.grounded",
+      "box-chakravakasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 8,
     "aliases": [],
     "rules": [
       {
-        "id": "box-chakravakasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "box-chakravakasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "box-chakravakasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "box-chakravakasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -716,8 +968,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "bridge-setu-bandha-sarvangasana.chest.opening",
-      "bridge-setu-bandha-sarvangasana.arm.extension"
+      "bridge-setu-bandha-sarvangasana.hips.lift",
+      "bridge-setu-bandha-sarvangasana.knees.parallel",
+      "bridge-setu-bandha-sarvangasana.pelvis.level"
     ],
     "isPremium": false,
     "orderIndex": 9,
@@ -728,47 +981,70 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "bridge-setu-bandha-sarvangasana.chest.opening",
-        "name": "Chest Opening",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "bridge-setu-bandha-sarvangasana.arm.extension",
-        "name": "Arm Support",
+        "id": "bridge-setu-bandha-sarvangasana.hips.lift",
+        "name": "Hips Lifted High",
         "metric": "angle",
         "points": [
           11,
-          13,
-          15
+          23,
+          25
         ],
         "comparison": "between",
-        "min": 140,
+        "min": 147,
         "max": 180,
-        "tolerance": 15,
-        "weight": 1,
+        "target": 165,
+        "tolerance": 18,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Lift hips high into strong straight bridge line.",
+        "isSafety": true
+      },
+      {
+        "id": "bridge-setu-bandha-sarvangasana.knees.parallel",
+        "name": "Knees at 90°",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 110,
+        "target": 90,
+        "tolerance": 20,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees stacked directly above ankles.",
+        "isSafety": false
+      },
+      {
+        "id": "bridge-setu-bandha-sarvangasana.pelvis.level",
+        "name": "Level Pelvis",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep both hip points at equal height.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
-      13,
-      15
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -808,52 +1084,75 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "butterfly.spine.erect",
-      "butterfly.shoulder.relaxation"
+      "butterfly.knees.open",
+      "butterfly.feet.together",
+      "butterfly.spine.tall"
     ],
     "isPremium": true,
     "orderIndex": 10,
     "aliases": [],
     "rules": [
       {
-        "id": "butterfly.spine.erect",
-        "name": "Spine Length",
+        "id": "butterfly.knees.open",
+        "name": "Knees Open Wide",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 20,
+        "max": 70,
+        "target": 45,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Let knees relax open toward the floor.",
+        "isSafety": true
+      },
+      {
+        "id": "butterfly.feet.together",
+        "name": "Soles of Feet Pressed",
+        "metric": "distance",
+        "points": [
+          27,
+          28
+        ],
+        "comparison": "less_than",
+        "target": 0.12,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Bring soles of feet together near pelvis."
+      },
+      {
+        "id": "butterfly.spine.tall",
+        "name": "Tall Seated Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
-      },
-      {
-        "id": "butterfly.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Sit upright with lengthened spine.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
-      23
+      23,
+      25,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -893,55 +1192,82 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "camel-ustrasana.chest.opening",
-      "camel-ustrasana.arm.extension"
+      "camel-ustrasana.chest.arch",
+      "camel-ustrasana.hips.forward",
+      "camel-ustrasana.knees.grounded"
     ],
     "isPremium": true,
     "orderIndex": 11,
     "aliases": [],
     "rules": [
       {
-        "id": "camel-ustrasana.chest.opening",
-        "name": "Chest Opening",
-        "metric": "horizontal_alignment",
+        "id": "camel-ustrasana.chest.arch",
+        "name": "Chest Heart Open",
+        "metric": "angle",
         "points": [
+          0,
           11,
-          12
+          23
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
+        "comparison": "between",
+        "min": 105,
+        "max": 155,
+        "target": 130,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Lift chest upward toward ceiling in smooth arch.",
+        "isSafety": true
       },
       {
-        "id": "camel-ustrasana.arm.extension",
-        "name": "Arm Support",
+        "id": "camel-ustrasana.hips.forward",
+        "name": "Hips Over Knees",
         "metric": "angle",
         "points": [
           11,
-          13,
-          15
+          23,
+          25
         ],
         "comparison": "between",
-        "min": 140,
+        "min": 157,
         "max": 180,
-        "tolerance": 15,
-        "weight": 1,
+        "target": 175,
+        "tolerance": 18,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Push hips forward so thighs stay vertical.",
+        "isSafety": false
+      },
+      {
+        "id": "camel-ustrasana.knees.grounded",
+        "name": "Knees 90° to Floor",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 110,
+        "target": 90,
+        "tolerance": 20,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep knees hip-width apart firmly grounded.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
-      13,
-      15
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -981,35 +1307,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "cat-marjariasana.body.symmetry"
+      "cat-marjariasana.body.supine_line",
+      "cat-marjariasana.shoulders.grounded",
+      "cat-marjariasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 12,
     "aliases": [],
     "rules": [
       {
-        "id": "cat-marjariasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "cat-marjariasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "cat-marjariasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "cat-marjariasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1049,35 +1416,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "caterpillar.body.symmetry"
+      "caterpillar.hip.deep_fold",
+      "caterpillar.knee.straight",
+      "caterpillar.spine.elongation",
+      "caterpillar.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 13,
     "aliases": [],
     "rules": [
       {
-        "id": "caterpillar.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "caterpillar.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "caterpillar.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "caterpillar.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "caterpillar.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1117,9 +1549,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "chair-utkatasana.shoulder.level",
-      "chair-utkatasana.spine.vertical",
-      "chair-utkatasana.hip.level"
+      "chair-utkatasana.knees.bend",
+      "chair-utkatasana.torso.incline",
+      "chair-utkatasana.arms.reach",
+      "chair-utkatasana.knees.level"
     ],
     "isPremium": false,
     "orderIndex": 14,
@@ -1129,60 +1562,90 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "chair-utkatasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "chair-utkatasana.knees.bend",
+        "name": "Knees Deep Bend (100°)",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 80,
+        "max": 120,
+        "target": 100,
+        "tolerance": 20,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Sink hips back as if sitting into a deep chair.",
+        "isSafety": false
       },
       {
-        "id": "chair-utkatasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
+        "id": "chair-utkatasana.torso.incline",
+        "name": "Torso Extended Forward",
+        "metric": "angle",
         "points": [
           11,
-          23
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 95,
+        "max": 135,
+        "target": 115,
+        "tolerance": 20,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep chest lifted and spine long on diagonal.",
+        "isSafety": false
+      },
+      {
+        "id": "chair-utkatasana.arms.reach",
+        "name": "Arms Raised Overhead",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 145,
+        "max": 180,
+        "target": 165,
+        "tolerance": 20,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Extend arms alongside ears.",
+        "isSafety": false
+      },
+      {
+        "id": "chair-utkatasana.knees.level",
+        "name": "Knees Symmetrical",
+        "metric": "horizontal_alignment",
+        "points": [
+          25,
+          26
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "chair-utkatasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep knees tracking parallel without caving.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      24
+      25,
+      26,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1222,7 +1685,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "childs-pose-symmetry"
+      "childs-pose-balasana.body.supine_line",
+      "childs-pose-balasana.shoulders.grounded",
+      "childs-pose-balasana.hips.grounded"
     ],
     "isPremium": false,
     "orderIndex": 15,
@@ -1233,30 +1698,69 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "childs-pose-symmetry",
-        "name": "Shoulder Alignment",
+        "id": "childs-pose-balasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "childs-pose-balasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "childs-pose-balasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Rest deeply and extend arms evenly along the mat."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
-      "status": "validated",
-      "version": "1.0.0",
-      "sampleCount": 20,
-      "expertReviewed": true
+      "status": "draft",
+      "version": "1.2.0",
+      "sampleCount": 0,
+      "expertReviewed": false
     }
   },
   {
@@ -1294,54 +1798,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "chin-stand-ganda-bherundasana.inversion.line",
-      "chin-stand-ganda-bherundasana.shoulder.base"
+      "chin-stand-ganda-bherundasana.body.vertical_line",
+      "chin-stand-ganda-bherundasana.core.stability",
+      "chin-stand-ganda-bherundasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 16,
     "aliases": [],
     "rules": [
       {
-        "id": "chin-stand-ganda-bherundasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "chin-stand-ganda-bherundasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "chin-stand-ganda-bherundasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "chin-stand-ganda-bherundasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "chin-stand-ganda-bherundasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1381,8 +1910,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "cobra-shoulder-level",
-      "cobra-elbow-bend"
+      "cobra-bhujangasana.chest.lift",
+      "cobra-bhujangasana.elbows.tuck",
+      "cobra-bhujangasana.legs.grounded",
+      "cobra-bhujangasana.shoulders.level"
     ],
     "isPremium": false,
     "orderIndex": 17,
@@ -1393,23 +1924,27 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "cobra-shoulder-level",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "cobra-bhujangasana.chest.lift",
+        "name": "Chest Elevation",
+        "metric": "angle",
         "points": [
+          0,
           11,
-          12
+          23
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Roll shoulders back and down away from your ears."
+        "comparison": "between",
+        "min": 115,
+        "max": 165,
+        "target": 140,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Lift chest smoothly using back muscles without forcing.",
+        "isSafety": true
       },
       {
-        "id": "cobra-elbow-bend",
-        "name": "Elbows Bent",
+        "id": "cobra-bhujangasana.elbows.tuck",
+        "name": "Elbows Bent and Tucked",
         "metric": "angle",
         "points": [
           11,
@@ -1417,24 +1952,66 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           15
         ],
         "comparison": "between",
-        "min": 90,
-        "max": 160,
-        "weight": 1,
+        "min": 95,
+        "max": 145,
+        "target": 120,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep elbows close to your ribs with soft bend.",
+        "isSafety": false
+      },
+      {
+        "id": "cobra-bhujangasana.legs.grounded",
+        "name": "Legs Extended & Grounded",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep a soft bend in your elbows hugged close to your ribs."
+        "feedback": "Press tops of feet and thighs firmly into mat.",
+        "isSafety": false
+      },
+      {
+        "id": "cobra-bhujangasana.shoulders.level",
+        "name": "Shoulders Down and Level",
+        "metric": "horizontal_alignment",
+        "points": [
+          11,
+          12
+        ],
+        "comparison": "less_than",
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Roll shoulders back and away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
       13,
-      15
+      15,
+      23,
+      25,
+      27
     ],
     "validation": {
-      "status": "validated",
-      "version": "1.0.0",
-      "sampleCount": 20,
-      "expertReviewed": true
+      "status": "draft",
+      "version": "1.2.0",
+      "sampleCount": 0,
+      "expertReviewed": false
     }
   },
   {
@@ -1472,7 +2049,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "corpse-savasana.body.symmetry"
+      "corpse-savasana.body.supine_line",
+      "corpse-savasana.shoulders.grounded",
+      "corpse-savasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 18,
@@ -1483,28 +2062,67 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "corpse-savasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "corpse-savasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "corpse-savasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "corpse-savasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1544,35 +2162,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "cow-bitilasana.body.symmetry"
+      "cow-bitilasana.body.supine_line",
+      "cow-bitilasana.shoulders.grounded",
+      "cow-bitilasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 19,
     "aliases": [],
     "rules": [
       {
-        "id": "cow-bitilasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "cow-bitilasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "cow-bitilasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "cow-bitilasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1612,6 +2271,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "cow-face-gomukhasana.hip.flexion",
+      "cow-face-gomukhasana.knee.fold",
       "cow-face-gomukhasana.spine.erect",
       "cow-face-gomukhasana.shoulder.relaxation"
     ],
@@ -1619,6 +2280,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 20,
     "aliases": [],
     "rules": [
+      {
+        "id": "cow-face-gomukhasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "cow-face-gomukhasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "cow-face-gomukhasana.spine.erect",
         "name": "Spine Length",
@@ -1628,11 +2327,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "cow-face-gomukhasana.shoulder.relaxation",
@@ -1643,21 +2343,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1697,16 +2400,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "crane-bakasana.standing.leg",
-      "crane-bakasana.shoulder.alignment"
+      "crane-bakasana.elbow.shelf",
+      "crane-bakasana.knee.tuck",
+      "crane-bakasana.feet.lifted",
+      "crane-bakasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 21,
     "aliases": [],
     "rules": [
       {
-        "id": "crane-bakasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "crane-bakasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "crane-bakasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "crane-bakasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -1714,39 +2457,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "crane-bakasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "crane-bakasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1786,32 +2534,75 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "crescent-lunge-ashta-chandrasana.shoulder.level",
-      "crescent-lunge-ashta-chandrasana.spine.vertical",
-      "crescent-lunge-ashta-chandrasana.hip.level"
+      "crescent-lunge-ashta-chandrasana.front_knee.angle",
+      "crescent-lunge-ashta-chandrasana.back_knee.straight",
+      "crescent-lunge-ashta-chandrasana.arms.parallel",
+      "crescent-lunge-ashta-chandrasana.torso.vertical"
     ],
     "isPremium": true,
     "orderIndex": 22,
     "aliases": [],
     "rules": [
       {
-        "id": "crescent-lunge-ashta-chandrasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "crescent-lunge-ashta-chandrasana.front_knee.angle",
+        "name": "Front Knee 90°",
+        "metric": "angle",
         "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend your front knee over your ankle at 90°.",
+        "isSafety": true
+      },
+      {
+        "id": "crescent-lunge-ashta-chandrasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Straighten and ground through your back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "crescent-lunge-ashta-chandrasana.arms.parallel",
+        "name": "Arms Parallel to Floor",
+        "metric": "angle",
+        "points": [
+          13,
           11,
           12
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Extend arms parallel to the ground.",
+        "isSafety": false
       },
       {
-        "id": "crescent-lunge-ashta-chandrasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "crescent-lunge-ashta-chandrasana.torso.vertical",
+        "name": "Torso Centered",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -1820,35 +2611,26 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "crescent-lunge-ashta-chandrasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep your torso upright without leaning forward.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1888,9 +2670,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "crescent-lunge-on-knee-anjaneyasana.shoulder.level",
-      "crescent-lunge-on-knee-anjaneyasana.spine.vertical",
-      "crescent-lunge-on-knee-anjaneyasana.hip.level"
+      "crescent-lunge-on-knee-anjaneyasana.front_knee.angle",
+      "crescent-lunge-on-knee-anjaneyasana.back_knee.straight",
+      "crescent-lunge-on-knee-anjaneyasana.arms.parallel",
+      "crescent-lunge-on-knee-anjaneyasana.torso.vertical"
     ],
     "isPremium": true,
     "orderIndex": 23,
@@ -1900,23 +2683,65 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "crescent-lunge-on-knee-anjaneyasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "crescent-lunge-on-knee-anjaneyasana.front_knee.angle",
+        "name": "Front Knee 90°",
+        "metric": "angle",
         "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend your front knee over your ankle at 90°.",
+        "isSafety": true
+      },
+      {
+        "id": "crescent-lunge-on-knee-anjaneyasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Straighten and ground through your back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "crescent-lunge-on-knee-anjaneyasana.arms.parallel",
+        "name": "Arms Parallel to Floor",
+        "metric": "angle",
+        "points": [
+          13,
           11,
           12
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Extend arms parallel to the ground.",
+        "isSafety": false
       },
       {
-        "id": "crescent-lunge-on-knee-anjaneyasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "crescent-lunge-on-knee-anjaneyasana.torso.vertical",
+        "name": "Torso Centered",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -1925,35 +2750,26 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "crescent-lunge-on-knee-anjaneyasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep your torso upright without leaning forward.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -1993,16 +2809,18 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "crescent-moon-ardha-chandrasana.standing.leg",
-      "crescent-moon-ardha-chandrasana.shoulder.alignment"
+      "crescent-moon-ardha-chandrasana.front_knee.angle",
+      "crescent-moon-ardha-chandrasana.back_knee.straight",
+      "crescent-moon-ardha-chandrasana.arms.parallel",
+      "crescent-moon-ardha-chandrasana.torso.vertical"
     ],
     "isPremium": true,
     "orderIndex": 24,
     "aliases": [],
     "rules": [
       {
-        "id": "crescent-moon-ardha-chandrasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "crescent-moon-ardha-chandrasana.front_knee.angle",
+        "name": "Front Knee 90°",
         "metric": "angle",
         "points": [
           23,
@@ -2010,39 +2828,84 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Bend your front knee over your ankle at 90°.",
+        "isSafety": true
       },
       {
-        "id": "crescent-moon-ardha-chandrasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "crescent-moon-ardha-chandrasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
         "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Straighten and ground through your back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "crescent-moon-ardha-chandrasana.arms.parallel",
+        "name": "Arms Parallel to Floor",
+        "metric": "angle",
+        "points": [
+          13,
           11,
           12
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Extend arms parallel to the ground.",
+        "isSafety": false
+      },
+      {
+        "id": "crescent-moon-ardha-chandrasana.torso.vertical",
+        "name": "Torso Centered",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
+        ],
+        "comparison": "less_than",
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep your torso upright without leaning forward.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
       23,
+      24,
       25,
-      27
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2082,6 +2945,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "crooked-monkey.hip.flexion",
+      "crooked-monkey.knee.fold",
       "crooked-monkey.spine.erect",
       "crooked-monkey.shoulder.relaxation"
     ],
@@ -2089,6 +2954,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 25,
     "aliases": [],
     "rules": [
+      {
+        "id": "crooked-monkey.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "crooked-monkey.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "crooked-monkey.spine.erect",
         "name": "Spine Length",
@@ -2098,11 +3001,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "crooked-monkey.shoulder.relaxation",
@@ -2113,21 +3017,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2167,16 +3074,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "crow-kakasana.standing.leg",
-      "crow-kakasana.shoulder.alignment"
+      "crow-kakasana.elbow.shelf",
+      "crow-kakasana.knee.tuck",
+      "crow-kakasana.feet.lifted",
+      "crow-kakasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 26,
     "aliases": [],
     "rules": [
       {
-        "id": "crow-kakasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "crow-kakasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "crow-kakasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "crow-kakasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -2184,39 +3131,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "crow-kakasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "crow-kakasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2256,16 +3208,37 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "dancer-natarajasana.standing.leg",
-      "dancer-natarajasana.shoulder.alignment"
+      "dancer-natarajasana.standing_knee.straight",
+      "dancer-natarajasana.lifted_knee.arch",
+      "dancer-natarajasana.torso.counterbalance",
+      "dancer-natarajasana.hip.square"
     ],
     "isPremium": true,
     "orderIndex": 27,
     "aliases": [],
     "rules": [
       {
-        "id": "dancer-natarajasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "dancer-natarajasana.standing_knee.straight",
+        "name": "Standing Leg Stable",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 155,
+        "max": 180,
+        "target": 170,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root firmly through your straight standing leg.",
+        "isSafety": true
+      },
+      {
+        "id": "dancer-natarajasana.lifted_knee.arch",
+        "name": "Lifted Leg Arch",
         "metric": "angle",
         "points": [
           23,
@@ -2273,39 +3246,63 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "min": 50,
+        "max": 100,
+        "target": 75,
+        "tolerance": 25,
+        "weight": 3,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Kick lifted foot upward and back into your hand.",
+        "isSafety": false
       },
       {
-        "id": "dancer-natarajasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "dancer-natarajasana.torso.counterbalance",
+        "name": "Torso Hinge",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          26
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Hinge forward from the hip as you lift the back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "dancer-natarajasana.hip.square",
+        "name": "Square Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "target": 0.1,
+        "tolerance": 0.08,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Keep hips facing forward as you lift.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2345,54 +3342,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "deaf-mans-karna-pidasana.inversion.line",
-      "deaf-mans-karna-pidasana.shoulder.base"
+      "deaf-mans-karna-pidasana.body.vertical_line",
+      "deaf-mans-karna-pidasana.core.stability",
+      "deaf-mans-karna-pidasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 28,
     "aliases": [],
     "rules": [
       {
-        "id": "deaf-mans-karna-pidasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "deaf-mans-karna-pidasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "deaf-mans-karna-pidasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "deaf-mans-karna-pidasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "deaf-mans-karna-pidasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2432,54 +3454,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "dolphin-shishumarasana.inversion.line",
-      "dolphin-shishumarasana.shoulder.base"
+      "dolphin-shishumarasana.hip.inverted_v",
+      "dolphin-shishumarasana.arms.extension",
+      "dolphin-shishumarasana.legs.straight",
+      "dolphin-shishumarasana.spine.line"
     ],
     "isPremium": true,
     "orderIndex": 29,
     "aliases": [],
     "rules": [
       {
-        "id": "dolphin-shishumarasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "dolphin-shishumarasana.hip.inverted_v",
+        "name": "Inverted V Apex",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
+        ],
+        "comparison": "between",
+        "min": 55,
+        "max": 95,
+        "target": 75,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Press hips high and back to form an inverted V shape.",
+        "isSafety": true
+      },
+      {
+        "id": "dolphin-shishumarasana.arms.extension",
+        "name": "Arms Fully Extended",
+        "metric": "angle",
+        "points": [
+          15,
+          13,
+          11
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Press ground away through straight arms.",
+        "isSafety": false
+      },
+      {
+        "id": "dolphin-shishumarasana.legs.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lengthen hamstrings and reach heels toward floor.",
+        "isSafety": false
+      },
+      {
+        "id": "dolphin-shishumarasana.spine.line",
+        "name": "Straight Spine Line",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
         "target": 0.12,
         "tolerance": 0.08,
         "weight": 2,
-        "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
-      },
-      {
-        "id": "dolphin-shishumarasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "severity": "low",
+        "feedback": "Keep spine in one straight diagonal line.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
+      15,
       23,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2519,9 +3587,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "downward-dog-adho-mukha-svanasana.shoulder.level",
-      "downward-dog-adho-mukha-svanasana.spine.vertical",
-      "downward-dog-adho-mukha-svanasana.hip.level"
+      "downward-dog-adho-mukha-svanasana.hip.inverted_v",
+      "downward-dog-adho-mukha-svanasana.arms.extension",
+      "downward-dog-adho-mukha-svanasana.legs.straight",
+      "downward-dog-adho-mukha-svanasana.spine.line"
     ],
     "isPremium": false,
     "orderIndex": 30,
@@ -2534,60 +3603,90 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "downward-dog-adho-mukha-svanasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "downward-dog-adho-mukha-svanasana.hip.inverted_v",
+        "name": "Inverted V Apex",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 55,
+        "max": 95,
+        "target": 75,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Press hips high and back to form an inverted V shape.",
+        "isSafety": true
       },
       {
-        "id": "downward-dog-adho-mukha-svanasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "downward-dog-adho-mukha-svanasana.arms.extension",
+        "name": "Arms Fully Extended",
+        "metric": "angle",
+        "points": [
+          15,
+          13,
+          11
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Press ground away through straight arms.",
+        "isSafety": false
+      },
+      {
+        "id": "downward-dog-adho-mukha-svanasana.legs.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lengthen hamstrings and reach heels toward floor.",
+        "isSafety": false
+      },
+      {
+        "id": "downward-dog-adho-mukha-svanasana.spine.line",
+        "name": "Straight Spine Line",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "downward-dog-adho-mukha-svanasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.12,
+        "tolerance": 0.08,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Keep spine in one straight diagonal line.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
+      15,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2627,56 +3726,81 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "eagle-garudasana.standing.leg",
-      "eagle-garudasana.shoulder.alignment"
+      "eagle-garudasana.standing_knee.bend",
+      "eagle-garudasana.elbows.crossed",
+      "eagle-garudasana.spine.vertical"
     ],
     "isPremium": true,
     "orderIndex": 31,
     "aliases": [],
     "rules": [
       {
-        "id": "eagle-garudasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "eagle-garudasana.standing_knee.bend",
+        "name": "Supporting Knee Bend",
         "metric": "angle",
         "points": [
-          23,
-          25,
-          27
+          24,
+          26,
+          28
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "min": 100,
+        "max": 140,
+        "target": 120,
+        "tolerance": 20,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Sink hips low with bent standing knee.",
+        "isSafety": true
       },
       {
-        "id": "eagle-garudasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "eagle-garudasana.elbows.crossed",
+        "name": "Elbows Bound",
+        "metric": "angle",
         "points": [
           11,
-          12
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 115,
+        "target": 90,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Cross and wrap arms with elbows at shoulder height.",
+        "isSafety": false
+      },
+      {
+        "id": "eagle-garudasana.spine.vertical",
+        "name": "Upright Torso",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Keep spine vertical and shoulders stacked over hips.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
+      15,
       23,
-      25,
-      27
+      24,
+      26,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2716,6 +3840,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "easy-sukhasana.hip.flexion",
+      "easy-sukhasana.knee.fold",
       "easy-sukhasana.spine.erect",
       "easy-sukhasana.shoulder.relaxation"
     ],
@@ -2727,6 +3853,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
+        "id": "easy-sukhasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "easy-sukhasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
         "id": "easy-sukhasana.spine.erect",
         "name": "Spine Length",
         "metric": "vertical_alignment",
@@ -2735,11 +3899,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "easy-sukhasana.shoulder.relaxation",
@@ -2750,21 +3915,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2804,16 +3972,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "eight-angle-ashtavakrasana.standing.leg",
-      "eight-angle-ashtavakrasana.shoulder.alignment"
+      "eight-angle-ashtavakrasana.elbow.shelf",
+      "eight-angle-ashtavakrasana.knee.tuck",
+      "eight-angle-ashtavakrasana.feet.lifted",
+      "eight-angle-ashtavakrasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 33,
     "aliases": [],
     "rules": [
       {
-        "id": "eight-angle-ashtavakrasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "eight-angle-ashtavakrasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "eight-angle-ashtavakrasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "eight-angle-ashtavakrasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -2821,39 +4029,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "eight-angle-ashtavakrasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "eight-angle-ashtavakrasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2893,8 +4106,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "eight-point-ashtangasana.core.alignment",
-      "eight-point-ashtangasana.shoulder.stability"
+      "eight-point-ashtangasana.plank.line",
+      "eight-point-ashtangasana.arms.stacked",
+      "eight-point-ashtangasana.knees.straight",
+      "eight-point-ashtangasana.hips.level"
     ],
     "isPremium": true,
     "orderIndex": 34,
@@ -2905,47 +4120,90 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "eight-point-ashtangasana.core.alignment",
-        "name": "Torso Line",
+        "id": "eight-point-ashtangasana.plank.line",
+        "name": "Straight Plank Line",
         "metric": "angle",
         "points": [
           11,
           23,
-          25
+          27
         ],
         "comparison": "between",
-        "min": 150,
+        "min": 163,
         "max": 180,
-        "tolerance": 15,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Engage abdominal muscles to maintain straight body line."
+        "feedback": "Keep body in one straight line without sagging hips.",
+        "isSafety": true
       },
       {
-        "id": "eight-point-ashtangasana.shoulder.stability",
-        "name": "Shoulder Stability",
+        "id": "eight-point-ashtangasana.arms.stacked",
+        "name": "Arms Perpendicular",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack shoulders directly over wrists.",
+        "isSafety": false
+      },
+      {
+        "id": "eight-point-ashtangasana.knees.straight",
+        "name": "Legs Extended",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Engage quads and press heels back.",
+        "isSafety": false
+      },
+      {
+        "id": "eight-point-ashtangasana.hips.level",
+        "name": "Level Hips",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Press through hands and keep shoulder girdle firm."
+        "feedback": "Prevent hips from twisting or dropping.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      25
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -2985,54 +4243,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "elbow-balance-shayanasana.inversion.line",
-      "elbow-balance-shayanasana.shoulder.base"
+      "elbow-balance-shayanasana.bow.arc",
+      "elbow-balance-shayanasana.knees.bent",
+      "elbow-balance-shayanasana.chest.centered"
     ],
     "isPremium": true,
     "orderIndex": 35,
     "aliases": [],
     "rules": [
       {
-        "id": "elbow-balance-shayanasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "elbow-balance-shayanasana.bow.arc",
+        "name": "Torso & Leg Bow Arc",
+        "metric": "angle",
         "points": [
+          11,
           23,
-          27
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 100,
+        "max": 150,
+        "target": 125,
+        "tolerance": 25,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Kick feet into hands to lift chest and thighs off mat.",
+        "isSafety": true
       },
       {
-        "id": "elbow-balance-shayanasana.shoulder.base",
-        "name": "Shoulder Base",
+        "id": "elbow-balance-shayanasana.knees.bent",
+        "name": "Knees Flexed",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 45,
+        "max": 95,
+        "target": 70,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold ankles firmly with knees hip-width apart.",
+        "isSafety": false
+      },
+      {
+        "id": "elbow-balance-shayanasana.chest.centered",
+        "name": "Chest Balanced",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Lift evenly through both shoulders.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3072,56 +4355,80 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "elephant-trunk-eka-hasta-bhujasana.standing.leg",
-      "elephant-trunk-eka-hasta-bhujasana.shoulder.alignment"
+      "elephant-trunk-eka-hasta-bhujasana.standing_knee.straight",
+      "elephant-trunk-eka-hasta-bhujasana.lifted_hip.flexion",
+      "elephant-trunk-eka-hasta-bhujasana.spine.balance"
     ],
     "isPremium": true,
     "orderIndex": 36,
     "aliases": [],
     "rules": [
       {
-        "id": "elephant-trunk-eka-hasta-bhujasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "elephant-trunk-eka-hasta-bhujasana.standing_knee.straight",
+        "name": "Standing Leg Strong",
         "metric": "angle",
         "points": [
-          23,
-          25,
-          27
+          24,
+          26,
+          28
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Keep standing leg straight and stable.",
+        "isSafety": true
       },
       {
-        "id": "elephant-trunk-eka-hasta-bhujasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "elephant-trunk-eka-hasta-bhujasana.lifted_hip.flexion",
+        "name": "Lifted Leg Elevated",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 80,
+        "max": 140,
+        "target": 110,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Maintain high lifted leg position.",
+        "isSafety": false
+      },
+      {
+        "id": "elephant-trunk-eka-hasta-bhujasana.spine.balance",
+        "name": "Vertical Alignment",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Keep your torso tall and centered.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3161,69 +4468,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "embryo-in-womb-garbha-pindasana.shoulder.level",
-      "embryo-in-womb-garbha-pindasana.spine.vertical",
-      "embryo-in-womb-garbha-pindasana.hip.level"
+      "embryo-in-womb-garbha-pindasana.knee.straight",
+      "embryo-in-womb-garbha-pindasana.hip.alignment",
+      "embryo-in-womb-garbha-pindasana.spine.erect",
+      "embryo-in-womb-garbha-pindasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 37,
     "aliases": [],
     "rules": [
       {
-        "id": "embryo-in-womb-garbha-pindasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "embryo-in-womb-garbha-pindasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "embryo-in-womb-garbha-pindasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "embryo-in-womb-garbha-pindasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "embryo-in-womb-garbha-pindasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "embryo-in-womb-garbha-pindasana.hip.level",
-        "name": "Hip Balance",
+        "id": "embryo-in-womb-garbha-pindasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3263,69 +4597,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "embryo-pindasana.shoulder.level",
-      "embryo-pindasana.spine.vertical",
-      "embryo-pindasana.hip.level"
+      "embryo-pindasana.knee.straight",
+      "embryo-pindasana.hip.alignment",
+      "embryo-pindasana.spine.erect",
+      "embryo-pindasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 38,
     "aliases": [],
     "rules": [
       {
-        "id": "embryo-pindasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "embryo-pindasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "embryo-pindasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "embryo-pindasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "embryo-pindasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "embryo-pindasana.hip.level",
-        "name": "Hip Balance",
+        "id": "embryo-pindasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3365,35 +4726,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "extended-puppy-uttana-shishosana.body.symmetry"
+      "extended-puppy-uttana-shishosana.body.supine_line",
+      "extended-puppy-uttana-shishosana.shoulders.grounded",
+      "extended-puppy-uttana-shishosana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 39,
     "aliases": [],
     "rules": [
       {
-        "id": "extended-puppy-uttana-shishosana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "extended-puppy-uttana-shishosana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "extended-puppy-uttana-shishosana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "extended-puppy-uttana-shishosana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3433,9 +4835,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "extended-side-angle-utthita-parshvakonasana.shoulder.level",
-      "extended-side-angle-utthita-parshvakonasana.spine.vertical",
-      "extended-side-angle-utthita-parshvakonasana.hip.level"
+      "extended-side-angle-utthita-parshvakonasana.front_knee.bend",
+      "extended-side-angle-utthita-parshvakonasana.back_knee.straight",
+      "extended-side-angle-utthita-parshvakonasana.side_body.diagonal"
     ],
     "isPremium": true,
     "orderIndex": 40,
@@ -3445,60 +4847,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "extended-side-angle-utthita-parshvakonasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "extended-side-angle-utthita-parshvakonasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "extended-side-angle-utthita-parshvakonasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
+        "id": "extended-side-angle-utthita-parshvakonasana.front_knee.bend",
+        "name": "Front Knee 90°",
+        "metric": "angle",
         "points": [
           23,
-          24
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend front knee at 90° over ankle.",
+        "isSafety": true
+      },
+      {
+        "id": "extended-side-angle-utthita-parshvakonasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep back leg straight with outer foot grounded.",
+        "isSafety": false
+      },
+      {
+        "id": "extended-side-angle-utthita-parshvakonasana.side_body.diagonal",
+        "name": "Long Diagonal Line",
+        "metric": "angle",
+        "points": [
+          15,
+          11,
+          28
+        ],
+        "comparison": "between",
+        "min": 150,
+        "max": 180,
+        "target": 170,
+        "tolerance": 20,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Create a straight diagonal line from hand to back foot.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      15,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3538,69 +4956,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.shoulder.level",
-      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.spine.vertical",
-      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.hip.level"
+      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.knee.straight",
+      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.hip.alignment",
+      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.spine.erect",
+      "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 41,
     "aliases": [],
     "rules": [
       {
-        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.hip.level",
-        "name": "Hip Balance",
+        "id": "extended-standing-hand-to-big-toe-utthita-hasta-padangushthasana-b.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3640,35 +5085,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "extended-supine-hand-to-big-toe-supta-padangushthasana-b.body.symmetry"
+      "extended-supine-hand-to-big-toe-supta-padangushthasana-b.body.supine_line",
+      "extended-supine-hand-to-big-toe-supta-padangushthasana-b.shoulders.grounded",
+      "extended-supine-hand-to-big-toe-supta-padangushthasana-b.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 42,
     "aliases": [],
     "rules": [
       {
-        "id": "extended-supine-hand-to-big-toe-supta-padangushthasana-b.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "extended-supine-hand-to-big-toe-supta-padangushthasana-b.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "extended-supine-hand-to-big-toe-supta-padangushthasana-b.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "extended-supine-hand-to-big-toe-supta-padangushthasana-b.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3708,6 +5194,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "fire-log-agnistambhasana.hip.flexion",
+      "fire-log-agnistambhasana.knee.fold",
       "fire-log-agnistambhasana.spine.erect",
       "fire-log-agnistambhasana.shoulder.relaxation"
     ],
@@ -3715,6 +5203,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 43,
     "aliases": [],
     "rules": [
+      {
+        "id": "fire-log-agnistambhasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "fire-log-agnistambhasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "fire-log-agnistambhasana.spine.erect",
         "name": "Spine Length",
@@ -3724,11 +5250,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "fire-log-agnistambhasana.shoulder.relaxation",
@@ -3739,21 +5266,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3793,69 +5323,101 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "firefly-i-tittibhasana-a.shoulder.level",
-      "firefly-i-tittibhasana-a.spine.vertical",
-      "firefly-i-tittibhasana-a.hip.level"
+      "firefly-i-tittibhasana-a.elbow.shelf",
+      "firefly-i-tittibhasana-a.knee.tuck",
+      "firefly-i-tittibhasana-a.feet.lifted",
+      "firefly-i-tittibhasana-a.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 44,
     "aliases": [],
     "rules": [
       {
-        "id": "firefly-i-tittibhasana-a.shoulder.level",
-        "name": "Shoulder Balance",
+        "id": "firefly-i-tittibhasana-a.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "firefly-i-tittibhasana-a.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "firefly-i-tittibhasana-a.feet.lifted",
+        "name": "Feet Lifted Off Ground",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
+      },
+      {
+        "id": "firefly-i-tittibhasana-a.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "firefly-i-tittibhasana-a.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "firefly-i-tittibhasana-a.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3895,69 +5457,101 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "firefly-ii-tittibhasana-b.shoulder.level",
-      "firefly-ii-tittibhasana-b.spine.vertical",
-      "firefly-ii-tittibhasana-b.hip.level"
+      "firefly-ii-tittibhasana-b.elbow.shelf",
+      "firefly-ii-tittibhasana-b.knee.tuck",
+      "firefly-ii-tittibhasana-b.feet.lifted",
+      "firefly-ii-tittibhasana-b.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 45,
     "aliases": [],
     "rules": [
       {
-        "id": "firefly-ii-tittibhasana-b.shoulder.level",
-        "name": "Shoulder Balance",
+        "id": "firefly-ii-tittibhasana-b.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "firefly-ii-tittibhasana-b.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "firefly-ii-tittibhasana-b.feet.lifted",
+        "name": "Feet Lifted Off Ground",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
+      },
+      {
+        "id": "firefly-ii-tittibhasana-b.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "firefly-ii-tittibhasana-b.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "firefly-ii-tittibhasana-b.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -3997,69 +5591,101 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "firefly-iii-tittibhasana-c.shoulder.level",
-      "firefly-iii-tittibhasana-c.spine.vertical",
-      "firefly-iii-tittibhasana-c.hip.level"
+      "firefly-iii-tittibhasana-c.elbow.shelf",
+      "firefly-iii-tittibhasana-c.knee.tuck",
+      "firefly-iii-tittibhasana-c.feet.lifted",
+      "firefly-iii-tittibhasana-c.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 46,
     "aliases": [],
     "rules": [
       {
-        "id": "firefly-iii-tittibhasana-c.shoulder.level",
-        "name": "Shoulder Balance",
+        "id": "firefly-iii-tittibhasana-c.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "firefly-iii-tittibhasana-c.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "firefly-iii-tittibhasana-c.feet.lifted",
+        "name": "Feet Lifted Off Ground",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
+      },
+      {
+        "id": "firefly-iii-tittibhasana-c.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "firefly-iii-tittibhasana-c.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "firefly-iii-tittibhasana-c.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4099,55 +5725,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "fish-matsyasana.spine.backbend_arch",
       "fish-matsyasana.chest.opening",
-      "fish-matsyasana.arm.extension"
+      "fish-matsyasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 47,
     "aliases": [],
     "rules": [
       {
+        "id": "fish-matsyasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "fish-matsyasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "fish-matsyasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "fish-matsyasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4187,69 +5837,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "floating-stick-brahmacharyasana.shoulder.level",
-      "floating-stick-brahmacharyasana.spine.vertical",
-      "floating-stick-brahmacharyasana.hip.level"
+      "floating-stick-brahmacharyasana.knee.straight",
+      "floating-stick-brahmacharyasana.hip.alignment",
+      "floating-stick-brahmacharyasana.spine.erect",
+      "floating-stick-brahmacharyasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 48,
     "aliases": [],
     "rules": [
       {
-        "id": "floating-stick-brahmacharyasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "floating-stick-brahmacharyasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "floating-stick-brahmacharyasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "floating-stick-brahmacharyasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "floating-stick-brahmacharyasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "floating-stick-brahmacharyasana.hip.level",
-        "name": "Hip Balance",
+        "id": "floating-stick-brahmacharyasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4289,16 +5966,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "flying-lizard.standing.leg",
-      "flying-lizard.shoulder.alignment"
+      "flying-lizard.elbow.shelf",
+      "flying-lizard.knee.tuck",
+      "flying-lizard.feet.lifted",
+      "flying-lizard.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 49,
     "aliases": [],
     "rules": [
       {
-        "id": "flying-lizard.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "flying-lizard.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "flying-lizard.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "flying-lizard.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -4306,39 +6023,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "flying-lizard.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "flying-lizard.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4378,16 +6100,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "flying-man-eka-pada-koundinyasana.standing.leg",
-      "flying-man-eka-pada-koundinyasana.shoulder.alignment"
+      "flying-man-eka-pada-koundinyasana.elbow.shelf",
+      "flying-man-eka-pada-koundinyasana.knee.tuck",
+      "flying-man-eka-pada-koundinyasana.feet.lifted",
+      "flying-man-eka-pada-koundinyasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 50,
     "aliases": [],
     "rules": [
       {
-        "id": "flying-man-eka-pada-koundinyasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "flying-man-eka-pada-koundinyasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "flying-man-eka-pada-koundinyasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "flying-man-eka-pada-koundinyasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -4395,39 +6157,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "flying-man-eka-pada-koundinyasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "flying-man-eka-pada-koundinyasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4467,16 +6234,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "flying-pigeon-eka-pada-galavasana.standing.leg",
-      "flying-pigeon-eka-pada-galavasana.shoulder.alignment"
+      "flying-pigeon-eka-pada-galavasana.elbow.shelf",
+      "flying-pigeon-eka-pada-galavasana.knee.tuck",
+      "flying-pigeon-eka-pada-galavasana.feet.lifted",
+      "flying-pigeon-eka-pada-galavasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 51,
     "aliases": [],
     "rules": [
       {
-        "id": "flying-pigeon-eka-pada-galavasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "flying-pigeon-eka-pada-galavasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "flying-pigeon-eka-pada-galavasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "flying-pigeon-eka-pada-galavasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -4484,39 +6291,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "flying-pigeon-eka-pada-galavasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "flying-pigeon-eka-pada-galavasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4556,54 +6368,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "forearm-balance-pincha-mayurasana.inversion.line",
-      "forearm-balance-pincha-mayurasana.shoulder.base"
+      "forearm-balance-pincha-mayurasana.body.vertical_line",
+      "forearm-balance-pincha-mayurasana.core.stability",
+      "forearm-balance-pincha-mayurasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 52,
     "aliases": [],
     "rules": [
       {
-        "id": "forearm-balance-pincha-mayurasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "forearm-balance-pincha-mayurasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "forearm-balance-pincha-mayurasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "forearm-balance-pincha-mayurasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "forearm-balance-pincha-mayurasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4643,55 +6480,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "frog-bhekasana.spine.backbend_arch",
       "frog-bhekasana.chest.opening",
-      "frog-bhekasana.arm.extension"
+      "frog-bhekasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 53,
     "aliases": [],
     "rules": [
       {
+        "id": "frog-bhekasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "frog-bhekasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "frog-bhekasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "frog-bhekasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4731,6 +6592,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "front-splits-hanumanasana.hip.flexion",
+      "front-splits-hanumanasana.knee.fold",
       "front-splits-hanumanasana.spine.erect",
       "front-splits-hanumanasana.shoulder.relaxation"
     ],
@@ -4738,6 +6601,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 54,
     "aliases": [],
     "rules": [
+      {
+        "id": "front-splits-hanumanasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "front-splits-hanumanasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "front-splits-hanumanasana.spine.erect",
         "name": "Spine Length",
@@ -4747,11 +6648,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "front-splits-hanumanasana.shoulder.relaxation",
@@ -4762,21 +6664,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4816,69 +6721,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "garland-malasana.shoulder.level",
-      "garland-malasana.spine.vertical",
-      "garland-malasana.hip.level"
+      "garland-malasana.knee.straight",
+      "garland-malasana.hip.alignment",
+      "garland-malasana.spine.erect",
+      "garland-malasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 55,
     "aliases": [],
     "rules": [
       {
-        "id": "garland-malasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "garland-malasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "garland-malasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "garland-malasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "garland-malasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "garland-malasana.hip.level",
-        "name": "Hip Balance",
+        "id": "garland-malasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -4918,69 +6850,78 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "gate-parighasana.shoulder.level",
-      "gate-parighasana.spine.vertical",
-      "gate-parighasana.hip.level"
+      "gate-parighasana.hips.table_angle",
+      "gate-parighasana.shoulders.table_angle",
+      "gate-parighasana.spine.neutral"
     ],
     "isPremium": true,
     "orderIndex": 56,
     "aliases": [],
     "rules": [
       {
-        "id": "gate-parighasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "gate-parighasana.hips.table_angle",
+        "name": "Hips Over Knees (90°)",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 72,
+        "max": 108,
+        "target": 90,
+        "tolerance": 18,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Stack hips directly over knees.",
+        "isSafety": true
       },
       {
-        "id": "gate-parighasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
+        "id": "gate-parighasana.shoulders.table_angle",
+        "name": "Shoulders Over Wrists (90°)",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          15
+        ],
+        "comparison": "between",
+        "min": 72,
+        "max": 108,
+        "target": 90,
+        "tolerance": 18,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack shoulders directly over hands/wrists.",
+        "isSafety": false
+      },
+      {
+        "id": "gate-parighasana.spine.neutral",
+        "name": "Neutral Spine",
+        "metric": "horizontal_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "gate-parighasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep back flat and neck aligned with spine.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      15,
       23,
-      24
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5020,69 +6961,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "goddess-utkata-konasana.shoulder.level",
-      "goddess-utkata-konasana.spine.vertical",
-      "goddess-utkata-konasana.hip.level"
+      "goddess-utkata-konasana.knee.straight",
+      "goddess-utkata-konasana.hip.alignment",
+      "goddess-utkata-konasana.spine.erect",
+      "goddess-utkata-konasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 57,
     "aliases": [],
     "rules": [
       {
-        "id": "goddess-utkata-konasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "goddess-utkata-konasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "goddess-utkata-konasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "goddess-utkata-konasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "goddess-utkata-konasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "goddess-utkata-konasana.hip.level",
-        "name": "Hip Balance",
+        "id": "goddess-utkata-konasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5122,69 +7090,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "gorilla-pada-hastasana.shoulder.level",
-      "gorilla-pada-hastasana.spine.vertical",
-      "gorilla-pada-hastasana.hip.level"
+      "gorilla-pada-hastasana.knee.straight",
+      "gorilla-pada-hastasana.hip.alignment",
+      "gorilla-pada-hastasana.spine.erect",
+      "gorilla-pada-hastasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 58,
     "aliases": [],
     "rules": [
       {
-        "id": "gorilla-pada-hastasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "gorilla-pada-hastasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "gorilla-pada-hastasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "gorilla-pada-hastasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "gorilla-pada-hastasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "gorilla-pada-hastasana.hip.level",
-        "name": "Hip Balance",
+        "id": "gorilla-pada-hastasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5224,69 +7219,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "grasshopper-maksikanagasana.shoulder.level",
-      "grasshopper-maksikanagasana.spine.vertical",
-      "grasshopper-maksikanagasana.hip.level"
+      "grasshopper-maksikanagasana.knee.straight",
+      "grasshopper-maksikanagasana.hip.alignment",
+      "grasshopper-maksikanagasana.spine.erect",
+      "grasshopper-maksikanagasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 59,
     "aliases": [],
     "rules": [
       {
-        "id": "grasshopper-maksikanagasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "grasshopper-maksikanagasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "grasshopper-maksikanagasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "grasshopper-maksikanagasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "grasshopper-maksikanagasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "grasshopper-maksikanagasana.hip.level",
-        "name": "Hip Balance",
+        "id": "grasshopper-maksikanagasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5326,55 +7348,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "half-bow-ardha-dhanurasana.chest.opening",
-      "half-bow-ardha-dhanurasana.arm.extension"
+      "half-bow-ardha-dhanurasana.bow.arc",
+      "half-bow-ardha-dhanurasana.knees.bent",
+      "half-bow-ardha-dhanurasana.chest.centered"
     ],
     "isPremium": true,
     "orderIndex": 60,
     "aliases": [],
     "rules": [
       {
-        "id": "half-bow-ardha-dhanurasana.chest.opening",
-        "name": "Chest Opening",
+        "id": "half-bow-ardha-dhanurasana.bow.arc",
+        "name": "Torso & Leg Bow Arc",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 100,
+        "max": 150,
+        "target": 125,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Kick feet into hands to lift chest and thighs off mat.",
+        "isSafety": true
+      },
+      {
+        "id": "half-bow-ardha-dhanurasana.knees.bent",
+        "name": "Knees Flexed",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 45,
+        "max": 95,
+        "target": 70,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold ankles firmly with knees hip-width apart.",
+        "isSafety": false
+      },
+      {
+        "id": "half-bow-ardha-dhanurasana.chest.centered",
+        "name": "Chest Balanced",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "half-bow-ardha-dhanurasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Lift evenly through both shoulders.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      13,
-      15
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5414,8 +7460,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "half-moon-ardha-chandrasana.standing.leg",
-      "half-moon-ardha-chandrasana.shoulder.alignment"
+      "half-moon-ardha-chandrasana.standing_knee.straight",
+      "half-moon-ardha-chandrasana.lifted_hip.flexion",
+      "half-moon-ardha-chandrasana.spine.balance"
     ],
     "isPremium": true,
     "orderIndex": 61,
@@ -5425,48 +7472,71 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "half-moon-ardha-chandrasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "half-moon-ardha-chandrasana.standing_knee.straight",
+        "name": "Standing Leg Strong",
         "metric": "angle",
         "points": [
-          23,
-          25,
-          27
+          24,
+          26,
+          28
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Keep standing leg straight and stable.",
+        "isSafety": true
       },
       {
-        "id": "half-moon-ardha-chandrasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "half-moon-ardha-chandrasana.lifted_hip.flexion",
+        "name": "Lifted Leg Elevated",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 80,
+        "max": 140,
+        "target": 110,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Maintain high lifted leg position.",
+        "isSafety": false
+      },
+      {
+        "id": "half-moon-ardha-chandrasana.spine.balance",
+        "name": "Vertical Alignment",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Keep your torso tall and centered.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5506,6 +7576,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "half-pigeon-ardha-kapotasana.hip.flexion",
+      "half-pigeon-ardha-kapotasana.knee.fold",
       "half-pigeon-ardha-kapotasana.spine.erect",
       "half-pigeon-ardha-kapotasana.shoulder.relaxation"
     ],
@@ -5513,6 +7585,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 62,
     "aliases": [],
     "rules": [
+      {
+        "id": "half-pigeon-ardha-kapotasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "half-pigeon-ardha-kapotasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "half-pigeon-ardha-kapotasana.spine.erect",
         "name": "Spine Length",
@@ -5522,11 +7632,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "half-pigeon-ardha-kapotasana.shoulder.relaxation",
@@ -5537,21 +7648,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5591,54 +7705,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "handstand-adho-mukha-vrksasana.inversion.line",
-      "handstand-adho-mukha-vrksasana.shoulder.base"
+      "handstand-adho-mukha-vrksasana.body.vertical_line",
+      "handstand-adho-mukha-vrksasana.core.stability",
+      "handstand-adho-mukha-vrksasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 63,
     "aliases": [],
     "rules": [
       {
-        "id": "handstand-adho-mukha-vrksasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "handstand-adho-mukha-vrksasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "handstand-adho-mukha-vrksasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "handstand-adho-mukha-vrksasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "handstand-adho-mukha-vrksasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5678,35 +7817,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "happy-baby-ananda-balasana.body.symmetry"
+      "happy-baby-ananda-balasana.knees.90",
+      "happy-baby-ananda-balasana.knees.flexion",
+      "happy-baby-ananda-balasana.sacrum.grounded"
     ],
     "isPremium": true,
     "orderIndex": 64,
     "aliases": [],
     "rules": [
       {
-        "id": "happy-baby-ananda-balasana.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "happy-baby-ananda-balasana.knees.90",
+        "name": "Knees 90° to Torso",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 110,
+        "target": 90,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees toward armpits with shins perpendicular to floor.",
+        "isSafety": true
+      },
+      {
+        "id": "happy-baby-ananda-balasana.knees.flexion",
+        "name": "Knee Bend 90°",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 110,
+        "target": 90,
+        "tolerance": 20,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold soles of feet with ankles stacked above knees.",
+        "isSafety": false
+      },
+      {
+        "id": "happy-baby-ananda-balasana.sacrum.grounded",
+        "name": "Sacrum Flat on Floor",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep your tailbone and head grounded on the mat.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5746,54 +7929,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "head-to-knee-janu-sirsasana.inversion.line",
-      "head-to-knee-janu-sirsasana.shoulder.base"
+      "head-to-knee-janu-sirsasana.body.vertical_line",
+      "head-to-knee-janu-sirsasana.core.stability",
+      "head-to-knee-janu-sirsasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 65,
     "aliases": [],
     "rules": [
       {
-        "id": "head-to-knee-janu-sirsasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "head-to-knee-janu-sirsasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "head-to-knee-janu-sirsasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "head-to-knee-janu-sirsasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "head-to-knee-janu-sirsasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5833,54 +8041,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "headstand-sirsasana.inversion.line",
-      "headstand-sirsasana.shoulder.base"
+      "headstand-sirsasana.body.vertical_line",
+      "headstand-sirsasana.core.stability",
+      "headstand-sirsasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 66,
     "aliases": [],
     "rules": [
       {
-        "id": "headstand-sirsasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "headstand-sirsasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "headstand-sirsasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "headstand-sirsasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "headstand-sirsasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -5920,6 +8153,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "hero-virasana.hip.flexion",
+      "hero-virasana.knee.fold",
       "hero-virasana.spine.erect",
       "hero-virasana.shoulder.relaxation"
     ],
@@ -5931,6 +8166,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
+        "id": "hero-virasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "hero-virasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
         "id": "hero-virasana.spine.erect",
         "name": "Spine Length",
         "metric": "vertical_alignment",
@@ -5939,11 +8212,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "hero-virasana.shoulder.relaxation",
@@ -5954,21 +8228,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6008,6 +8285,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "heron-kraunchasana.hip.flexion",
+      "heron-kraunchasana.knee.fold",
       "heron-kraunchasana.spine.erect",
       "heron-kraunchasana.shoulder.relaxation"
     ],
@@ -6015,6 +8294,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 68,
     "aliases": [],
     "rules": [
+      {
+        "id": "heron-kraunchasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "heron-kraunchasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "heron-kraunchasana.spine.erect",
         "name": "Spine Length",
@@ -6024,11 +8341,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "heron-kraunchasana.shoulder.relaxation",
@@ -6039,21 +8357,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6093,69 +8414,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "himalayan-duck-karandavasana.shoulder.level",
-      "himalayan-duck-karandavasana.spine.vertical",
-      "himalayan-duck-karandavasana.hip.level"
+      "himalayan-duck-karandavasana.knee.straight",
+      "himalayan-duck-karandavasana.hip.alignment",
+      "himalayan-duck-karandavasana.spine.erect",
+      "himalayan-duck-karandavasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 69,
     "aliases": [],
     "rules": [
       {
-        "id": "himalayan-duck-karandavasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "himalayan-duck-karandavasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "himalayan-duck-karandavasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "himalayan-duck-karandavasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "himalayan-duck-karandavasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "himalayan-duck-karandavasana.hip.level",
-        "name": "Hip Balance",
+        "id": "himalayan-duck-karandavasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6195,69 +8543,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "horse-vatayanasana.shoulder.level",
-      "horse-vatayanasana.spine.vertical",
-      "horse-vatayanasana.hip.level"
+      "horse-vatayanasana.knee.straight",
+      "horse-vatayanasana.hip.alignment",
+      "horse-vatayanasana.spine.erect",
+      "horse-vatayanasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 70,
     "aliases": [],
     "rules": [
       {
-        "id": "horse-vatayanasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "horse-vatayanasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "horse-vatayanasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "horse-vatayanasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "horse-vatayanasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "horse-vatayanasana.hip.level",
-        "name": "Hip Balance",
+        "id": "horse-vatayanasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6297,69 +8672,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "humble-flamingo.shoulder.level",
-      "humble-flamingo.spine.vertical",
-      "humble-flamingo.hip.level"
+      "humble-flamingo.knee.straight",
+      "humble-flamingo.hip.alignment",
+      "humble-flamingo.spine.erect",
+      "humble-flamingo.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 71,
     "aliases": [],
     "rules": [
       {
-        "id": "humble-flamingo.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "humble-flamingo.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "humble-flamingo.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "humble-flamingo.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "humble-flamingo.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "humble-flamingo.hip.level",
-        "name": "Hip Balance",
+        "id": "humble-flamingo.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6399,52 +8801,78 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "inverted-staff-dvi-pada-viparita-dandasana.spine.erect",
-      "inverted-staff-dvi-pada-viparita-dandasana.shoulder.relaxation"
+      "inverted-staff-dvi-pada-viparita-dandasana.torso_legs.90",
+      "inverted-staff-dvi-pada-viparita-dandasana.knees.straight",
+      "inverted-staff-dvi-pada-viparita-dandasana.spine.vertical"
     ],
     "isPremium": true,
     "orderIndex": 72,
     "aliases": [],
     "rules": [
       {
-        "id": "inverted-staff-dvi-pada-viparita-dandasana.spine.erect",
-        "name": "Spine Length",
+        "id": "inverted-staff-dvi-pada-viparita-dandasana.torso_legs.90",
+        "name": "90° L-Sit Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Sit at a precise 90° angle with torso upright and legs straight.",
+        "isSafety": true
+      },
+      {
+        "id": "inverted-staff-dvi-pada-viparita-dandasana.knees.straight",
+        "name": "Legs Fully Grounded",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 165,
+        "max": 180,
+        "target": 175,
+        "tolerance": 10,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Press backs of knees and thighs flat to floor.",
+        "isSafety": false
+      },
+      {
+        "id": "inverted-staff-dvi-pada-viparita-dandasana.spine.vertical",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
-      },
-      {
-        "id": "inverted-staff-dvi-pada-viparita-dandasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
+        "target": 0.07,
         "tolerance": 0.05,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lengthen spine tall out of pelvis.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6484,55 +8912,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "king-pigeon-eka-pada-rajakapotasana.spine.backbend_arch",
       "king-pigeon-eka-pada-rajakapotasana.chest.opening",
-      "king-pigeon-eka-pada-rajakapotasana.arm.extension"
+      "king-pigeon-eka-pada-rajakapotasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 73,
     "aliases": [],
     "rules": [
       {
+        "id": "king-pigeon-eka-pada-rajakapotasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "king-pigeon-eka-pada-rajakapotasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "king-pigeon-eka-pada-rajakapotasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "king-pigeon-eka-pada-rajakapotasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6572,35 +9024,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "legs-up-the-wall-viparita-karani.body.symmetry"
+      "legs-up-the-wall-viparita-karani.body.vertical_line",
+      "legs-up-the-wall-viparita-karani.core.stability",
+      "legs-up-the-wall-viparita-karani.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 74,
     "aliases": [],
     "rules": [
       {
-        "id": "legs-up-the-wall-viparita-karani.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "legs-up-the-wall-viparita-karani.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
+      },
+      {
+        "id": "legs-up-the-wall-viparita-karani.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "legs-up-the-wall-viparita-karani.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6640,69 +9136,78 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "little-thunderbolt-laghu-vajrasana.shoulder.level",
-      "little-thunderbolt-laghu-vajrasana.spine.vertical",
-      "little-thunderbolt-laghu-vajrasana.hip.level"
+      "little-thunderbolt-laghu-vajrasana.hips.table_angle",
+      "little-thunderbolt-laghu-vajrasana.shoulders.table_angle",
+      "little-thunderbolt-laghu-vajrasana.spine.neutral"
     ],
     "isPremium": true,
     "orderIndex": 75,
     "aliases": [],
     "rules": [
       {
-        "id": "little-thunderbolt-laghu-vajrasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "little-thunderbolt-laghu-vajrasana.hips.table_angle",
+        "name": "Hips Over Knees (90°)",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 72,
+        "max": 108,
+        "target": 90,
+        "tolerance": 18,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Stack hips directly over knees.",
+        "isSafety": true
       },
       {
-        "id": "little-thunderbolt-laghu-vajrasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
+        "id": "little-thunderbolt-laghu-vajrasana.shoulders.table_angle",
+        "name": "Shoulders Over Wrists (90°)",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          15
+        ],
+        "comparison": "between",
+        "min": 72,
+        "max": 108,
+        "target": 90,
+        "tolerance": 18,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack shoulders directly over hands/wrists.",
+        "isSafety": false
+      },
+      {
+        "id": "little-thunderbolt-laghu-vajrasana.spine.neutral",
+        "name": "Neutral Spine",
+        "metric": "horizontal_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "little-thunderbolt-laghu-vajrasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep back flat and neck aligned with spine.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      15,
       23,
-      24
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6742,69 +9247,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "lizard-uttana-pristhasana.shoulder.level",
-      "lizard-uttana-pristhasana.spine.vertical",
-      "lizard-uttana-pristhasana.hip.level"
+      "lizard-uttana-pristhasana.knee.straight",
+      "lizard-uttana-pristhasana.hip.alignment",
+      "lizard-uttana-pristhasana.spine.erect",
+      "lizard-uttana-pristhasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 76,
     "aliases": [],
     "rules": [
       {
-        "id": "lizard-uttana-pristhasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "lizard-uttana-pristhasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "lizard-uttana-pristhasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "lizard-uttana-pristhasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "lizard-uttana-pristhasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "lizard-uttana-pristhasana.hip.level",
-        "name": "Hip Balance",
+        "id": "lizard-uttana-pristhasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6844,55 +9376,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "locust-i-shalabhasana-a.spine.backbend_arch",
       "locust-i-shalabhasana-a.chest.opening",
-      "locust-i-shalabhasana-a.arm.extension"
+      "locust-i-shalabhasana-a.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 77,
     "aliases": [],
     "rules": [
       {
+        "id": "locust-i-shalabhasana-a.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "locust-i-shalabhasana-a.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "locust-i-shalabhasana-a.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "locust-i-shalabhasana-a.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -6932,55 +9488,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "locust-ii-shalabhasana-b.spine.backbend_arch",
       "locust-ii-shalabhasana-b.chest.opening",
-      "locust-ii-shalabhasana-b.arm.extension"
+      "locust-ii-shalabhasana-b.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 78,
     "aliases": [],
     "rules": [
       {
+        "id": "locust-ii-shalabhasana-b.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "locust-ii-shalabhasana-b.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "locust-ii-shalabhasana-b.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "locust-ii-shalabhasana-b.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7020,55 +9600,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "locust-iii-shalabhasana-c.spine.backbend_arch",
       "locust-iii-shalabhasana-c.chest.opening",
-      "locust-iii-shalabhasana-c.arm.extension"
+      "locust-iii-shalabhasana-c.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 79,
     "aliases": [],
     "rules": [
       {
+        "id": "locust-iii-shalabhasana-c.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "locust-iii-shalabhasana-c.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "locust-iii-shalabhasana-c.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "locust-iii-shalabhasana-c.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7108,55 +9712,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "lord-of-the-fishes-paripurna-matsyendrasana.spine.backbend_arch",
       "lord-of-the-fishes-paripurna-matsyendrasana.chest.opening",
-      "lord-of-the-fishes-paripurna-matsyendrasana.arm.extension"
+      "lord-of-the-fishes-paripurna-matsyendrasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 80,
     "aliases": [],
     "rules": [
       {
+        "id": "lord-of-the-fishes-paripurna-matsyendrasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "lord-of-the-fishes-paripurna-matsyendrasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "lord-of-the-fishes-paripurna-matsyendrasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "lord-of-the-fishes-paripurna-matsyendrasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7196,6 +9824,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "lotus-padmasana.hip.flexion",
+      "lotus-padmasana.knee.fold",
       "lotus-padmasana.spine.erect",
       "lotus-padmasana.shoulder.relaxation"
     ],
@@ -7207,6 +9837,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
+        "id": "lotus-padmasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "lotus-padmasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
         "id": "lotus-padmasana.spine.erect",
         "name": "Spine Length",
         "metric": "vertical_alignment",
@@ -7215,11 +9883,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "lotus-padmasana.shoulder.relaxation",
@@ -7230,21 +9899,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7284,8 +9956,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "low-push-up-chaturanga-dandasana.core.alignment",
-      "low-push-up-chaturanga-dandasana.shoulder.stability"
+      "low-push-up-chaturanga-dandasana.elbows.90",
+      "low-push-up-chaturanga-dandasana.plank.straight",
+      "low-push-up-chaturanga-dandasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 82,
@@ -7296,47 +9969,71 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "low-push-up-chaturanga-dandasana.core.alignment",
-        "name": "Torso Line",
+        "id": "low-push-up-chaturanga-dandasana.elbows.90",
+        "name": "Elbows at 90°",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Lower until elbows are bent at a precise 90° angle.",
+        "isSafety": true
+      },
+      {
+        "id": "low-push-up-chaturanga-dandasana.plank.straight",
+        "name": "Straight Body Line",
         "metric": "angle",
         "points": [
           11,
           23,
-          25
+          27
         ],
         "comparison": "between",
-        "min": 150,
+        "min": 163,
         "max": 180,
-        "tolerance": 15,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Engage abdominal muscles to maintain straight body line."
+        "feedback": "Maintain single straight line from crown to heels.",
+        "isSafety": true
       },
       {
-        "id": "low-push-up-chaturanga-dandasana.shoulder.stability",
-        "name": "Shoulder Stability",
+        "id": "low-push-up-chaturanga-dandasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Press through hands and keep shoulder girdle firm."
+        "feedback": "Keep shoulders level and collarbones broad.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
-      25
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7376,9 +10073,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "lunge-runner.shoulder.level",
-      "lunge-runner.spine.vertical",
-      "lunge-runner.hip.level"
+      "lunge-runner.front_knee.angle",
+      "lunge-runner.back_knee.straight",
+      "lunge-runner.arms.parallel",
+      "lunge-runner.torso.vertical"
     ],
     "isPremium": true,
     "orderIndex": 83,
@@ -7389,23 +10087,65 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "lunge-runner.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "lunge-runner.front_knee.angle",
+        "name": "Front Knee 90°",
+        "metric": "angle",
         "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend your front knee over your ankle at 90°.",
+        "isSafety": true
+      },
+      {
+        "id": "lunge-runner.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Straighten and ground through your back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "lunge-runner.arms.parallel",
+        "name": "Arms Parallel to Floor",
+        "metric": "angle",
+        "points": [
+          13,
           11,
           12
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Extend arms parallel to the ground.",
+        "isSafety": false
       },
       {
-        "id": "lunge-runner.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "lunge-runner.torso.vertical",
+        "name": "Torso Centered",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -7414,35 +10154,26 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "lunge-runner.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep your torso upright without leaning forward.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7482,69 +10213,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "moon-bird-eka-pada-shirshasana-c.shoulder.level",
-      "moon-bird-eka-pada-shirshasana-c.spine.vertical",
-      "moon-bird-eka-pada-shirshasana-c.hip.level"
+      "moon-bird-eka-pada-shirshasana-c.knee.straight",
+      "moon-bird-eka-pada-shirshasana-c.hip.alignment",
+      "moon-bird-eka-pada-shirshasana-c.spine.erect",
+      "moon-bird-eka-pada-shirshasana-c.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 84,
     "aliases": [],
     "rules": [
       {
-        "id": "moon-bird-eka-pada-shirshasana-c.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "moon-bird-eka-pada-shirshasana-c.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "moon-bird-eka-pada-shirshasana-c.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "moon-bird-eka-pada-shirshasana-c.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "moon-bird-eka-pada-shirshasana-c.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "moon-bird-eka-pada-shirshasana-c.hip.level",
-        "name": "Hip Balance",
+        "id": "moon-bird-eka-pada-shirshasana-c.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7584,9 +10342,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "tadasana-shoulder-level",
-      "tadasana-hip-level",
-      "tadasana-legs-straight"
+      "mountain-tadasana.knee.straight",
+      "mountain-tadasana.hip.alignment",
+      "mountain-tadasana.spine.erect",
+      "mountain-tadasana.shoulders.level"
     ],
     "isPremium": false,
     "orderIndex": 85,
@@ -7598,38 +10357,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "tadasana-shoulder-level",
-        "name": "Shoulder Alignment",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed away from your ears."
-      },
-      {
-        "id": "tadasana-hip-level",
-        "name": "Hip Alignment",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute your weight evenly and keep your hips level."
-      },
-      {
-        "id": "tadasana-legs-straight",
-        "name": "Leg Extension",
+        "id": "mountain-tadasana.knee.straight",
+        "name": "Legs Straight and Strong",
         "metric": "angle",
         "points": [
           23,
@@ -7637,25 +10366,78 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "weight": 1,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
+      },
+      {
+        "id": "mountain-tadasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "mountain-tadasana.spine.erect",
+        "name": "Vertical Spine",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "mountain-tadasana.shoulders.level",
+        "name": "Level Shoulders",
+        "metric": "horizontal_alignment",
+        "points": [
+          11,
+          12
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Stand tall with both legs fully straight."
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24,
       25,
       27
     ],
     "validation": {
       "status": "production",
-      "version": "1.0.0",
-      "sampleCount": 20,
+      "version": "1.2.0",
+      "sampleCount": 50,
       "expertReviewed": true
     }
   },
@@ -7694,69 +10476,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "noose-pashasana.shoulder.level",
-      "noose-pashasana.spine.vertical",
-      "noose-pashasana.hip.level"
+      "noose-pashasana.knee.straight",
+      "noose-pashasana.hip.alignment",
+      "noose-pashasana.spine.erect",
+      "noose-pashasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 86,
     "aliases": [],
     "rules": [
       {
-        "id": "noose-pashasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "noose-pashasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "noose-pashasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "noose-pashasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "noose-pashasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "noose-pashasana.hip.level",
-        "name": "Hip Balance",
+        "id": "noose-pashasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7796,69 +10605,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.shoulder.level",
-      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.spine.vertical",
-      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.hip.level"
+      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.knee.straight",
+      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.hip.alignment",
+      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.spine.erect",
+      "one-leg-behind-the-head-i-eka-pada-shirshasana-a.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 87,
     "aliases": [],
     "rules": [
       {
-        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.hip.level",
-        "name": "Hip Balance",
+        "id": "one-leg-behind-the-head-i-eka-pada-shirshasana-a.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -7898,69 +10734,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.shoulder.level",
-      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.spine.vertical",
-      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.hip.level"
+      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.knee.straight",
+      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.hip.alignment",
+      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.spine.erect",
+      "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 88,
     "aliases": [],
     "rules": [
       {
-        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.hip.level",
-        "name": "Hip Balance",
+        "id": "one-leg-behind-the-head-ii-eka-pada-shirshasana-b.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8000,16 +10863,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "peacock-mayurasana.standing.leg",
-      "peacock-mayurasana.shoulder.alignment"
+      "peacock-mayurasana.elbow.shelf",
+      "peacock-mayurasana.knee.tuck",
+      "peacock-mayurasana.feet.lifted",
+      "peacock-mayurasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 89,
     "aliases": [],
     "rules": [
       {
-        "id": "peacock-mayurasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "peacock-mayurasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "peacock-mayurasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "peacock-mayurasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -8017,39 +10920,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "peacock-mayurasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "peacock-mayurasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8089,69 +10997,101 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "pendant-lolasana.shoulder.level",
-      "pendant-lolasana.spine.vertical",
-      "pendant-lolasana.hip.level"
+      "pendant-lolasana.elbow.shelf",
+      "pendant-lolasana.knee.tuck",
+      "pendant-lolasana.feet.lifted",
+      "pendant-lolasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 90,
     "aliases": [],
     "rules": [
       {
-        "id": "pendant-lolasana.shoulder.level",
-        "name": "Shoulder Balance",
+        "id": "pendant-lolasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "pendant-lolasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "pendant-lolasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
+      },
+      {
+        "id": "pendant-lolasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "pendant-lolasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "pendant-lolasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8191,55 +11131,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "pigeon-kapotasana.spine.backbend_arch",
       "pigeon-kapotasana.chest.opening",
-      "pigeon-kapotasana.arm.extension"
+      "pigeon-kapotasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 91,
     "aliases": [],
     "rules": [
       {
+        "id": "pigeon-kapotasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "pigeon-kapotasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "pigeon-kapotasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "pigeon-kapotasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8279,8 +11243,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "plank-phalakasana.core.alignment",
-      "plank-phalakasana.shoulder.stability"
+      "plank-phalakasana.plank.line",
+      "plank-phalakasana.arms.stacked",
+      "plank-phalakasana.knees.straight",
+      "plank-phalakasana.hips.level"
     ],
     "isPremium": true,
     "orderIndex": 92,
@@ -8290,47 +11256,90 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "plank-phalakasana.core.alignment",
-        "name": "Torso Line",
+        "id": "plank-phalakasana.plank.line",
+        "name": "Straight Plank Line",
         "metric": "angle",
         "points": [
           11,
           23,
-          25
+          27
         ],
         "comparison": "between",
-        "min": 150,
+        "min": 163,
         "max": 180,
-        "tolerance": 15,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Engage abdominal muscles to maintain straight body line."
+        "feedback": "Keep body in one straight line without sagging hips.",
+        "isSafety": true
       },
       {
-        "id": "plank-phalakasana.shoulder.stability",
-        "name": "Shoulder Stability",
+        "id": "plank-phalakasana.arms.stacked",
+        "name": "Arms Perpendicular",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack shoulders directly over wrists.",
+        "isSafety": false
+      },
+      {
+        "id": "plank-phalakasana.knees.straight",
+        "name": "Legs Extended",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Engage quads and press heels back.",
+        "isSafety": false
+      },
+      {
+        "id": "plank-phalakasana.hips.level",
+        "name": "Level Hips",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Press through hands and keep shoulder girdle firm."
+        "feedback": "Prevent hips from twisting or dropping.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      25
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8370,54 +11379,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "plow-halasana.inversion.line",
-      "plow-halasana.shoulder.base"
+      "plow-halasana.body.vertical_line",
+      "plow-halasana.core.stability",
+      "plow-halasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 93,
     "aliases": [],
     "rules": [
       {
-        "id": "plow-halasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "plow-halasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "plow-halasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "plow-halasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "plow-halasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8457,69 +11491,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "pyramid-parshvottanasana.shoulder.level",
-      "pyramid-parshvottanasana.spine.vertical",
-      "pyramid-parshvottanasana.hip.level"
+      "pyramid-parshvottanasana.knee.straight",
+      "pyramid-parshvottanasana.hip.alignment",
+      "pyramid-parshvottanasana.spine.erect",
+      "pyramid-parshvottanasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 94,
     "aliases": [],
     "rules": [
       {
-        "id": "pyramid-parshvottanasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "pyramid-parshvottanasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "pyramid-parshvottanasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "pyramid-parshvottanasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "pyramid-parshvottanasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "pyramid-parshvottanasana.hip.level",
-        "name": "Hip Balance",
+        "id": "pyramid-parshvottanasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8559,35 +11620,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "rabbit-shashankasana.body.symmetry"
+      "rabbit-shashankasana.body.supine_line",
+      "rabbit-shashankasana.shoulders.grounded",
+      "rabbit-shashankasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 95,
     "aliases": [],
     "rules": [
       {
-        "id": "rabbit-shashankasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "rabbit-shashankasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "rabbit-shashankasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "rabbit-shashankasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8627,35 +11729,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "reclined-bound-angle-supta-baddha-konasana.body.symmetry"
+      "reclined-bound-angle-supta-baddha-konasana.body.supine_line",
+      "reclined-bound-angle-supta-baddha-konasana.shoulders.grounded",
+      "reclined-bound-angle-supta-baddha-konasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 96,
     "aliases": [],
     "rules": [
       {
-        "id": "reclined-bound-angle-supta-baddha-konasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "reclined-bound-angle-supta-baddha-konasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "reclined-bound-angle-supta-baddha-konasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "reclined-bound-angle-supta-baddha-konasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8695,35 +11838,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "reverse-corpse-advasana.body.symmetry"
+      "reverse-corpse-advasana.body.supine_line",
+      "reverse-corpse-advasana.shoulders.grounded",
+      "reverse-corpse-advasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 97,
     "aliases": [],
     "rules": [
       {
-        "id": "reverse-corpse-advasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "reverse-corpse-advasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "reverse-corpse-advasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "reverse-corpse-advasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8763,56 +11947,80 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "revolved-bird-of-paradise-parivritta-svarga-dvijasana.standing.leg",
-      "revolved-bird-of-paradise-parivritta-svarga-dvijasana.shoulder.alignment"
+      "revolved-bird-of-paradise-parivritta-svarga-dvijasana.standing_knee.straight",
+      "revolved-bird-of-paradise-parivritta-svarga-dvijasana.lifted_hip.flexion",
+      "revolved-bird-of-paradise-parivritta-svarga-dvijasana.spine.balance"
     ],
     "isPremium": true,
     "orderIndex": 98,
     "aliases": [],
     "rules": [
       {
-        "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana.standing_knee.straight",
+        "name": "Standing Leg Strong",
         "metric": "angle",
         "points": [
-          23,
-          25,
-          27
+          24,
+          26,
+          28
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Keep standing leg straight and stable.",
+        "isSafety": true
       },
       {
-        "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana.lifted_hip.flexion",
+        "name": "Lifted Leg Elevated",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 80,
+        "max": 140,
+        "target": 110,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Maintain high lifted leg position.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-bird-of-paradise-parivritta-svarga-dvijasana.spine.balance",
+        "name": "Vertical Alignment",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Keep your torso tall and centered.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8852,69 +12060,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "revolved-chair-parivrtta-utkatasana.shoulder.level",
-      "revolved-chair-parivrtta-utkatasana.spine.vertical",
-      "revolved-chair-parivrtta-utkatasana.hip.level"
+      "revolved-chair-parivrtta-utkatasana.knees.bend",
+      "revolved-chair-parivrtta-utkatasana.torso.incline",
+      "revolved-chair-parivrtta-utkatasana.arms.reach",
+      "revolved-chair-parivrtta-utkatasana.knees.level"
     ],
     "isPremium": true,
     "orderIndex": 99,
     "aliases": [],
     "rules": [
       {
-        "id": "revolved-chair-parivrtta-utkatasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "revolved-chair-parivrtta-utkatasana.knees.bend",
+        "name": "Knees Deep Bend (100°)",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 80,
+        "max": 120,
+        "target": 100,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Sink hips back as if sitting into a deep chair.",
+        "isSafety": true
       },
       {
-        "id": "revolved-chair-parivrtta-utkatasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
+        "id": "revolved-chair-parivrtta-utkatasana.torso.incline",
+        "name": "Torso Extended Forward",
+        "metric": "angle",
         "points": [
           11,
-          23
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 95,
+        "max": 135,
+        "target": 115,
+        "tolerance": 20,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep chest lifted and spine long on diagonal.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-chair-parivrtta-utkatasana.arms.reach",
+        "name": "Arms Raised Overhead",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 145,
+        "max": 180,
+        "target": 165,
+        "tolerance": 20,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Extend arms alongside ears.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-chair-parivrtta-utkatasana.knees.level",
+        "name": "Knees Symmetrical",
+        "metric": "horizontal_alignment",
+        "points": [
+          25,
+          26
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "revolved-chair-parivrtta-utkatasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep knees tracking parallel without caving.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      24
+      25,
+      26,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -8954,16 +12193,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "revolved-flying-man-parivritta-eka-pada-koundinyasana.standing.leg",
-      "revolved-flying-man-parivritta-eka-pada-koundinyasana.shoulder.alignment"
+      "revolved-flying-man-parivritta-eka-pada-koundinyasana.elbow.shelf",
+      "revolved-flying-man-parivritta-eka-pada-koundinyasana.knee.tuck",
+      "revolved-flying-man-parivritta-eka-pada-koundinyasana.feet.lifted",
+      "revolved-flying-man-parivritta-eka-pada-koundinyasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 100,
     "aliases": [],
     "rules": [
       {
-        "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -8971,39 +12250,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "revolved-flying-man-parivritta-eka-pada-koundinyasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9043,56 +12327,80 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "revolved-half-moon-parivritta-ardha-chandrasana.standing.leg",
-      "revolved-half-moon-parivritta-ardha-chandrasana.shoulder.alignment"
+      "revolved-half-moon-parivritta-ardha-chandrasana.standing_knee.straight",
+      "revolved-half-moon-parivritta-ardha-chandrasana.lifted_hip.flexion",
+      "revolved-half-moon-parivritta-ardha-chandrasana.spine.balance"
     ],
     "isPremium": true,
     "orderIndex": 101,
     "aliases": [],
     "rules": [
       {
-        "id": "revolved-half-moon-parivritta-ardha-chandrasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "revolved-half-moon-parivritta-ardha-chandrasana.standing_knee.straight",
+        "name": "Standing Leg Strong",
         "metric": "angle",
         "points": [
-          23,
-          25,
-          27
+          24,
+          26,
+          28
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Keep standing leg straight and stable.",
+        "isSafety": true
       },
       {
-        "id": "revolved-half-moon-parivritta-ardha-chandrasana.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "revolved-half-moon-parivritta-ardha-chandrasana.lifted_hip.flexion",
+        "name": "Lifted Leg Elevated",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 80,
+        "max": 140,
+        "target": 110,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Maintain high lifted leg position.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-half-moon-parivritta-ardha-chandrasana.spine.balance",
+        "name": "Vertical Alignment",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Keep your torso tall and centered.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9132,6 +12440,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.hip.flexion",
+      "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.knee.fold",
       "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.spine.erect",
       "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.shoulder.relaxation"
     ],
@@ -9139,6 +12449,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 102,
     "aliases": [],
     "rules": [
+      {
+        "id": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.spine.erect",
         "name": "Spine Length",
@@ -9148,11 +12496,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "revolved-seated-hand-to-big-toe-upavishta-parivritta-hasta-padangushthasana.shoulder.relaxation",
@@ -9163,21 +12512,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9217,69 +12569,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.shoulder.level",
-      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.spine.vertical",
-      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.hip.level"
+      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.knee.straight",
+      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.hip.alignment",
+      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.spine.erect",
+      "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 103,
     "aliases": [],
     "rules": [
       {
-        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.hip.level",
-        "name": "Hip Balance",
+        "id": "revolved-standing-hand-to-big-toe-parivritta-hasta-padangushthasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9319,69 +12698,106 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "revolved-triangle-parivritta-trikonasana.shoulder.level",
-      "revolved-triangle-parivritta-trikonasana.spine.vertical",
-      "revolved-triangle-parivritta-trikonasana.hip.level"
+      "revolved-triangle-parivritta-trikonasana.front_knee.straight",
+      "revolved-triangle-parivritta-trikonasana.back_knee.straight",
+      "revolved-triangle-parivritta-trikonasana.arms.vertical_line",
+      "revolved-triangle-parivritta-trikonasana.hip.lateral_hinge"
     ],
     "isPremium": true,
     "orderIndex": 104,
     "aliases": [],
     "rules": [
       {
-        "id": "revolved-triangle-parivritta-trikonasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "revolved-triangle-parivritta-trikonasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "revolved-triangle-parivritta-trikonasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
+        "id": "revolved-triangle-parivritta-trikonasana.front_knee.straight",
+        "name": "Front Leg Straight",
+        "metric": "angle",
         "points": [
           23,
-          24
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Keep both legs straight and quad engaged.",
+        "isSafety": true
+      },
+      {
+        "id": "revolved-triangle-parivritta-trikonasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Anchor firmly through straight back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-triangle-parivritta-trikonasana.arms.vertical_line",
+        "name": "Arms in Straight Line",
+        "metric": "angle",
+        "points": [
+          15,
+          11,
+          16
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Extend arms vertically in a single line.",
+        "isSafety": false
+      },
+      {
+        "id": "revolved-triangle-parivritta-trikonasana.hip.lateral_hinge",
+        "name": "Side Lateral Hinge",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 95,
+        "max": 145,
+        "target": 120,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Hinge directly sideways over your front leg.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      15,
+      16,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9421,69 +12837,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "rock-the-baby.shoulder.level",
-      "rock-the-baby.spine.vertical",
-      "rock-the-baby.hip.level"
+      "rock-the-baby.knee.straight",
+      "rock-the-baby.hip.alignment",
+      "rock-the-baby.spine.erect",
+      "rock-the-baby.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 105,
     "aliases": [],
     "rules": [
       {
-        "id": "rock-the-baby.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "rock-the-baby.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "rock-the-baby.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "rock-the-baby.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "rock-the-baby.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "rock-the-baby.hip.level",
-        "name": "Hip Balance",
+        "id": "rock-the-baby.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9523,69 +12966,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "rooster-kukkutasana.shoulder.level",
-      "rooster-kukkutasana.spine.vertical",
-      "rooster-kukkutasana.hip.level"
+      "rooster-kukkutasana.knee.straight",
+      "rooster-kukkutasana.hip.alignment",
+      "rooster-kukkutasana.spine.erect",
+      "rooster-kukkutasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 106,
     "aliases": [],
     "rules": [
       {
-        "id": "rooster-kukkutasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "rooster-kukkutasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "rooster-kukkutasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "rooster-kukkutasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "rooster-kukkutasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "rooster-kukkutasana.hip.level",
-        "name": "Hip Balance",
+        "id": "rooster-kukkutasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9625,69 +13095,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-bharadvajas-twist-bharadvajasana.shoulder.level",
-      "sage-bharadvajas-twist-bharadvajasana.spine.vertical",
-      "sage-bharadvajas-twist-bharadvajasana.hip.level"
+      "sage-bharadvajas-twist-bharadvajasana.knee.straight",
+      "sage-bharadvajas-twist-bharadvajasana.hip.alignment",
+      "sage-bharadvajas-twist-bharadvajasana.spine.erect",
+      "sage-bharadvajas-twist-bharadvajasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 107,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-bharadvajas-twist-bharadvajasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-bharadvajas-twist-bharadvajasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "sage-bharadvajas-twist-bharadvajasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-bharadvajas-twist-bharadvajasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-bharadvajas-twist-bharadvajasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "sage-bharadvajas-twist-bharadvajasana.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-bharadvajas-twist-bharadvajasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9727,69 +13224,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-gherandas-gherandasana.shoulder.level",
-      "sage-gherandas-gherandasana.spine.vertical",
-      "sage-gherandas-gherandasana.hip.level"
+      "sage-gherandas-gherandasana.knee.straight",
+      "sage-gherandas-gherandasana.hip.alignment",
+      "sage-gherandas-gherandasana.spine.erect",
+      "sage-gherandas-gherandasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 108,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-gherandas-gherandasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-gherandas-gherandasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "sage-gherandas-gherandasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-gherandas-gherandasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-gherandas-gherandasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "sage-gherandas-gherandasana.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-gherandas-gherandasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9829,32 +13353,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-marichis-i-marichyasana-a.shoulder.level",
-      "sage-marichis-i-marichyasana-a.spine.vertical",
-      "sage-marichis-i-marichyasana-a.hip.level"
+      "sage-marichis-i-marichyasana-a.hip.flexion",
+      "sage-marichis-i-marichyasana-a.knee.fold",
+      "sage-marichis-i-marichyasana-a.spine.erect",
+      "sage-marichis-i-marichyasana-a.shoulder.relaxation"
     ],
     "isPremium": true,
     "orderIndex": 109,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-marichis-i-marichyasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-marichis-i-marichyasana-a.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
       },
       {
-        "id": "sage-marichis-i-marichyasana-a.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-marichis-i-marichyasana-a.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-marichis-i-marichyasana-a.spine.erect",
+        "name": "Spine Length",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -9863,35 +13411,38 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
-        "id": "sage-marichis-i-marichyasana-a.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-marichis-i-marichyasana-a.shoulder.relaxation",
+        "name": "Relaxed Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -9931,32 +13482,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-marichis-ii-marichyasana-b.shoulder.level",
-      "sage-marichis-ii-marichyasana-b.spine.vertical",
-      "sage-marichis-ii-marichyasana-b.hip.level"
+      "sage-marichis-ii-marichyasana-b.hip.flexion",
+      "sage-marichis-ii-marichyasana-b.knee.fold",
+      "sage-marichis-ii-marichyasana-b.spine.erect",
+      "sage-marichis-ii-marichyasana-b.shoulder.relaxation"
     ],
     "isPremium": true,
     "orderIndex": 110,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-marichis-ii-marichyasana-b.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-marichis-ii-marichyasana-b.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
       },
       {
-        "id": "sage-marichis-ii-marichyasana-b.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-marichis-ii-marichyasana-b.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-marichis-ii-marichyasana-b.spine.erect",
+        "name": "Spine Length",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -9965,35 +13540,38 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
-        "id": "sage-marichis-ii-marichyasana-b.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-marichis-ii-marichyasana-b.shoulder.relaxation",
+        "name": "Relaxed Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10033,32 +13611,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-marichis-iii-marichyasana-c.shoulder.level",
-      "sage-marichis-iii-marichyasana-c.spine.vertical",
-      "sage-marichis-iii-marichyasana-c.hip.level"
+      "sage-marichis-iii-marichyasana-c.hip.flexion",
+      "sage-marichis-iii-marichyasana-c.knee.fold",
+      "sage-marichis-iii-marichyasana-c.spine.erect",
+      "sage-marichis-iii-marichyasana-c.shoulder.relaxation"
     ],
     "isPremium": true,
     "orderIndex": 111,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-marichis-iii-marichyasana-c.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-marichis-iii-marichyasana-c.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
       },
       {
-        "id": "sage-marichis-iii-marichyasana-c.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-marichis-iii-marichyasana-c.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-marichis-iii-marichyasana-c.spine.erect",
+        "name": "Spine Length",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -10067,35 +13669,38 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
-        "id": "sage-marichis-iii-marichyasana-c.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-marichis-iii-marichyasana-c.shoulder.relaxation",
+        "name": "Relaxed Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10135,32 +13740,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-marichis-iv-marichyasana-d.shoulder.level",
-      "sage-marichis-iv-marichyasana-d.spine.vertical",
-      "sage-marichis-iv-marichyasana-d.hip.level"
+      "sage-marichis-iv-marichyasana-d.hip.flexion",
+      "sage-marichis-iv-marichyasana-d.knee.fold",
+      "sage-marichis-iv-marichyasana-d.spine.erect",
+      "sage-marichis-iv-marichyasana-d.shoulder.relaxation"
     ],
     "isPremium": true,
     "orderIndex": 112,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-marichis-iv-marichyasana-d.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-marichis-iv-marichyasana-d.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
       },
       {
-        "id": "sage-marichis-iv-marichyasana-d.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-marichis-iv-marichyasana-d.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-marichis-iv-marichyasana-d.spine.erect",
+        "name": "Spine Length",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -10169,35 +13798,38 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
-        "id": "sage-marichis-iv-marichyasana-d.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-marichis-iv-marichyasana-d.shoulder.relaxation",
+        "name": "Relaxed Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10237,69 +13869,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sage-visvamitras-vishvamitrasana.shoulder.level",
-      "sage-visvamitras-vishvamitrasana.spine.vertical",
-      "sage-visvamitras-vishvamitrasana.hip.level"
+      "sage-visvamitras-vishvamitrasana.knee.straight",
+      "sage-visvamitras-vishvamitrasana.hip.alignment",
+      "sage-visvamitras-vishvamitrasana.spine.erect",
+      "sage-visvamitras-vishvamitrasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 113,
     "aliases": [],
     "rules": [
       {
-        "id": "sage-visvamitras-vishvamitrasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sage-visvamitras-vishvamitrasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "sage-visvamitras-vishvamitrasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sage-visvamitras-vishvamitrasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "sage-visvamitras-vishvamitrasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "sage-visvamitras-vishvamitrasana.hip.level",
-        "name": "Hip Balance",
+        "id": "sage-visvamitras-vishvamitrasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10339,16 +13998,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "scale-tolasana.standing.leg",
-      "scale-tolasana.shoulder.alignment"
+      "scale-tolasana.elbow.shelf",
+      "scale-tolasana.knee.tuck",
+      "scale-tolasana.feet.lifted",
+      "scale-tolasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 114,
     "aliases": [],
     "rules": [
       {
-        "id": "scale-tolasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "scale-tolasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "scale-tolasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "scale-tolasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -10356,39 +14055,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "scale-tolasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "scale-tolasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10428,8 +14132,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "scorpion-vrischikasana-a.shoulder.level",
-      "scorpion-vrischikasana-a.spine.vertical",
+      "scorpion-vrischikasana-a.body.vertical_line",
+      "scorpion-vrischikasana-a.core.stability",
       "scorpion-vrischikasana-a.hip.level"
     ],
     "isPremium": true,
@@ -10437,60 +14141,70 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "aliases": [],
     "rules": [
       {
-        "id": "scorpion-vrischikasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "scorpion-vrischikasana-a.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "scorpion-vrischikasana-a.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
+        "id": "scorpion-vrischikasana-a.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          23
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
       },
       {
         "id": "scorpion-vrischikasana-a.hip.level",
-        "name": "Hip Balance",
+        "name": "Level Inverted Hips",
         "metric": "horizontal_alignment",
         "points": [
           23,
           24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
-      24
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10530,52 +14244,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "seated-forward-fold-paschimottanasana.spine.erect",
-      "seated-forward-fold-paschimottanasana.shoulder.relaxation"
+      "seated-forward-fold-paschimottanasana.hip.deep_fold",
+      "seated-forward-fold-paschimottanasana.knee.straight",
+      "seated-forward-fold-paschimottanasana.spine.elongation",
+      "seated-forward-fold-paschimottanasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 116,
     "aliases": [],
     "rules": [
       {
-        "id": "seated-forward-fold-paschimottanasana.spine.erect",
-        "name": "Spine Length",
-        "metric": "vertical_alignment",
+        "id": "seated-forward-fold-paschimottanasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "seated-forward-fold-paschimottanasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "seated-forward-fold-paschimottanasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
           11,
           23
         ],
-        "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
       },
       {
-        "id": "seated-forward-fold-paschimottanasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
+        "id": "seated-forward-fold-paschimottanasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
-      23
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10615,6 +14377,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "seated-gate-parighasana.hip.flexion",
+      "seated-gate-parighasana.knee.fold",
       "seated-gate-parighasana.spine.erect",
       "seated-gate-parighasana.shoulder.relaxation"
     ],
@@ -10622,6 +14386,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 117,
     "aliases": [],
     "rules": [
+      {
+        "id": "seated-gate-parighasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "seated-gate-parighasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "seated-gate-parighasana.spine.erect",
         "name": "Spine Length",
@@ -10631,11 +14433,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "seated-gate-parighasana.shoulder.relaxation",
@@ -10646,21 +14449,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10700,52 +14506,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.spine.erect",
-      "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.shoulder.relaxation"
+      "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.hip.deep_fold",
+      "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.knee.straight",
+      "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.spine.elongation",
+      "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 118,
     "aliases": [],
     "rules": [
       {
-        "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.spine.erect",
-        "name": "Spine Length",
-        "metric": "vertical_alignment",
+        "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
           11,
           23
         ],
-        "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
       },
       {
-        "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
+        "id": "seated-half-bound-lotus-forward-bend-ardha-baddha-padma-paschimottanasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
-      23
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10785,52 +14639,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.spine.erect",
-      "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.shoulder.relaxation"
+      "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.hip.deep_fold",
+      "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.knee.straight",
+      "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.spine.elongation",
+      "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 119,
     "aliases": [],
     "rules": [
       {
-        "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.spine.erect",
-        "name": "Spine Length",
-        "metric": "vertical_alignment",
+        "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
           11,
           23
         ],
-        "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
       },
       {
-        "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
+        "id": "seated-three-limbed-forward-bend-trianga-mukha-eka-pada-paschimottanasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
-      23
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10870,6 +14772,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "seated-twist-ardha-matsyendrasana.hip.flexion",
+      "seated-twist-ardha-matsyendrasana.knee.fold",
       "seated-twist-ardha-matsyendrasana.spine.erect",
       "seated-twist-ardha-matsyendrasana.shoulder.relaxation"
     ],
@@ -10877,6 +14781,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 120,
     "aliases": [],
     "rules": [
+      {
+        "id": "seated-twist-ardha-matsyendrasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "seated-twist-ardha-matsyendrasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "seated-twist-ardha-matsyendrasana.spine.erect",
         "name": "Spine Length",
@@ -10886,11 +14828,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "seated-twist-ardha-matsyendrasana.shoulder.relaxation",
@@ -10901,21 +14844,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -10955,69 +14901,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "shiva-squat.shoulder.level",
-      "shiva-squat.spine.vertical",
-      "shiva-squat.hip.level"
+      "shiva-squat.knee.straight",
+      "shiva-squat.hip.alignment",
+      "shiva-squat.spine.erect",
+      "shiva-squat.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 121,
     "aliases": [],
     "rules": [
       {
-        "id": "shiva-squat.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "shiva-squat.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "shiva-squat.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "shiva-squat.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "shiva-squat.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "shiva-squat.hip.level",
-        "name": "Hip Balance",
+        "id": "shiva-squat.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11057,6 +15030,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "shoelace.hip.flexion",
+      "shoelace.knee.fold",
       "shoelace.spine.erect",
       "shoelace.shoulder.relaxation"
     ],
@@ -11064,6 +15039,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 122,
     "aliases": [],
     "rules": [
+      {
+        "id": "shoelace.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "shoelace.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "shoelace.spine.erect",
         "name": "Spine Length",
@@ -11073,11 +15086,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "shoelace.shoulder.relaxation",
@@ -11088,21 +15102,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11142,69 +15159,101 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "shoulder-pressing-bhuja-pidasana.shoulder.level",
-      "shoulder-pressing-bhuja-pidasana.spine.vertical",
-      "shoulder-pressing-bhuja-pidasana.hip.level"
+      "shoulder-pressing-bhuja-pidasana.elbow.shelf",
+      "shoulder-pressing-bhuja-pidasana.knee.tuck",
+      "shoulder-pressing-bhuja-pidasana.feet.lifted",
+      "shoulder-pressing-bhuja-pidasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 123,
     "aliases": [],
     "rules": [
       {
-        "id": "shoulder-pressing-bhuja-pidasana.shoulder.level",
-        "name": "Shoulder Balance",
+        "id": "shoulder-pressing-bhuja-pidasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "shoulder-pressing-bhuja-pidasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "shoulder-pressing-bhuja-pidasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
+      },
+      {
+        "id": "shoulder-pressing-bhuja-pidasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "shoulder-pressing-bhuja-pidasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "shoulder-pressing-bhuja-pidasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11244,6 +15293,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "shoulder-stand-with-lotus-legs-urdhva-padmasana.hip.flexion",
+      "shoulder-stand-with-lotus-legs-urdhva-padmasana.knee.fold",
       "shoulder-stand-with-lotus-legs-urdhva-padmasana.spine.erect",
       "shoulder-stand-with-lotus-legs-urdhva-padmasana.shoulder.relaxation"
     ],
@@ -11251,6 +15302,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 124,
     "aliases": [],
     "rules": [
+      {
+        "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana.spine.erect",
         "name": "Spine Length",
@@ -11260,11 +15349,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "shoulder-stand-with-lotus-legs-urdhva-padmasana.shoulder.relaxation",
@@ -11275,21 +15365,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11329,54 +15422,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "shoulderstand-sarvangasana.inversion.line",
-      "shoulderstand-sarvangasana.shoulder.base"
+      "shoulderstand-sarvangasana.body.vertical_line",
+      "shoulderstand-sarvangasana.core.stability",
+      "shoulderstand-sarvangasana.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 125,
     "aliases": [],
     "rules": [
       {
-        "id": "shoulderstand-sarvangasana.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "shoulderstand-sarvangasana.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "shoulderstand-sarvangasana.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "shoulderstand-sarvangasana.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "shoulderstand-sarvangasana.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11416,16 +15534,56 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "side-crow-parsva-bakasana.standing.leg",
-      "side-crow-parsva-bakasana.shoulder.alignment"
+      "side-crow-parsva-bakasana.elbow.shelf",
+      "side-crow-parsva-bakasana.knee.tuck",
+      "side-crow-parsva-bakasana.feet.lifted",
+      "side-crow-parsva-bakasana.shoulders.stable"
     ],
     "isPremium": true,
     "orderIndex": 126,
     "aliases": [],
     "rules": [
       {
-        "id": "side-crow-parsva-bakasana.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "side-crow-parsva-bakasana.elbow.shelf",
+        "name": "Elbow Support Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          13,
+          15
+        ],
+        "comparison": "between",
+        "min": 70,
+        "max": 120,
+        "target": 95,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend elbows into a strong supportive shelf (90°).",
+        "isSafety": true
+      },
+      {
+        "id": "side-crow-parsva-bakasana.knee.tuck",
+        "name": "Knees Tucked High",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 35,
+        "max": 85,
+        "target": 60,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Draw knees high onto the backs of your upper arms.",
+        "isSafety": true
+      },
+      {
+        "id": "side-crow-parsva-bakasana.feet.lifted",
+        "name": "Feet Lifted Off Ground",
         "metric": "angle",
         "points": [
           23,
@@ -11433,39 +15591,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "tolerance": 10,
-        "weight": 2,
-        "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "min": 40,
+        "max": 90,
+        "target": 65,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lift toes and feet off the mat with core strength.",
+        "isSafety": false
       },
       {
-        "id": "side-crow-parsva-bakasana.shoulder.alignment",
-        "name": "Shoulder Level",
+        "id": "side-crow-parsva-bakasana.shoulders.stable",
+        "name": "Shoulder Stability",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Distribute weight evenly across both arms.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
+      15,
       23,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11505,32 +15668,75 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "side-lunge-skandasana.shoulder.level",
-      "side-lunge-skandasana.spine.vertical",
-      "side-lunge-skandasana.hip.level"
+      "side-lunge-skandasana.front_knee.angle",
+      "side-lunge-skandasana.back_knee.straight",
+      "side-lunge-skandasana.arms.parallel",
+      "side-lunge-skandasana.torso.vertical"
     ],
     "isPremium": true,
     "orderIndex": 127,
     "aliases": [],
     "rules": [
       {
-        "id": "side-lunge-skandasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "side-lunge-skandasana.front_knee.angle",
+        "name": "Front Knee 90°",
+        "metric": "angle",
         "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend your front knee over your ankle at 90°.",
+        "isSafety": true
+      },
+      {
+        "id": "side-lunge-skandasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Straighten and ground through your back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "side-lunge-skandasana.arms.parallel",
+        "name": "Arms Parallel to Floor",
+        "metric": "angle",
+        "points": [
+          13,
           11,
           12
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Extend arms parallel to the ground.",
+        "isSafety": false
       },
       {
-        "id": "side-lunge-skandasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "side-lunge-skandasana.torso.vertical",
+        "name": "Torso Centered",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -11539,35 +15745,26 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "side-lunge-skandasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Keep your torso upright without leaning forward.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
+      13,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11607,8 +15804,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "side-plank-vasishthasana.core.alignment",
-      "side-plank-vasishthasana.shoulder.stability"
+      "side-plank-vasishthasana.plank.line",
+      "side-plank-vasishthasana.arms.stacked",
+      "side-plank-vasishthasana.knees.straight",
+      "side-plank-vasishthasana.hips.level"
     ],
     "isPremium": true,
     "orderIndex": 128,
@@ -11618,47 +15817,90 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "side-plank-vasishthasana.core.alignment",
-        "name": "Torso Line",
+        "id": "side-plank-vasishthasana.plank.line",
+        "name": "Straight Plank Line",
         "metric": "angle",
         "points": [
           11,
           23,
-          25
+          27
         ],
         "comparison": "between",
-        "min": 150,
+        "min": 163,
         "max": 180,
-        "tolerance": 15,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Engage abdominal muscles to maintain straight body line."
+        "feedback": "Keep body in one straight line without sagging hips.",
+        "isSafety": true
       },
       {
-        "id": "side-plank-vasishthasana.shoulder.stability",
-        "name": "Shoulder Stability",
+        "id": "side-plank-vasishthasana.arms.stacked",
+        "name": "Arms Perpendicular",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack shoulders directly over wrists.",
+        "isSafety": false
+      },
+      {
+        "id": "side-plank-vasishthasana.knees.straight",
+        "name": "Legs Extended",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Engage quads and press heels back.",
+        "isSafety": false
+      },
+      {
+        "id": "side-plank-vasishthasana.hips.level",
+        "name": "Level Hips",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Press through hands and keep shoulder girdle firm."
+        "feedback": "Prevent hips from twisting or dropping.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      25
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11698,69 +15940,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sleeping-yogi-yoga-nidrasana.shoulder.level",
-      "sleeping-yogi-yoga-nidrasana.spine.vertical",
-      "sleeping-yogi-yoga-nidrasana.hip.level"
+      "sleeping-yogi-yoga-nidrasana.knee.straight",
+      "sleeping-yogi-yoga-nidrasana.hip.alignment",
+      "sleeping-yogi-yoga-nidrasana.spine.erect",
+      "sleeping-yogi-yoga-nidrasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 129,
     "aliases": [],
     "rules": [
       {
-        "id": "sleeping-yogi-yoga-nidrasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "sleeping-yogi-yoga-nidrasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "sleeping-yogi-yoga-nidrasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "sleeping-yogi-yoga-nidrasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "sleeping-yogi-yoga-nidrasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "sleeping-yogi-yoga-nidrasana.hip.level",
-        "name": "Hip Balance",
+        "id": "sleeping-yogi-yoga-nidrasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11800,69 +16069,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "snake-sarpasana.shoulder.level",
-      "snake-sarpasana.spine.vertical",
-      "snake-sarpasana.hip.level"
+      "snake-sarpasana.knee.straight",
+      "snake-sarpasana.hip.alignment",
+      "snake-sarpasana.spine.erect",
+      "snake-sarpasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 130,
     "aliases": [],
     "rules": [
       {
-        "id": "snake-sarpasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "snake-sarpasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "snake-sarpasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "snake-sarpasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "snake-sarpasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "snake-sarpasana.hip.level",
-        "name": "Hip Balance",
+        "id": "snake-sarpasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11902,31 +16198,37 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "sphinx-salamba-bhujangasana.chest.opening",
-      "sphinx-salamba-bhujangasana.arm.extension"
+      "sphinx-salamba-bhujangasana.chest.lift",
+      "sphinx-salamba-bhujangasana.elbows.tuck",
+      "sphinx-salamba-bhujangasana.legs.grounded",
+      "sphinx-salamba-bhujangasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 131,
     "aliases": [],
     "rules": [
       {
-        "id": "sphinx-salamba-bhujangasana.chest.opening",
-        "name": "Chest Opening",
-        "metric": "horizontal_alignment",
+        "id": "sphinx-salamba-bhujangasana.chest.lift",
+        "name": "Chest Elevation",
+        "metric": "angle",
         "points": [
+          0,
           11,
-          12
+          23
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
+        "comparison": "between",
+        "min": 115,
+        "max": 165,
+        "target": 140,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Lift chest smoothly using back muscles without forcing.",
+        "isSafety": true
       },
       {
-        "id": "sphinx-salamba-bhujangasana.arm.extension",
-        "name": "Arm Support",
+        "id": "sphinx-salamba-bhujangasana.elbows.tuck",
+        "name": "Elbows Bent and Tucked",
         "metric": "angle",
         "points": [
           11,
@@ -11934,23 +16236,64 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           15
         ],
         "comparison": "between",
-        "min": 140,
+        "min": 95,
+        "max": 145,
+        "target": 120,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep elbows close to your ribs with soft bend.",
+        "isSafety": false
+      },
+      {
+        "id": "sphinx-salamba-bhujangasana.legs.grounded",
+        "name": "Legs Extended & Grounded",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 163,
         "max": 180,
-        "tolerance": 15,
-        "weight": 1,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Press tops of feet and thighs firmly into mat.",
+        "isSafety": false
+      },
+      {
+        "id": "sphinx-salamba-bhujangasana.shoulders.level",
+        "name": "Shoulders Down and Level",
+        "metric": "horizontal_alignment",
+        "points": [
+          11,
+          12
+        ],
+        "comparison": "less_than",
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Roll shoulders back and away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
       13,
-      15
+      15,
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -11990,52 +16333,78 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "staff-dandasana.spine.erect",
-      "staff-dandasana.shoulder.relaxation"
+      "staff-dandasana.torso_legs.90",
+      "staff-dandasana.knees.straight",
+      "staff-dandasana.spine.vertical"
     ],
     "isPremium": true,
     "orderIndex": 132,
     "aliases": [],
     "rules": [
       {
-        "id": "staff-dandasana.spine.erect",
-        "name": "Spine Length",
+        "id": "staff-dandasana.torso_legs.90",
+        "name": "90° L-Sit Angle",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Sit at a precise 90° angle with torso upright and legs straight.",
+        "isSafety": true
+      },
+      {
+        "id": "staff-dandasana.knees.straight",
+        "name": "Legs Fully Grounded",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 165,
+        "max": 180,
+        "target": 175,
+        "tolerance": 10,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Press backs of knees and thighs flat to floor.",
+        "isSafety": false
+      },
+      {
+        "id": "staff-dandasana.spine.vertical",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
-      },
-      {
-        "id": "staff-dandasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
+        "target": 0.07,
         "tolerance": 0.05,
-        "weight": 1,
-        "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Lengthen spine tall out of pelvis.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12075,55 +16444,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-bow-dandayamana-dhanurasana.chest.opening",
-      "standing-bow-dandayamana-dhanurasana.arm.extension"
+      "standing-bow-dandayamana-dhanurasana.bow.arc",
+      "standing-bow-dandayamana-dhanurasana.knees.bent",
+      "standing-bow-dandayamana-dhanurasana.chest.centered"
     ],
     "isPremium": true,
     "orderIndex": 133,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-bow-dandayamana-dhanurasana.chest.opening",
-        "name": "Chest Opening",
+        "id": "standing-bow-dandayamana-dhanurasana.bow.arc",
+        "name": "Torso & Leg Bow Arc",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 100,
+        "max": 150,
+        "target": 125,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Kick feet into hands to lift chest and thighs off mat.",
+        "isSafety": true
+      },
+      {
+        "id": "standing-bow-dandayamana-dhanurasana.knees.bent",
+        "name": "Knees Flexed",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 45,
+        "max": 95,
+        "target": 70,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold ankles firmly with knees hip-width apart.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-bow-dandayamana-dhanurasana.chest.centered",
+        "name": "Chest Balanced",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "standing-bow-dandayamana-dhanurasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Lift evenly through both shoulders.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      13,
-      15
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12163,69 +16556,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-foot-to-head-trivikramasana-a.shoulder.level",
-      "standing-foot-to-head-trivikramasana-a.spine.vertical",
-      "standing-foot-to-head-trivikramasana-a.hip.level"
+      "standing-foot-to-head-trivikramasana-a.knee.straight",
+      "standing-foot-to-head-trivikramasana-a.hip.alignment",
+      "standing-foot-to-head-trivikramasana-a.spine.erect",
+      "standing-foot-to-head-trivikramasana-a.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 134,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-foot-to-head-trivikramasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "standing-foot-to-head-trivikramasana-a.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "standing-foot-to-head-trivikramasana-a.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "standing-foot-to-head-trivikramasana-a.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-foot-to-head-trivikramasana-a.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "standing-foot-to-head-trivikramasana-a.hip.level",
-        "name": "Hip Balance",
+        "id": "standing-foot-to-head-trivikramasana-a.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12265,9 +16685,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-forward-bend-uttanasana.shoulder.level",
-      "standing-forward-bend-uttanasana.spine.vertical",
-      "standing-forward-bend-uttanasana.hip.level"
+      "standing-forward-bend-uttanasana.hip.deep_fold",
+      "standing-forward-bend-uttanasana.knee.straight",
+      "standing-forward-bend-uttanasana.spine.elongation",
+      "standing-forward-bend-uttanasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 135,
@@ -12279,60 +16700,90 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "standing-forward-bend-uttanasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "standing-forward-bend-uttanasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
       },
       {
-        "id": "standing-forward-bend-uttanasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
+        "id": "standing-forward-bend-uttanasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
         "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-forward-bend-uttanasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
           11,
           23
         ],
-        "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
       },
       {
-        "id": "standing-forward-bend-uttanasana.hip.level",
-        "name": "Hip Balance",
+        "id": "standing-forward-bend-uttanasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
         "metric": "horizontal_alignment",
         "points": [
           23,
           24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
       23,
-      24
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12372,52 +16823,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.spine.erect",
-      "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.shoulder.relaxation"
+      "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.hip.deep_fold",
+      "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.knee.straight",
+      "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.spine.elongation",
+      "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 136,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.spine.erect",
-        "name": "Spine Length",
-        "metric": "vertical_alignment",
+        "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
           11,
           23
         ],
-        "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
       },
       {
-        "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
+        "id": "standing-half-bound-lotus-forward-bend-ardha-baddha-padmottanasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
-      23
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12457,69 +16956,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.shoulder.level",
-      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.spine.vertical",
-      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.hip.level"
+      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.knee.straight",
+      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.hip.alignment",
+      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.spine.erect",
+      "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 137,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.hip.level",
-        "name": "Hip Balance",
+        "id": "standing-hand-to-big-toe-utthita-hasta-padangushthasana-a.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12559,69 +17085,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-leg-behind-head-durvasasana.shoulder.level",
-      "standing-leg-behind-head-durvasasana.spine.vertical",
-      "standing-leg-behind-head-durvasasana.hip.level"
+      "standing-leg-behind-head-durvasasana.knee.straight",
+      "standing-leg-behind-head-durvasasana.hip.alignment",
+      "standing-leg-behind-head-durvasasana.spine.erect",
+      "standing-leg-behind-head-durvasasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 138,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-leg-behind-head-durvasasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "standing-leg-behind-head-durvasasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "standing-leg-behind-head-durvasasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "standing-leg-behind-head-durvasasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-leg-behind-head-durvasasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "standing-leg-behind-head-durvasasana.hip.level",
-        "name": "Hip Balance",
+        "id": "standing-leg-behind-head-durvasasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12661,35 +17214,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-leg-behind-head-forward-bend-richikasana.body.symmetry"
+      "standing-leg-behind-head-forward-bend-richikasana.hip.deep_fold",
+      "standing-leg-behind-head-forward-bend-richikasana.knee.straight",
+      "standing-leg-behind-head-forward-bend-richikasana.spine.elongation",
+      "standing-leg-behind-head-forward-bend-richikasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 139,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-leg-behind-head-forward-bend-richikasana.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "standing-leg-behind-head-forward-bend-richikasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "standing-leg-behind-head-forward-bend-richikasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-leg-behind-head-forward-bend-richikasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-leg-behind-head-forward-bend-richikasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12729,35 +17347,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "standing-splits-urdhva-prasarita-eka-padasana.body.symmetry"
+      "standing-splits-urdhva-prasarita-eka-padasana.hip.deep_fold",
+      "standing-splits-urdhva-prasarita-eka-padasana.knee.straight",
+      "standing-splits-urdhva-prasarita-eka-padasana.spine.elongation",
+      "standing-splits-urdhva-prasarita-eka-padasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 140,
     "aliases": [],
     "rules": [
       {
-        "id": "standing-splits-urdhva-prasarita-eka-padasana.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "standing-splits-urdhva-prasarita-eka-padasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "standing-splits-urdhva-prasarita-eka-padasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-splits-urdhva-prasarita-eka-padasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "standing-splits-urdhva-prasarita-eka-padasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12797,69 +17480,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "star-utthita-tadasana.shoulder.level",
-      "star-utthita-tadasana.spine.vertical",
-      "star-utthita-tadasana.hip.level"
+      "star-utthita-tadasana.knee.straight",
+      "star-utthita-tadasana.hip.alignment",
+      "star-utthita-tadasana.spine.erect",
+      "star-utthita-tadasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 141,
     "aliases": [],
     "rules": [
       {
-        "id": "star-utthita-tadasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "star-utthita-tadasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "star-utthita-tadasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "star-utthita-tadasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "star-utthita-tadasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "star-utthita-tadasana.hip.level",
-        "name": "Hip Balance",
+        "id": "star-utthita-tadasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12899,35 +17609,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "supine-angle-supta-konasana.body.symmetry"
+      "supine-angle-supta-konasana.body.supine_line",
+      "supine-angle-supta-konasana.shoulders.grounded",
+      "supine-angle-supta-konasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 142,
     "aliases": [],
     "rules": [
       {
-        "id": "supine-angle-supta-konasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "supine-angle-supta-konasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-angle-supta-konasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-angle-supta-konasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -12967,35 +17718,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "supine-foot-to-head-supta-trivikramasana.body.symmetry"
+      "supine-foot-to-head-supta-trivikramasana.body.supine_line",
+      "supine-foot-to-head-supta-trivikramasana.shoulders.grounded",
+      "supine-foot-to-head-supta-trivikramasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 143,
     "aliases": [],
     "rules": [
       {
-        "id": "supine-foot-to-head-supta-trivikramasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "supine-foot-to-head-supta-trivikramasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-foot-to-head-supta-trivikramasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-foot-to-head-supta-trivikramasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13035,35 +17827,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "supine-hand-to-big-toe-supta-padangushthasana-a.body.symmetry"
+      "supine-hand-to-big-toe-supta-padangushthasana-a.body.supine_line",
+      "supine-hand-to-big-toe-supta-padangushthasana-a.shoulders.grounded",
+      "supine-hand-to-big-toe-supta-padangushthasana-a.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 144,
     "aliases": [],
     "rules": [
       {
-        "id": "supine-hand-to-big-toe-supta-padangushthasana-a.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "supine-hand-to-big-toe-supta-padangushthasana-a.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-hand-to-big-toe-supta-padangushthasana-a.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-hand-to-big-toe-supta-padangushthasana-a.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13103,35 +17936,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "supine-straddle-supta-samakonasana.body.symmetry"
+      "supine-straddle-supta-samakonasana.body.supine_line",
+      "supine-straddle-supta-samakonasana.shoulders.grounded",
+      "supine-straddle-supta-samakonasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 145,
     "aliases": [],
     "rules": [
       {
-        "id": "supine-straddle-supta-samakonasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "supine-straddle-supta-samakonasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-straddle-supta-samakonasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-straddle-supta-samakonasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13171,35 +18045,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "supine-twist-supta-matsyendrasana.body.symmetry"
+      "supine-twist-supta-matsyendrasana.body.supine_line",
+      "supine-twist-supta-matsyendrasana.shoulders.grounded",
+      "supine-twist-supta-matsyendrasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 146,
     "aliases": [],
     "rules": [
       {
-        "id": "supine-twist-supta-matsyendrasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "supine-twist-supta-matsyendrasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-twist-supta-matsyendrasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "supine-twist-supta-matsyendrasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13239,6 +18154,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "thunderbolt-vajrasana.hip.flexion",
+      "thunderbolt-vajrasana.knee.fold",
       "thunderbolt-vajrasana.spine.erect",
       "thunderbolt-vajrasana.shoulder.relaxation"
     ],
@@ -13246,6 +18163,44 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "orderIndex": 147,
     "aliases": [],
     "rules": [
+      {
+        "id": "thunderbolt-vajrasana.hip.flexion",
+        "name": "Seated Hip Grounding",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 65,
+        "max": 105,
+        "target": 85,
+        "tolerance": 20,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Root both sit bones evenly into the mat.",
+        "isSafety": true
+      },
+      {
+        "id": "thunderbolt-vajrasana.knee.fold",
+        "name": "Knee Fold Comfort",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 25,
+        "max": 85,
+        "target": 55,
+        "tolerance": 30,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Fold legs comfortably in steady seated base.",
+        "isSafety": false
+      },
       {
         "id": "thunderbolt-vajrasana.spine.erect",
         "name": "Spine Length",
@@ -13255,11 +18210,12 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           23
         ],
         "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Sit tall with a straight, elongated spine.",
+        "isSafety": false
       },
       {
         "id": "thunderbolt-vajrasana.shoulder.relaxation",
@@ -13270,21 +18226,24 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Relax shoulders away from your ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      23
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13324,69 +18283,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "tiger-vyaghrasana.shoulder.level",
-      "tiger-vyaghrasana.spine.vertical",
-      "tiger-vyaghrasana.hip.level"
+      "tiger-vyaghrasana.knee.straight",
+      "tiger-vyaghrasana.hip.alignment",
+      "tiger-vyaghrasana.spine.erect",
+      "tiger-vyaghrasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 148,
     "aliases": [],
     "rules": [
       {
-        "id": "tiger-vyaghrasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "tiger-vyaghrasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "tiger-vyaghrasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "tiger-vyaghrasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "tiger-vyaghrasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "tiger-vyaghrasana.hip.level",
-        "name": "Hip Balance",
+        "id": "tiger-vyaghrasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13426,69 +18412,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "toe-stand-padangushthasana.shoulder.level",
-      "toe-stand-padangushthasana.spine.vertical",
-      "toe-stand-padangushthasana.hip.level"
+      "toe-stand-padangushthasana.knee.straight",
+      "toe-stand-padangushthasana.hip.alignment",
+      "toe-stand-padangushthasana.spine.erect",
+      "toe-stand-padangushthasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 149,
     "aliases": [],
     "rules": [
       {
-        "id": "toe-stand-padangushthasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "toe-stand-padangushthasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "toe-stand-padangushthasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "toe-stand-padangushthasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "toe-stand-padangushthasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "toe-stand-padangushthasana.hip.level",
-        "name": "Hip Balance",
+        "id": "toe-stand-padangushthasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13528,69 +18541,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "tortoise-kurmasana.shoulder.level",
-      "tortoise-kurmasana.spine.vertical",
-      "tortoise-kurmasana.hip.level"
+      "tortoise-kurmasana.knee.straight",
+      "tortoise-kurmasana.hip.alignment",
+      "tortoise-kurmasana.spine.erect",
+      "tortoise-kurmasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 150,
     "aliases": [],
     "rules": [
       {
-        "id": "tortoise-kurmasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "tortoise-kurmasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "tortoise-kurmasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "tortoise-kurmasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "tortoise-kurmasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "tortoise-kurmasana.hip.level",
-        "name": "Hip Balance",
+        "id": "tortoise-kurmasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13630,8 +18670,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "tree-standing-leg-straight",
-      "tree-shoulders-level"
+      "tree-vrksasana.standing_knee.straight",
+      "tree-vrksasana.bent_knee.abduction",
+      "tree-vrksasana.foot_to_thigh",
+      "tree-vrksasana.spine.upright"
     ],
     "isPremium": false,
     "orderIndex": 151,
@@ -13642,8 +18684,27 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "tree-standing-leg-straight",
+        "id": "tree-vrksasana.standing_knee.straight",
         "name": "Standing Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Keep standing leg straight and firmly grounded.",
+        "isSafety": true
+      },
+      {
+        "id": "tree-vrksasana.bent_knee.abduction",
+        "name": "Bent Knee Open",
         "metric": "angle",
         "points": [
           23,
@@ -13651,39 +18712,60 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
-        "max": 180,
-        "weight": 2,
+        "min": 35,
+        "max": 75,
+        "target": 55,
+        "tolerance": 20,
+        "weight": 3,
         "severity": "high",
-        "feedback": "Keep your standing leg straight and firmly grounded."
+        "feedback": "Turn your bent knee outward to open the hip.",
+        "isSafety": false
       },
       {
-        "id": "tree-shoulders-level",
-        "name": "Shoulders Level",
-        "metric": "horizontal_alignment",
+        "id": "tree-vrksasana.foot_to_thigh",
+        "name": "Foot Grounded on Thigh",
+        "metric": "distance",
         "points": [
-          11,
-          12
+          27,
+          26
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.16,
+        "tolerance": 0.08,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Keep both shoulders level and open across the chest."
+        "feedback": "Place sole of foot firmly against inner thigh or calf."
+      },
+      {
+        "id": "tree-vrksasana.spine.upright",
+        "name": "Upright Spine",
+        "metric": "vertical_alignment",
+        "points": [
+          11,
+          23
+        ],
+        "comparison": "less_than",
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Lengthen your spine tall through the crown of your head.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
-      27
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "production",
-      "version": "1.0.0",
-      "sampleCount": 20,
+      "version": "1.2.0",
+      "sampleCount": 50,
       "expertReviewed": true
     }
   },
@@ -13722,9 +18804,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "triangle-trikonasana.shoulder.level",
-      "triangle-trikonasana.spine.vertical",
-      "triangle-trikonasana.hip.level"
+      "triangle-trikonasana.front_knee.straight",
+      "triangle-trikonasana.back_knee.straight",
+      "triangle-trikonasana.arms.vertical_line",
+      "triangle-trikonasana.hip.lateral_hinge"
     ],
     "isPremium": false,
     "orderIndex": 152,
@@ -13734,60 +18817,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "triangle-trikonasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          11,
-          12
-        ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
-      },
-      {
-        "id": "triangle-trikonasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "triangle-trikonasana.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
+        "id": "triangle-trikonasana.front_knee.straight",
+        "name": "Front Leg Straight",
+        "metric": "angle",
         "points": [
           23,
-          24
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Keep both legs straight and quad engaged.",
+        "isSafety": true
+      },
+      {
+        "id": "triangle-trikonasana.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Anchor firmly through straight back leg.",
+        "isSafety": false
+      },
+      {
+        "id": "triangle-trikonasana.arms.vertical_line",
+        "name": "Arms in Straight Line",
+        "metric": "angle",
+        "points": [
+          15,
+          11,
+          16
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Extend arms vertically in a single line.",
+        "isSafety": false
+      },
+      {
+        "id": "triangle-trikonasana.hip.lateral_hinge",
+        "name": "Side Lateral Hinge",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 95,
+        "max": 145,
+        "target": 120,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Hinge directly sideways over your front leg.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      15,
+      16,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13827,54 +18946,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "tripod-headstand-mukta-hasta-shirshasana-a.inversion.line",
-      "tripod-headstand-mukta-hasta-shirshasana-a.shoulder.base"
+      "tripod-headstand-mukta-hasta-shirshasana-a.body.vertical_line",
+      "tripod-headstand-mukta-hasta-shirshasana-a.core.stability",
+      "tripod-headstand-mukta-hasta-shirshasana-a.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 153,
     "aliases": [],
     "rules": [
       {
-        "id": "tripod-headstand-mukta-hasta-shirshasana-a.inversion.line",
-        "name": "Vertical Line",
-        "metric": "vertical_alignment",
+        "id": "tripod-headstand-mukta-hasta-shirshasana-a.body.vertical_line",
+        "name": "Inverted Vertical Line",
+        "metric": "angle",
         "points": [
+          11,
           23,
           27
         ],
-        "comparison": "less_than",
-        "target": 0.12,
-        "tolerance": 0.08,
-        "weight": 2,
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Stack hips and legs vertically with smooth control."
+        "feedback": "Align legs, hips, and shoulders in a single vertical line.",
+        "isSafety": true
       },
       {
-        "id": "tripod-headstand-mukta-hasta-shirshasana-a.shoulder.base",
-        "name": "Shoulder Base",
-        "metric": "horizontal_alignment",
+        "id": "tripod-headstand-mukta-hasta-shirshasana-a.core.stability",
+        "name": "Core Engagement",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Engage core to maintain stable vertical axis.",
+        "isSafety": false
+      },
+      {
+        "id": "tripod-headstand-mukta-hasta-shirshasana-a.hip.level",
+        "name": "Level Inverted Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "high",
-        "isSafety": true,
-        "feedback": "Maintain broad shoulder foundation without compressing neck."
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep pelvis level without tilting.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
+      25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -13914,69 +19058,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.shoulder.level",
-      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.spine.vertical",
-      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.hip.level"
+      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.knee.straight",
+      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.hip.alignment",
+      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.spine.erect",
+      "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 154,
     "aliases": [],
     "rules": [
       {
-        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.hip.level",
-        "name": "Hip Balance",
+        "id": "two-legs-behind-the-head-i-dvi-pada-shirshasana-a.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14016,69 +19187,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.shoulder.level",
-      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.spine.vertical",
-      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.hip.level"
+      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.knee.straight",
+      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.hip.alignment",
+      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.spine.erect",
+      "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 155,
     "aliases": [],
     "rules": [
       {
-        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.hip.level",
-        "name": "Hip Balance",
+        "id": "two-legs-behind-the-head-ii-dvi-pada-shirshasana-b.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14118,8 +19316,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "upward-facing-dog-urdhva-mukha-shvanasana.spine.backbend_arch",
       "upward-facing-dog-urdhva-mukha-shvanasana.chest.opening",
-      "upward-facing-dog-urdhva-mukha-shvanasana.arm.extension"
+      "upward-facing-dog-urdhva-mukha-shvanasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 156,
@@ -14130,47 +19329,70 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
+        "id": "upward-facing-dog-urdhva-mukha-shvanasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "upward-facing-dog-urdhva-mukha-shvanasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "upward-facing-dog-urdhva-mukha-shvanasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "upward-facing-dog-urdhva-mukha-shvanasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14210,55 +19432,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "upward-plank-purvottanasana.core.alignment",
-      "upward-plank-purvottanasana.shoulder.stability"
+      "upward-plank-purvottanasana.plank.line",
+      "upward-plank-purvottanasana.arms.stacked",
+      "upward-plank-purvottanasana.knees.straight",
+      "upward-plank-purvottanasana.hips.level"
     ],
     "isPremium": true,
     "orderIndex": 157,
     "aliases": [],
     "rules": [
       {
-        "id": "upward-plank-purvottanasana.core.alignment",
-        "name": "Torso Line",
+        "id": "upward-plank-purvottanasana.plank.line",
+        "name": "Straight Plank Line",
         "metric": "angle",
         "points": [
           11,
           23,
-          25
+          27
         ],
         "comparison": "between",
-        "min": 150,
+        "min": 163,
         "max": 180,
-        "tolerance": 15,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
         "severity": "high",
-        "feedback": "Engage abdominal muscles to maintain straight body line."
+        "feedback": "Keep body in one straight line without sagging hips.",
+        "isSafety": true
       },
       {
-        "id": "upward-plank-purvottanasana.shoulder.stability",
-        "name": "Shoulder Stability",
+        "id": "upward-plank-purvottanasana.arms.stacked",
+        "name": "Arms Perpendicular",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack shoulders directly over wrists.",
+        "isSafety": false
+      },
+      {
+        "id": "upward-plank-purvottanasana.knees.straight",
+        "name": "Legs Extended",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Engage quads and press heels back.",
+        "isSafety": false
+      },
+      {
+        "id": "upward-plank-purvottanasana.hips.level",
+        "name": "Level Hips",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Press through hands and keep shoulder girdle firm."
+        "feedback": "Prevent hips from twisting or dropping.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      25
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14298,9 +19565,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "warrior-i-virabhadrasana-a.shoulder.level",
-      "warrior-i-virabhadrasana-a.spine.vertical",
-      "warrior-i-virabhadrasana-a.hip.level"
+      "warrior-i-virabhadrasana-a.front_knee.angle",
+      "warrior-i-virabhadrasana-a.back_knee.straight",
+      "warrior-i-virabhadrasana-a.arms.overhead",
+      "warrior-i-virabhadrasana-a.torso.upright"
     ],
     "isPremium": true,
     "orderIndex": 158,
@@ -14311,23 +19579,65 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "warrior-i-virabhadrasana-a.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "warrior-i-virabhadrasana-a.front_knee.angle",
+        "name": "Front Knee 90°",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 75,
+        "max": 105,
+        "target": 90,
+        "tolerance": 15,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Bend your front knee directly over your ankle at 90°.",
+        "isSafety": true
       },
       {
-        "id": "warrior-i-virabhadrasana-a.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "warrior-i-virabhadrasana-a.back_knee.straight",
+        "name": "Back Leg Straight",
+        "metric": "angle",
+        "points": [
+          24,
+          26,
+          28
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep your back leg straight with your heel grounded.",
+        "isSafety": false
+      },
+      {
+        "id": "warrior-i-virabhadrasana-a.arms.overhead",
+        "name": "Arms Raised Overhead",
+        "metric": "angle",
+        "points": [
+          23,
+          11,
+          13
+        ],
+        "comparison": "between",
+        "min": 155,
+        "max": 180,
+        "target": 170,
+        "tolerance": 15,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Extend both arms straight overhead.",
+        "isSafety": false
+      },
+      {
+        "id": "warrior-i-virabhadrasana-a.torso.upright",
+        "name": "Upright Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
@@ -14336,35 +19646,25 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "warrior-i-virabhadrasana-a.hip.level",
-        "name": "Hip Balance",
-        "metric": "horizontal_alignment",
-        "points": [
-          23,
-          24
-        ],
-        "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "feedback": "Lift your torso tall out of your hips.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
+      13,
       23,
-      24
+      24,
+      25,
+      26,
+      27,
+      28
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14433,7 +19733,7 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "max": 180,
         "weight": 2,
         "severity": "high",
-        "feedback": "Extend your left arm straight out to the side \u2014 reach through your fingertips."
+        "feedback": "Extend your left arm straight out to the side — reach through your fingertips."
       },
       {
         "id": "warrior-ii-right-elbow-straight",
@@ -14449,7 +19749,7 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "max": 180,
         "weight": 2,
         "severity": "high",
-        "feedback": "Extend your right arm straight out to the side \u2014 reach through your fingertips."
+        "feedback": "Extend your right arm straight out to the side — reach through your fingertips."
       },
       {
         "id": "warrior-ii-left-knee-angle",
@@ -14468,7 +19768,7 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "warningTolerance": 25,
         "weight": 3,
         "severity": "high",
-        "feedback": "Bend your front knee toward 90 degrees \u2014 stack it directly over your ankle."
+        "feedback": "Bend your front knee toward 90 degrees — stack it directly over your ankle."
       },
       {
         "id": "warrior-ii-right-knee-straight",
@@ -14486,7 +19786,7 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "warningTolerance": 18,
         "weight": 2,
         "severity": "high",
-        "feedback": "Keep your back leg straight \u2014 press through the outer edge of your foot."
+        "feedback": "Keep your back leg straight — press through the outer edge of your foot."
       },
       {
         "id": "warrior-ii-shoulder-alignment",
@@ -14517,7 +19817,7 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "tolerance": 0.06,
         "weight": 1,
         "severity": "medium",
-        "feedback": "Keep hips open and stable \u2014 square them toward the side of the room."
+        "feedback": "Keep hips open and stable — square them toward the side of the room."
       }
     ],
     "requiredLandmarks": [
@@ -14536,8 +19836,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "validation": {
       "status": "production",
-      "version": "1.0.0",
-      "sampleCount": 20,
+      "version": "1.2.0",
+      "sampleCount": 50,
       "expertReviewed": true
     }
   },
@@ -14576,8 +19876,10 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "warrior-iii-virabhadrasana-c.standing.leg",
-      "warrior-iii-virabhadrasana-c.shoulder.alignment"
+      "warrior-iii-virabhadrasana-c.standing_knee.straight",
+      "warrior-iii-virabhadrasana-c.lifted_hip.extension",
+      "warrior-iii-virabhadrasana-c.torso.horizontal",
+      "warrior-iii-virabhadrasana-c.hip.level"
     ],
     "isPremium": true,
     "orderIndex": 160,
@@ -14588,8 +19890,8 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "rules": [
       {
-        "id": "warrior-iii-virabhadrasana-c.standing.leg",
-        "name": "Standing Leg Stability",
+        "id": "warrior-iii-virabhadrasana-c.standing_knee.straight",
+        "name": "Standing Leg Straight",
         "metric": "angle",
         "points": [
           23,
@@ -14597,39 +19899,80 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
           27
         ],
         "comparison": "between",
-        "min": 160,
+        "min": 163,
         "max": 180,
-        "tolerance": 10,
-        "weight": 2,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
         "severity": "high",
-        "feedback": "Firm your standing leg and root down through the foot."
+        "feedback": "Keep your standing leg strong with a straight knee.",
+        "isSafety": true
       },
       {
-        "id": "warrior-iii-virabhadrasana-c.shoulder.alignment",
-        "name": "Shoulder Level",
-        "metric": "horizontal_alignment",
+        "id": "warrior-iii-virabhadrasana-c.lifted_hip.extension",
+        "name": "Lifted Leg Parallel",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Extend your lifted leg straight back in line with your spine.",
+        "isSafety": false
+      },
+      {
+        "id": "warrior-iii-virabhadrasana-c.torso.horizontal",
+        "name": "Torso Horizontal",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Keep your torso and lifted leg parallel to the ground.",
+        "isSafety": false
+      },
+      {
+        "id": "warrior-iii-virabhadrasana-c.hip.level",
+        "name": "Level Hips",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders even and focus your gaze on a steady point."
+        "feedback": "Square your hips toward the floor.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12,
       23,
+      24,
       25,
       27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14669,69 +20012,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "waterfall-supta-dandasana.shoulder.level",
-      "waterfall-supta-dandasana.spine.vertical",
-      "waterfall-supta-dandasana.hip.level"
+      "waterfall-supta-dandasana.body.supine_line",
+      "waterfall-supta-dandasana.shoulders.grounded",
+      "waterfall-supta-dandasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 161,
     "aliases": [],
     "rules": [
       {
-        "id": "waterfall-supta-dandasana.shoulder.level",
-        "name": "Shoulder Balance",
+        "id": "waterfall-supta-dandasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "waterfall-supta-dandasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
       },
       {
-        "id": "waterfall-supta-dandasana.spine.vertical",
-        "name": "Spinal Alignment",
-        "metric": "vertical_alignment",
-        "points": [
-          11,
-          23
-        ],
-        "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
-      },
-      {
-        "id": "waterfall-supta-dandasana.hip.level",
-        "name": "Hip Balance",
+        "id": "waterfall-supta-dandasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
         "metric": "horizontal_alignment",
         "points": [
           23,
           24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14771,55 +20121,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wheel-urdhva-dhanurasana.chest.opening",
-      "wheel-urdhva-dhanurasana.arm.extension"
+      "wheel-urdhva-dhanurasana.bow.arc",
+      "wheel-urdhva-dhanurasana.knees.bent",
+      "wheel-urdhva-dhanurasana.chest.centered"
     ],
     "isPremium": true,
     "orderIndex": 162,
     "aliases": [],
     "rules": [
       {
-        "id": "wheel-urdhva-dhanurasana.chest.opening",
-        "name": "Chest Opening",
+        "id": "wheel-urdhva-dhanurasana.bow.arc",
+        "name": "Torso & Leg Bow Arc",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 100,
+        "max": 150,
+        "target": 125,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Kick feet into hands to lift chest and thighs off mat.",
+        "isSafety": true
+      },
+      {
+        "id": "wheel-urdhva-dhanurasana.knees.bent",
+        "name": "Knees Flexed",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 45,
+        "max": 95,
+        "target": 70,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Hold ankles firmly with knees hip-width apart.",
+        "isSafety": false
+      },
+      {
+        "id": "wheel-urdhva-dhanurasana.chest.centered",
+        "name": "Chest Balanced",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.09,
+        "tolerance": 0.07,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "wheel-urdhva-dhanurasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Lift evenly through both shoulders.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
-      13,
-      15
+      23,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14859,52 +20233,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wide-angle-seated-forward-bend-upavistha-konasana.spine.erect",
-      "wide-angle-seated-forward-bend-upavistha-konasana.shoulder.relaxation"
+      "wide-angle-seated-forward-bend-upavistha-konasana.hip.deep_fold",
+      "wide-angle-seated-forward-bend-upavistha-konasana.knee.straight",
+      "wide-angle-seated-forward-bend-upavistha-konasana.spine.elongation",
+      "wide-angle-seated-forward-bend-upavistha-konasana.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 163,
     "aliases": [],
     "rules": [
       {
-        "id": "wide-angle-seated-forward-bend-upavistha-konasana.spine.erect",
-        "name": "Spine Length",
-        "metric": "vertical_alignment",
+        "id": "wide-angle-seated-forward-bend-upavistha-konasana.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "wide-angle-seated-forward-bend-upavistha-konasana.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-angle-seated-forward-bend-upavistha-konasana.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
           11,
           23
         ],
-        "comparison": "less_than",
-        "target": 0.1,
-        "tolerance": 0.08,
-        "weight": 1,
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Sit tall with a straight, elongated spine."
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
       },
       {
-        "id": "wide-angle-seated-forward-bend-upavistha-konasana.shoulder.relaxation",
-        "name": "Relaxed Shoulders",
+        "id": "wide-angle-seated-forward-bend-upavistha-konasana.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
         "metric": "horizontal_alignment",
         "points": [
-          11,
-          12
+          23,
+          24
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax shoulders away from your ears."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12,
-      23
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -14944,35 +20366,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wide-legged-forward-bend-i-prasarita-padottanasana-a.body.symmetry"
+      "wide-legged-forward-bend-i-prasarita-padottanasana-a.hip.deep_fold",
+      "wide-legged-forward-bend-i-prasarita-padottanasana-a.knee.straight",
+      "wide-legged-forward-bend-i-prasarita-padottanasana-a.spine.elongation",
+      "wide-legged-forward-bend-i-prasarita-padottanasana-a.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 164,
     "aliases": [],
     "rules": [
       {
-        "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-i-prasarita-padottanasana-a.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -15012,35 +20499,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wide-legged-forward-bend-ii-prasarita-padottanasana-b.body.symmetry"
+      "wide-legged-forward-bend-ii-prasarita-padottanasana-b.hip.deep_fold",
+      "wide-legged-forward-bend-ii-prasarita-padottanasana-b.knee.straight",
+      "wide-legged-forward-bend-ii-prasarita-padottanasana-b.spine.elongation",
+      "wide-legged-forward-bend-ii-prasarita-padottanasana-b.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 165,
     "aliases": [],
     "rules": [
       {
-        "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-ii-prasarita-padottanasana-b.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -15080,35 +20632,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wide-legged-forward-bend-iii-prasarita-padottanasana-c.body.symmetry"
+      "wide-legged-forward-bend-iii-prasarita-padottanasana-c.hip.deep_fold",
+      "wide-legged-forward-bend-iii-prasarita-padottanasana-c.knee.straight",
+      "wide-legged-forward-bend-iii-prasarita-padottanasana-c.spine.elongation",
+      "wide-legged-forward-bend-iii-prasarita-padottanasana-c.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 166,
     "aliases": [],
     "rules": [
       {
-        "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-iii-prasarita-padottanasana-c.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -15148,35 +20765,100 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wide-legged-forward-bend-iv-prasarita-padottanasana-d.body.symmetry"
+      "wide-legged-forward-bend-iv-prasarita-padottanasana-d.hip.deep_fold",
+      "wide-legged-forward-bend-iv-prasarita-padottanasana-d.knee.straight",
+      "wide-legged-forward-bend-iv-prasarita-padottanasana-d.spine.elongation",
+      "wide-legged-forward-bend-iv-prasarita-padottanasana-d.pelvis.tilt"
     ],
     "isPremium": true,
     "orderIndex": 167,
     "aliases": [],
     "rules": [
       {
-        "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d.body.symmetry",
-        "name": "Symmetric Balance",
-        "metric": "horizontal_alignment",
+        "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d.hip.deep_fold",
+        "name": "Deep Hip Flexion",
+        "metric": "angle",
         "points": [
           11,
-          12
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 30,
+        "max": 80,
+        "target": 55,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Fold deeply from the hips rather than rounding the back.",
+        "isSafety": true
+      },
+      {
+        "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d.knee.straight",
+        "name": "Legs Straight",
+        "metric": "angle",
+        "points": [
+          23,
+          25,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Keep knees straight or with gentle microbend.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d.spine.elongation",
+        "name": "Elongated Spine",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 135,
+        "max": 180,
+        "target": 160,
+        "tolerance": 25,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Reach crown of head toward toes with open chest.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-legged-forward-bend-iv-prasarita-padottanasana-d.pelvis.tilt",
+        "name": "Pelvic Anterior Tilt",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
         ],
         "comparison": "less_than",
         "target": 0.08,
         "tolerance": 0.06,
-        "weight": 1,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Keep pelvis square and balanced.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
-      12
+      23,
+      24,
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -15216,69 +20898,96 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wide-splits-samakonasana.shoulder.level",
-      "wide-splits-samakonasana.spine.vertical",
-      "wide-splits-samakonasana.hip.level"
+      "wide-splits-samakonasana.knee.straight",
+      "wide-splits-samakonasana.hip.alignment",
+      "wide-splits-samakonasana.spine.erect",
+      "wide-splits-samakonasana.shoulders.level"
     ],
     "isPremium": true,
     "orderIndex": 168,
     "aliases": [],
     "rules": [
       {
-        "id": "wide-splits-samakonasana.shoulder.level",
-        "name": "Shoulder Balance",
-        "metric": "horizontal_alignment",
+        "id": "wide-splits-samakonasana.knee.straight",
+        "name": "Legs Straight and Strong",
+        "metric": "angle",
         "points": [
-          11,
-          12
+          23,
+          25,
+          27
         ],
-        "comparison": "less_than",
-        "target": 0.05,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Keep shoulders level and relaxed."
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Engage thighs and straighten knees without hyperextending.",
+        "isSafety": true
       },
       {
-        "id": "wide-splits-samakonasana.spine.vertical",
-        "name": "Spinal Alignment",
+        "id": "wide-splits-samakonasana.hip.alignment",
+        "name": "Hips Over Ankles",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 163,
+        "max": 180,
+        "target": 175,
+        "tolerance": 12,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Stack hips over ankles and shoulders over hips.",
+        "isSafety": false
+      },
+      {
+        "id": "wide-splits-samakonasana.spine.erect",
+        "name": "Vertical Spine",
         "metric": "vertical_alignment",
         "points": [
           11,
           23
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 3,
         "severity": "medium",
-        "feedback": "Lengthen your spine and maintain upright alignment."
+        "feedback": "Stand tall with elongated spine and open collarbones.",
+        "isSafety": false
       },
       {
-        "id": "wide-splits-samakonasana.hip.level",
-        "name": "Hip Balance",
+        "id": "wide-splits-samakonasana.shoulders.level",
+        "name": "Level Shoulders",
         "metric": "horizontal_alignment",
         "points": [
-          23,
-          24
+          11,
+          12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.04,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Distribute weight evenly across hips."
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "low",
+        "feedback": "Relax shoulders evenly away from ears.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
       12,
       23,
-      24
+      25,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -15318,55 +21027,79 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
+      "wild-thing-chamatkarasana.spine.backbend_arch",
       "wild-thing-chamatkarasana.chest.opening",
-      "wild-thing-chamatkarasana.arm.extension"
+      "wild-thing-chamatkarasana.shoulder.symmetry"
     ],
     "isPremium": true,
     "orderIndex": 169,
     "aliases": [],
     "rules": [
       {
+        "id": "wild-thing-chamatkarasana.spine.backbend_arch",
+        "name": "Spine Arch Extension",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          25
+        ],
+        "comparison": "between",
+        "min": 120,
+        "max": 170,
+        "target": 145,
+        "tolerance": 25,
+        "weight": 4,
+        "severity": "high",
+        "feedback": "Arch smoothly through the entire spine.",
+        "isSafety": true
+      },
+      {
         "id": "wild-thing-chamatkarasana.chest.opening",
-        "name": "Chest Opening",
+        "name": "Chest Expansion",
+        "metric": "angle",
+        "points": [
+          0,
+          11,
+          23
+        ],
+        "comparison": "between",
+        "min": 110,
+        "max": 160,
+        "target": 135,
+        "tolerance": 25,
+        "weight": 3,
+        "severity": "high",
+        "feedback": "Expand chest and broaden collarbones.",
+        "isSafety": false
+      },
+      {
+        "id": "wild-thing-chamatkarasana.shoulder.symmetry",
+        "name": "Symmetrical Shoulders",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.06,
-        "tolerance": 0.05,
-        "weight": 1,
+        "target": 0.08,
+        "tolerance": 0.06,
+        "weight": 2,
         "severity": "medium",
-        "feedback": "Broaden across your collarbones and open your chest."
-      },
-      {
-        "id": "wild-thing-chamatkarasana.arm.extension",
-        "name": "Arm Support",
-        "metric": "angle",
-        "points": [
-          11,
-          13,
-          15
-        ],
-        "comparison": "between",
-        "min": 140,
-        "max": 180,
-        "tolerance": 15,
-        "weight": 1,
-        "severity": "medium",
-        "feedback": "Engage arms to support gentle spinal arch."
+        "feedback": "Keep shoulders even and relaxed.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
+      0,
       11,
       12,
-      13,
-      15
+      23,
+      25
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
@@ -15406,35 +21139,76 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     ],
     "targetHoldSeconds": 5,
     "ruleIds": [
-      "wind-removing-pavanamuktasana.body.symmetry"
+      "wind-removing-pavanamuktasana.body.supine_line",
+      "wind-removing-pavanamuktasana.shoulders.grounded",
+      "wind-removing-pavanamuktasana.hips.grounded"
     ],
     "isPremium": true,
     "orderIndex": 170,
     "aliases": [],
     "rules": [
       {
-        "id": "wind-removing-pavanamuktasana.body.symmetry",
-        "name": "Symmetric Balance",
+        "id": "wind-removing-pavanamuktasana.body.supine_line",
+        "name": "Supine Alignment",
+        "metric": "angle",
+        "points": [
+          11,
+          23,
+          27
+        ],
+        "comparison": "between",
+        "min": 160,
+        "max": 180,
+        "target": 175,
+        "tolerance": 15,
+        "weight": 3,
+        "severity": "medium",
+        "feedback": "Rest fully flat and symmetrical on the floor.",
+        "isSafety": false
+      },
+      {
+        "id": "wind-removing-pavanamuktasana.shoulders.grounded",
+        "name": "Shoulders Relaxed & Grounded",
         "metric": "horizontal_alignment",
         "points": [
           11,
           12
         ],
         "comparison": "less_than",
-        "target": 0.08,
-        "tolerance": 0.06,
-        "weight": 1,
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
+        "severity": "medium",
+        "feedback": "Let shoulders melt into the earth.",
+        "isSafety": false
+      },
+      {
+        "id": "wind-removing-pavanamuktasana.hips.grounded",
+        "name": "Hips Grounded Evenly",
+        "metric": "horizontal_alignment",
+        "points": [
+          23,
+          24
+        ],
+        "comparison": "less_than",
+        "target": 0.07,
+        "tolerance": 0.05,
+        "weight": 2,
         "severity": "low",
-        "feedback": "Relax deeply and breathe steadily into the posture."
+        "feedback": "Release pelvis with balanced symmetry.",
+        "isSafety": false
       }
     ],
     "requiredLandmarks": [
       11,
-      12
+      12,
+      23,
+      24,
+      27
     ],
     "validation": {
       "status": "draft",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "sampleCount": 0,
       "expertReviewed": false
     }
