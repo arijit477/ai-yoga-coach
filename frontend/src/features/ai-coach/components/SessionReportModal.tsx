@@ -22,7 +22,7 @@ export function SessionReportModal({
       setIsLoading(true);
       
       try {
-        const response = await fetch("http://localhost:8000/api/ai-coach/chat/summary", {
+        const response = await fetch("http://localhost:8000/api/chat/summary", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
