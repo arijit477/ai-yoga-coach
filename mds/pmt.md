@@ -1,359 +1,261 @@
-PHASE 10A — FIX THE ROOT CAUSE FOUND BY THE 170-ASANA AUDIT
+We have completed the read-only cleanup audit.
 
-The complete audit has confirmed the root cause of the false-positive completion problem.
+DO NOT perform the entire cleanup plan at once.
 
-DO NOT create 170 separate algorithms.
+We will execute cleanup in controlled phases.
 
-DO NOT modify MediaPipe.
+IMPORTANT:
+Do not touch the active AI Yoga Coach architecture.
 
-DO NOT modify AccuracyCalculator.
+PROTECTED SYSTEMS — DO NOT DELETE OR REFACTOR:
 
-DO NOT modify the 5-second hold logic.
-
-DO NOT modify Phase 9 coaching.
-
-This phase is specifically to fix the completion-gate architecture.
+- AICoachPage.tsx
+- usePoseTracking.ts
+- usePoseEvaluation.ts
+- useCoachState.ts
+- useCoachSession.ts
+- AsanaRegistry.ts
+- allAsanasCatalog.ts
+- coachingProfilesCatalog.ts
+- AsanaCompletionGate.ts
+- AsanaLandmarkRequirements.ts
+- HoldTimer.tsx
+- PoseReviewModal.tsx
+- SessionReportModal.tsx
+- PoseLandmarkerService.ts
+- LandmarkSmoother.ts
+- CameraReadinessTracker.ts
+- PoseFeatureEngine.ts
+- PoseEvaluator.ts
+- TemporalPoseEvaluator.ts
+- RuleEvaluator.ts
+- AccuracyStabilizer.ts
+- PostureCheckAdapter.ts
+- CoachingEventEngine.ts
+- RealtimeVoiceAgent.ts
+- useRealtimeVoice.ts
+- Alice/Kevin avatar system
+- all 170/174 asana definitions
+- rules.json
+- MediaPipe model
+- Supabase integration required by the application
+- active backend realtime route
+- active backend chat route
+- active backend asana upload route
 
 ==================================================
-PROBLEM CONFIRMED BY AUDIT
+PHASE 1 — SAFE DEAD FILES ONLY
 ==================================================
+
+Delete ONLY files that the audit confirmed have:
+
+1. zero imports
+2. zero dynamic references
+3. zero runtime dependencies
+4. zero deployment dependencies
+
+Candidate files from the audit:
+
+- frontend/src/App.css
+- frontend/src/assets/hero.png
+- frontend/src/assets/react.svg
+- frontend/src/assets/vite.svg
+- frontend/src/pages/ExerciseSelectionPage.tsx
+- frontend/src/store/useCoachStore.ts
+- frontend/src/store/useSessionStore.ts
+- frontend/src/services/api.ts
+- frontend/src/data/coaches.ts
+- frontend/src/data/exercises.ts
+- frontend/src/types/coach.ts
+- frontend/src/types/exercise.ts
+- frontend/src/features/folderGuide.md
+
+Before deletion, perform one final repository-wide reference search.
+
+If ANY candidate has an unexpected reference:
+DO NOT DELETE IT.
+Move it to INVESTIGATE.
+
+==================================================
+PHASE 2 — LEGACY BACKEND
+==================================================
+
+Only after Phase 1 is verified and the project builds:
+
+Remove the confirmed-dead backend pose pipeline:
+
+- backend/app/api/routes/video_stream.py
+- backend/app/api/routes/temp.py
+- backend/app/services/pose_analysis/
+
+Also remove useBackendPoseTracking.ts if confirmed unused.
+
+Before deleting:
+
+Verify that no active frontend or backend route imports any of them.
+
+==================================================
+PHASE 3 — THREE.JS LEGACY SYSTEM
+==================================================
+
+Verify that the entire:
+
+frontend/src/features/ai-coach/3d/
+
+directory is unreachable from the production application.
+
+Also verify:
+
+- Avatar animation files
+- Three.js components
+- Three.js utilities
+
+Only then remove the 3D cluster.
+
+After removal, remove ONLY dependencies that become unused:
+
+- @react-three/fiber
+- @react-three/drei
+- three
+- @types/three
+
+Do not remove any avatar system required by Alice/Kevin.
+
+==================================================
+PHASE 4 — DO NOT DELETE DUPLICATE ANALYSIS FILES YET
+==================================================
+
+DO NOT delete these yet:
+
+- AsanaPoseEvaluator.ts
+- AccuracyCalculator.ts
+- PostureAnalyzer.ts
+- JointAngleExtractor.ts
+- PoseStabilityDetector.ts
+- ScoreSmoother.ts
+- useAsanaEvaluation.ts
+- useStableAccuracy.ts
+- useStablePoseEvaluation.ts
+- useStableScore.ts
+
+Instead create:
+
+docs/CANDIDATE_LEGACY_ANALYSIS.md
+
+For each file determine:
+
+- Is it imported?
+- Who imports it?
+- Does it contain unique logic?
+- Does current production code replace it?
+- Does any test depend on it?
+- Does it contain logic that could help fix current accuracy problems?
+- Can it safely be deleted?
+
+Mark each:
+
+SAFE TO DELETE
+or
+KEEP
+or
+INVESTIGATE
+
+Do NOT delete these during the first cleanup.
+
+==================================================
+PHASE 5 — FIX THE SESSION REPORT API MISMATCH
+==================================================
+
+Audit:
+
+SessionReportModal.tsx
+
+and:
+
+backend/app/api/routes/chat.py
 
 The audit found:
 
-- 170 active asanas
-- KNOWN_CRITICAL_RULES runtime matches: 0
-- 36 using auto-high-severity fallback
-- 129 using low-severity first-rule fallback
-- 5 with NO rules
-- 134/170 without strong pose-defining critical rules
-- 117 total potential false-positive risk in critical/high/medium-high tiers
+Frontend:
+ /api/ai-coach/chat/summary
 
-ROOT CAUSE:
+Backend:
+ /api/chat/summary
 
-KNOWN_CRITICAL_RULES uses short IDs such as:
+Verify the actual deployed route.
 
-cobra
-bhujangasana
-warrior-ii
-tadasana
-tree-pose
-lotus
+If the mismatch is confirmed, fix ONLY the endpoint path.
 
-while ALL_ASANAS_CATALOG uses compound IDs such as:
-
-cobra-bhujangasana
-warrior-ii-virabhadrasana-ii
-mountain-tadasana
-tree-vrksasana
-lotus-padmasana
-
-normalizeAsanaId() currently only removes file extensions/path information and does not resolve these aliases.
-
-Therefore the hand-authored critical rules are effectively DEAD at runtime.
+Do not redesign the session-report system.
 
 ==================================================
-STEP 1 — FIX ID RESOLUTION
+PHASE 6 — DEPENDENCY CLEANUP
 ==================================================
 
-Create a single canonical asana-ID resolution mechanism.
+Do NOT remove dependencies until the corresponding source code has been deleted.
 
-The system must correctly resolve catalog IDs to the corresponding completion profile / critical-rule configuration.
+After Phases 1–3:
 
-Examples:
+Run dependency analysis again.
 
-cobra-bhujangasana
-→ cobra / bhujangasana critical profile
-
-warrior-ii-virabhadrasana-ii
-→ warrior-ii critical profile
-
-mountain-tadasana
-→ tadasana critical profile
-
-tree-vrksasana
-→ tree-pose / vrksasana critical profile
-
-lotus-padmasana
-→ lotus / padmasana critical profile
-
-downward-dog-adho-mukha-svanasana
-→ downward-dog critical profile
-
-childs-pose-balasana
-→ childs-pose / balasana critical profile
-
-Do NOT solve this by randomly adding aliases throughout the codebase.
-
-Create ONE canonical resolver or alias map and make AsanaCompletionGate use it.
-
-After implementation, verify:
-
-KNOWN_CRITICAL_RULES runtime matches > 0.
-
-Print the exact matched count.
+Only remove packages with zero remaining imports/usages.
 
 ==================================================
-STEP 2 — VERIFY THE EXISTING CRITICAL RULES
+PHASE 7 — VERIFICATION
 ==================================================
 
-After fixing ID resolution, run the audit again.
+After every phase:
 
-For every matched asana report:
+Run:
 
-Asana
-Catalog ID
-Resolved critical profile
-Critical rule IDs
-Critical rule count
-Rules actually evaluated at runtime
+npm run typecheck
+npm run build
+npm test
+npm run validate:asanas
 
-IMPORTANT:
+Do not continue to the next phase if:
 
-Do not assume that resolving the ID means the rules are good.
+- TypeScript errors appear
+- build fails
+- tests fail
+- asana validation fails
 
-We need to confirm that the intended critical rules are ACTUALLY being evaluated.
-
-==================================================
-STEP 3 — REMOVE UNSAFE COMPLETION FALLBACK
-==================================================
-
-Current dangerous behavior:
-
-No pose-specific rules
-        ↓
-generic accuracy + confidence
-        ↓
-eligible
-        ↓
-5-second hold
-        ↓
-completion
-
-This must NOT happen for a strict AI Yoga Coach.
-
-If an asana has:
-
-requiresDetectionRefinement === true
-
-AND there are no reliable pose-defining critical rules,
-
-then:
-
-isEligible = false
-
-hold = 0
-
-completion = false
-
-popup = false
-
-voice completion = false
-
-The user may continue receiving normal coaching/guidance, but the system must NEVER claim the asana is completed without sufficient pose-specific evidence.
-
-FAIL CLOSED.
+Record the result after each phase.
 
 ==================================================
-STEP 4 — REMOVE THE "FIRST RULE" COMPLETION FALLBACK
+GIT SAFETY
 ==================================================
 
-The current fallback:
+Create a separate git commit after each phase.
 
-"No high-severity rules → use first rule"
+Commit 1:
+cleanup: remove confirmed dead frontend files
 
-is not acceptable for strict completion.
+Commit 2:
+cleanup: remove obsolete backend pose pipeline
 
-A generic first rule such as:
+Commit 3:
+cleanup: remove unused threejs pipeline
 
-horizontal_alignment
-vertical_alignment
-body symmetry
-should NOT be treated as proof that the user is performing a specific asana.
+Commit 4:
+fix: correct session report endpoint
 
-Change this behavior:
-
-If no meaningful pose-defining rule exists:
-
-→ requiresDetectionRefinement = true
-→ completion gate = NOT ELIGIBLE
-
-Do not invent a critical rule.
+Do NOT combine everything into one commit.
 
 ==================================================
-STEP 5 — KEEP THE 5-SECOND HOLD
+FINAL REQUIREMENT
 ==================================================
 
-Do NOT change the current 5-second continuous hold.
+After each phase, report:
 
-The hold should remain:
+1. Files deleted
+2. Files retained
+3. Dependencies removed
+4. Tests run
+5. Build result
+6. Asana validation result
+7. Any unexpected issue
 
-Valid pose gate
-+
-accuracy >= 75%
-+
-continuous validity
-+
-5000ms
-=
-completion
+DO NOT continue automatically if a verification step fails.
 
-But now the pose gate must actually contain valid pose-specific evidence.
-
-==================================================
-STEP 6 — COBRA REGRESSION
-==================================================
-
-Cobra is the primary production regression.
-
-Test:
-
-User selects Cobra.
-
-Scenario A:
-User sits upright.
-
-Expected:
-- Cobra critical rules fail
-- isEligible = false
-- hold = 0
-- no completion
-- no popup
-- no completion voice
-
-Scenario B:
-User moves randomly.
-
-Expected:
-- no completion
-
-Scenario C:
-User partially enters Cobra.
-
-Expected:
-- no completion
-
-Scenario D:
-User correctly performs Cobra.
-
-Expected:
-- critical Cobra rules pass
-- accuracy >= 75%
-- valid continuous hold begins
-- after 5 continuous seconds → completion
-
-==================================================
-STEP 7 — TEST OTHER KNOWN PROFILES
-==================================================
-
-At minimum test:
-
-Cobra
-Lotus
-Warrior II
-Mountain
-Tree
-Bridge
-Downward Dog
-Child's Pose
-
-For every one:
-
-Wrong configuration
-→ no completion
-
-Partial configuration
-→ no completion
-
-Correct configuration
-→ eligible
-
-Correct configuration + 5 seconds
-→ completion
-
-==================================================
-STEP 8 — RE-RUN THE 170-ASANA AUDIT
-==================================================
-
-After the above changes generate:
-
-TOTAL ACTIVE ASANAS
-KNOWN_CRITICAL_RULES MATCHED
-STRONG CRITICAL RULES
-REQUIRES DETECTION REFINEMENT
-FALLBACK-BASED
-NO RULES
-FALSE-POSITIVE RISK
-
-Also report:
-
-Before:
-KNOWN_CRITICAL_RULES = 0
-
-After:
-KNOWN_CRITICAL_RULES = ?
-
-==================================================
-STEP 9 — DO NOT PRETEND ALL 170 ARE FIXED
-==================================================
-
-This is extremely important.
-
-If only 20/170 currently have meaningful pose-specific rules, report:
-
-20 validated
-150 require detection refinement
-
-Do NOT mark all 170 as safe merely because they pass through the generic gate.
-
-The purpose of this phase is to make the completion system STRICT and HONEST.
-
-==================================================
-STEP 10 — TESTS
-==================================================
-
-Run all existing tests.
-
-Add regression tests for:
-
-1. Compound ID resolves to critical profile
-2. Cobra false positive rejected
-3. Wrong stance rejected
-4. Missing critical rules cannot complete
-5. Generic first-rule cannot establish completion
-6. requiresDetectionRefinement cannot complete
-7. Correct pose + 5 sec completes
-8. Asana switch resets hold
-9. Invalid pose resets hold
-10. No duplicate completion
-
-Then run:
-
-tsc -b
-
-vite build
-
-==================================================
-FINAL REPORT
-==================================================
-
-Return:
-
-1. Root cause
-2. Files changed
-3. Canonical ID resolution implemented
-4. Number of KNOWN_CRITICAL_RULES matched before/after
-5. Fallback completion removed/disabled
-6. Number of asanas now strongly validated
-7. Number requiring detection refinement
-8. Cobra manual/regression result
-9. Other representative asana results
-10. Full test count
-11. TypeScript result
-12. Vite result
-
-DO NOT proceed to authoring/refining all 170 pose-specific rules in this phase.
-
-First fix the architecture and make the completion gate strict and fail-closed.
-
-After this phase is complete, we will start the next phase:
-POSE-SPECIFIC RULE REFINEMENT FOR THE 170 ASANAS.
+The goal is SAFE cleanup, not aggressive deletion.
