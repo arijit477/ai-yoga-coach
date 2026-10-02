@@ -62,37 +62,37 @@ export interface AsanaCompletionGateResult {
  * Hand-authored, pose-defining critical completion rule IDs for foundational asanas.
  */
 export const KNOWN_CRITICAL_RULES: Record<string, string[]> = {
-  "adho-mukha-svanasana": ["downward-dog.spine.extension","downward-dog.hips.elevation"],
-  "balasana": ["balasana.hips.heels","balasana.torso.fold"],
-  "bhujangasana": ["bhujangasana.chest.lift","bhujangasana.elbows.tuck"],
-  "bitilasana": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "adho-mukha-svanasana": ["downward-dog.spine.extension", "downward-dog.hips.elevation"],
+  "balasana": ["balasana.hips.heels", "balasana.torso.fold"],
+  "bhujangasana": ["bhujangasana.chest.lift", "bhujangasana.elbows.tuck"],
+  "bitilasana": ["cow-bitilasana.body.symmetry"],
   "boat-navasana": ["navasana.torso.vshape"],
   "bow-dhanurasana": ["dhanurasana.bow.arc"],
-  "bridge": ["bridge.hips.lift","bridge.left_knee.angle"],
-  "bridge-pose": ["bridge.hips.lift","bridge.left_knee.angle"],
+  "bridge": ["bridge.hips.lift", "bridge.left_knee.angle"],
+  "bridge-pose": ["bridge.hips.lift", "bridge.left_knee.angle"],
   "camel-ustrasana": ["ustrasana.chest.lift"],
-  "cat": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
-  "cat-marjaryasana": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
-  "cat-pose": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
-  "chaturanga": ["chaturanga.elbows.90","chaturanga.body.line"],
-  "chaturanga-dandasana": ["chaturanga.elbows.90","chaturanga.body.line"],
-  "childs-pose": ["balasana.hips.heels","balasana.torso.fold"],
-  "cobra": ["bhujangasana.chest.lift","bhujangasana.elbows.tuck"],
-  "cobra-pose": ["bhujangasana.chest.lift","bhujangasana.elbows.tuck"],
+  "cat": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
+  "cat-marjaryasana": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
+  "cat-pose": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
+  "chaturanga": ["chaturanga.elbows.90", "chaturanga.body.line"],
+  "chaturanga-dandasana": ["chaturanga.elbows.90", "chaturanga.body.line"],
+  "childs-pose": ["balasana.hips.heels", "balasana.torso.fold"],
+  "cobra": ["bhujangasana.chest.lift", "bhujangasana.elbows.tuck"],
+  "cobra-pose": ["bhujangasana.chest.lift", "bhujangasana.elbows.tuck"],
   "corpse-pose": ["savasana-relaxation"],
   "corpse-savasana": ["savasana-relaxation"],
-  "cow": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
-  "cow-bitilasana": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
-  "cow-pose": ["cow-bitilasana.body.symmetry","cat-cow-shoulder-wrist"],
+  "cow": ["cow-bitilasana.body.symmetry"],
+  "cow-bitilasana": ["cow-bitilasana.body.symmetry"],
+  "cow-pose": ["cow-bitilasana.body.symmetry"],
   "dhanurasana": ["dhanurasana.bow.arc"],
-  "downward-dog": ["downward-dog.spine.extension","downward-dog.hips.elevation"],
+  "downward-dog": ["downward-dog.spine.extension", "downward-dog.hips.elevation"],
   "locust-salabhasana": ["salabhasana.leg.lift"],
-  "lotus": ["padmasana.spine.vertical","padmasana.hips.level"],
-  "lotus-pose": ["padmasana.spine.vertical","padmasana.hips.level"],
-  "marjaryasana": ["cat-marjaryasana.body.symmetry","cat-cow-shoulder-wrist"],
-  "mountain-pose": ["mountain.spine.vertical","mountain.shoulders.level"],
+  "lotus": ["padmasana.spine.vertical", "padmasana.hips.level"],
+  "lotus-pose": ["padmasana.spine.vertical", "padmasana.hips.level"],
+  "marjaryasana": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
+  "mountain-pose": ["mountain.spine.vertical", "mountain.shoulders.level"],
   "navasana": ["navasana.torso.vshape"],
-  "padmasana": ["padmasana.spine.vertical","padmasana.hips.level"],
+  "padmasana": ["padmasana.spine.vertical", "padmasana.hips.level"],
   "paschimottanasana": ["paschimottanasana.spine.extension"],
   "phalakasana": ["plank.body.line"],
   "plank": ["plank.body.line"],
@@ -100,14 +100,14 @@ export const KNOWN_CRITICAL_RULES: Record<string, string[]> = {
   "salabhasana": ["salabhasana.leg.lift"],
   "savasana": ["savasana-relaxation"],
   "seated-forward-bend-paschimottanasana": ["paschimottanasana.spine.extension"],
-  "setu-bandhasana": ["bridge.hips.lift","bridge.left_knee.angle"],
-  "tadasana": ["mountain.spine.vertical","mountain.shoulders.level"],
-  "tree-pose": ["tree.bent_knee.abduction","tree.standing_leg.straight"],
+  "setu-bandhasana": ["bridge.hips.lift", "bridge.left_knee.angle"],
+  "tadasana": ["mountain.spine.vertical", "mountain.shoulders.level"],
+  "tree-pose": ["tree.bent_knee.abduction", "tree.standing_leg.straight"],
   "triangle": ["trikonasana.knee.straight"],
   "triangle-trikonasana": ["trikonasana.knee.straight"],
   "trikonasana": ["trikonasana.knee.straight"],
   "ustrasana": ["ustrasana.chest.lift"],
-  "vrksasana": ["tree.bent_knee.abduction","tree.standing_leg.straight"],
+  "vrksasana": ["tree.bent_knee.abduction", "tree.standing_leg.straight"],
   "warrior_ii": ["warrior_ii.front_knee.angle"],
   "warrior-i": ["warrior-i-front-knee-angle"],
   "warrior-i-virabhadrasana-i": ["warrior-i-front-knee-angle"],
@@ -268,45 +268,105 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
   const ruleMap = new Map(ruleEvaluations.map((r) => [r.ruleId, r]));
 
   let criticalPassedCount = 0;
+  let criticalEvaluatedCount = 0;
+
   const failedCritical: string[] = [];
+  const missingCritical: string[] = [];
+
 
   for (const critId of requirements.criticalRuleIds) {
     let evalItem = ruleMap.get(critId);
+
+    // Support minor differences in rule ID formatting.
     if (!evalItem) {
-      const critClean = critId.toLowerCase().replace(/[-_.]/g, "");
+      const critClean = critId
+        .toLowerCase()
+        .replace(/[-_.]/g, "");
+
       for (const [rId, rItem] of ruleMap.entries()) {
-        const rClean = rId.toLowerCase().replace(/[-_.]/g, "");
-        if (rClean === critClean || rClean.includes(critClean) || critClean.includes(rClean)) {
+        const rClean = rId
+          .toLowerCase()
+          .replace(/[-_.]/g, "");
+
+        if (
+          rClean === critClean ||
+          rClean.includes(critClean) ||
+          critClean.includes(rClean)
+        ) {
           evalItem = rItem;
           break;
         }
       }
     }
 
-    if (evalItem) {
-      if (evalItem.status === "fail" || evalItem.score < 60) {
-        failedCritical.push(critId);
-      } else if (evalItem.status === "pass" || evalItem.status === "warning") {
-        criticalPassedCount++;
-      }
+    // A required critical rule was not evaluated.
+    // Completion MUST fail closed.
+    if (!evalItem) {
+      missingCritical.push(critId);
+      continue;
     }
+
+    criticalEvaluatedCount++;
+
+    // Explicit failure always blocks completion.
+    if (evalItem.status === "fail" || evalItem.score < 60) {
+      failedCritical.push(critId);
+      continue;
+    }
+
+    // A warning is acceptable only when its score is still above
+    // the minimum critical-rule score.
+    if (
+      evalItem.status === "pass" ||
+      (evalItem.status === "warning" &&
+        evalItem.score >= requirements.minimumCriticalScore)
+    ) {
+      criticalPassedCount++;
+      continue;
+    }
+
+    // Unknown / unavailable state must fail closed.
+    failedCritical.push(`${critId}:not_evaluable`);
   }
 
-  // If critical rules were required but none matched in evaluation
-  if (requirements.criticalRuleIds.length > 0 && criticalPassedCount === 0 && failedCritical.length === 0) {
-    failedCritical.push(...requirements.criticalRuleIds);
-  }
-
-  baseResult.criticalRulesEvaluated = requirements.criticalRuleIds.length;
+  baseResult.criticalRulesEvaluated = criticalEvaluatedCount;
   baseResult.criticalRulesPassed = criticalPassedCount;
-  baseResult.failedCriticalRuleIds = failedCritical;
-  baseResult.criticalRulesValid = failedCritical.length === 0 && (requirements.criticalRuleIds.length === 0 || criticalPassedCount > 0);
 
-  if (!baseResult.criticalRulesValid && requirements.requireAllCriticalRules) {
-    baseResult.reason = `Critical rule failure: [${failedCritical.join(", ")}] not satisfied`;
+  baseResult.failedCriticalRuleIds = [
+    ...failedCritical,
+    ...missingCritical,
+  ];
+
+  // Every required critical rule must:
+  // 1. Exist in the evaluation
+  // 2. Be evaluable
+  // 3. Pass its minimum requirement
+  const allCriticalRulesPassed =
+    requirements.criticalRuleIds.length > 0 &&
+    criticalEvaluatedCount === requirements.criticalRuleIds.length &&
+    criticalPassedCount === requirements.criticalRuleIds.length &&
+    failedCritical.length === 0 &&
+    missingCritical.length === 0;
+
+  baseResult.criticalRulesValid = allCriticalRulesPassed;
+
+  if (
+    requirements.requireAllCriticalRules &&
+    !baseResult.criticalRulesValid
+  ) {
+    const problems = [
+      ...failedCritical.map((id) => `${id} failed`),
+      ...missingCritical.map((id) => `${id} missing`),
+    ];
+
+    baseResult.reason =
+      `Critical rule failure: ${problems.length > 0
+        ? problems.join(", ")
+        : "not all critical rules passed"
+      }`;
+
     return baseResult;
   }
-
   // 6. Pose Identity Validation (Phase 1 & Phase 1.5 single source of truth)
   // Hold timer & completion MUST NEVER start unless pose identity is confirmed (isMatch === true).
   const identityResult: PoseIdentityResult =
@@ -314,7 +374,10 @@ export function evaluateCompletionGate(options: EvaluateCompletionGateOptions): 
       ? evaluation.identity
       : validatePoseIdentity(asanaId, { landmarks });
 
-  baseResult.identityValid = identityResult.isMatch;
+  baseResult.identityValid =
+    identityResult.isMatch &&
+    Number.isFinite(identityResult.confidence) &&
+    identityResult.confidence >= 0.4;
   baseResult.identityResult = identityResult;
 
   if (!identityResult.isMatch) {
