@@ -55,6 +55,13 @@ export class CoachingRhythmManager {
     event: CoachingEvent,
     now = Date.now()
   ): CoachingRhythmDecision {
+    return this.evaluate(event, now);
+  }
+
+  public evaluate(
+    event: CoachingEvent,
+    now = Date.now()
+  ): CoachingRhythmDecision {
     const cueType = this.getCueType(event);
 
     // Safety feedback should always have the highest priority.

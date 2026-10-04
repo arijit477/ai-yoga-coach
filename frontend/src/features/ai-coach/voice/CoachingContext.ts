@@ -1,43 +1,35 @@
-import type { CoachingEvent } from "./voice.types";
+export type CoachingState =
+  | "STARTING"
+  | "MOVING_INTO_POSE"
+  | "CORRECTING"
+  | "IMPROVING"
+  | "CORRECT"
+  | "HOLDING"
+  | "COMPLETING"
+  | "COMPLETED";
+
+export interface CoachingIssue {
+  id: string;
+  bodyPart: string;
+  issue: string;
+  correction: string;
+  severity: "low" | "medium" | "high";
+  confidence?: number;
+}
 
 export interface CoachingContext {
-  asana: {
-    id: string;
-    name: string;
-  };
+  asanaName: string;
+  state: CoachingState;
 
-  posture: {
-    score?: number;
-    status?: string;
-    trend?: "improving" | "worsening" | "stable";
-  };
+  activeIssues: CoachingIssue[];
 
-  primaryIssue: {
-    ruleId: string;
-    bodyRegion?: string;
-    joint?: string;
-    severity: string;
-    currentValue?: number;
-    targetMin?: number;
-    targetMax?: number;
-    feedback?: string;
-  } | null;
+  correctedIssues: string[];
 
-  session: {
-    state?: string;
-    isHolding: boolean;
-    holdTime: number;
-    isCompleted: boolean;
-    isActive: boolean;
-  };
+  lastCorrectionAt?: number;
+  lastIssueId?: string;
 
-  camera: {
-    state?: string;
-    hasPose: boolean;
-    userVisible: boolean;
-  };
+  holdSeconds?: number;
+  remainingHoldSeconds?: number;
 
-  coachingHistory: {
-    recentEvents: CoachingEvent[];
-  };
+  score?: number;
 }

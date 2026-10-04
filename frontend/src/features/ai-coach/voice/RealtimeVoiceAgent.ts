@@ -1,13 +1,14 @@
 import type { CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 import { getAsanaStartingInstruction } from "../services/AsanaStartingInstructionService";
 import type { FeedbackOutput } from "../analysis/FeedbackEngine";
-import { buildCoachingContext } from "./CoachingContextBuilder";
-import type { CoachingContext } from "./CoachingContext";
-import {
-  CoachingRhythmManager,
-  type CoachingRhythmDecision,
-} from "./CoachingRhythmManager";
+import { CoachingRhythmManager } from "./CoachingRhythmManager";
 import { buildRealtimeCoachingContext } from "./CoachingContextFormatter";
+import { VoiceCoachingOrchestrator } from "./VoiceCoachingOrchestrator";
+import type { CoachingIntent } from "./coachingIntent.types";
+import { getCoachingIntentInstruction } from "./CoachingIntentInstructions";
+import { CoachingContextManager } from "./CoachingContextManager";
+import { CoachingPromptBuilder } from "./CoachingPromptBuilder";
+import type { CoachingContext } from "./CoachingContext";
 
 export interface SessionContextData {
   coach: string;
@@ -64,12 +65,14 @@ export class RealtimeVoiceAgent {
   private isConnecting: boolean = false;
   private currentSessionContext: SessionContextData | null = null;
 
-  // Phase 3: controls when coaching events should become voice output
+  // Phase 3 & 3.5: controls when coaching events should become voice output
+  private readonly voiceCoachingOrchestrator = new VoiceCoachingOrchestrator();
   private coachingRhythm = new CoachingRhythmManager();
+  private readonly coachingContextManager = new CoachingContextManager();
 
   // Safe response orchestration state
   private hasActiveServerResponse: boolean = false;
-  private pendingSpeechText: string | null = null;
+  private pendingSpeech: { text: string; intent?: CoachingIntent } | null = null;
   private isCancelling: boolean = false;
 
   // Web Audio API pipeline for lipsync and volume control
@@ -209,7 +212,7 @@ export class RealtimeVoiceAgent {
           const desc = asana.description ? ` ${asana.description}` : '';
           const instruction = getAsanaStartingInstruction(asana.id);
 
-          this.speak(`Let's begin ${asana.name}.${desc} ${instruction}`);
+          this.speak(`Let's begin ${asana.name}.${desc} ${instruction}`, "GUIDE_ENTRY");
         } else if (this.currentSessionContext?.isSessionActive) {
           this.speakGreeting();
         }
@@ -284,10 +287,10 @@ export class RealtimeVoiceAgent {
         this.isCancelling = false;
 
         // If a new coaching prompt was queued while previous speech was finishing/cancelling, trigger it now
-        if (this.pendingSpeechText) {
-          const nextText = this.pendingSpeechText;
-          this.pendingSpeechText = null;
-          this.sendResponseCreate(nextText);
+        if (this.pendingSpeech) {
+          const next = this.pendingSpeech;
+          this.pendingSpeech = null;
+          this.sendResponseCreate(next.text, next.intent);
         }
       }
 
@@ -312,10 +315,10 @@ export class RealtimeVoiceAgent {
           // Benign race: response finished just before cancel signal arrived
           this.hasActiveServerResponse = false;
           this.isCancelling = false;
-          if (this.pendingSpeechText) {
-            const nextText = this.pendingSpeechText;
-            this.pendingSpeechText = null;
-            this.sendResponseCreate(nextText);
+          if (this.pendingSpeech) {
+            const next = this.pendingSpeech;
+            this.pendingSpeech = null;
+            this.sendResponseCreate(next.text, next.intent);
           }
           return;
         }
@@ -339,9 +342,9 @@ export class RealtimeVoiceAgent {
   }
 
   /**
-   * Helper to dispatch response.create with rich coach prosody instructions.
+   * Helper to dispatch response.create with rich coach prosody instructions and coaching intent.
    */
-  private sendResponseCreate(text: string): void {
+  private sendResponseCreate(text: string, intent?: CoachingIntent): void {
     if (!this.dc || this.dc.readyState !== "open" || this.isMuted) {
       return;
     }
@@ -368,10 +371,20 @@ You are Coach Kevin, a grounded, confident, motivating British yoga instructor.
 Your coaching style is energetic, focused, encouraging and athletic.
 `;
 
+    const coachingIntent: CoachingIntent = intent || "GUIDE_ENTRY";
+    const intentInstruction = getCoachingIntentInstruction(coachingIntent);
+
+    const structuredContext = this.coachingContextManager.getContext();
+    const structuredCoachingPrompt = structuredContext
+      ? CoachingPromptBuilder.build(structuredContext)
+      : "";
+
     const instructions = `
 You are Coach ${coachName}, the user's real-time AI yoga coach.
 
 ${personality}
+
+${structuredCoachingPrompt}
 
 You are operating in a UNIDIRECTIONAL coaching experience.
 
@@ -404,6 +417,11 @@ COACHING PRINCIPLES:
 10. If nothing meaningful has changed, prefer silence over unnecessary chatter.
 11. Never overwhelm the user with multiple instructions.
 12. Keep spoken responses concise and natural.
+
+COACHING INTENT:
+${coachingIntent}
+
+${intentInstruction}
 
 ENGAGEMENT:
 
@@ -438,7 +456,7 @@ CURRENT EVENT:
 
 ${text}
 
-Use the CURRENT EVENT together with the CURRENT COACHING CONTEXT.
+Use the CURRENT EVENT together with the CURRENT COACHING CONTEXT and COACHING INTENT.
 
 The event is trusted input from the existing pose-analysis system.
 Do not reinterpret the biomechanics beyond the information supplied.
@@ -479,13 +497,13 @@ The response should normally be one or two short sentences.
    * Spoken guidance trigger for approved coaching events.
    * Programmatically requests OpenAI to synthesize and stream speech.
    */
-  public speak(text: string): void {
+  public speak(text: string, intent?: CoachingIntent): void {
     if (!text || this.isMuted) return;
 
     if (this.dc && this.dc.readyState === "open") {
       if (this.hasActiveServerResponse) {
         // Queue latest text and cancel in-flight response safely
-        this.pendingSpeechText = text;
+        this.pendingSpeech = { text, intent };
         if (!this.isCancelling) {
           this.isCancelling = true;
           try {
@@ -496,8 +514,8 @@ The response should normally be one or two short sentences.
           }
         }
       } else {
-        this.pendingSpeechText = null;
-        this.sendResponseCreate(text);
+        this.pendingSpeech = null;
+        this.sendResponseCreate(text, intent);
       }
 
       this.onTranscript?.({
@@ -512,14 +530,59 @@ The response should normally be one or two short sentences.
   }
 
   /**
+   * Phase 4B: Initializes structured coaching context for an asana.
+   */
+  public startCoachingContext(asanaName: string): void {
+    this.coachingContextManager.startPose(asanaName);
+  }
+
+  /**
+   * Phase 4B: Updates the structured coaching context.
+   */
+  public updateCoachingContext(context: CoachingContext): void {
+    this.coachingContextManager.setState(context.state);
+
+    this.coachingContextManager.setIssues(context.activeIssues);
+
+    context.correctedIssues.forEach((issueId) => {
+      this.coachingContextManager.markIssueCorrected(issueId);
+    });
+
+    if (context.holdSeconds !== undefined) {
+      this.coachingContextManager.updateHold(
+        context.holdSeconds,
+        context.remainingHoldSeconds
+      );
+    }
+
+    if (context.score !== undefined) {
+      this.coachingContextManager.setScore(context.score);
+    }
+  }
+
+  /**
+   * Phase 4B: Resets the structured coaching context.
+   */
+  public resetCoachingContext(): void {
+    this.coachingContextManager.reset();
+  }
+
+  public getCoachingContextManager(): CoachingContextManager {
+    return this.coachingContextManager;
+  }
+
+  /**
    * Triggers the pose entry cue when an asana starts.
    */
   public triggerPoseStart(asanaId: string, asanaName: string, _asanaDescription?: string): void {
+    this.voiceCoachingOrchestrator.reset();
+    this.resetCoachingContext();
+    this.startCoachingContext(asanaName);
     const instruction = getAsanaStartingInstruction(asanaId);
     const message = `Let's begin ${asanaName}. ${instruction}`;
 
     if (this.dc && this.dc.readyState === "open") {
-      this.speak(message);
+      this.speak(message, "GUIDE_ENTRY");
     } else {
       this.pendingPoseStart = { id: asanaId, name: asanaName, description: instruction };
     }
@@ -542,7 +605,7 @@ The response should normally be one or two short sentences.
         const instruction = ctx.asanaId ? getAsanaStartingInstruction(ctx.asanaId) : `Settle into your foundation and take a deep breath.`;
         greeting = `Perfect. ${instruction}`;
       }
-      this.speak(greeting);
+      this.speak(greeting, "GUIDE_ENTRY");
     }
   }
 
@@ -554,7 +617,7 @@ The response should normally be one or two short sentences.
 
     if (this.dc && this.dc.readyState === "open") {
       if (this.hasActiveServerResponse) {
-        this.pendingSpeechText = feedback.message;
+        this.pendingSpeech = { text: feedback.message, intent: "CORRECT" };
         if (!this.isCancelling) {
           this.isCancelling = true;
           try {
@@ -565,7 +628,7 @@ The response should normally be one or two short sentences.
           }
         }
       } else {
-        this.pendingSpeechText = null;
+        this.pendingSpeech = null;
         this.sendFeedbackResponse(feedback);
       }
 
@@ -615,24 +678,79 @@ The response should normally be one or two short sentences.
   /**
    * Dispatches a structured coaching event approved by CoachDecisionEngine.
    *
-   * Phase 3:
-   * CoachingRhythmManager decides whether the event should be spoken now.
+   * Phase 3.5, 4A & 4B:
+   * VoiceCoachingOrchestrator arbitrates whether the event should be spoken now
+   * and maps the coaching intent.
+   * Updates structured CoachingContextManager context.
    * It does NOT modify pose detection, scoring, or event generation.
    */
   public sendCoachingEvent(event: CoachingEvent): void {
     if (this.isMuted) return;
 
-    const decision: CoachingRhythmDecision =
-      this.coachingRhythm.shouldSpeak(event);
+    const ruleId = event.ruleId || event.primaryIssue?.ruleId || (event as any).data?.ruleId;
+    const joint = event.joint || event.primaryIssue?.joint || event.primaryIssue?.bodyRegion || (event as any).data?.joint || (event as any).data?.bodyRegion || "Posture";
+    const feedback = event.feedback || event.primaryIssue?.feedback || (event as any).data?.feedback || "Alignment needs correction";
+    const rawSeverity = event.severity || event.primaryIssue?.severity || (event as any).data?.severity || "medium";
+    const severity: "low" | "medium" | "high" = rawSeverity === "high" || rawSeverity === "low" ? rawSeverity : "medium";
+    const score = event.score ?? (event as any).data?.score;
+    const holdSec = (event as any).holdTime ?? (event as any).data?.holdTime ?? 0;
+    const targetHold = (event as any).targetHoldTime ?? (event as any).data?.targetHoldTime;
+    const remainingSec = targetHold !== undefined ? Math.max(0, targetHold - holdSec) : undefined;
 
-    if (!decision.shouldSpeak) {
-      console.debug(
-        "[AI COACH] Coaching event suppressed by rhythm:",
-        event.type,
-        decision.reason
-      );
+    // Phase 4B: update structured coaching context based on the incoming vision event
+    if (event.type === "pose_started") {
+      this.coachingContextManager.setState("STARTING");
+    } else if (event.type === "pose_correction") {
+      this.coachingContextManager.setState("CORRECTING");
+      if (ruleId) {
+        this.coachingContextManager.setIssues([
+          {
+            id: ruleId,
+            bodyPart: joint,
+            issue: feedback,
+            correction: feedback,
+            severity,
+          },
+        ]);
+      }
+    } else if (event.type === "issue_improving") {
+      this.coachingContextManager.setState("IMPROVING");
+    } else if (event.type === "issue_resolved") {
+      if (ruleId) {
+        this.coachingContextManager.markIssueCorrected(ruleId);
+      }
+      this.coachingContextManager.setState("CORRECT");
+    } else if (event.type === "good_form") {
+      this.coachingContextManager.setState("CORRECT");
+    } else if (event.type === "pose_held" || event.type === "hold_countdown") {
+      this.coachingContextManager.updateHold(holdSec, remainingSec);
+    } else if (event.type === "pose_completed") {
+      this.coachingContextManager.setState("COMPLETING");
+    }
+
+    if (score !== undefined) {
+      this.coachingContextManager.setScore(score);
+    }
+
+    const voiceDecision =
+      this.voiceCoachingOrchestrator.evaluate(event);
+
+    if (!voiceDecision.shouldSpeak) {
+      console.log(`[AI COACH][VOICE]`, {
+        type: event.type,
+        intent: voiceDecision.intent,
+        action: "suppressed",
+        reason: voiceDecision.reason,
+      });
       return;
     }
+
+    console.log(`[AI COACH][VOICE]`, {
+      type: event.type,
+      intent: voiceDecision.intent,
+      action: "send",
+      cueType: voiceDecision.cueType,
+    });
 
     let spokenText = event.feedback ?? "";
 
@@ -707,12 +825,16 @@ The response should normally be one or two short sentences.
     }
 
     // Mark the event only when we actually intend to speak it.
-    this.coachingRhythm.markSpoken(
+    this.voiceCoachingOrchestrator.getRhythmManager().markSpoken(
       event,
-      decision.cueType
+      voiceDecision.cueType
     );
 
-    this.speak(spokenText);
+    this.speak(spokenText, voiceDecision.intent);
+
+    if (event.type === "pose_completed") {
+      this.coachingContextManager.setState("COMPLETED");
+    }
   }
 
   /**
@@ -809,9 +931,11 @@ The response should normally be one or two short sentences.
   public disconnect(): void {
     this.isSpeaking = false;
     this.isConnecting = false;
-    this.pendingSpeechText = null;
+    this.pendingSpeech = null;
     this.isCancelling = false;
+    this.voiceCoachingOrchestrator.reset();
     this.coachingRhythm.reset();
+    this.coachingContextManager.reset();
 
     // Cancel in-flight response if active
     if (this.dc && this.dc.readyState === "open" && this.hasActiveServerResponse) {

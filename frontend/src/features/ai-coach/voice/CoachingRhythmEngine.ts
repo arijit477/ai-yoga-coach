@@ -46,7 +46,7 @@ export function evaluateCoachingRhythm({
     };
   }
 
-  if (type === "completion") {
+  if (type === "pose_completed") {
     return {
       shouldSpeak: now - lastSpokenAt >= COMPLETION_COOLDOWN_MS,
       reason: "completion",
@@ -54,7 +54,7 @@ export function evaluateCoachingRhythm({
     };
   }
 
-  if (type === "correction") {
+  if (type === "pose_correction") {
     return {
       shouldSpeak: now - lastSpokenAt >= DEFAULT_COOLDOWN_MS,
       reason: "correction",
@@ -62,7 +62,7 @@ export function evaluateCoachingRhythm({
     };
   }
 
-  if (type === "correction_resolved") {
+  if (type === "issue_resolved" || type === "issue_improving") {
     return {
       shouldSpeak: now - lastSpokenAt >= DEFAULT_COOLDOWN_MS,
       reason: "resolved",
@@ -70,7 +70,7 @@ export function evaluateCoachingRhythm({
     };
   }
 
-  if (type === "encouragement") {
+  if (type === "good_form" || type === "pose_held") {
     return {
       shouldSpeak: now - lastSpokenAt >= DEFAULT_COOLDOWN_MS,
       reason: "encouragement",

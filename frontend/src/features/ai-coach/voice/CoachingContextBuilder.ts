@@ -1,55 +1,40 @@
 import type { SessionContextData } from "./RealtimeVoiceAgent";
-import type { CoachingContext } from "./CoachingContext";
+import type { CoachingContext, CoachingIssue, CoachingState } from "./CoachingContext";
 
 export function buildCoachingContext(
   session: SessionContextData
 ): CoachingContext {
+  const activeIssues: CoachingIssue[] = session.primaryIssue
+    ? [
+        {
+          id: session.primaryIssue.ruleId,
+          bodyPart: session.primaryIssue.joint || "body",
+          issue: session.primaryIssue.feedback || "Alignment needs adjustment",
+          correction: session.primaryIssue.feedback || "Adjust your position",
+          severity: (session.primaryIssue.severity as "low" | "medium" | "high") || "medium",
+        },
+      ]
+    : [];
+
+  let state: CoachingState = "MOVING_INTO_POSE";
+  if (session.isCompleted) {
+    state = "COMPLETED";
+  } else if (session.isHolding) {
+    state = "HOLDING";
+  } else if (session.scoreTrend === "improving") {
+    state = "IMPROVING";
+  } else if (activeIssues.length > 0) {
+    state = "CORRECTING";
+  } else if (session.score && session.score >= 80) {
+    state = "CORRECT";
+  }
+
   return {
-    asana: {
-      id: session.asanaId,
-      name: session.asanaName,
-    },
-
-    posture: {
-      score: session.score,
-      status: session.coachState,
-      trend: session.scoreTrend,
-    },
-
-    primaryIssue: session.primaryIssue
-      ? {
-          ruleId: session.primaryIssue.ruleId,
-          joint: session.primaryIssue.joint,
-          severity: session.primaryIssue.severity,
-          currentValue:
-            session.primaryIssue.currentValue ??
-            session.primaryIssue.currentAngle,
-          targetMin:
-            session.primaryIssue.targetMin ??
-            session.primaryIssue.min,
-          targetMax:
-            session.primaryIssue.targetMax ??
-            session.primaryIssue.max,
-          feedback: session.primaryIssue.feedback,
-        }
-      : null,
-
-    session: {
-      state: session.sessionState,
-      isHolding: session.isHolding ?? false,
-      holdTime: session.holdTime ?? 0,
-      isCompleted: session.isCompleted ?? false,
-      isActive: session.isSessionActive ?? false,
-    },
-
-    camera: {
-      state: session.cameraState,
-      hasPose: session.hasPose ?? false,
-      userVisible: session.userVisible ?? false,
-    },
-
-    coachingHistory: {
-      recentEvents: session.recentEvents ?? [],
-    },
+    asanaName: session.asanaName || "Yoga Pose",
+    state,
+    activeIssues,
+    correctedIssues: [],
+    holdSeconds: session.holdTime ?? 0,
+    score: session.score,
   };
 }

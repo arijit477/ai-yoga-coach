@@ -1,841 +1,470 @@
-# PHASE 4 — REAL-TIME POSE VALIDATION, HOLD STABILITY & HUMAN-LIKE COACHING FLOW
+PHASE 4B — Context-Aware Real-Time Coaching
+4B.1 — Create CoachingContext.ts
+Create:
+frontend/src/features/ai-coach/voice/CoachingContext.ts
 
-## IMPORTANT CONTEXT
+export type CoachingState =
+  | "STARTING"
+  | "MOVING_INTO_POSE"
+  | "CORRECTING"
+  | "IMPROVING"
+  | "CORRECT"
+  | "HOLDING"
+  | "COMPLETING"
+  | "COMPLETED";
 
-The project has already implemented:
+export interface CoachingIssue {
+  id: string;
+  bodyPart: string;
+  issue: string;
+  correction: string;
+  severity: "low" | "medium" | "high";
+  confidence?: number;
+}
 
-Phase 1
-- Pose Identity Validation
-- Canonical Asana ID resolution
-- Stance validation
-- Landmark validation
-- Pose-specific identity rules
+export interface CoachingContext {
+  asanaName: string;
+  state: CoachingState;
 
-Phase 1.5
-- Identity-gated completion eligibility
-- 75% accuracy threshold
-- 5-second continuous hold
-- Hold reset when identity/accuracy becomes invalid
+  activeIssues: CoachingIssue[];
 
-Phase 2
-- Weighted accuracy calculation
-- Coverage protection
-- NaN/Infinity protection
-- Temporal accuracy stabilization
-- Outlier rejection
-- Score hysteresis
+  correctedIssues: string[];
 
-Phase 3
-- 170-asana rule coverage
-- Pose families
-- PoseRuleFactory
-- Pose-specific form rules
-- Critical rules
+  lastCorrectionAt?: number;
+  lastIssueId?: string;
 
-Phase 3.5
-- Rule quality / false-positive audit was attempted
-- The generated audit report has known reporting problems
-- DO NOT rely on its numerical claims as proof of accuracy
+  holdSeconds?: number;
+  remainingHoldSeconds?: number;
 
-The current goal is to improve the ACTUAL REAL-TIME COACHING FLOW.
+  score?: number;
+}
 
-============================================================
-PHASE 4 OBJECTIVE
-============================================================
+This becomes the structured information we give the voice agent.
+4B.2 — Create CoachingContextManager.ts
+Create:
+frontend/src/features/ai-coach/voice/CoachingContextManager.ts
 
-Build a robust real-time validation and coaching state pipeline so the
-AI Yoga Coach behaves more like a human yoga instructor.
+import {
+  CoachingContext,
+  CoachingIssue,
+  CoachingState,
+} from "./CoachingContext";
 
-The desired behavior is:
+export class CoachingContextManager {
+  private context: CoachingContext | null = null;
 
-USER SELECTS ASANA
-        ↓
-AI COACH INTRODUCES THE ASANA
-        ↓
-VOICE GUIDES USER INTO POSITION
-        ↓
-USER MOVES TOWARD THE POSE
-        ↓
-SYSTEM DETERMINES:
-"Is the user actually performing the selected pose?"
-        ↓
-If NO:
-    Continue guidance
-    No completion
-    No hold
-        ↓
-If YES:
-    Evaluate form accuracy
-        ↓
-Accuracy ≥ 75%
-        ↓
-START 5-SECOND HOLD
-        ↓
-Continuously verify:
-    - pose identity
-    - required landmarks
-    - form accuracy
-    - tracking confidence
-        ↓
-If any required condition breaks:
-    HOLD RESETS
-        ↓
-If valid for full 5 seconds:
-    COACH ANNOUNCES COMPLETION
-        ↓
-ASANA COMPLETED POPUP
-        ↓
-NEXT ASANA
+  startPose(asanaName: string): void {
+    this.context = {
+      asanaName,
+      state: "STARTING",
+      activeIssues: [],
+      correctedIssues: [],
+    };
+  }
 
-============================================================
-CRITICAL PRINCIPLE
-============================================================
+  setState(state: CoachingState): void {
+    if (!this.context) return;
 
-Do NOT treat a high accuracy score alone as proof that the asana is
-being performed.
+    this.context.state = state;
+  }
 
-Completion requires:
+  setIssues(issues: CoachingIssue[]): void {
+    if (!this.context) return;
 
-IDENTITY VALID
-AND
-FORM VALID
-AND
-ACCURACY >= 75%
-AND
-TRACKING VALID
-AND
-CONTINUOUS HOLD >= 5 SECONDS
+    this.context.activeIssues = issues;
 
-All conditions must remain valid for the entire hold.
+    if (issues.length > 0) {
+      this.context.lastIssueId = issues[0].id;
+    }
+  }
 
-============================================================
-STEP 1 — AUDIT THE CURRENT RUNTIME FLOW
-============================================================
+  markIssueCorrected(issueId: string): void {
+    if (!this.context) return;
 
-Before modifying anything, inspect the actual implementation.
+    this.context.activeIssues =
+      this.context.activeIssues.filter(
+        issue => issue.id !== issueId
+      );
 
-Trace the runtime path from:
+    if (!this.context.correctedIssues.includes(issueId)) {
+      this.context.correctedIssues.push(issueId);
+    }
+  }
 
-Camera frame
-→ MediaPipe
-→ landmarks
-→ PoseEvaluator
-→ PoseIdentityValidator
-→ form evaluation
-→ accuracy
-→ AccuracyStabilizer
-→ AsanaCompletionGate
-→ useCoachSession
-→ hold state
-→ completion
-→ PoseReviewModal
-→ next asana
+  updateHold(
+    holdSeconds: number,
+    remainingHoldSeconds?: number
+  ): void {
+    if (!this.context) return;
 
-Inspect:
+    this.context.holdSeconds = holdSeconds;
+    this.context.remainingHoldSeconds =
+      remainingHoldSeconds;
 
-- usePoseTracking.ts
-- useCoachSession.ts
-- PoseEvaluator.ts
-- TemporalPoseEvaluator.ts
-- PoseIdentityValidator.ts
-- AsanaCompletionGate.ts
-- AccuracyPipeline.ts
-- AccuracyStabilizer.ts
-- AccuracyCalculator.ts
-- RuleEngine.ts
-- StanceDetector.ts
-- PoseReviewModal.tsx
-- AICoachPage.tsx
-- voice/coaching services
-- any session state machine
+    this.context.state = "HOLDING";
+  }
 
-DO NOT assume the previous reports are completely accurate.
+  setScore(score: number): void {
+    if (!this.context) return;
 
-Use the actual source code as the source of truth.
+    this.context.score = score;
+  }
 
-============================================================
-STEP 2 — CREATE ONE AUTHORITATIVE FRAME RESULT
-============================================================
+  getContext(): CoachingContext | null {
+    if (!this.context) return null;
 
-Create or improve a single runtime result representing the current
-frame/session state.
+    return {
+      ...this.context,
+      activeIssues: [...this.context.activeIssues],
+      correctedIssues: [...this.context.correctedIssues],
+    };
+  }
 
+  reset(): void {
+    this.context = null;
+  }
+}
+
+4B.3 — Create CoachingPromptBuilder.ts
+This is important.
+GPT should not decide what the user's body is doing.
+MediaPipe + your rule engine decides that.
+GPT's job is to turn that structured information into natural coaching speech.
+Create:
+frontend/src/features/ai-coach/voice/CoachingPromptBuilder.ts
+
+import { CoachingContext } from "./CoachingContext";
+
+export class CoachingPromptBuilder {
+  static build(context: CoachingContext): string {
+    const issues = context.activeIssues
+      .map(
+        issue =>
+          `- ${issue.bodyPart}: ${issue.issue}. Correction: ${issue.correction}`
+      )
+      .join("\n");
+
+    const corrected =
+      context.correctedIssues.length > 0
+        ? context.correctedIssues.join(", ")
+        : "none";
+
+    return `
+AI YOGA COACHING CONTEXT
+
+Asana:
+${context.asanaName}
+
+Current state:
+${context.state}
+
+Active posture issues:
+${issues || "None"}
+
+Previously corrected issues:
+${corrected}
+
+Hold duration:
+${context.holdSeconds ?? 0} seconds
+
+Remaining hold:
+${context.remainingHoldSeconds ?? "unknown"} seconds
+
+Score:
+${context.score ?? "unknown"}
+
+COACHING RULES:
+
+1. Speak like a real yoga coach.
+2. Give short, actionable instructions.
+3. Never describe the entire asana when the user is already performing it.
+4. Focus on the most important active issue.
+5. Tell the user exactly what body part to move.
+6. Do not invent posture problems.
+7. Trust the detected posture information.
+8. If the user is improving, acknowledge the improvement.
+9. If the posture becomes correct, acknowledge it briefly.
+10. During a hold, encourage breathing and stability.
+11. When the pose is completed, congratulate the user.
+12. Do not repeat the same correction unnecessarily.
+13. Never overwhelm the user with multiple corrections at once.
+14. Keep the coaching voice natural, warm, encouraging and concise.
+
+The voice response should normally be 1-2 short sentences.
+`;
+  }
+}
+
+4B.4 — Add context to RealtimeVoiceAgent
+Now modify your existing:
+RealtimeVoiceAgent.ts
+
+Add:
+import { CoachingContextManager } from "./CoachingContextManager";
+import { CoachingPromptBuilder } from "./CoachingPromptBuilder";
+import { CoachingContext } from "./CoachingContext";
+
+Inside the class add:
+private readonly coachingContextManager =
+  new CoachingContextManager();
+
+4B.5 — Add context methods
+Inside RealtimeVoiceAgent:
+public startCoachingContext(asanaName: string): void {
+  this.coachingContextManager.startPose(asanaName);
+}
+
+public updateCoachingContext(
+  context: CoachingContext
+): void {
+  this.coachingContextManager.setState(context.state);
+
+  this.coachingContextManager.setIssues(
+    context.activeIssues
+  );
+
+  context.correctedIssues.forEach(issueId => {
+    this.coachingContextManager.markIssueCorrected(
+      issueId
+    );
+  });
+
+  if (context.holdSeconds !== undefined) {
+    this.coachingContextManager.updateHold(
+      context.holdSeconds,
+      context.remainingHoldSeconds
+    );
+  }
+
+  if (context.score !== undefined) {
+    this.coachingContextManager.setScore(
+      context.score
+    );
+  }
+}
+
+public resetCoachingContext(): void {
+  this.coachingContextManager.reset();
+}
+
+4B.6 — Modify sendCoachingEvent()
+You already have:
+sendCoachingEvent(event: CoachingEvent)
+
+Do not replace your existing orchestrator logic.
+Keep:
+const decision =
+  this.voiceCoachingOrchestrator.evaluate(event);
+
+and all your existing rhythm/arbitration logic.
+After the event has been approved, obtain the context:
+const context =
+  this.coachingContextManager.getContext();
+
+Then build the coaching instruction:
+const coachingPrompt = context
+  ? CoachingPromptBuilder.build(context)
+  : "";
+
+Your existing event prompt should then include:
+const finalInstruction = `
+${coachingPrompt}
+
+CURRENT COACHING EVENT:
+
+Event type:
+${event.type}
+
+Cue type:
+${event.cueType}
+
+Event message:
+${event.message}
+
+Respond as the AI yoga coach.
+`;
+
+Then send your existing Realtime response using:
+finalInstruction
+
+instead of replacing the entire existing event mechanism.
+Important
+Don't remove:
+Realtime coaching context
+
+that already exists in your project.
+We're adding the structured context, not replacing your existing prompt.
+4B.7 — Connect pose start
+Where you currently have:
+triggerPoseStart()
+
+you should initialize the context.
 For example:
+this.startCoachingContext(asanaName);
 
-PoseFrameState
+Then keep your existing:
+this.voiceCoachingOrchestrator.reset();
 
-containing conceptually:
+So the sequence becomes:
+New Asana
+   ↓
+Reset orchestrator
+   ↓
+Reset coaching context
+   ↓
+Start new coaching context
+   ↓
+Pose-start event
 
-- asanaId
-- canonicalAsanaId
-- identity
-- stance
-- tracking
-- accuracy
-- form validity
-- completion eligibility
-- failure reason
-- timestamp
+4B.8 — Connect posture corrections
+Where your pose analysis generates a correction, create a structured issue.
+For example:
+const issue = {
+  id: "left-elbow-extension",
+  bodyPart: "Left elbow",
+  issue: "Elbow is too bent",
+  correction: "Straighten your left arm",
+  severity: "medium" as const,
+  confidence: 0.94,
+};
 
-Do not duplicate the same calculations in multiple hooks.
+Then:
+this.coachingContextManager.setIssues([
+  issue,
+]);
 
-The runtime should have one authoritative answer to:
+Now GPT receives:
+Active posture issues:
 
-"Is this frame valid for completion?"
+- Left elbow: Elbow is too bent.
+  Correction: Straighten your left arm.
 
-============================================================
-STEP 3 — DEFINE COMPLETION ELIGIBILITY
-============================================================
+Instead of having to guess what the user is doing.
+4B.9 — Improvement state
+When your rule engine detects improvement:
+this.coachingContextManager.setState(
+  "IMPROVING"
+);
 
-Completion eligibility must be:
+Then:
+this.sendCoachingEvent(event);
 
-identity.isMatch === true
-AND
-identity confidence is acceptable
-AND
-required landmarks are valid
-AND
-form evaluation is valid
-AND
-accuracy >= 75%
+GPT can naturally say:
+"Much better. Keep extending that arm."
 
-Do NOT start the hold merely because:
+4B.10 — Correct posture
+When the issue disappears:
+this.coachingContextManager.markIssueCorrected(
+  issueId
+);
 
-accuracy >= 75%
+this.coachingContextManager.setState(
+  "CORRECT"
+);
 
-This is extremely important.
+Then your existing:
+issue_resolved
 
-============================================================
-STEP 4 — HOLD STATE MACHINE
-============================================================
+event can produce:
+"Perfect. Your alignment is good."
 
-Implement or verify an explicit hold state machine.
+4B.11 — Holding
+When the user enters the hold:
+this.coachingContextManager.updateHold(
+  holdSeconds,
+  remainingHoldSeconds
+);
 
-States:
-
-IDLE
-↓
-POSITIONING
-↓
-POSE_DETECTED
-↓
+The state automatically becomes:
 HOLDING
-↓
-COMPLETED
 
-Possible transitions:
-
-IDLE
-→ POSITIONING
-
-POSITIONING
-→ POSE_DETECTED
-
-POSE_DETECTED
-→ HOLDING
-when all completion conditions become valid
-
-HOLDING
-→ HOLDING
-while all conditions remain valid
-
-HOLDING
-→ POSITIONING
-if identity/form/tracking becomes invalid
-
-HOLDING
-→ COMPLETED
-after 5000ms of continuous validity
-
-COMPLETED
-→ next asana / user choice
-
-Do not allow:
-
-HOLDING → COMPLETED
-
-unless the complete 5000ms interval was continuously valid.
-
-============================================================
-STEP 5 — TRUE CONTINUOUS HOLD
-============================================================
-
-The hold timer must measure actual continuous validity.
-
-Correct:
-
-t = 0
-identity = true
-accuracy = 80
-tracking = valid
-
-t = 1s
-identity = true
-accuracy = 82
-tracking = valid
-
-t = 2s
-identity = true
-accuracy = 78
-tracking = valid
-
-t = 3s
-identity = true
-accuracy = 81
-tracking = valid
-
-t = 4s
-identity = true
-accuracy = 79
-tracking = valid
-
-t = 5s
-→ COMPLETED
-
-If at 3.2 seconds:
-
-identity = false
-
-then:
-
-hold = 0
-candidateSince = null
-state = positioning
-
-The timer must NOT resume from 3.2 seconds later.
-
-============================================================
-STEP 6 — TEMPORARY CAMERA/TRACKING LOSS
-============================================================
-
-Do NOT allow the accuracy grace period to automatically mean the
-completion hold remains valid.
-
-Accuracy stabilization and completion eligibility are separate.
-
-Example:
-
-Temporary tracking loss:
-
-Accuracy UI:
-    may temporarily preserve the previous score
-
-Completion:
-    must evaluate whether the required identity/form evidence is still
-    valid.
-
-Do not complete an asana using stale landmarks.
-
-============================================================
-STEP 7 — SCORE VS IDENTITY
-============================================================
-
-Maintain this distinction:
-
-IDENTITY:
-
-"Is this the selected asana?"
-
-FORM SCORE:
-
-"How well is the selected asana being performed?"
-
-Example:
-
-Selected:
-Cobra
-
-User lies flat:
-
-Possible form-like generic measurements:
-    80%
-
-But:
-
-identity:
-    false
-
-Therefore:
-
-completion:
-    false
-
-hold:
-    0
-
-Do not allow a generic score to override identity.
-
-============================================================
-STEP 8 — FEEDBACK PRIORITIZATION
-============================================================
-
-Implement deterministic feedback priority.
-
-Priority:
-
-1. No person / tracking unavailable
-2. Wrong pose / identity mismatch
-3. Major pose/form error
-4. Moderate form correction
-5. Minor correction
-6. Correct pose
-7. Hold in progress
-8. Completion
-
-Only one primary correction should be presented at a time.
-
-Avoid voice spam.
-
-Example:
-
-BAD:
-
-"Straighten your knee"
-"Lift your chest"
-"Align your shoulder"
-"Fix your hip"
-"Straighten your spine"
-
-all within a short interval.
-
-GOOD:
-
-"Lift your chest slightly."
-
-Then wait for the user to respond.
-
-============================================================
-STEP 9 — FEEDBACK PERSISTENCE
-============================================================
-
-Feedback must not change every frame.
-
-Implement/verify temporal persistence:
-
-If a correction appears:
-
-- require persistence before changing it
-- use cooldown
-- avoid repeating identical messages
-- prioritize meaningful changes
-
-The coach should sound like a human instructor.
-
-============================================================
-STEP 10 — HOLD FEEDBACK
-============================================================
-
-When hold begins:
+GPT should then produce short encouragement:
+"Keep breathing. Stay strong and steady."
+
+Not another posture explanation.
+4B.12 — Completion
+When:
+pose_completed
+
+fires:
+this.coachingContextManager.setState(
+  "COMPLETING"
+);
+
+The GPT instruction should naturally produce:
+"Excellent! You completed Warrior Two. Take a deep breath and relax."
+
+After the completion event:
+this.coachingContextManager.setState(
+  "COMPLETED"
+);
+
+4B.13 — Very important: don't let GPT talk continuously
+This is where your existing Phase 3.5 work becomes valuable.
+Keep your current:
+CoachingRhythmManager
+        ↓
+VoiceCoachingOrchestrator
+
+The new context layer doesn't bypass the rhythm system.
+The architecture should remain:
+MediaPipe
+    ↓
+Pose Analysis
+    ↓
+CoachingEventEngine
+    ↓
+CoachDecisionEngine
+    ↓
+VoiceCoachingOrchestrator
+    ↓
+CoachingContext
+    ↓
+GPT Realtime
+    ↓
+Voice
+
+The orchestrator still decides:
+Should the coach speak?
+
+The context layer tells GPT:
+What exactly should the coach say?
+
+That's the key distinction.
+4B.14 — Expected behavior after Phase 4B
+Scenario 1 — Wrong elbow
+MediaPipe:
+Left elbow = incorrect
 
 Voice:
+"Straighten your left arm a little."
 
-"Great. Hold here."
+Scenario 2 — Still wrong
+After cooldown:
+"Your left arm is still slightly bent. Extend it a little more."
 
-Then optionally:
+Scenario 3 — Improving
+"Yes, much better. Keep it there."
 
-"Keep breathing."
+Scenario 4 — Correct
+"Perfect. Your alignment looks good."
 
-Avoid repeating this every frame.
+Scenario 5 — Holding
+"Beautiful. Keep breathing and hold steady."
 
-At completion:
+Scenario 6 — Almost finished
+"Almost there. Stay strong."
 
-"Excellent. You've completed the pose."
+Scenario 7 — Completed
+"Excellent work! You completed the pose. Take a breath and relax."
 
-Then show the existing completion popup.
-
-Do NOT redesign the popup.
-
-============================================================
-STEP 11 — COMPLETION EVENT MUST FIRE ONCE
-============================================================
-
-During the 5-second hold:
-
-Do NOT trigger completion multiple times.
-
-Use a completion guard/ref/state transition.
-
-After completion:
-
-additional animation frames must not:
-
-- restart completion
-- replay completion voice
-- show multiple popups
-- increment completion count multiple times
-
-============================================================
-STEP 12 — PREVENT PREMATURE COMPLETION
-============================================================
-
-Specifically test these scenarios in code:
-
-Scenario A:
-
-User has not reached selected pose.
-
-Expected:
-
-identity = false
-hold = 0
-completion = false
-
-Scenario B:
-
-Identity true but accuracy = 70%.
-
-Expected:
-
-hold = 0
-completion = false
-
-Scenario C:
-
-Identity true
-accuracy = 80%
-
-Expected:
-
-hold starts.
-
-Scenario D:
-
-Identity true
-accuracy = 80%
-hold = 3 seconds
-identity becomes false.
-
-Expected:
-
-hold resets to 0.
-
-Scenario E:
-
-Identity becomes valid again.
-
-Expected:
-
-new 5-second hold begins.
-
-Scenario F:
-
-Valid continuous hold reaches 5 seconds.
-
-Expected:
-
-completion fires exactly once.
-
-Scenario G:
-
-User reaches 75% for one frame only.
-
-Expected:
-
-hold does not complete.
-
-Scenario H:
-
-Accuracy oscillates:
-
-74
-76
-74
-76
-74
-76
-
-Expected:
-
-hold should only progress when the actual completion eligibility
-condition remains continuously valid according to the existing
-stabilized accuracy behavior.
-
-============================================================
-STEP 13 — PREVENT FALSE POSITIVE COMPLETION
-============================================================
-
-Test high-risk examples:
-
-Cobra selected:
-- standing
-- sitting
-- lying flat
-- random movement
-
-Tree selected:
-- standing normally
-- two feet on ground
-
-Warrior II selected:
-- standing normally
-- narrow stance
-- unrelated standing pose
-
-Lotus selected:
-- normal sitting
-- legs not correctly positioned
-
-Downward Dog selected:
-- tabletop
-- plank
-- standing
-
-Expected:
-
-NO completion.
-
-Do not hard-code these poses.
-
-Use the existing identity/rule architecture.
-
-============================================================
-STEP 14 — REACT STATE SAFETY
-============================================================
-
-The previous project encountered:
-
-"Maximum update depth exceeded"
-
-Do NOT reintroduce this.
-
-In particular inspect:
-
-usePoseTracking.ts
-useCoachSession.ts
-
-Look for:
-
-- setState inside requestAnimationFrame
-- effects depending on state they update
-- unstable object dependencies
-- unstable callback dependencies
-- effects recreated every render
-- multiple animation loops
-- missing cleanup
-- multiple subscriptions
-
-The real-time frame loop should not continuously force React renders.
-
-Prefer refs for high-frequency runtime state where appropriate.
-
-React state should be updated only when UI-visible state actually
-changes.
-
-============================================================
-STEP 15 — REQUESTANIMATIONFRAME SAFETY
-============================================================
-
-There must be exactly one controlled pose-processing loop for the
-camera/session.
-
-Ensure:
-
-- animation frame is scheduled once
-- cleanup cancels it
-- unmount stops it
-- camera stop stops it
-- session stop stops it
-- no duplicate loops are created by re-renders
-
-Do not create nested requestAnimationFrame chains accidentally.
-
-============================================================
-STEP 16 — PERFORMANCE
-============================================================
-
-The runtime loop should avoid:
-
-- unnecessary React setState
-- full catalog searches
-- rule registration every frame
-- recreating evaluators every frame
-- creating large arrays every frame
-- repeated canonical ID resolution
-- repeated configuration parsing
-
-Cache static configuration where appropriate.
-
-============================================================
-STEP 17 — TESTS
-============================================================
-
-Create:
-
-frontend/src/features/ai-coach/analysis/__tests__/Phase4RuntimeCoaching.test.ts
-
-Cover:
-
-1. Wrong pose cannot start hold.
-2. Wrong pose cannot complete.
-3. Correct identity + accuracy <75 cannot start hold.
-4. Correct identity + accuracy >=75 starts hold.
-5. Identity breaks during hold → reset.
-6. Tracking validity breaks during hold → reset.
-7. Form validity breaks during hold → reset.
-8. Identity recovers → fresh 5-second hold.
-9. 5000ms continuous valid hold → completion.
-10. Completion fires once.
-11. Premature single-frame accuracy spike cannot complete.
-12. Stale accuracy cannot complete without valid identity.
-13. Feedback is prioritized.
-14. Duplicate feedback is suppressed.
-15. Completion voice/event is fired once.
-16. Session transition after completion works.
-17. requestAnimationFrame loop is cleaned up.
-18. No duplicate processing loop is created.
-19. React state update loop cannot recursively trigger itself.
-20. Existing Phase 1 identity tests pass.
-21. Existing Phase 1.5 hold tests pass.
-22. Existing Phase 2 accuracy tests pass.
-23. Existing Phase 3 catalog tests pass.
-
-============================================================
-STEP 18 — REGRESSION
-============================================================
-
-Run:
-
-npm test
-npm run typecheck
+4B.15 — Build and test
+After implementing:
 npm run build
-npm run validate:asanas
 
-Do not invent results.
+Then:
+npm test
 
-Report exact numbers.
-
-============================================================
-STEP 19 — DOCUMENTATION
-============================================================
-
-Create:
-
-docs/PHASE_4_REALTIME_COACHING_FLOW.md
-
-Include:
-
-# Phase 4 — Real-Time Pose Validation & Human-Like Coaching Flow
-
-## Objective
-
-## Existing Runtime Architecture
-
-## Frame Evaluation Pipeline
-
-## Completion Eligibility
-
-## Hold State Machine
-
-## Continuous Hold Logic
-
-## Identity vs Form
-
-## Tracking Loss Handling
-
-## Feedback Priority
-
-## Feedback Persistence
-
-## Completion Event Protection
-
-## requestAnimationFrame Safety
-
-## React State Safety
-
-## Performance
-
-## Tests
-
-## Regression Results
-
-## Remaining Limitations
-
-============================================================
-FINAL REPORT
-============================================================
-
-At the end report:
-
-PHASE:
-4
-
-FILES MODIFIED:
-list exact files
-
-FILES ADDED:
-list exact files
-
-FILES REMOVED:
-list exact files
-
-HOLD LOGIC:
-PASS / FAIL
-
-IDENTITY GATING:
-PASS / FAIL
-
-75% THRESHOLD:
-PRESERVED / CHANGED
-
-5000ms HOLD:
-PRESERVED / CHANGED
-
-COMPLETION EVENT:
-PASS / FAIL
-
-DUPLICATE COMPLETION PROTECTION:
-PASS / FAIL
-
-FEEDBACK PRIORITIZATION:
-PASS / FAIL
-
-VOICE COOLDOWN:
-PASS / FAIL
-
-RAF SAFETY:
-PASS / FAIL
-
-REACT STATE SAFETY:
-PASS / FAIL
-
-TESTS:
-X passed / X failed
-
-TYPECHECK:
-PASS / FAIL
-
-BUILD:
-PASS / FAIL
-
-CATALOG:
-X/170
-
-============================================================
-STRICT RULES
-============================================================
-
-1. Do not redesign the UI.
-
-2. Do not remove PoseReviewModal.
-
-3. Do not remove completion popup.
-
-4. Do not remove the 75% threshold.
-
-5. Do not change 5000ms hold duration.
-
-6. Do not bypass PoseIdentityValidator.
-
-7. Do not bypass AsanaCompletionGate.
-
-8. Do not make accuracy alone sufficient for completion.
-
-9. Do not create another independent completion mechanism.
-
-10. Do not create another requestAnimationFrame loop.
-
-11. Do not fix unrelated cleanup issues.
-
-12. Do not implement Phase 5.
-
-STOP after Phase 4.
+You should preserve your existing 389 tests / 76 suites baseline.
+If tests fail, don't start changing unrelated files. Give me the exact error.
+Phase 4B success criteria

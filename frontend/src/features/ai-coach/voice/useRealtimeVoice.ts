@@ -76,12 +76,29 @@ export function useRealtimeVoice() {
   }, []);
 
   const dispatchEvent = useCallback((event: CoachingEvent, context?: any) => {
+    console.log(`[AI COACH][EVENT]`, {
+      type: event.type,
+      id: event.id,
+      asanaId: event.asanaId,
+      severity: event.severity,
+      feedback: event.feedback,
+    });
     const decision = decisionEngineRef.current?.evaluate(event, context);
     if (decision?.shouldSpeak) {
-       console.log(`[AI COACH] Coaching event approved: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
+       console.log(`[AI COACH][DECISION]`, {
+         type: event.type,
+         shouldSpeak: true,
+         priority: decision.priority,
+         reason: decision.reason,
+       });
        agentRef.current?.sendCoachingEvent(event);
     } else if (decision) {
-       console.log(`[AI COACH] Coaching event suppressed: type=${event.type}, priority=${decision.priority}, reason=${decision.reason}`);
+       console.log(`[AI COACH][DECISION]`, {
+         type: event.type,
+         shouldSpeak: false,
+         priority: decision.priority,
+         reason: decision.reason,
+       });
     }
   }, []);
 
