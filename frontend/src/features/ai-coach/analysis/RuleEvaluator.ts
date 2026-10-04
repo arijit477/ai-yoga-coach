@@ -33,7 +33,7 @@ export function evaluateRule(
   context: PoseEvaluatorContext,
 ): RuleResult {
   const imageLandmarks = context.landmarks;
-  const worldLandmarks = context.worldLandmarks ?? context.landmarks;
+  const worldLandmarks = context.worldLandmarks;
 
   if (!imageLandmarks || imageLandmarks.length < 33) {
     return {
@@ -92,6 +92,13 @@ export function evaluateRule(
   // 2. Pre-check landmark usability for all required rule points
   for (const pointIdx of rule.points) {
     const lm = imageLandmarks[pointIdx];
+    console.log("[RULE DEBUG] Landmark check", {
+      ruleId: rule.id,
+      ruleName: rule.name,
+      pointIdx,
+      landmark: lm,
+      usable: lm ? isLandmarkUsable(lm) : false,
+    });
     if (!lm || !isLandmarkUsable(lm)) {
       return {
         passed: false,
@@ -106,13 +113,31 @@ export function evaluateRule(
   // 3. Extract measured value based on metric
   let value: number | null = null;
 
+  console.log("[RULE DEBUG] Evaluating metric", {
+    ruleId: rule.id,
+    metric: rule.metric,
+    points: rule.points,
+    comparison: rule.comparison,
+    target: rule.target,
+    min: rule.min,
+    max: rule.max,
+    tolerance: rule.tolerance,
+  });
+
   switch (rule.metric) {
     case "angle":
-      value = evaluateAngle(rule, worldLandmarks);
+      value = evaluateAngle(
+        rule,
+        worldLandmarks ?? imageLandmarks,
+        Boolean(worldLandmarks),
+      );
       break;
 
     case "distance":
-      value = evaluateDistance(rule, worldLandmarks);
+      value = evaluateDistance(
+        rule,
+        worldLandmarks ?? imageLandmarks,
+      );
       break;
 
     case "horizontal_alignment":
@@ -132,6 +157,14 @@ export function evaluateRule(
         ignored: true,
       };
   }
+
+  console.log("[RULE DEBUG] Metric result", {
+    ruleId: rule.id,
+    metric: rule.metric,
+    points: rule.points,
+    value,
+    isFinite: value !== null && Number.isFinite(value),
+  });
 
   if (value === null || !Number.isFinite(value)) {
     return {
@@ -212,6 +245,18 @@ export function evaluateRule(
     isSafety: rule.isSafety ?? false,
   };
 
+  console.log("[RULE DEBUG] Final rule result", {
+    ruleId: rule.id,
+    ruleName: rule.name,
+    measuredValue: value,
+    targetMin,
+    targetMax,
+    delta,
+    warningTol,
+    status,
+    score,
+  });
+
   return {
     passed: false,
     status,
@@ -228,17 +273,36 @@ export function evaluateRule(
 function evaluateAngle(
   rule: PoseRule,
   landmarks: PoseEvaluatorContext["landmarks"],
+  useWorldCoordinates: boolean,
 ): number | null {
   if (rule.points.length !== 3) {
     return null;
   }
 
   const [a, b, c] = rule.points;
+
   if (!landmarks[a] || !landmarks[b] || !landmarks[c]) {
     return null;
   }
 
-  return calculateLandmarkAngle(landmarks[a], landmarks[b], landmarks[c]);
+  console.log("[ANGLE DEBUG] Calculating angle", {
+    ruleId: rule.id,
+    ruleName: rule.name,
+    points: [a, b, c],
+    useWorldCoordinates,
+    landmarks: {
+      a: landmarks[a],
+      b: landmarks[b],
+      c: landmarks[c],
+    },
+  });
+
+  return calculateLandmarkAngle(
+    landmarks[a],
+    landmarks[b],
+    landmarks[c],
+    useWorldCoordinates,
+  );
 }
 
 /**

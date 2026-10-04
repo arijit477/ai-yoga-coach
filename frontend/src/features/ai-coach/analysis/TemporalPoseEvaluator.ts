@@ -52,6 +52,14 @@ export class TemporalPoseEvaluator {
       rawEvaluation.overallStatus !== "not_ready" &&
       rawEvaluation.overallStatus !== "unknown");
 
+    console.log("[TEMPORAL DEBUG]", {
+      landmarkCount: context.landmarks?.length,
+      evaluatedRules: rawEvaluation.summary.evaluatedRules,
+      overallStatus: rawEvaluation.overallStatus,
+      rawScore: rawEvaluation.score,
+      hasUsableTracking,
+    });
+
     // Update the accuracy stabilizer
     const stabilized = this.accuracyStabilizer.update(
       hasUsableTracking ? rawEvaluation.score : null,

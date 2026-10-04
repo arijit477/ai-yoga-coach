@@ -29,6 +29,13 @@ export function usePoseEvaluation(
 
     const rules = getPoseRules(asanaId);
 
+    console.log("[POSE DEBUG]", {
+      asanaId,
+      landmarkCount: result.landmarks.length,
+      rulesCount: rules.length,
+      ruleIds: rules.map(r => r.id),
+    });
+
     if (rules.length === 0) {
       return null;
     }
@@ -37,13 +44,16 @@ export function usePoseEvaluation(
       return null;
     }
 
-    const worldLandmarks = (result.worldLandmarks && result.worldLandmarks.length >= 33)
-      ? result.worldLandmarks
-      : result.landmarks;
+    const worldLandmarks =
+      result.worldLandmarks && result.worldLandmarks.length >= 33
+        ? result.worldLandmarks
+        : undefined;
 
-    return evaluatorRef.current?.evaluate(asanaId, rules, {
-      landmarks: result.landmarks,
-      worldLandmarks,
-    }) || null;
+    return (
+      evaluatorRef.current?.evaluate(asanaId, rules, {
+        landmarks: result.landmarks,
+        worldLandmarks,
+      }) || null
+    );
   }, [result, asanaId, customRules]);
 }

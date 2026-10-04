@@ -111,6 +111,19 @@ export function evaluatePose(
     issues
   );
 
+  console.log("[EVAL DEBUG]", {
+    asanaId,
+    totalRules: rules.length,
+    evaluatedRules,
+    passedRules,
+    warningRules,
+    failedRules,
+    notEvaluableRules,
+    score,
+    coverage,
+    overallStatus,
+  });
+
   // Derive 8 body area posture statuses
   const posture = derivePostureStatuses(ruleEvaluations);
 

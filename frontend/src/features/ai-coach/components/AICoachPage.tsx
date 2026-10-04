@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { Maximize, Minimize, Camera, CameraOff, Square, Volume2, VolumeX } from "lucide-react";
+import { Play, Maximize, Minimize, Camera, CameraOff, Square, Volume2, VolumeX } from "lucide-react";
 
 import { CameraView } from "./CameraView";
 import { PoseSkeleton } from "./PoseSkeleton";
@@ -855,7 +855,6 @@ export function AICoachPage() {
             <CameraView
               videoRef={videoRef}
               enabled={!isIntroVideoActive && isCameraActive}
-              score={stableScore}
             />
 
             {/* Neon glowing skeleton overlay */}
@@ -914,14 +913,39 @@ export function AICoachPage() {
               />
             </div>
 
-            {/* Top-Right Controls: Start/Stop Camera, End Routine, Exit Fullscreen Button & Compact Score Ring */}
-            <div className="absolute right-[180px] xs:right-[195px] sm:right-[220px] lg:right-[235px] top-4 sm:top-6 z-20 flex items-center gap-2.5">
+            {/* Top-Right Controls: Start Practice / End Routine, Start/Stop Camera, Exit Fullscreen Button & Compact Score Ring */}
+            <div className="absolute right-[212px] xs:right-[228px] sm:right-[256px] lg:right-[272px] top-4 sm:top-6 z-20 flex items-center gap-2.5">
+              {/* Start Practice / End Routine Button in Fullscreen / Cinema Mode */}
+              {!isSessionActive ? (
+                <button
+                  type="button"
+                  onClick={handleStartSession}
+                  className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
+                  title="Start practice"
+                  aria-label="Start practice"
+                >
+                  <Play size={12} className="fill-white" />
+                  <span>Start practice</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleStopSession}
+                  className="flex items-center gap-1.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white border border-rose-400/40 px-3.5 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
+                  title="End Routine"
+                  aria-label="End Routine"
+                >
+                  <Square size={11} className="fill-white" />
+                  <span>End Routine</span>
+                </button>
+              )}
+
               {/* Start / Stop Camera Toggle Button in Cinema Mode */}
               {!isCameraActive ? (
                 <button
                   type="button"
                   onClick={handleStartCamera}
-                  className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
+                  className="flex items-center gap-1.5 rounded-full bg-slate-800/90 hover:bg-slate-700 text-white border border-white/20 px-3 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
                   title="Start camera"
                 >
                   <Camera size={13} className="fill-white" />
@@ -936,20 +960,6 @@ export function AICoachPage() {
                 >
                   <CameraOff size={13} />
                   <span className="hidden sm:inline">Stop camera</span>
-                </button>
-              )}
-
-              {/* End Routine Button in Fullscreen / Cinema Mode */}
-              {isSessionActive && (
-                <button
-                  type="button"
-                  onClick={handleStopSession}
-                  className="flex items-center gap-1.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white border border-rose-400/40 px-3 py-1.5 text-xs font-bold transition shadow-md active:scale-95 cursor-pointer"
-                  title="End Routine"
-                  aria-label="End Routine"
-                >
-                  <Square size={11} className="fill-white" />
-                  <span>End Routine</span>
                 </button>
               )}
 
@@ -1239,7 +1249,6 @@ export function AICoachPage() {
                   <CameraView
                     videoRef={videoRef}
                     enabled={!isIntroVideoActive && isCameraActive}
-                    score={effectiveDisplayedScore}
                   />
                 )}
 

@@ -88,6 +88,7 @@ export function calculateLandmarkAngle(
   a: Landmark | null | undefined,
   b: Landmark | null | undefined,
   c: Landmark | null | undefined,
+  useWorldCoordinates = false,
 ): number | null {
   if (!a || !b || !c) {
     return null;
@@ -97,9 +98,54 @@ export function calculateLandmarkAngle(
     return null;
   }
 
-  return calculateAngle(
-    { x: a.x, y: a.y, z: a.z ?? 0 },
-    { x: b.x, y: b.y, z: b.z ?? 0 },
-    { x: c.x, y: c.y, z: c.z ?? 0 },
+  const ab = {
+    x: a.x - b.x,
+    y: a.y - b.y,
+    z: useWorldCoordinates ? (a.z ?? 0) - (b.z ?? 0) : 0,
+  };
+
+  const cb = {
+    x: c.x - b.x,
+    y: c.y - b.y,
+    z: useWorldCoordinates ? (c.z ?? 0) - (b.z ?? 0) : 0,
+  };
+
+  const magnitudeAB = Math.sqrt(
+    ab.x * ab.x +
+    ab.y * ab.y +
+    ab.z * ab.z,
   );
+
+  const magnitudeCB = Math.sqrt(
+    cb.x * cb.x +
+    cb.y * cb.y +
+    cb.z * cb.z,
+  );
+
+  if (
+    magnitudeAB === 0 ||
+    magnitudeCB === 0 ||
+    !Number.isFinite(magnitudeAB) ||
+    !Number.isFinite(magnitudeCB)
+  ) {
+    return null;
+  }
+
+  const dot =
+    ab.x * cb.x +
+    ab.y * cb.y +
+    ab.z * cb.z;
+
+  const cosine = Math.max(
+    -1,
+    Math.min(1, dot / (magnitudeAB * magnitudeCB)),
+  );
+
+  const angleRadians = Math.acos(cosine);
+
+  const angleDegrees = angleRadians * (180 / Math.PI);
+
+  return Number.isFinite(angleDegrees)
+    ? angleDegrees
+    : null;
 }

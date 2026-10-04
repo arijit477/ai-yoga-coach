@@ -1,6 +1,13 @@
 import type { CoachingEvent, VoiceTranscriptItem, VoiceConnectionState } from "./voice.types";
 import { getAsanaStartingInstruction } from "../services/AsanaStartingInstructionService";
 import type { FeedbackOutput } from "../analysis/FeedbackEngine";
+import { buildCoachingContext } from "./CoachingContextBuilder";
+import type { CoachingContext } from "./CoachingContext";
+import {
+  CoachingRhythmManager,
+  type CoachingRhythmDecision,
+} from "./CoachingRhythmManager";
+import { buildRealtimeCoachingContext } from "./CoachingContextFormatter";
 
 export interface SessionContextData {
   coach: string;
@@ -56,12 +63,15 @@ export class RealtimeVoiceAgent {
   private currentCoachId: string | null = null;
   private isConnecting: boolean = false;
   private currentSessionContext: SessionContextData | null = null;
-  
+
+  // Phase 3: controls when coaching events should become voice output
+  private coachingRhythm = new CoachingRhythmManager();
+
   // Safe response orchestration state
   private hasActiveServerResponse: boolean = false;
   private pendingSpeechText: string | null = null;
   private isCancelling: boolean = false;
-  
+
   // Web Audio API pipeline for lipsync and volume control
   private remoteAudioStream: MediaStream | null = null;
   private audioCtx: AudioContext | null = null;
@@ -80,7 +90,7 @@ export class RealtimeVoiceAgent {
   ) {
     this.onStatusChange = onStatusChange;
     this.onTranscript = onTranscript;
-    
+
     if (typeof document !== "undefined") {
       this.audioEl = document.createElement("audio");
       this.audioEl.autoplay = true;
@@ -197,7 +207,9 @@ export class RealtimeVoiceAgent {
           const asana = this.pendingPoseStart;
           this.pendingPoseStart = null;
           const desc = asana.description ? ` ${asana.description}` : '';
-          this.speak(`Let's begin ${asana.name}.${desc} Stand comfortably and check your alignment.`);
+          const instruction = getAsanaStartingInstruction(asana.id);
+
+          this.speak(`Let's begin ${asana.name}.${desc} ${instruction}`);
         } else if (this.currentSessionContext?.isSessionActive) {
           this.speakGreeting();
         }
@@ -314,7 +326,7 @@ export class RealtimeVoiceAgent {
             this.isCancelling = true;
             try {
               this.dc.send(JSON.stringify({ type: "response.cancel" }));
-            } catch (_) {}
+            } catch (_) { }
           }
           return;
         }
@@ -330,27 +342,135 @@ export class RealtimeVoiceAgent {
    * Helper to dispatch response.create with rich coach prosody instructions.
    */
   private sendResponseCreate(text: string): void {
-    if (!this.dc || this.dc.readyState !== "open" || this.isMuted) return;
+    if (!this.dc || this.dc.readyState !== "open" || this.isMuted) {
+      return;
+    }
 
-    const asanaName = this.currentSessionContext?.asanaName || "this pose";
+    const session: SessionContextData = this.currentSessionContext ?? {
+      coach: this.currentCoachId || "alice",
+      asanaId: "",
+      asanaName: "this pose",
+      isSessionActive: true,
+    };
+
+    const context = buildRealtimeCoachingContext(session);
+
     const isAlice = this.currentCoachId !== "kevin";
-    const styleCue = isAlice
-      ? `As Coach Alice guiding ${asanaName}, speak this concise yoga coaching instruction with a calm, warm, graceful British tone and natural breath pauses:`
-      : `As Coach Kevin guiding ${asanaName}, speak this concise yoga coaching instruction with a grounded, confident, motivating British tone and athletic focus:`;
+    const coachName = isAlice ? "Alice" : "Kevin";
+
+    const personality = isAlice
+      ? `
+You are Coach Alice, a calm, warm, graceful British yoga instructor.
+Your coaching style is supportive, elegant, reassuring and encouraging.
+`
+      : `
+You are Coach Kevin, a grounded, confident, motivating British yoga instructor.
+Your coaching style is energetic, focused, encouraging and athletic.
+`;
+
+    const instructions = `
+You are Coach ${coachName}, the user's real-time AI yoga coach.
+
+${personality}
+
+You are operating in a UNIDIRECTIONAL coaching experience.
+
+The user is performing yoga in front of a camera.
+Do NOT ask the user questions.
+Do NOT start a conversation.
+Do NOT expect microphone input.
+Do NOT ask the user to respond verbally.
+
+The computer-vision system is authoritative for posture measurement.
+
+You must NEVER invent a posture problem that is not supported
+by the supplied coaching context.
+
+Your job is to turn the trusted coaching state into natural,
+short and useful spoken coaching.
+
+COACHING PRINCIPLES:
+
+1. Safety comes first.
+2. Correct the most important issue first.
+3. Give only one physical correction at a time.
+4. Do not repeatedly say the same correction.
+5. Recognize improvement.
+6. Encourage the user when they are doing well.
+7. During a stable hold, occasionally encourage breathing,
+   stability and focus.
+8. When the user successfully corrects a problem, acknowledge it.
+9. When the pose is completed, give concise positive reinforcement.
+10. If nothing meaningful has changed, prefer silence over unnecessary chatter.
+11. Never overwhelm the user with multiple instructions.
+12. Keep spoken responses concise and natural.
+
+ENGAGEMENT:
+
+The user should feel like they have a real yoga instructor
+watching and guiding them.
+
+Use a natural rhythm:
+
+GUIDE → OBSERVE → CORRECT → ENCOURAGE → OBSERVE → CONFIRM
+
+Do not praise every single event.
+Do not repeat identical phrases.
+Do not speak just because data arrived.
+
+When appropriate, use brief coaching language such as:
+
+"Good."
+"That's better."
+"Keep breathing."
+"Nice work."
+"Stay there."
+"Beautiful alignment."
+"Just a little longer."
+
+Adapt the wording naturally rather than repeating these exact phrases.
+
+CURRENT COACHING CONTEXT:
+
+${JSON.stringify(context, null, 2)}
+
+CURRENT EVENT:
+
+${text}
+
+Use the CURRENT EVENT together with the CURRENT COACHING CONTEXT.
+
+The event is trusted input from the existing pose-analysis system.
+Do not reinterpret the biomechanics beyond the information supplied.
+
+Return ONLY the short spoken coaching response.
+No explanations.
+No JSON.
+No bullet points.
+No technical terminology.
+No questions.
+
+The response should normally be one or two short sentences.
+`;
 
     const responseCreate = {
       type: "response.create",
       response: {
-        instructions: `${styleCue} "${text}"`,
+        instructions,
       },
     };
 
     try {
       this.dc.send(JSON.stringify(responseCreate));
+
       this.hasActiveServerResponse = true;
       this.isCancelling = false;
     } catch (err) {
-      console.warn("[AI COACH] Failed to send response.create:", err);
+      console.warn(
+        "[AI COACH] Failed to send intelligent response.create:",
+        err
+      );
+
       this.hasActiveServerResponse = false;
     }
   }
@@ -397,7 +517,7 @@ export class RealtimeVoiceAgent {
   public triggerPoseStart(asanaId: string, asanaName: string, _asanaDescription?: string): void {
     const instruction = getAsanaStartingInstruction(asanaId);
     const message = `Let's begin ${asanaName}. ${instruction}`;
-    
+
     if (this.dc && this.dc.readyState === "open") {
       this.speak(message);
     } else {
@@ -494,8 +614,26 @@ export class RealtimeVoiceAgent {
 
   /**
    * Dispatches a structured coaching event approved by CoachDecisionEngine.
+   *
+   * Phase 3:
+   * CoachingRhythmManager decides whether the event should be spoken now.
+   * It does NOT modify pose detection, scoring, or event generation.
    */
   public sendCoachingEvent(event: CoachingEvent): void {
+    if (this.isMuted) return;
+
+    const decision: CoachingRhythmDecision =
+      this.coachingRhythm.shouldSpeak(event);
+
+    if (!decision.shouldSpeak) {
+      console.debug(
+        "[AI COACH] Coaching event suppressed by rhythm:",
+        event.type,
+        decision.reason
+      );
+      return;
+    }
+
     let spokenText = event.feedback ?? "";
 
     if (!spokenText) {
@@ -503,38 +641,78 @@ export class RealtimeVoiceAgent {
         case "pose_started":
           spokenText = getAsanaStartingInstruction(event.asanaId);
           break;
+
         case "calibration_complete":
-          spokenText = `Alignment looks ready. Let's begin ${event.asanaName}.`;
+          spokenText =
+            `Alignment looks ready. Let's begin ${event.asanaName}.`;
           break;
+
         case "good_form":
-          spokenText = "Beautiful form. Breathe smoothly and hold right here.";
+          spokenText =
+            "Beautiful form. Breathe smoothly and hold right here.";
           break;
+
+        case "issue_improving":
+          spokenText =
+            event.feedback ?? "That's getting better. Keep going.";
+          break;
+
+        case "issue_resolved":
+          spokenText =
+            event.feedback ?? "Yes, that's much better. Keep that alignment.";
+          break;
+
         case "pose_held":
-          spokenText = "Posture is aligned. Soften your shoulders and keep breathing.";
+          spokenText =
+            "Posture is aligned. Soften your shoulders and keep breathing.";
           break;
+
+        case "hold_countdown":
+          spokenText =
+            event.feedback ?? "Keep holding. Stay steady and breathe.";
+          break;
+
         case "pose_completed":
-          spokenText = `Wonderful hold! You completed ${event.asanaName}.`;
+          spokenText =
+            `Wonderful hold! You completed ${event.asanaName}.`;
           break;
+
         case "user_out_of_frame":
-          spokenText = "I lost sight of you. Step back into the frame so we can continue.";
+          spokenText =
+            "I lost sight of you. Step back into the frame so we can continue.";
           break;
+
         case "partial_body":
-          spokenText = "I can only see part of your body. Step back slightly so I can see your full form.";
+          spokenText =
+            "I can only see part of your body. Step back slightly so I can see your full form.";
           break;
+
         case "camera_unavailable":
-          spokenText = "Please enable your camera so I can guide you.";
+          spokenText =
+            "Please enable your camera so I can guide you.";
           break;
+
         case "camera_ready":
-          spokenText = "Welcome back! I can see your alignment clearly now.";
+          spokenText =
+            "Welcome back! I can see your alignment clearly now.";
           break;
+
         default:
           break;
       }
     }
 
-    if (spokenText) {
-      this.speak(spokenText);
+    if (!spokenText) {
+      return;
     }
+
+    // Mark the event only when we actually intend to speak it.
+    this.coachingRhythm.markSpoken(
+      event,
+      decision.cueType
+    );
+
+    this.speak(spokenText);
   }
 
   /**
@@ -546,7 +724,7 @@ export class RealtimeVoiceAgent {
 
   private handleFunctionCall(ev: any): void {
     if (!this.dc || this.dc.readyState !== "open") return;
-    
+
     const callId = ev.call_id;
     const functionName = ev.name;
     let result: any = { error: "Context not available" };
@@ -633,12 +811,13 @@ export class RealtimeVoiceAgent {
     this.isConnecting = false;
     this.pendingSpeechText = null;
     this.isCancelling = false;
+    this.coachingRhythm.reset();
 
     // Cancel in-flight response if active
     if (this.dc && this.dc.readyState === "open" && this.hasActiveServerResponse) {
       try {
         this.dc.send(JSON.stringify({ type: "response.cancel" }));
-      } catch (_) {}
+      } catch (_) { }
       this.hasActiveServerResponse = false;
     }
 
@@ -646,21 +825,21 @@ export class RealtimeVoiceAgent {
     if (this.audioEl) {
       try {
         this.audioEl.pause();
-      } catch (_) {}
+      } catch (_) { }
       this.audioEl.srcObject = null;
     }
 
     if (this.dc) {
       try {
         this.dc.close();
-      } catch (_) {}
+      } catch (_) { }
       this.dc = null;
     }
 
     if (this.pc) {
       try {
         this.pc.close();
-      } catch (_) {}
+      } catch (_) { }
       this.pc = null;
     }
 
@@ -672,7 +851,7 @@ export class RealtimeVoiceAgent {
     if (this.audioCtx) {
       try {
         this.audioCtx.close();
-      } catch (_) {}
+      } catch (_) { }
       this.audioCtx = null;
     }
 
@@ -700,22 +879,22 @@ export class RealtimeVoiceAgent {
       this.unlockAudio();
 
       const source = this.audioCtx.createMediaStreamSource(this.remoteAudioStream);
-      
+
       this.gainNode = this.audioCtx.createGain();
       this.gainNode.gain.value = this.isMuted ? 0 : this.DEFAULT_GAIN;
 
       this.analyser = this.audioCtx.createAnalyser();
       this.analyser.fftSize = 256;
-      
+
       // Source -> Gain -> Analyser -> Speakers (audioCtx.destination)
       source.connect(this.gainNode);
       this.gainNode.connect(this.analyser);
       this.gainNode.connect(this.audioCtx.destination);
-      
+
       this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
 
       if (this.volumeInterval) window.clearInterval(this.volumeInterval);
-      
+
       this.volumeInterval = window.setInterval(() => {
         if (this.isMuted) return;
         if (this.analyser && this.dataArray) {
@@ -725,10 +904,10 @@ export class RealtimeVoiceAgent {
             sum += this.dataArray[i];
           }
           const avg = sum / this.dataArray.length;
-          
+
           // Threshold for voice activity detection driving lipsync
           const isCurrentlySpeaking = avg > 3.0;
-          
+
           if (isCurrentlySpeaking !== this.isSpeaking) {
             this.isSpeaking = isCurrentlySpeaking;
             this.updateStatus(this.isSpeaking ? "speaking" : "connected");
