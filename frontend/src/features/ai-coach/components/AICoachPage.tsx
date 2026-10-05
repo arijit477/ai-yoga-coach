@@ -127,7 +127,39 @@ const INTRO_GUIDE_VIDEO_URL = getAsanaVideoUrl(
   "guide-videos/AI%20Yoga%20Coach.mp4",
 );
 
+// Temporary client-testing whitelist.
+// This only controls which asanas are displayed in the AI Coach selector.
+// It does NOT remove or modify any asanas from the master catalog.
+const CLIENT_TEST_ASANA_IDS = [
+  "chair-utkatasana",
+  "mountain-tadasana",
+  "warrior-ii-virabhadrasana-ii",
+  "tree-vrksasana",
+  "downward-dog-adho-mukha-svanasana",
+  "cobra-bhujangasana",
+  "cat-marjariasana",
+  "cow-bitilasana",
+  "boat-navasana",
+  "bridge-setu-bandha-sarvangasana",
+  "half-moon-ardha-chandrasana",
+  "childs-pose-balasana",
+] as const;
+
 export function AICoachPage() {
+  const clientTestAsanas = useMemo(() => {
+    const allAsanas = getAllAsanas();
+
+    return CLIENT_TEST_ASANA_IDS
+      .map((id) => allAsanas.find((asana) => asana.id === id))
+      .filter((asana): asana is typeof allAsanas[number] => Boolean(asana));
+  }, []);
+
+  if (import.meta.env.DEV) {
+    console.log("[AI COACH] Client test asanas:", {
+      count: clientTestAsanas.length,
+      ids: clientTestAsanas.map((asana) => asana.id),
+    });
+  }
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Introductory guide video state (plays inside camera stage on initial page load)
@@ -1505,7 +1537,7 @@ export function AICoachPage() {
                 coachName={getCoachName(selectedCoach)}
               >
                 <AsanaSelector
-                  asanas={getAllAsanas() as unknown as Asana[]}
+                  asanas={clientTestAsanas as unknown as Asana[]}
                   currentAsana={currentAsana}
                   onSelectAsana={handleSelectAsana}
                   disabled={isSessionActive}
