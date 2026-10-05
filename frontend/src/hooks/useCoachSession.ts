@@ -254,7 +254,8 @@ export function useCoachSession({
 
   const stopSession = useCallback(() => {
     resetSession();
-  }, [resetSession]);
+    onSessionComplete?.();
+  }, [resetSession, onSessionComplete]);
 
   /**
    * Evaluate Camera Readiness on landmark update — deduplicated to avoid unnecessary re-renders
@@ -275,7 +276,7 @@ export function useCoachSession({
    * Automatic coaching lifecycle activation when camera is started
    */
   useEffect(() => {
-    if (isCameraActive && state === "idle") {
+    if (isCameraActive && state === "idle" && practiceStarted) {
       transitionTo("camera_check", "camera_activated");
     } else if (
       isCameraActive === false &&
@@ -285,7 +286,7 @@ export function useCoachSession({
     ) {
       resetSession();
     }
-  }, [isCameraActive, state, transitionTo, resetSession]);
+  }, [isCameraActive, state, practiceStarted, transitionTo, resetSession]);
 
   /**
    * 8. CAMERA CHECK Stage: Checks camera readiness
@@ -670,7 +671,7 @@ export function useCoachSession({
     const isLastAsana = currentAsanaIndex + 1 >= totalAsanas;
 
     if (isLastAsana) {
-      transitionTo("completed", "all_asanas_completed");
+      transitionTo("session_completed", "all_asanas_completed");
       onSessionComplete?.();
       return;
     }
@@ -706,9 +707,9 @@ export function useCoachSession({
    * "End Session" (END SESSION)
    */
   const endSession = useCallback(() => {
-    transitionTo("completed", "user_ended_session");
+    resetSession();
     onSessionComplete?.();
-  }, [transitionTo, onSessionComplete]);
+  }, [resetSession, onSessionComplete]);
 
   /*
    * Cleanup on unmount.

@@ -8,17 +8,18 @@ export const ALLOWED_SESSION_TRANSITIONS: Record<
   CoachSessionState[]
 > = {
   idle: ["guide_video", "get_ready", "camera_check", "countdown", "coaching"],
-  guide_video: ["get_ready", "countdown", "idle", "camera_check"],
-  get_ready: ["camera_check", "detecting", "hold_still", "coaching", "idle"],
-  camera_check: ["hold_still", "get_ready", "countdown", "coaching", "idle"],
-  hold_still: ["calibrating", "camera_check", "get_ready", "countdown", "coaching", "idle"],
-  calibrating: ["coaching", "hold_still", "camera_check", "get_ready", "idle"],
+  guide_video: ["get_ready", "countdown", "idle", "camera_check", "session_completed"],
+  get_ready: ["camera_check", "detecting", "hold_still", "coaching", "idle", "session_completed"],
+  camera_check: ["hold_still", "get_ready", "countdown", "coaching", "idle", "session_completed"],
+  hold_still: ["calibrating", "camera_check", "get_ready", "countdown", "coaching", "idle", "session_completed"],
+  calibrating: ["coaching", "hold_still", "camera_check", "get_ready", "idle", "session_completed"],
   coaching: [
     "correcting",
     "holding",
     "pose_review",
     "user_choice",
     "completed",
+    "session_completed",
     "get_ready",
     "idle",
   ],
@@ -28,6 +29,7 @@ export const ALLOWED_SESSION_TRANSITIONS: Record<
     "pose_review",
     "user_choice",
     "completed",
+    "session_completed",
     "get_ready",
     "idle",
   ],
@@ -37,6 +39,7 @@ export const ALLOWED_SESSION_TRANSITIONS: Record<
     "pose_review",
     "user_choice",
     "completed",
+    "session_completed",
     "get_ready",
     "idle",
   ],
@@ -46,6 +49,7 @@ export const ALLOWED_SESSION_TRANSITIONS: Record<
     "guide_video",
     "coaching",
     "completed",
+    "session_completed",
     "idle",
   ],
   user_choice: [
@@ -53,16 +57,17 @@ export const ALLOWED_SESSION_TRANSITIONS: Record<
     "guide_video", // Next Pose with guide video
     "coaching", // Stay Here
     "completed", // End Session
+    "session_completed", // End Session
     "idle",
   ],
   completed: ["idle", "get_ready", "guide_video", "session_completed"],
   session_completed: ["idle", "get_ready", "guide_video"],
 
   // Legacy state transition support
-  countdown: ["hold_still", "camera_check", "idle", "get_ready", "coaching"],
-  detecting: ["camera_check", "hold_still", "analyzing", "coaching", "idle"],
-  analyzing: ["coaching", "correcting", "detecting", "idle"],
-  transition: ["get_ready", "guide_video", "idle", "completed"],
+  countdown: ["hold_still", "camera_check", "idle", "get_ready", "coaching", "session_completed"],
+  detecting: ["camera_check", "hold_still", "analyzing", "coaching", "idle", "session_completed"],
+  analyzing: ["coaching", "correcting", "detecting", "idle", "session_completed"],
+  transition: ["get_ready", "guide_video", "idle", "completed", "session_completed"],
 };
 
 /**

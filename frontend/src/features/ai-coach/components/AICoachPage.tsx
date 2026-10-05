@@ -13,7 +13,6 @@ import { useCoachSession } from "../../../hooks/useCoachSession";
 import { AsanaSelector } from "./AsanaSelector";
 import { GuideVideoOverlay } from "./GuideVideoOverlay";
 import { PoseReviewModal } from "./PoseReviewModal";
-import { SessionReportModal } from "./SessionReportModal";
 import { useAICoachStore } from "../store/aiCoachStore";
 import type { CoachPersona } from "../types/coach-session";
 import { useRealtimeVoice, CoachingEventBuilder } from "../voice";
@@ -294,10 +293,10 @@ export function AICoachPage() {
     startSession,
     skipGuideVideo,
     finishGuideVideo,
-    stopSession,
     resetSession,
     moveToNextAsana,
     stayHere,
+    endSession,
   } = useCoachSession({
     evaluation: stableEvaluation,
     asanaId: currentAsana.id,
@@ -510,7 +509,7 @@ export function AICoachPage() {
   ]);
 
   const handleStopSession = useCallback(() => {
-    stopSession();
+    endSession();
     voiceStop(); // Stop speaking and disconnect voice coach immediately
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
@@ -523,7 +522,7 @@ export function AICoachPage() {
     lastSentContextRef.current = null;
     coachingEngineRef.current?.reset();
     voiceResetEngine();
-  }, [stopSession, voiceStop]);
+  }, [endSession, voiceStop, voiceResetEngine]);
 
   // Reset per-asana dispatch locks when coach persona changes
   useEffect(() => {
@@ -1226,16 +1225,6 @@ export function AICoachPage() {
               />
             )}
 
-            {/* Session Report Modal (End of session - cinema mode) */}
-            {sessionState === "session_completed" && (
-              <SessionReportModal
-                completedAsanas={completedAsanasForReport}
-                onClose={() => {
-                  resetSession();
-                  voiceStop();
-                }}
-              />
-            )}
           </div>
         </div>
       )}
@@ -1496,16 +1485,6 @@ export function AICoachPage() {
                   />
                 )}
 
-                {/* Session Report Modal (End of session - normal mode) */}
-                {sessionState === "session_completed" && (
-                  <SessionReportModal
-                    completedAsanas={completedAsanasForReport}
-                    onClose={() => {
-                      resetSession();
-                      voiceStop();
-                    }}
-                  />
-                )}
               </div>
 
               {/* Clean Session Controls Bar (Start/Stop Camera, Practice/End, Skeleton, Asana Selection) */}

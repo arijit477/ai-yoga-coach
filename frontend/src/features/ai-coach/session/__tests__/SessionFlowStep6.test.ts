@@ -126,11 +126,23 @@ describe("Step 6 Session State Machine & Flow Tests", () => {
       assert.equal(sm.getState(), "coaching");
     });
 
-    it("15. user_choice -> completed (end session)", () => {
+    it("15. user_choice -> session_completed / completed (end session)", () => {
       const sm = new SessionStateMachine("user_choice");
-      assert.equal(sm.canTransitionTo("completed"), true);
-      assert.equal(sm.transition("completed"), true);
-      assert.equal(sm.getState(), "completed");
+      assert.equal(sm.canTransitionTo("session_completed"), true);
+      assert.equal(sm.transition("session_completed"), true);
+      assert.equal(sm.getState(), "session_completed");
+
+      const smCompleted = new SessionStateMachine("user_choice");
+      assert.equal(smCompleted.canTransitionTo("completed"), true);
+      assert.equal(smCompleted.transition("completed"), true);
+      assert.equal(smCompleted.getState(), "completed");
+    });
+
+    it("15b. pose_review -> session_completed (end session)", () => {
+      const sm = new SessionStateMachine("pose_review");
+      assert.equal(sm.canTransitionTo("session_completed"), true);
+      assert.equal(sm.transition("session_completed"), true);
+      assert.equal(sm.getState(), "session_completed");
     });
   });
 

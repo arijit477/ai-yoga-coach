@@ -11,19 +11,26 @@ from app.api.routes import realtime
 app = FastAPI(title="AI Yoga Coach API", version="0.1.0")
 
 # Setup CORS with configurable origins
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173").strip()
+frontend_url = os.getenv("FRONTEND_URL", "").strip()
 custom_origins = os.getenv("ALLOWED_ORIGINS", "")
 
+default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://ai-yoga-coach-zeta.vercel.app",
+    "https://ai-yoga-coach-br648scpx-arijits-projects-f22bee41.vercel.app",
+]
+
+if frontend_url:
+    default_origins.append(frontend_url)
+
 if custom_origins.strip():
-    allowed_origins = [o.strip() for o in custom_origins.split(",") if o.strip()]
+    custom_list = [o.strip() for o in custom_origins.split(",") if o.strip()]
+    allowed_origins = default_origins + custom_list
 else:
-    allowed_origins = [
-        frontend_url,
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ]
+    allowed_origins = default_origins
 
 # Deduplicate
 allowed_origins = list(dict.fromkeys(allowed_origins))
@@ -35,6 +42,7 @@ if os.getenv("CORS_ALLOW_ALL", "false").lower() in ("true", "1"):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=r"https://ai-yoga-coach.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -26,6 +26,7 @@ export interface RuleResult {
 }
 
 const ruleEvaluatorLogThrottle = new Map<string, number>();
+const DEBUG_POSE_RULES = false;
 
 /**
  * Evaluate a single pose rule against the current pose.
@@ -94,13 +95,15 @@ export function evaluateRule(
   // 2. Pre-check landmark usability for all required rule points
   for (const pointIdx of rule.points) {
     const lm = imageLandmarks[pointIdx];
-    console.log("[RULE DEBUG] Landmark check", {
-      ruleId: rule.id,
-      ruleName: rule.name,
-      pointIdx,
-      landmark: lm,
-      usable: lm ? isLandmarkUsable(lm) : false,
-    });
+    if (DEBUG_POSE_RULES) {
+      console.log("[RULE DEBUG] Landmark check", {
+        ruleId: rule.id,
+        ruleName: rule.name,
+        pointIdx,
+        landmark: lm,
+        usable: lm ? isLandmarkUsable(lm) : false,
+      });
+    }
     if (!lm || !isLandmarkUsable(lm)) {
       return {
         passed: false,
@@ -115,16 +118,18 @@ export function evaluateRule(
   // 3. Extract measured value based on metric
   let value: number | null = null;
 
-  console.log("[RULE DEBUG] Evaluating metric", {
-    ruleId: rule.id,
-    metric: rule.metric,
-    points: rule.points,
-    comparison: rule.comparison,
-    target: rule.target,
-    min: rule.min,
-    max: rule.max,
-    tolerance: rule.tolerance,
-  });
+  if (DEBUG_POSE_RULES) {
+    console.log("[RULE DEBUG] Evaluating metric", {
+      ruleId: rule.id,
+      metric: rule.metric,
+      points: rule.points,
+      comparison: rule.comparison,
+      target: rule.target,
+      min: rule.min,
+      max: rule.max,
+      tolerance: rule.tolerance,
+    });
+  }
 
   switch (rule.metric) {
     case "angle":
@@ -160,13 +165,15 @@ export function evaluateRule(
       };
   }
 
-  console.log("[RULE DEBUG] Metric result", {
-    ruleId: rule.id,
-    metric: rule.metric,
-    points: rule.points,
-    value,
-    isFinite: value !== null && Number.isFinite(value),
-  });
+  if (DEBUG_POSE_RULES) {
+    console.log("[RULE DEBUG] Metric result", {
+      ruleId: rule.id,
+      metric: rule.metric,
+      points: rule.points,
+      value,
+      isFinite: value !== null && Number.isFinite(value),
+    });
+  }
 
   if (value === null || !Number.isFinite(value)) {
     return {
@@ -317,17 +324,19 @@ function evaluateAngle(
     return null;
   }
 
-  console.log("[ANGLE DEBUG] Calculating angle", {
-    ruleId: rule.id,
-    ruleName: rule.name,
-    points: [a, b, c],
-    useWorldCoordinates,
-    landmarks: {
-      a: landmarks[a],
-      b: landmarks[b],
-      c: landmarks[c],
-    },
-  });
+  if (DEBUG_POSE_RULES) {
+    console.log("[ANGLE DEBUG] Calculating angle", {
+      ruleId: rule.id,
+      ruleName: rule.name,
+      points: [a, b, c],
+      useWorldCoordinates,
+      landmarks: {
+        a: landmarks[a],
+        b: landmarks[b],
+        c: landmarks[c],
+      },
+    });
+  }
 
   return calculateLandmarkAngle(
     landmarks[a],

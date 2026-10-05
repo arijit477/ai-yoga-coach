@@ -19,6 +19,9 @@ const SEVERITY_WEIGHTS: Record<RuleSeverity, number> = {
   info: 1,
 };
 
+const DEBUG_POSE_SUMMARY = true;
+let lastEvalDebugLogTime = 0;
+
 export function evaluatePose(
   asanaId: string,
   rules: PoseRule[],
@@ -127,18 +130,24 @@ export function evaluatePose(
     });
   }
 
-  console.log("[EVAL DEBUG]", {
-    asanaId,
-    totalRules: rules.length,
-    evaluatedRules,
-    passedRules,
-    warningRules,
-    failedRules,
-    notEvaluableRules,
-    score,
-    coverage,
-    overallStatus,
-  });
+  if (DEBUG_POSE_SUMMARY) {
+    const now = Date.now();
+    if (now - lastEvalDebugLogTime >= 500) {
+      lastEvalDebugLogTime = now;
+      console.log("[EVAL DEBUG]", {
+        asanaId,
+        totalRules: rules.length,
+        evaluatedRules,
+        passedRules,
+        warningRules,
+        failedRules,
+        notEvaluableRules,
+        score,
+        coverage,
+        overallStatus,
+      });
+    }
+  }
 
   // Derive 8 body area posture statuses
   const posture = derivePostureStatuses(ruleEvaluations);
