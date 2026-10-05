@@ -627,6 +627,10 @@ export function useCoachSession({
               elapsedHold,
               score: finalScore,
             });
+            console.debug("[COMPLETION AUDIT] onAsanaComplete FIRED", {
+              asanaId: activeAsanaId,
+              score: finalScore,
+            });
           }
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);

@@ -1,4 +1,5 @@
 import type { CoachPersona } from "../types/coach-session";
+import { assetUrl } from "../../../lib/assetUrl";
 
 interface CoachSelectorProps {
   selectedCoach: CoachPersona;
@@ -26,7 +27,7 @@ export function CoachSelector({
         } disabled:opacity-50`}
       >
         <img
-          src="/images/alice.png"
+          src={assetUrl("/images/alice.png")}
           alt="Alice"
           className="h-4 w-4 rounded-full object-cover border border-slate-200"
         />
@@ -44,7 +45,7 @@ export function CoachSelector({
         } disabled:opacity-50`}
       >
         <img
-          src="/images/kevin.jpg"
+          src={assetUrl("/images/kevin.jpg")}
           alt="Kevin"
           className="h-4 w-4 rounded-full object-cover border border-slate-200"
         />

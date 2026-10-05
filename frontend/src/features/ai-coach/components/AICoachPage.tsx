@@ -28,6 +28,7 @@ import { SafetyGuideBanner } from "./SafetyGuideBanner";
 import { AsanaInstructionsCard } from "./AsanaInstructionsCard";
 import { getAsanaVideoUrl } from "../data/freeAsanas";
 import { getAllAsanas } from "../data/AsanaRegistry";
+import { assetUrl } from "../../../lib/assetUrl";
 import type { Asana } from "../types/asana";
 import { PostureCheckOverlay } from "./PostureCheckOverlay";
 import { getPostureCheckResult, PostureStatusDebouncer } from "../analysis/PostureCheckAdapter";
@@ -421,18 +422,24 @@ export function AICoachPage() {
     ),
   });
 
+  const prevPopupStateRef = useRef<string | null>(null);
   useEffect(() => {
     if (
       sessionState === "pose_review" ||
       sessionState === "user_choice" ||
       sessionState === "completed"
     ) {
-      if (import.meta.env?.DEV) {
-        console.debug("[COMPLETION AUDIT] POPUP STATE", {
-          sessionState,
-          asanaId: currentAsana.id,
-        });
+      if (prevPopupStateRef.current !== sessionState) {
+        prevPopupStateRef.current = sessionState;
+        if (import.meta.env?.DEV) {
+          console.debug("[COMPLETION AUDIT] POPUP STATE", {
+            sessionState,
+            asanaId: currentAsana.id,
+          });
+        }
       }
+    } else {
+      prevPopupStateRef.current = null;
     }
   }, [sessionState, currentAsana.id]);
 
@@ -1121,8 +1128,8 @@ export function AICoachPage() {
                   <img
                     src={
                       selectedCoach === "alice"
-                        ? "/images/alice.png"
-                        : "/images/kevin.jpg"
+                        ? assetUrl("/images/alice.png")
+                        : assetUrl("/images/kevin.jpg")
                     }
                     alt={`Coach ${getCoachName(selectedCoach)}`}
                     className="w-full h-full object-cover object-top"

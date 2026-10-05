@@ -125,68 +125,67 @@ const requirementsCache = new Map<string, AsanaCompletionRequirements>();
  */
 export function getAsanaCompletionRequirements(asanaId: string): AsanaCompletionRequirements {
   const normalizedId = normalizeAsanaId(asanaId);
-  const cached = requirementsCache.get(normalizedId);
-  if (cached) {
-    return cached;
-  }
+  let requirements = requirementsCache.get(normalizedId);
+  
+  if (!requirements) {
+    // Resolve compound catalog ID (e.g. "cobra-bhujangasana") to canonical short-form key
+    // (e.g. "bhujangasana") used by KNOWN_CRITICAL_RULES. This is the ONE resolution point.
+    const canonicalId = resolveCanonicalAsanaId(normalizedId);
 
-  // Resolve compound catalog ID (e.g. "cobra-bhujangasana") to canonical short-form key
-  // (e.g. "bhujangasana") used by KNOWN_CRITICAL_RULES. This is the ONE resolution point.
-  const canonicalId = resolveCanonicalAsanaId(normalizedId);
+    const profile = getAsanaCoachingProfile(normalizedId);
+    const landmarkReqs = getAsanaLandmarkRequirements(normalizedId);
 
-  const profile = getAsanaCoachingProfile(normalizedId);
-  const landmarkReqs = getAsanaLandmarkRequirements(normalizedId);
+    ensureAsanaRules(normalizedId);
+    const rules = hasPoseRules(normalizedId) ? getPoseRules(normalizedId) : [];
 
-  ensureAsanaRules(normalizedId);
-  const rules = hasPoseRules(normalizedId) ? getPoseRules(normalizedId) : [];
+    let criticalRuleIds: string[] = [];
+    let requiresDetectionRefinement = false;
+    let refinementReason: string | undefined;
 
-  let criticalRuleIds: string[] = [];
-  let requiresDetectionRefinement = false;
-  let refinementReason: string | undefined;
-
-  // 1. Check hand-authored critical rule sets via canonical ID
-  if (KNOWN_CRITICAL_RULES[canonicalId]) {
-    criticalRuleIds = [...KNOWN_CRITICAL_RULES[canonicalId]];
-  } else {
-    // 2. Auto-extract high-severity or safety-critical rules from catalog definitions
-    const highSevRules = rules.filter((r) => r.severity === "high" || r.isSafety || (r.weight ?? 1) >= 3);
-    if (highSevRules.length > 0) {
-      criticalRuleIds = highSevRules.map((r) => r.id);
+    // 1. Check hand-authored critical rule sets via canonical ID
+    if (KNOWN_CRITICAL_RULES[canonicalId]) {
+      criticalRuleIds = [...KNOWN_CRITICAL_RULES[canonicalId]];
     } else {
-      // STEP 3 & 4 (pmt.md Phase 10A): No reliable pose-defining rules exist.
-      // Do NOT promote a generic first rule (horizontal/vertical alignment, body symmetry)
-      // to critical status — these metrics cannot uniquely identify a specific asana.
-      // Mark for detection refinement and BLOCK completion (fail-closed).
-      requiresDetectionRefinement = true;
-      if (rules.length > 0) {
-        refinementReason = `Rules exist but lack high-severity pose-defining constraints (${rules.length} low/medium-severity rules). Completion blocked until pose-specific rules are authored.`;
+      // 2. Auto-extract high-severity or safety-critical rules from catalog definitions
+      const highSevRules = rules.filter((r) => r.severity === "high" || r.isSafety || (r.weight ?? 1) >= 3);
+      if (highSevRules.length > 0) {
+        criticalRuleIds = highSevRules.map((r) => r.id);
       } else {
-        refinementReason = "No joint rules authored for this asana. Completion blocked until pose-specific rules are authored.";
+        // STEP 3 & 4 (pmt.md Phase 10A): No reliable pose-defining rules exist.
+        // Do NOT promote a generic first rule (horizontal/vertical alignment, body symmetry)
+        // to critical status — these metrics cannot uniquely identify a specific asana.
+        // Mark for detection refinement and BLOCK completion (fail-closed).
+        requiresDetectionRefinement = true;
+        if (rules.length > 0) {
+          refinementReason = `Rules exist but lack high-severity pose-defining constraints (${rules.length} low/medium-severity rules). Completion blocked until pose-specific rules are authored.`;
+        } else {
+          refinementReason = "No joint rules authored for this asana. Completion blocked until pose-specific rules are authored.";
+        }
       }
     }
-  }
 
-  const requirements: AsanaCompletionRequirements = {
-    asanaId: normalizedId,
-    canonicalId,
-    asanaName: profile.asanaName,
-    requiredStance: profile.stance,
-    criticalRuleIds,
-    requiredRegions: landmarkReqs.requiredRegions.length > 0 ? landmarkReqs.requiredRegions : (profile.requiredRegions as BodyRegion[]),
-    requireAllCriticalRules: true,
-    minimumCriticalScore: 70,
-    requiresDetectionRefinement,
-    refinementReason,
-  };
-
-  requirementsCache.set(normalizedId, requirements);
-
-  if (typeof window !== "undefined" && import.meta.env?.DEV) {
-    console.debug("[COMPLETION AUDIT] REQUIREMENTS", {
+    requirements = {
       asanaId: normalizedId,
       canonicalId,
+      asanaName: profile.asanaName,
+      requiredStance: profile.stance,
       criticalRuleIds,
+      requiredRegions: landmarkReqs.requiredRegions.length > 0 ? landmarkReqs.requiredRegions : (profile.requiredRegions as BodyRegion[]),
+      requireAllCriticalRules: true,
+      minimumCriticalScore: 70,
       requiresDetectionRefinement,
+      refinementReason,
+    };
+
+    requirementsCache.set(normalizedId, requirements);
+  }
+
+  if (import.meta.env?.DEV) {
+    console.debug("[COMPLETION AUDIT] REQUIREMENTS", {
+      asanaId: requirements.asanaId,
+      canonicalId: requirements.canonicalId,
+      criticalRuleIds: requirements.criticalRuleIds,
+      requiresDetectionRefinement: requirements.requiresDetectionRefinement,
     });
   }
 

@@ -7,6 +7,8 @@ import type { VoiceState } from "../voice/voice.types";
 import type { Asana } from "../types/asana";
 import type { PostureCheckResult } from "../types/posture-check";
 
+import { assetUrl } from "../../../lib/assetUrl";
+
 interface CoachPanelProps {
   coach: CoachId;
   coachName: string;
@@ -49,7 +51,7 @@ export const CoachPanel = React.memo(function CoachPanel({
   const outfit = outfitId
     ? coachData?.outfits.find((o) => o.id === outfitId) ?? coachData?.outfits[0]
     : coachData?.outfits[0];
-  const outfitImageSrc = outfit?.imageSrc ?? (coach === "alice" ? "/images/alice.png" : "/images/kevin.jpg");
+  const outfitImageSrc = outfit?.imageSrc ?? (coach === "alice" ? assetUrl("/images/alice.png") : assetUrl("/images/kevin.jpg"));
 
   return (
     <div

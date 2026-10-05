@@ -1,6 +1,6 @@
 import type { PoseRule } from "../../types/pose-rules";
-
 import { registerPoseRules, getPoseRules, hasPoseRules } from "../RuleEngine";
+import { assetUrl } from "../../../../lib/assetUrl";
 export { getPoseRules };
 
 let RULES_CACHE: Record<string, PoseRule[]> | null = null;
@@ -8,7 +8,7 @@ let RULES_CACHE: Record<string, PoseRule[]> | null = null;
 export async function fetchRulesCache() {
   if (RULES_CACHE) return RULES_CACHE;
   try {
-    const res = await fetch("/data/rules.json");
+    const res = await fetch(assetUrl("/data/rules.json"));
     RULES_CACHE = await res.json();
   } catch (err) {
     console.error("Failed to fetch rules", err);

@@ -3,6 +3,7 @@ import { COACHES } from "./avatar.types";
 import type { CoachId, AvatarState } from "./avatar.types";
 import { AvatarAssetResolver } from "./AvatarAssetResolver";
 import { AvatarController } from "./AvatarController";
+import { assetUrl } from "../../../lib/assetUrl";
 
 interface AvatarPlayerProps {
   coach: CoachId;
@@ -115,7 +116,7 @@ export const AvatarPlayer = React.memo(function AvatarPlayer({
   // Get the selected outfit image (or fallback to default)
   const coachData = COACHES[coach];
   const selectedOutfit = coachData?.outfits?.find(o => o.id === outfitId) || coachData?.outfits?.[0];
-  const fallbackImageSrc = selectedOutfit?.imageSrc || (coach === "alice" ? "/images/alice.png" : "/images/kevin.jpg");
+  const fallbackImageSrc = selectedOutfit?.imageSrc || (coach === "alice" ? assetUrl("/images/alice.png") : assetUrl("/images/kevin.jpg"));
 
   // If a custom outfit is selected, we disable the video (since we don't have matching videos)
   const hasCustomOutfit = outfitId !== "default";
