@@ -7,10 +7,173 @@ import type {
 } from "../types/pose-rules";
 import { evaluatePose } from "./PoseEvaluator";
 import { AccuracyStabilizer } from "./AccuracyStabilizer";
+import {
+  isLandmarkValid,
+  getLandmarkConfidence,
+} from "./LandmarkUtils";
+import { getAsanaCoachingProfile } from "../services/AsanaCoachingProfileService";
 
 import { evaluateCompletionGate } from "./AsanaCompletionGate";
 
 const ISSUE_PERSISTENCE_THRESHOLD = 10; // Frames an issue must persist to become primary
+
+interface TrackingReadinessResult {
+  ready: boolean;
+  requiredLandmarks: number[];
+  missingLandmarks: number[];
+  confidence: number;
+  missingRegions: string[];
+}
+
+const REGION_LANDMARKS: Record<string, number[]> = {
+  head: [0],
+
+  shoulders: [11, 12],
+  elbows: [13, 14],
+  wrists: [15, 16],
+
+  torso: [11, 12, 23, 24],
+  spine: [11, 12, 23, 24],
+  hips: [23, 24],
+
+  knees: [25, 26],
+  ankles: [27, 28],
+
+  feet: [27, 28, 31, 32],
+
+  // Conceptual regions used by the coaching profile system
+  arms: [11, 12, 13, 14, 15, 16],
+  legs: [23, 24, 25, 26, 27, 28],
+};
+
+function evaluateTrackingReadiness(
+  asanaId: string,
+  rules: PoseRule[],
+  landmarks: PoseEvaluatorContext["landmarks"],
+): TrackingReadinessResult {
+  if (!landmarks || landmarks.length < 33) {
+    return {
+      ready: false,
+      requiredLandmarks: [],
+      missingLandmarks: [],
+      confidence: 0,
+      missingRegions: ["body"],
+    };
+  }
+
+  const profile = getAsanaCoachingProfile(asanaId);
+
+  const requiredIndices = new Set<number>();
+
+  /*
+   * 1. Always require the head anchor.
+   *
+   * This prevents a cropped camera view from being considered
+   * fully ready simply because torso/limb rules can be evaluated.
+   */
+  requiredIndices.add(0);
+
+  /*
+   * 2. Add stance-specific body requirements.
+   *
+   * Examples:
+   * standing -> torso + legs + feet
+   * seated   -> torso + legs + head
+   * prone    -> torso + arms + head
+   * etc.
+   */
+  for (const region of profile.requiredRegions ?? []) {
+    const indices = REGION_LANDMARKS[String(region)];
+
+    if (!indices) {
+      continue;
+    }
+
+    for (const index of indices) {
+      requiredIndices.add(index);
+    }
+  }
+
+  /*
+   * 3. Also require every landmark explicitly referenced
+   *    by the active pose rules.
+   *
+   * This makes the gate pose-specific without hard-coding
+   * any individual asana.
+   */
+  for (const rule of rules) {
+    for (const point of rule.points ?? []) {
+      if (
+        Number.isInteger(point) &&
+        point >= 0 &&
+        point < 33
+      ) {
+        requiredIndices.add(point);
+      }
+    }
+  }
+
+  const requiredLandmarks = Array.from(requiredIndices).sort(
+    (a, b) => a - b,
+  );
+
+  const missingLandmarks = requiredLandmarks.filter(
+    (index) => !isLandmarkValid(landmarks[index]),
+  );
+
+  const missingRegions: string[] = [];
+
+  for (const region of profile.requiredRegions ?? []) {
+    const indices = REGION_LANDMARKS[String(region)];
+
+    if (!indices) {
+      continue;
+    }
+
+    const regionReady = indices.every((index) =>
+      isLandmarkValid(landmarks[index]),
+    );
+
+    if (!regionReady) {
+      missingRegions.push(String(region));
+    }
+  }
+
+  /*
+   * Calculate confidence only from landmarks that matter
+   * for this asana.
+   */
+  const confidence =
+    requiredLandmarks.length > 0
+      ? requiredLandmarks.reduce(
+          (sum, index) =>
+            sum + getLandmarkConfidence(landmarks[index]),
+          0,
+        ) / requiredLandmarks.length
+      : 0;
+
+  /*
+   * Strict gate:
+   *
+   * ALL required landmarks must be valid.
+   *
+   * This is what prevents a partial camera frame from producing
+   * a believable accuracy percentage.
+   */
+  const ready =
+    requiredLandmarks.length > 0 &&
+    missingLandmarks.length === 0 &&
+    missingRegions.length === 0 &&
+    confidence >= 0.5;
+
+  return {
+    ready,
+    requiredLandmarks,
+    missingLandmarks,
+    confidence,
+    missingRegions,
+  };
+}
 
 export class TemporalPoseEvaluator {
   private accuracyStabilizer = new AccuracyStabilizer();
@@ -40,24 +203,38 @@ export class TemporalPoseEvaluator {
   ): PoseEvaluationResult | null {
     const rawEvaluation = evaluatePose(asanaId, rules, context);
     
-    // Check if the pose is truly valid:
-    // 1. Must have valid landmark array with >= 33 landmarks
-    // 2. Evaluated rules must represent at least half the required rules
-    // 3. No high-severity rule should be unknown (missing critical body parts)
-    // 4. Overall status must not be "unknown"
-    const hasUsableTracking =
-      Boolean(context.landmarks &&
-      context.landmarks.length >= 33 &&
-      rawEvaluation.summary.evaluatedRules > 0 &&
-      rawEvaluation.overallStatus !== "not_ready" &&
-      rawEvaluation.overallStatus !== "unknown");
+    const trackingReadiness = evaluateTrackingReadiness(
+      asanaId,
+      rules,
+      context.landmarks,
+    );
+
+    const hasUsableTracking = trackingReadiness.ready;
 
     console.log("[TEMPORAL DEBUG]", {
+      asanaId,
+
       landmarkCount: context.landmarks?.length,
+
       evaluatedRules: rawEvaluation.summary.evaluatedRules,
+
       overallStatus: rawEvaluation.overallStatus,
+
       rawScore: rawEvaluation.score,
+
       hasUsableTracking,
+
+      requiredLandmarks:
+        trackingReadiness.requiredLandmarks,
+
+      missingLandmarks:
+        trackingReadiness.missingLandmarks,
+
+      missingRegions:
+        trackingReadiness.missingRegions,
+
+      trackingConfidence:
+        trackingReadiness.confidence,
     });
 
     // Update the accuracy stabilizer
