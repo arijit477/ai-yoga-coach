@@ -20,9 +20,9 @@ export function SessionReportModal({
     async function fetchSummary() {
       if (completedAsanas.length === 0) return;
       setIsLoading(true);
-      
       try {
-        const response = await fetch("http://localhost:8000/api/chat/summary", {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+        const response = await fetch(`${apiUrl}/api/chat/summary`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
