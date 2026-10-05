@@ -1604,9 +1604,9 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
         "name": "Arms Raised Overhead",
         "metric": "angle",
         "points": [
-          23,
           11,
-          13
+          13,
+          15
         ],
         "comparison": "between",
         "min": 145,
@@ -1638,6 +1638,7 @@ export const ALL_ASANAS_CATALOG: AsanaDefinition[] = [
     "requiredLandmarks": [
       11,
       13,
+      15,
       23,
       25,
       26,

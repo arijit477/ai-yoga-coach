@@ -19,6 +19,119 @@ export function normalizeAsanaId(filenameOrId: string): string {
   return clean.replace(/\.(webp|png|jpg|jpeg)$/i, "").trim().toLowerCase();
 }
 
+/**
+ * Authoritative canonical alias map for resolving sequence step IDs, Sanskrit aliases, and shorthand names
+ * to actual registered AsanaDefinitions with full pose rules.
+ */
+export const ASANA_CANONICAL_ALIASES: Record<string, string> = {
+  // Step 1: Prayer / Pranamasana
+  "step-01-prayer-pranamasana": "mountain-tadasana",
+  "step-1-prayer-pranamasana": "mountain-tadasana",
+  "step-01-pranamasana": "mountain-tadasana",
+  "step-1-pranamasana": "mountain-tadasana",
+  "step-1-pranamasana-namaskar": "mountain-tadasana",
+  "prayer-pranamasana": "mountain-tadasana",
+  "pranamasana": "mountain-tadasana",
+  "pranamasana-namaskar": "mountain-tadasana",
+
+  // Step 2: Raised Arms / Hasta Uttanasana
+  "step-02-raised-arms-hastauttanasana": "mountain-tadasana",
+  "step-2-raised-arms-hastauttanasana": "mountain-tadasana",
+  "step-02-hastauttanasana": "mountain-tadasana",
+  "step-2-hastauttanasana": "mountain-tadasana",
+  "step-2-raised-arms-hastauttana": "mountain-tadasana",
+  "raised-arms-hastauttanasana": "mountain-tadasana",
+  "hastauttanasana": "mountain-tadasana",
+  "hasta-uttanasana": "mountain-tadasana",
+
+  // Step 3: Standing Forward Bend / Hastapadasana / Padahastasana
+  "step-03-standing-forward-bend-hastapadasana": "standing-forward-bend-uttanasana",
+  "step-3-standing-forward-bend-hastapadasana": "standing-forward-bend-uttanasana",
+  "step-03-hand-to-foot-padahastasana": "standing-forward-bend-uttanasana",
+  "step-3-hand-to-foot-padahastasana": "standing-forward-bend-uttanasana",
+  "step-03-hastapadasana": "standing-forward-bend-uttanasana",
+  "step-3-hastapadasana": "standing-forward-bend-uttanasana",
+  "standing-forward-bend-hastapadasana": "standing-forward-bend-uttanasana",
+  "hastapadasana": "standing-forward-bend-uttanasana",
+  "padahastasana": "standing-forward-bend-uttanasana",
+
+  // Step 4: Equestrian / Ashwa Sanchalanasana (Right Leg Back)
+  "step-04-equestrian-right-back-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "step-4-equestrian-right-back-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "step-04-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "step-4-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "equestrian-right-back-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "ashwasanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+
+  // Step 5: Plank / Dandasana / Phalakasana
+  "step-05-plank-dandasana": "plank-phalakasana",
+  "step-5-plank-dandasana": "plank-phalakasana",
+  "step-05-dandasana": "plank-phalakasana",
+  "step-5-dandasana": "plank-phalakasana",
+  "plank-dandasana": "plank-phalakasana",
+  "dandasana": "plank-phalakasana",
+  "phalakasana": "plank-phalakasana",
+  "plank": "plank-phalakasana",
+
+  // Step 6: Eight-Limbed Salute / Ashtanga Namaskara
+  "step-06-eight-limbed-salute-ashtanga-namaskara": "eight-point-ashtangasana",
+  "step-6-eight-limbed-salute-ashtanga-namaskara": "eight-point-ashtangasana",
+  "step-06-ashtanga-namaskara": "eight-point-ashtangasana",
+  "step-6-ashtanga-namaskara": "eight-point-ashtangasana",
+  "eight-limbed-salute-ashtanga-namaskara": "eight-point-ashtangasana",
+  "ashtanga-namaskara": "eight-point-ashtangasana",
+  "ashtanga-namaskar": "eight-point-ashtangasana",
+  "ashtangasana": "eight-point-ashtangasana",
+
+  // Step 7: Cobra / Bhujangasana
+  "step-07-cobra-bhujangasana": "cobra-bhujangasana",
+  "step-7-cobra-bhujangasana": "cobra-bhujangasana",
+  "step-07-bhujangasana": "cobra-bhujangasana",
+  "step-7-bhujangasana": "cobra-bhujangasana",
+  "cobra-bhujangasana": "cobra-bhujangasana",
+  "bhujangasana": "cobra-bhujangasana",
+  "cobra": "cobra-bhujangasana",
+
+  // Step 8: Downward-Facing Dog / Adho Mukha Svanasana
+  "step-08-downward-dog-adho-mukha-svanasana": "downward-dog-adho-mukha-svanasana",
+  "step-8-downward-dog-adho-mukha-svanasana": "downward-dog-adho-mukha-svanasana",
+  "step-08-adho-mukha-svanasana": "downward-dog-adho-mukha-svanasana",
+  "step-8-adho-mukha-svanasana": "downward-dog-adho-mukha-svanasana",
+  "downward-dog-adho-mukha-svanasana": "downward-dog-adho-mukha-svanasana",
+  "adho-mukha-svanasana": "downward-dog-adho-mukha-svanasana",
+  "downward-dog": "downward-dog-adho-mukha-svanasana",
+  "downdog": "downward-dog-adho-mukha-svanasana",
+
+  // Step 9: Equestrian / Ashwa Sanchalanasana (Left Leg Back)
+  "step-09-equestrian-left-back-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "step-9-equestrian-left-back-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+  "equestrian-left-back-ashwa-sanchalanasana": "crescent-lunge-on-knee-anjaneyasana",
+
+  // Step 10: Standing Forward Bend (Return)
+  "step-10-standing-forward-bend-hastapadasana": "standing-forward-bend-uttanasana",
+  "standing-forward-bend-hastapadasana-return": "standing-forward-bend-uttanasana",
+
+  // Step 11: Raised Arms (Return)
+  "step-11-raised-arms-hastauttanasana": "mountain-tadasana",
+  "raised-arms-hastauttanasana-return": "mountain-tadasana",
+
+  // Step 12: Mountain Pose / Tadasana
+  "step-12-mountain-tadasana": "mountain-tadasana",
+  "mountain-tadasana": "mountain-tadasana",
+  "mountain-pose": "mountain-tadasana",
+  "tadasana": "mountain-tadasana",
+};
+
+/**
+ * Resolves any asana ID or alias to its registered canonical ID.
+ */
+export function resolveCanonicalAsanaId(idOrAlias: string): string {
+  if (!idOrAlias) return "";
+  const normalized = normalizeAsanaId(idOrAlias);
+  return ASANA_CANONICAL_ALIASES[normalized] || normalized;
+}
+
 function populateRegistryMap(asanas: AsanaDefinition[]) {
   ASANA_REGISTRY_MAP.clear();
   for (const asana of asanas) {
@@ -39,6 +152,15 @@ function populateRegistryMap(asanas: AsanaDefinition[]) {
           ASANA_REGISTRY_MAP.set(aliasKey, asana);
         }
       }
+    }
+  }
+
+  // Also bind canonical aliases to definitions in registry
+  for (const [alias, targetId] of Object.entries(ASANA_CANONICAL_ALIASES)) {
+    const targetKey = normalizeAsanaId(targetId);
+    const targetDef = ASANA_REGISTRY_MAP.get(targetKey);
+    if (targetDef && !ASANA_REGISTRY_MAP.has(alias)) {
+      ASANA_REGISTRY_MAP.set(alias, targetDef);
     }
   }
 }
@@ -98,8 +220,14 @@ export async function initAsanaRegistry() {
 export function getAsana(idOrAlias: string): AsanaDefinition | null {
   if (!idOrAlias) return null;
   const key = normalizeAsanaId(idOrAlias);
-  const asana = ASANA_REGISTRY_MAP.get(key);
-  return asana ?? null;
+  const direct = ASANA_REGISTRY_MAP.get(key);
+  if (direct) return direct;
+
+  const canonicalKey = resolveCanonicalAsanaId(idOrAlias);
+  if (canonicalKey && canonicalKey !== key) {
+    return ASANA_REGISTRY_MAP.get(canonicalKey) ?? null;
+  }
+  return null;
 }
 
 /**
@@ -108,7 +236,10 @@ export function getAsana(idOrAlias: string): AsanaDefinition | null {
 export function hasAsana(idOrAlias: string): boolean {
   if (!idOrAlias) return false;
   const key = normalizeAsanaId(idOrAlias);
-  return ASANA_REGISTRY_MAP.has(key);
+  if (ASANA_REGISTRY_MAP.has(key)) return true;
+
+  const canonicalKey = resolveCanonicalAsanaId(idOrAlias);
+  return ASANA_REGISTRY_MAP.has(canonicalKey);
 }
 
 /**
@@ -173,4 +304,5 @@ export const AsanaRegistry = {
   getRules: getAsanaRules,
   getRequiredLandmarks: getAsanaRequiredLandmarks,
   normalizeId: normalizeAsanaId,
+  resolveCanonicalId: resolveCanonicalAsanaId,
 };

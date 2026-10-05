@@ -8,6 +8,7 @@ import type { CoachingIntent } from "./coachingIntent.types";
 import { getCoachingIntentInstruction } from "./CoachingIntentInstructions";
 import { CoachingContextManager } from "./CoachingContextManager";
 import { CoachingPromptBuilder } from "./CoachingPromptBuilder";
+import { CoachingContextSynchronizer } from "./CoachingContextSynchronizer";
 import type { CoachingContext } from "./CoachingContext";
 
 export interface SessionContextData {
@@ -69,6 +70,7 @@ export class RealtimeVoiceAgent {
   private readonly voiceCoachingOrchestrator = new VoiceCoachingOrchestrator();
   private coachingRhythm = new CoachingRhythmManager();
   private readonly coachingContextManager = new CoachingContextManager();
+  private readonly contextSynchronizer = new CoachingContextSynchronizer(this.coachingContextManager);
 
   // Safe response orchestration state
   private hasActiveServerResponse: boolean = false;
@@ -480,6 +482,11 @@ The response should normally be one or two short sentences.
 
     try {
       this.dc.send(JSON.stringify(responseCreate));
+      console.log(`[AI COACH][DEBUG][VOICE] sendResponseCreate dispatched to OpenAI WebRTC DataChannel`, {
+        intent: coachingIntent,
+        text,
+        timestamp: Date.now(),
+      });
 
       this.hasActiveServerResponse = true;
       this.isCancelling = false;
@@ -571,13 +578,27 @@ The response should normally be one or two short sentences.
     return this.coachingContextManager;
   }
 
+  public getContextSynchronizer(): CoachingContextSynchronizer {
+    return this.contextSynchronizer;
+  }
+
+  public syncCoachingContext(event: CoachingEvent): void {
+    this.contextSynchronizer.sync(event);
+  }
+
   /**
    * Triggers the pose entry cue when an asana starts.
    */
   public triggerPoseStart(asanaId: string, asanaName: string, _asanaDescription?: string): void {
     this.voiceCoachingOrchestrator.reset();
     this.resetCoachingContext();
-    this.startCoachingContext(asanaName);
+    this.contextSynchronizer.sync({
+      id: `pose_start_${Date.now()}`,
+      type: "pose_started",
+      timestamp: Date.now(),
+      asanaId,
+      asanaName,
+    });
     const instruction = getAsanaStartingInstruction(asanaId);
     const message = `Let's begin ${asanaName}. ${instruction}`;
 
@@ -678,79 +699,40 @@ The response should normally be one or two short sentences.
   /**
    * Dispatches a structured coaching event approved by CoachDecisionEngine.
    *
-   * Phase 3.5, 4A & 4B:
+   * Phase 3.5, 4A, 4B & 4C:
+   * CoachingContextSynchronizer updates live structured CoachingContextManager.
    * VoiceCoachingOrchestrator arbitrates whether the event should be spoken now
    * and maps the coaching intent.
-   * Updates structured CoachingContextManager context.
    * It does NOT modify pose detection, scoring, or event generation.
    */
   public sendCoachingEvent(event: CoachingEvent): void {
     if (this.isMuted) return;
 
-    const ruleId = event.ruleId || event.primaryIssue?.ruleId || (event as any).data?.ruleId;
-    const joint = event.joint || event.primaryIssue?.joint || event.primaryIssue?.bodyRegion || (event as any).data?.joint || (event as any).data?.bodyRegion || "Posture";
-    const feedback = event.feedback || event.primaryIssue?.feedback || (event as any).data?.feedback || "Alignment needs correction";
-    const rawSeverity = event.severity || event.primaryIssue?.severity || (event as any).data?.severity || "medium";
-    const severity: "low" | "medium" | "high" = rawSeverity === "high" || rawSeverity === "low" ? rawSeverity : "medium";
-    const score = event.score ?? (event as any).data?.score;
-    const holdSec = (event as any).holdTime ?? (event as any).data?.holdTime ?? 0;
-    const targetHold = (event as any).targetHoldTime ?? (event as any).data?.targetHoldTime;
-    const remainingSec = targetHold !== undefined ? Math.max(0, targetHold - holdSec) : undefined;
-
-    // Phase 4B: update structured coaching context based on the incoming vision event
-    if (event.type === "pose_started") {
-      this.coachingContextManager.setState("STARTING");
-    } else if (event.type === "pose_correction") {
-      this.coachingContextManager.setState("CORRECTING");
-      if (ruleId) {
-        this.coachingContextManager.setIssues([
-          {
-            id: ruleId,
-            bodyPart: joint,
-            issue: feedback,
-            correction: feedback,
-            severity,
-          },
-        ]);
-      }
-    } else if (event.type === "issue_improving") {
-      this.coachingContextManager.setState("IMPROVING");
-    } else if (event.type === "issue_resolved") {
-      if (ruleId) {
-        this.coachingContextManager.markIssueCorrected(ruleId);
-      }
-      this.coachingContextManager.setState("CORRECT");
-    } else if (event.type === "good_form") {
-      this.coachingContextManager.setState("CORRECT");
-    } else if (event.type === "pose_held" || event.type === "hold_countdown") {
-      this.coachingContextManager.updateHold(holdSec, remainingSec);
-    } else if (event.type === "pose_completed") {
-      this.coachingContextManager.setState("COMPLETING");
-    }
-
-    if (score !== undefined) {
-      this.coachingContextManager.setScore(score);
-    }
+    // Phase 4C: Live context synchronization
+    this.contextSynchronizer.sync(event);
 
     const voiceDecision =
       this.voiceCoachingOrchestrator.evaluate(event);
 
+    console.log(`[AI COACH][TRACE][10][VOICE]`, {
+      eventType: event.type,
+      shouldSpeak: voiceDecision.shouldSpeak,
+      dataChannelState: this.dc?.readyState ?? "closed",
+      responseCreateSent: Boolean(voiceDecision.shouldSpeak && this.dc && this.dc.readyState === "open"),
+    });
+
+    console.log(`[AI COACH][DEBUG][VOICE]`, {
+      eventType: event.type,
+      cueType: voiceDecision.cueType,
+      contextState: this.coachingContextManager.getContext()?.state ?? "unknown",
+      whetherSpeechRequestSent: voiceDecision.shouldSpeak,
+      reason: voiceDecision.reason,
+      timestamp: Date.now(),
+    });
+
     if (!voiceDecision.shouldSpeak) {
-      console.log(`[AI COACH][VOICE]`, {
-        type: event.type,
-        intent: voiceDecision.intent,
-        action: "suppressed",
-        reason: voiceDecision.reason,
-      });
       return;
     }
-
-    console.log(`[AI COACH][VOICE]`, {
-      type: event.type,
-      intent: voiceDecision.intent,
-      action: "send",
-      cueType: voiceDecision.cueType,
-    });
 
     let spokenText = event.feedback ?? "";
 

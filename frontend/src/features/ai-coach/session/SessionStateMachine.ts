@@ -87,11 +87,16 @@ export class SessionStateMachine {
   private onTransitionCallback?: (
     from: CoachSessionState,
     to: CoachSessionState,
+    reason?: string,
   ) => void;
 
   constructor(
     initialState: CoachSessionState = "idle",
-    onTransition?: (from: CoachSessionState, to: CoachSessionState) => void,
+    onTransition?: (
+      from: CoachSessionState,
+      to: CoachSessionState,
+      reason?: string,
+    ) => void,
   ) {
     this.currentState = initialState;
     this.onTransitionCallback = onTransition;
@@ -105,29 +110,29 @@ export class SessionStateMachine {
     return canTransitionSession(this.currentState, target);
   }
 
-  public transition(target: CoachSessionState): boolean {
+  public transition(target: CoachSessionState, reason?: string): boolean {
     if (this.currentState === target) {
       return true;
     }
 
     if (!canTransitionSession(this.currentState, target)) {
       console.warn(
-        `[SessionStateMachine] Illegal state transition attempted: ${this.currentState} -> ${target}`,
+        `[SessionStateMachine] Illegal state transition attempted: ${this.currentState} -> ${target}${reason ? ` (${reason})` : ""}`,
       );
       return false;
     }
 
     const previous = this.currentState;
     this.currentState = target;
-    this.onTransitionCallback?.(previous, target);
+    this.onTransitionCallback?.(previous, target, reason);
     return true;
   }
 
-  public reset(toState: CoachSessionState = "idle"): void {
+  public reset(toState: CoachSessionState = "idle", reason: string = "reset"): void {
     const previous = this.currentState;
     this.currentState = toState;
     if (previous !== toState) {
-      this.onTransitionCallback?.(previous, toState);
+      this.onTransitionCallback?.(previous, toState, reason);
     }
   }
 }

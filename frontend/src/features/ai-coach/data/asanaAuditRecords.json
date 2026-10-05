@@ -799,9 +799,9 @@
         "name": "Arms Raised Overhead",
         "metric": "angle",
         "points": [
-          23,
           11,
-          13
+          13,
+          15
         ],
         "weight": 2,
         "severity": "medium"

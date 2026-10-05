@@ -25,6 +25,8 @@ export interface RuleResult {
   ignored?: boolean; // alias for status === "unknown"
 }
 
+const ruleEvaluatorLogThrottle = new Map<string, number>();
+
 /**
  * Evaluate a single pose rule against the current pose.
  */
@@ -204,8 +206,24 @@ export function evaluateRule(
     rule.warningTolerance ??
     (rule.tolerance !== undefined ? rule.tolerance * 1.5 : defaultWarningTol);
 
+  const now = Date.now();
+
   // Exact target pass
   if (value >= targetMin && value <= targetMax) {
+    if (Math.random() < 0.1 || !ruleEvaluatorLogThrottle.has(rule.id) || now - (ruleEvaluatorLogThrottle.get(rule.id) ?? 0) >= 2000) {
+      ruleEvaluatorLogThrottle.set(rule.id, now);
+      console.log(`[AI COACH][RUNTIME][RULE]`, {
+        asana: (context as any)?.asanaId ?? "current_asana",
+        ruleId: rule.id,
+        metric: rule.metric,
+        currentValue: Number(value.toFixed(1)),
+        targetValue: rule.target ?? (rule.min !== undefined && rule.max !== undefined ? `[${rule.min}, ${rule.max}]` : rule.min ?? rule.max ?? null),
+        threshold: rule.tolerance ?? (rule.metric === "angle" ? 10 : 0.03),
+        deviation: 0,
+        status: "PASS",
+        severity: rule.severity,
+      });
+    }
     return {
       passed: true,
       status: "pass",
@@ -245,17 +263,31 @@ export function evaluateRule(
     isSafety: rule.isSafety ?? false,
   };
 
-  console.log("[RULE DEBUG] Final rule result", {
-    ruleId: rule.id,
-    ruleName: rule.name,
-    measuredValue: value,
-    targetMin,
-    targetMax,
-    delta,
-    warningTol,
-    status,
-    score,
-  });
+  if (!ruleEvaluatorLogThrottle.has(rule.id) || now - (ruleEvaluatorLogThrottle.get(rule.id) ?? 0) >= 1000) {
+    ruleEvaluatorLogThrottle.set(rule.id, now);
+    console.log(`[AI COACH][TRACE][5][POSE_ISSUE]`, {
+      ruleId: issue.ruleId,
+      severity: issue.severity,
+      currentValue: Number(issue.currentValue.toFixed(1)),
+      targetValue: issue.targetValue ?? issue.min ?? issue.max,
+      threshold: rule.tolerance ?? (rule.metric === "angle" ? 10 : 0.03),
+      deviation: Number(delta.toFixed(1)),
+      feedback: issue.feedback,
+      isSafety: issue.isSafety ?? false,
+    });
+
+    console.log(`[AI COACH][RUNTIME][RULE]`, {
+      asana: (context as any)?.asanaId ?? "current_asana",
+      ruleId: rule.id,
+      metric: rule.metric,
+      currentValue: Number(value.toFixed(1)),
+      targetValue: rule.target ?? (rule.min !== undefined && rule.max !== undefined ? `[${rule.min}, ${rule.max}]` : rule.min ?? rule.max ?? null),
+      threshold: rule.tolerance ?? (rule.metric === "angle" ? 10 : 0.03),
+      deviation: Number(delta.toFixed(1)),
+      status: status.toUpperCase(),
+      severity: rule.severity,
+    });
+  }
 
   return {
     passed: false,

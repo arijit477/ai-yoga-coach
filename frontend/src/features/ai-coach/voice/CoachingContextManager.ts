@@ -32,13 +32,24 @@ export class CoachingContextManager {
     }
   }
 
+  addOrUpdateIssue(issue: CoachingIssue): void {
+    if (!this.context) return;
+
+    const index = this.context.activeIssues.findIndex((i) => i.id === issue.id);
+    if (index >= 0) {
+      this.context.activeIssues[index] = issue;
+    } else {
+      this.context.activeIssues.push(issue);
+    }
+    this.context.lastIssueId = issue.id;
+  }
+
   markIssueCorrected(issueId: string): void {
     if (!this.context) return;
 
-    this.context.activeIssues =
-      this.context.activeIssues.filter(
-        issue => issue.id !== issueId
-      );
+    this.context.activeIssues = this.context.activeIssues.filter(
+      (issue) => issue.id !== issueId
+    );
 
     if (!this.context.correctedIssues.includes(issueId)) {
       this.context.correctedIssues.push(issueId);
@@ -46,14 +57,17 @@ export class CoachingContextManager {
   }
 
   updateHold(
-    holdSeconds: number,
+    holdSeconds?: number,
     remainingHoldSeconds?: number
   ): void {
     if (!this.context) return;
 
-    this.context.holdSeconds = holdSeconds;
-    this.context.remainingHoldSeconds =
-      remainingHoldSeconds;
+    if (holdSeconds !== undefined) {
+      this.context.holdSeconds = holdSeconds;
+    }
+    if (remainingHoldSeconds !== undefined) {
+      this.context.remainingHoldSeconds = remainingHoldSeconds;
+    }
 
     this.context.state = "HOLDING";
   }

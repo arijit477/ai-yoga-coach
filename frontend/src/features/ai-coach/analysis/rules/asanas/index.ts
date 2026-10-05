@@ -1,5 +1,5 @@
 import type { AsanaDefinition } from "../../../types/asana-definition";
-import { getAsana, getAllAsanas } from "../../../data/AsanaRegistry";
+import { getAsana, getAllAsanas, normalizeAsanaId, resolveCanonicalAsanaId } from "../../../data/AsanaRegistry";
 import { mountainPose } from "./mountainPose";
 import { treePose } from "./treePose";
 import { warriorIIPose } from "./warriorIIPose";
@@ -25,11 +25,20 @@ export const ASANA_DEFINITIONS: Record<string, AsanaDefinition> = {
 };
 
 /**
- * Retrieves an AsanaDefinition from the authoritative AsanaRegistry by primary ID or alias.
+ * Retrieves an AsanaDefinition from the authoritative AsanaRegistry or definition catalog by primary ID or alias.
  */
 export function getAsanaDefinition(idOrAlias: string): AsanaDefinition | null {
   if (!idOrAlias) return null;
-  return getAsana(idOrAlias) ?? ASANA_DEFINITIONS[idOrAlias] ?? null;
+  const normalized = normalizeAsanaId(idOrAlias);
+  const canonical = resolveCanonicalAsanaId(idOrAlias);
+
+  return (
+    ASANA_DEFINITIONS[normalized] ??
+    ASANA_DEFINITIONS[canonical] ??
+    getAsana(normalized) ??
+    getAsana(canonical) ??
+    null
+  );
 }
 
 export {

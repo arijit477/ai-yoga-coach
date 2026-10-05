@@ -69,6 +69,14 @@ export class CoachDecisionEngine {
     const now = context?.now ?? Date.now();
     const priority = this.getEventPriority(event);
 
+    console.log(`[AI COACH][TRACE][8][DECISION_INPUT]`, {
+      eventType: event.type,
+      priority,
+      lastSpokenTime: this.lastEventTime,
+      cooldown: this.config.cooldownMs,
+      activeSpeechState: context?.isUserSpeaking ?? false,
+    });
+
     // 1. Safety Warnings always pass through immediately
     if (priority === 1) {
       return this.approve(event, priority, true, "Safety warning requires immediate interruption.", "Correct safety issue", now);
@@ -170,6 +178,23 @@ export class CoachDecisionEngine {
       this.ruleTimestamps.clear();
     }
 
+    console.log(`[AI COACH][TRACE][8][DECISION_APPROVED]`, {
+      eventType: event.type,
+      priority,
+      reason,
+      ruleId: event.ruleId,
+    });
+
+    console.log(`[AI COACH][DEBUG][DECISION]`, {
+      eventType: event.type,
+      priority,
+      shouldSpeak: true,
+      reason,
+      cooldownResult: "passed",
+      ruleId: event.ruleId,
+      timestamp: now,
+    });
+
     return {
       shouldSpeak: true,
       priority,
@@ -181,6 +206,23 @@ export class CoachDecisionEngine {
   }
 
   private reject(event: CoachingEvent, priority: number, reason: string): CoachDecision {
+    console.log(`[AI COACH][TRACE][8][DECISION_BLOCKED]`, {
+      eventType: event.type,
+      priority,
+      reason,
+      ruleId: event.ruleId,
+    });
+
+    console.log(`[AI COACH][DEBUG][DECISION]`, {
+      eventType: event.type,
+      priority,
+      shouldSpeak: false,
+      reason,
+      cooldownResult: reason.includes("cooldown") || reason.includes("too recently") ? "blocked" : "n/a",
+      ruleId: event.ruleId,
+      timestamp: Date.now(),
+    });
+
     return {
       shouldSpeak: false,
       priority,

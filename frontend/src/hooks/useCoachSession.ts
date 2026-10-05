@@ -7,6 +7,7 @@ import { CalibrationTracker, type CalibrationResult } from "../features/ai-coach
 import { ScoreBuffer } from "../features/ai-coach/analysis/ScoreAggregator";
 import { evaluateCameraReadiness } from "../features/ai-coach/motion/CameraReadinessEvaluator";
 import { SessionStateMachine } from "../features/ai-coach/session/SessionStateMachine";
+import type { CameraReadinessState } from "../features/ai-coach/motion/CameraReadinessTracker";
 import {
   CAMERA_GUIDANCE_MESSAGES,
   type CameraReadinessResult,
@@ -22,6 +23,8 @@ interface UseCoachSessionOptions {
   requiredRegions?: BodyRegion[];
   isInitialized: boolean;
   hasPose: boolean;
+  isCameraActive?: boolean;
+  cameraState?: CameraReadinessState;
   targetHoldSeconds?: number;
   completionHoldMs?: number;
   completionAccuracyThreshold?: number;
@@ -40,6 +43,7 @@ interface UseCoachSessionOptions {
 
 export interface UseCoachSessionResult {
   state: CoachSessionState;
+  practiceStarted: boolean;
   countdown: number | null;
   holdTime: number;
   targetHoldSeconds: number;
@@ -78,6 +82,8 @@ export function useCoachSession({
   requiredRegions,
   isInitialized: _isInitialized,
   hasPose,
+  isCameraActive,
+  cameraState,
   targetHoldSeconds = DEFAULT_REQUIRED_HOLD_SECONDS,
   completionHoldMs = COMPLETION_HOLD_MS,
   completionAccuracyThreshold = COMPLETION_ACCURACY_THRESHOLD,
@@ -94,6 +100,7 @@ export function useCoachSession({
   onPoseReviewReady,
 }: UseCoachSessionOptions): UseCoachSessionResult {
   const [state, setState] = useState<CoachSessionState>("idle");
+  const [practiceStarted, setPracticeStarted] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [holdTime, setHoldTime] = useState(0);
   const [transitionCountdown, setTransitionCountdown] = useState<number | null>(null);
@@ -110,9 +117,23 @@ export function useCoachSession({
     })
   );
 
+  const hasPoseRef = useRef(hasPose);
+  hasPoseRef.current = hasPose;
+  const cameraReadinessRef = useRef(cameraReadiness);
+  cameraReadinessRef.current = cameraReadiness;
+  const isCameraActiveRef = useRef(isCameraActive ?? false);
+  isCameraActiveRef.current = isCameraActive ?? false;
+
   const stateMachineRef = useRef<SessionStateMachine>(
-    new SessionStateMachine("idle", (_from, to) => {
+    new SessionStateMachine("idle", (from, to, reason) => {
       setState(to);
+      console.log(`[AI COACH][SESSION][STATE]`, {
+        previousState: from,
+        nextState: to,
+        reason: reason || `transition_to_${to}`,
+        cameraState: cameraReadinessRef.current?.state ?? "unknown",
+        hasValidPose: Boolean(hasPoseRef.current),
+      });
     })
   );
 
@@ -165,8 +186,8 @@ export function useCoachSession({
   /**
    * Safe State Machine Transition helper
    */
-  const transitionTo = useCallback((target: CoachSessionState): boolean => {
-    return stateMachineRef.current.transition(target);
+  const transitionTo = useCallback((target: CoachSessionState, reason?: string): boolean => {
+    return stateMachineRef.current.transition(target, reason);
   }, []);
 
   /**
@@ -193,6 +214,7 @@ export function useCoachSession({
    * resetSession(): resets session progression, timers, state -> idle
    */
   const resetSession = useCallback(() => {
+    setPracticeStarted(false);
     resetCurrentAsana();
     stateMachineRef.current.reset("idle");
     setCountdown(null);
@@ -250,55 +272,28 @@ export function useCoachSession({
   }, [landmarks, hasPose, requiredLandmarks, requiredRegions]);
 
   /**
-   * 10. CALIBRATING Stage
+   * Automatic coaching lifecycle activation when camera is started
    */
-  const startCalibrating = useCallback(() => {
-    clearTimers();
-    calibrationTrackerRef.current?.reset();
-    setCalibrationProgress(0);
-    setVisibilityWarning(null);
-    hasPromptedCalibrationRef.current = false;
-    lastPromptedWarningRef.current = null;
-    transitionTo("calibrating");
-  }, [clearTimers, transitionTo]);
-
-  /**
-   * 9. HOLD STILL Stage: 2s stability confirmation before calibration
-   */
-  const startHoldStill = useCallback(() => {
-    clearTimers();
-    setCountdown(HOLD_STILL_SECONDS);
-    transitionTo("hold_still");
-  }, [clearTimers, transitionTo]);
-
   useEffect(() => {
-    if (state !== "hold_still") return;
-
-    setCountdown(HOLD_STILL_SECONDS);
-
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval);
-          startCalibrating();
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [state, startCalibrating]);
+    if (isCameraActive && state === "idle") {
+      transitionTo("camera_check", "camera_activated");
+    } else if (
+      isCameraActive === false &&
+      state !== "idle" &&
+      state !== "completed" &&
+      state !== "session_completed"
+    ) {
+      resetSession();
+    }
+  }, [isCameraActive, state, transitionTo, resetSession]);
 
   /**
-   * 8. CAMERA CHECK Stage: Checks camera readiness before allowing hold still
+   * 8. CAMERA CHECK Stage: Checks camera readiness
    */
   const startCameraCheck = useCallback(() => {
     clearTimers();
     setCountdown(null);
-    transitionTo("camera_check");
+    transitionTo("camera_check", "get_ready_completed");
   }, [clearTimers, transitionTo]);
 
   /**
@@ -308,7 +303,7 @@ export function useCoachSession({
     clearTimers();
     resetCurrentAsana();
     setCountdown(GET_READY_SECONDS);
-    transitionTo("get_ready");
+    transitionTo("get_ready", "start_session");
   }, [clearTimers, resetCurrentAsana, transitionTo]);
 
   useEffect(() => {
@@ -337,46 +332,85 @@ export function useCoachSession({
    */
   const startSession = useCallback(
     (options?: { skipVideo?: boolean }) => {
-      resetSession();
+      setPracticeStarted(true);
+      resetCurrentAsana();
       if (hasGuideVideo && !options?.skipVideo) {
-        transitionTo("guide_video");
+        transitionTo("guide_video", "guide_video_intro");
       } else {
-        startGetReady();
+        if (state === "idle") {
+          transitionTo("camera_check", "start_session_camera_check");
+        }
       }
     },
-    [hasGuideVideo, resetSession, transitionTo, startGetReady]
+    [hasGuideVideo, resetCurrentAsana, transitionTo, state]
   );
 
   const skipGuideVideo = useCallback(() => {
-    startGetReady();
-  }, [startGetReady]);
+    setPracticeStarted(true);
+    if (state === "guide_video" || state === "idle") {
+      transitionTo("camera_check", "skip_guide_video");
+    }
+  }, [state, transitionTo]);
 
   const finishGuideVideo = useCallback(() => {
-    startGetReady();
-  }, [startGetReady]);
+    setPracticeStarted(true);
+    if (state === "guide_video" || state === "idle") {
+      transitionTo("camera_check", "finish_guide_video");
+    }
+  }, [state, transitionTo]);
 
   /**
-   * Camera Check Flow: Transition to hold_still once camera readiness is satisfied
+   * Camera Check Flow: Transition to coaching when practice has started, camera is ready, and pose is valid
    */
   useEffect(() => {
     if (state !== "camera_check") return;
 
-    if (cameraReadiness.ready) {
-      startHoldStill();
-    }
-  }, [state, cameraReadiness.ready, startHoldStill]);
+    const isCameraReadyForCoaching =
+      cameraState === "CAMERA_READY" ||
+      cameraState === "FULL_BODY_DETECTED" ||
+      cameraReadiness.ready ||
+      cameraReadiness.state === "camera_ready";
 
-  /**
-   * Hold Still Flow: If user moves or visibility is lost during hold_still, reset countdown
-   */
-  useEffect(() => {
-    if (state !== "hold_still") return;
+    const isCameraPartial =
+      cameraState === "PARTIAL_BODY" ||
+      cameraReadiness.state === "camera_partial";
 
-    if (!cameraReadiness.ready) {
-      // Pause/reset hold still countdown if readiness lost
-      setCountdown(HOLD_STILL_SECONDS);
+    const poseValid = Boolean(
+      hasPose &&
+      landmarks &&
+      landmarks.length >= 33 &&
+      evaluation &&
+      ("isValid" in evaluation ? evaluation.isValid !== false : true)
+    );
+
+    const canEnterCoaching =
+      practiceStarted &&
+      isCameraReadyForCoaching &&
+      !isCameraPartial &&
+      poseValid;
+
+    if (canEnterCoaching) {
+      console.log("[AI COACH][SESSION]", {
+        previousState: state,
+        nextState: "coaching",
+        cameraState: cameraState ?? cameraReadiness.state,
+        poseValid,
+        reason: "practice_started_and_camera_ready",
+      });
+
+      transitionTo("coaching", "practice_started_and_camera_ready");
     }
-  }, [state, cameraReadiness.ready]);
+  }, [
+    state,
+    practiceStarted,
+    cameraState,
+    cameraReadiness,
+    hasPose,
+    landmarks,
+    evaluation,
+    transitionTo,
+  ]);
+
 
   /**
    * Calibration tracking in calibrating state
@@ -413,7 +447,7 @@ export function useCoachSession({
 
       if (calibrationResult.state === "CALIBRATION_COMPLETE") {
         onCalibrationComplete?.();
-        transitionTo("coaching");
+        transitionTo("coaching", "calibration_complete");
         setCurrentStepIndex(0);
         onStepChange?.(0);
       }
@@ -492,7 +526,7 @@ export function useCoachSession({
       if (hasPoseLostSinceRef.current === null) {
         hasPoseLostSinceRef.current = Date.now();
       } else if (Date.now() - hasPoseLostSinceRef.current > 7000) {
-        transitionTo("camera_check");
+        transitionTo("camera_check", "pose_lost");
         setHoldTime(0);
         holdScoresRef.current = [];
       }
@@ -562,15 +596,15 @@ export function useCoachSession({
           const finalScore = Math.max(0, Math.min(100, Math.round(evaluation.score)));
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);
-          transitionTo("pose_review");
+          transitionTo("pose_review", "hold_duration_completed");
           // Immediately also support user_choice state
           setTimeout(() => {
-            transitionTo("user_choice");
+            transitionTo("user_choice", "pose_review_ready");
           }, 50);
         }
       } else {
         if (state !== "holding") {
-          transitionTo("holding");
+          transitionTo("holding", "pose_valid_for_completion");
         }
       }
     } else {
@@ -580,9 +614,9 @@ export function useCoachSession({
 
       // Correcting state when primary issue exists
       if (evaluation.primaryIssue && state !== "correcting") {
-        transitionTo("correcting");
+        transitionTo("correcting", "primary_issue_detected");
       } else if (!evaluation.primaryIssue && state !== "coaching") {
-        transitionTo("coaching");
+        transitionTo("coaching", "issue_resolved_or_form_acceptable");
       }
     }
   }, [
@@ -636,7 +670,7 @@ export function useCoachSession({
     const isLastAsana = currentAsanaIndex + 1 >= totalAsanas;
 
     if (isLastAsana) {
-      transitionTo("completed");
+      transitionTo("completed", "all_asanas_completed");
       onSessionComplete?.();
       return;
     }
@@ -648,7 +682,6 @@ export function useCoachSession({
     resetCurrentAsana,
     currentAsanaIndex,
     totalAsanas,
-    hasGuideVideo,
     onSessionComplete,
     onAdvanceAsana,
     startGetReady,
@@ -666,14 +699,14 @@ export function useCoachSession({
     hasCompletedCurrentAsanaRef.current = false;
     completionCandidateSinceRef.current = null;
     scoreBufferRef.current.reset();
-    transitionTo("coaching");
+    transitionTo("coaching", "user_stay_here");
   }, [transitionTo]);
 
   /**
    * "End Session" (END SESSION)
    */
   const endSession = useCallback(() => {
-    transitionTo("completed");
+    transitionTo("completed", "user_ended_session");
     onSessionComplete?.();
   }, [transitionTo, onSessionComplete]);
 
@@ -691,6 +724,7 @@ export function useCoachSession({
 
   return {
     state,
+    practiceStarted,
     countdown,
     holdTime,
     targetHoldSeconds,

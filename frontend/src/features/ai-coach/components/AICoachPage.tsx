@@ -33,6 +33,7 @@ import type { Asana } from "../types/asana";
 import { PostureCheckOverlay } from "./PostureCheckOverlay";
 import { getPostureCheckResult, PostureStatusDebouncer } from "../analysis/PostureCheckAdapter";
 import { getAsanaLandmarkRequirements } from "../analysis/AsanaLandmarkRequirements";
+import { getPoseRules } from "../analysis/rules/poseRulesRegistry";
 
 function getCoachStateMessage(state: ReturnType<typeof useCoachState>): string {
   switch (state) {
@@ -266,6 +267,7 @@ export function AICoachPage() {
   const lastAnnouncedCountdownRef = useRef<number | null>(null);
   const hasDispatchedCalibrationPromptRef = useRef<string | null>(null);
   const hasDispatchedCalibrationCompleteRef = useRef<string | null>(null);
+  const hasLoggedCoachingReadyRef = useRef<string | null>(null);
   // Track last sent session context to avoid spamming OpenAI with per-frame updates
   const lastSentContextRef = useRef<{
     coach: string;
@@ -275,6 +277,7 @@ export function AICoachPage() {
     sessionState: string;
     primaryIssueRuleId: string | null;
   } | null>(null);
+  const lastUITraceTimeRef = useRef<number>(0);
 
   // Score to display after asana completes (animates from standby to final score)
   const [finalAsanaScore, setFinalAsanaScore] = useState<number | null>(null);
@@ -303,6 +306,8 @@ export function AICoachPage() {
     requiredRegions: asanaRequirements.requiredRegions,
     isInitialized,
     hasPose: Boolean(result),
+    isCameraActive,
+    cameraState,
     targetHoldSeconds: currentAsana.targetHoldSeconds,
     currentAsanaIndex,
     totalAsanas: activeAsanas.length,
@@ -448,6 +453,12 @@ export function AICoachPage() {
       : liveDisplayedScore;
 
   const handleStartSession = useCallback(() => {
+    console.log("[AI COACH][SESSION] Start Practice requested", {
+      currentSessionState: sessionState,
+      cameraState,
+      poseValid: Boolean(result && stableEvaluation?.isValid !== false),
+    });
+
     hasDispatchedStartRef.current = null;
     hasDispatchedHeldRef.current = null;
     hasDispatchedCompletedRef.current = null;
@@ -455,6 +466,7 @@ export function AICoachPage() {
     lastAnnouncedCountdownRef.current = null;
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
+    hasLoggedCoachingReadyRef.current = null;
     coachingEngineRef.current?.reset();
     voiceResetEngine();
 
@@ -483,6 +495,10 @@ export function AICoachPage() {
     isCameraActive,
     handleStartCamera,
     startSession,
+    sessionState,
+    cameraState,
+    result,
+    stableEvaluation,
     voiceState.status,
     voiceDispatch,
     voiceTriggerPoseStart,
@@ -503,6 +519,7 @@ export function AICoachPage() {
     lastAnnouncedCountdownRef.current = null;
     hasDispatchedCalibrationPromptRef.current = null;
     hasDispatchedCalibrationCompleteRef.current = null;
+    hasLoggedCoachingReadyRef.current = null;
     lastSentContextRef.current = null;
     coachingEngineRef.current?.reset();
     voiceResetEngine();
@@ -515,6 +532,7 @@ export function AICoachPage() {
     hasDispatchedCompletedRef.current = null;
     hasDispatchedThresholdRef.current = null;
     lastAnnouncedCountdownRef.current = null;
+    hasLoggedCoachingReadyRef.current = null;
     lastSentContextRef.current = null;
   }, [selectedCoach]);
 
@@ -528,6 +546,7 @@ export function AICoachPage() {
       hasDispatchedCompletedRef.current = null;
       hasDispatchedThresholdRef.current = null;
       lastAnnouncedCountdownRef.current = null;
+      hasLoggedCoachingReadyRef.current = null;
       coachingEngineRef.current?.reset();
       voiceResetEngine();
 
@@ -690,6 +709,19 @@ export function AICoachPage() {
    * MediaPipe -> PoseEvaluator -> TemporalPoseEvaluator -> CoachingEventEngine -> CoachingEventDispatcher -> RealtimeVoiceAgent
    */
   useEffect(() => {
+    const now = Date.now();
+    if (now - lastUITraceTimeRef.current >= 1000) {
+      lastUITraceTimeRef.current = now;
+      console.log(`[AI COACH][TRACE][UI]`, {
+        poseTrackingConnected: Boolean(result),
+        evaluationConnected: Boolean(stableEvaluation),
+        eventEngineConnected: Boolean(coachingEngineRef.current),
+        sessionState,
+        cameraState,
+        asanaId: currentAsana.id,
+      });
+    }
+
     if (
       sessionState === "idle" ||
       sessionState === "countdown" ||
@@ -723,6 +755,24 @@ export function AICoachPage() {
     voiceDispatch,
     voiceState.status,
   ]);
+
+  // Throttled trace when system first becomes ready for active coaching for current asana
+  useEffect(() => {
+    if (
+      (sessionState === "coaching" || sessionState === "holding" || sessionState === "correcting") &&
+      hasLoggedCoachingReadyRef.current !== currentAsana.id
+    ) {
+      hasLoggedCoachingReadyRef.current = currentAsana.id;
+      console.log(`[AI COACH][SESSION][COACHING_READY]`, {
+        sessionState,
+        cameraState,
+        hasValidPose: Boolean(result && stableEvaluation?.isValid !== false),
+        landmarkCount: result?.landmarks?.length ?? 0,
+        asanaId: currentAsana.id,
+        rulesCount: getPoseRules(currentAsana.id).length,
+      });
+    }
+  }, [sessionState, cameraState, result, stableEvaluation, currentAsana.id]);
 
   // Voice Countdown Effect based on holdTime
   useEffect(() => {

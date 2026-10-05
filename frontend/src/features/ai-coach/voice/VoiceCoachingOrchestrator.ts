@@ -40,12 +40,20 @@ export class VoiceCoachingOrchestrator {
     const rhythmDecision =
       this.rhythmManager.evaluate(event, now);
 
-    console.log(`[AI COACH][VOICE ORCHESTRATOR]`, {
-      event: event.type,
-      intent: intentResult.intent,
+    console.log(`[AI COACH][TRACE][9][ORCHESTRATOR]`, {
+      eventType: event.type,
       cueType: rhythmDecision.cueType,
       shouldSpeak: rhythmDecision.shouldSpeak,
       reason: rhythmDecision.reason,
+    });
+
+    console.log(`[AI COACH][DEBUG][ORCHESTRATOR]`, {
+      eventType: event.type,
+      cueType: rhythmDecision.cueType,
+      shouldSpeak: rhythmDecision.shouldSpeak,
+      reason: rhythmDecision.reason,
+      intent: intentResult.intent,
+      timestamp: now,
     });
 
     return {

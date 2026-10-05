@@ -7,6 +7,7 @@ export { buildCoachingContext } from "./CoachingContextBuilder";
 export type { CoachingContext, CoachingState, CoachingIssue } from "./CoachingContext";
 export { CoachingContextManager } from "./CoachingContextManager";
 export { CoachingPromptBuilder } from "./CoachingPromptBuilder";
+export { CoachingContextSynchronizer } from "./CoachingContextSynchronizer";
 export { buildRealtimeCoachingContext } from "./CoachingContextFormatter";
 export type { RealtimeCoachingContext } from "./CoachingContextFormatter";
 export { CoachingRhythmManager } from "./CoachingRhythmManager";

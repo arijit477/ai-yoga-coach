@@ -43,6 +43,8 @@ export class CoachingEventEngine {
   private lastMindfulnessTime: number = 0;
   private readonly MINDFULNESS_INTERVAL_MS = 45_000; // Every ~45 seconds during holding
 
+  private lastLoggedGateKey: string | null = null;
+
   public reset(): void {
     this.lastSessionState = "idle";
     this.lastCameraState = "CAMERA_DISABLED";
@@ -53,6 +55,36 @@ export class CoachingEventEngine {
     this.lastOutOfFrameReminderTime = 0;
     this.firedMilestones.clear();
     this.lastMindfulnessTime = 0;
+    this.lastLoggedGateKey = null;
+  }
+
+  private logGateDecision(details: {
+    sessionState: string;
+    cameraState: string;
+    hasValidPose: boolean;
+    ruleId?: string;
+    severity?: string;
+    isSafetyIssue?: boolean;
+    activeIssue?: string | null;
+    decision: string;
+    reason?: string;
+  }): void {
+    const key = `${details.sessionState}_${details.cameraState}_${details.decision}_${details.ruleId || 'none'}_${details.reason || 'none'}`;
+    if (this.lastLoggedGateKey === key) return;
+    this.lastLoggedGateKey = key;
+
+    console.log(
+      `[AI COACH][CORRECTION GATE]\n` +
+      `sessionState=${details.sessionState}\n` +
+      `cameraState=${details.cameraState}\n` +
+      `hasValidPose=${details.hasValidPose}\n` +
+      (details.ruleId ? `ruleId=${details.ruleId}\n` : "") +
+      (details.severity ? `severity=${details.severity}\n` : "") +
+      (details.isSafetyIssue !== undefined ? `isSafetyIssue=${details.isSafetyIssue}\n` : "") +
+      (details.activeIssue !== undefined ? `activeIssue=${details.activeIssue}\n` : "") +
+      `decision=${details.decision}` +
+      (details.reason ? `\nreason=${details.reason}` : "")
+    );
   }
 
   public process(
@@ -66,6 +98,15 @@ export class CoachingEventEngine {
     const events: CoachingEvent[] = [];
     const coach = coachId ?? "alice";
     const now = Date.now();
+
+    console.log(`[AI COACH][TRACE][7][EVENT_ENGINE_INPUT]`, {
+      sessionState,
+      cameraState,
+      hasEvaluation: Boolean(evaluation),
+      poseValid: Boolean(evaluation && evaluation.isValid !== false),
+      primaryIssue: evaluation?.primaryIssue?.ruleId ?? null,
+      selectedAsana: asanaId,
+    });
 
     // 1. Camera State Transitions & Continuous Visibility Tracking
     if (this.lastCameraState !== cameraState) {
@@ -133,19 +174,97 @@ export class CoachingEventEngine {
       this.lastSessionState = sessionState;
     }
 
-    // 3. Pose Evaluation (Strictly guarded by CAMERA_READY to avoid occlusion false-positives)
+    // 3. Pose Evaluation & Correction Gating
     const isActiveCoaching =
       sessionState === "coaching" || sessionState === "holding" || sessionState === "correcting";
+    const isCameraValidForCoaching =
+      cameraState === "CAMERA_READY" || cameraState === "FULL_BODY_DETECTED";
+    const hasValidPose = Boolean(evaluation && evaluation.isValid !== false);
 
-    if (isActiveCoaching && cameraState === "CAMERA_READY" && evaluation && evaluation.isValid !== false) {
+    if (evaluation?.primaryIssue) {
+      if (!isActiveCoaching || !isCameraValidForCoaching || !hasValidPose) {
+        const blockReason = !isActiveCoaching
+          ? "session_not_active"
+          : !isCameraValidForCoaching
+            ? `camera_state_${cameraState.toLowerCase()}`
+            : "invalid_pose";
+        this.logGateDecision({
+          sessionState,
+          cameraState,
+          hasValidPose,
+          ruleId: evaluation.primaryIssue.ruleId,
+          severity: evaluation.primaryIssue.severity,
+          isSafetyIssue: Boolean(evaluation.primaryIssue.isSafety),
+          activeIssue: this.activeIssue?.ruleId ?? null,
+          decision: "BLOCK",
+          reason: blockReason,
+        });
+
+        console.log(`[AI COACH][TRACE][7][EVENT_ENGINE_BLOCKED]`, {
+          reason: blockReason,
+          sessionState,
+          cameraState,
+          ruleId: evaluation.primaryIssue.ruleId,
+        });
+
+        console.log(
+          `[AI COACH][RUNTIME][EVENT_INPUT]\n` +
+          `sessionState=${sessionState}\n` +
+          `cameraState=${cameraState}\n` +
+          `ruleId=${evaluation.primaryIssue.ruleId}\n` +
+          `severity=${evaluation.primaryIssue.severity}\n` +
+          `isSafety=${Boolean(evaluation.primaryIssue.isSafety)}\n` +
+          `validPose=${hasValidPose}\n\n` +
+          `[AI COACH][RUNTIME][EVENT_OUTPUT]\n` +
+          `event=NONE\n` +
+          `reason=${blockReason}`
+        );
+      }
+    } else if (isActiveCoaching && isCameraValidForCoaching && hasValidPose) {
+      console.log(`[AI COACH][TRACE][7][EVENT_ENGINE_BLOCKED]`, {
+        reason: "no_primary_issue",
+      });
+    }
+
+    if (isActiveCoaching && isCameraValidForCoaching && hasValidPose && evaluation) {
       
-      // Safety Warning check (explicit high severity alignment issues)
+      // Safety Warning check (explicit safety hazards flagged with isSafety === true)
       const secondary = evaluation.secondaryIssues || [];
       const safetyIssue =
-        secondary.find((i) => i.severity === "high") ||
-        (evaluation.primaryIssue?.severity === "high" ? evaluation.primaryIssue : null);
+        secondary.find((i) => i.isSafety === true) ||
+        (evaluation.primaryIssue?.isSafety === true ? evaluation.primaryIssue : null);
 
       if (safetyIssue) {
+        this.logGateDecision({
+          sessionState,
+          cameraState,
+          hasValidPose,
+          ruleId: safetyIssue.ruleId,
+          severity: safetyIssue.severity,
+          isSafetyIssue: true,
+          activeIssue: this.activeIssue?.ruleId ?? null,
+          decision: "ALLOW_SAFETY_WARNING",
+        });
+
+        console.log(`[AI COACH][TRACE][7][EVENT_CREATED]`, {
+          eventType: "safety_warning",
+          ruleId: safetyIssue.ruleId,
+          severity: safetyIssue.severity,
+          feedback: safetyIssue.feedback,
+        });
+
+        console.log(
+          `[AI COACH][RUNTIME][EVENT_INPUT]\n` +
+          `sessionState=${sessionState}\n` +
+          `cameraState=${cameraState}\n` +
+          `ruleId=${safetyIssue.ruleId}\n` +
+          `severity=${safetyIssue.severity}\n` +
+          `isSafety=true\n` +
+          `validPose=true\n\n` +
+          `[AI COACH][RUNTIME][EVENT_OUTPUT]\n` +
+          `event=safety_warning`
+        );
+
         events.push(
           CoachingEventBuilder.buildSafetyWarningEvent(
             asanaId,
@@ -159,10 +278,10 @@ export class CoachingEventEngine {
         );
       }
 
-      // Single Primary Issue Processing
+      // Single Primary Issue Processing (Normal form issues, including high-severity form corrections)
       const primary = evaluation.primaryIssue;
 
-      if (primary && primary.severity !== "high") {
+      if (primary && !primary.isSafety) {
         const currentDeviation = Math.abs(
           primary.currentValue - (primary.targetValue ?? primary.currentValue)
         );
@@ -174,6 +293,36 @@ export class CoachingEventEngine {
             initialDeviation: currentDeviation,
             lastDeviation: currentDeviation,
           };
+          this.logGateDecision({
+            sessionState,
+            cameraState,
+            hasValidPose,
+            ruleId: primary.ruleId,
+            severity: primary.severity,
+            isSafetyIssue: false,
+            activeIssue: null,
+            decision: "ALLOW_POSE_CORRECTION",
+          });
+
+          console.log(`[AI COACH][TRACE][7][EVENT_CREATED]`, {
+            eventType: "pose_correction",
+            ruleId: primary.ruleId,
+            severity: primary.severity,
+            feedback: primary.feedback,
+          });
+
+          console.log(
+            `[AI COACH][RUNTIME][EVENT_INPUT]\n` +
+            `sessionState=${sessionState}\n` +
+            `cameraState=${cameraState}\n` +
+            `ruleId=${primary.ruleId}\n` +
+            `severity=${primary.severity}\n` +
+            `isSafety=false\n` +
+            `validPose=true\n\n` +
+            `[AI COACH][RUNTIME][EVENT_OUTPUT]\n` +
+            `event=pose_correction`
+          );
+
           events.push(
             CoachingEventBuilder.buildPoseCorrectionEvent(
               asanaId,
@@ -189,20 +338,55 @@ export class CoachingEventEngine {
         } else {
           // Existing issue — check for meaningful improvement (30% reduction in deviation)
           const initialDev = this.activeIssue.initialDeviation;
+          const prevDev = this.activeIssue.lastDeviation;
+          const improvementPercent = initialDev > 0 ? ((initialDev - currentDeviation) / initialDev) * 100 : 0;
+
           if (
             initialDev > 0 &&
             currentDeviation < initialDev * 0.7 &&
             currentDeviation < this.activeIssue.lastDeviation
           ) {
+            console.log(`[AI COACH][TRACE][7][EVENT_CREATED]`, {
+              eventType: "issue_improving",
+              ruleId: primary.ruleId,
+              severity: primary.severity,
+              feedback: "Form improving",
+            });
+
+            console.log(
+              `[AI COACH][RUNTIME][IMPROVEMENT]\n` +
+              `previousDeviation=${prevDev.toFixed(1)}\n` +
+              `currentDeviation=${currentDeviation.toFixed(1)}\n` +
+              `improvementPercent=${improvementPercent.toFixed(1)}\n` +
+              `activeIssue=${primary.ruleId}\n` +
+              `decision=ISSUE_IMPROVING`
+            );
+
             events.push(
               CoachingEventBuilder.buildIssueImprovingEvent(asanaId, asanaName, primary.ruleId, coachId)
             );
             this.activeIssue.initialDeviation = currentDeviation;
+          } else {
+            console.log(`[AI COACH][TRACE][7][EVENT_ENGINE_BLOCKED]`, {
+              reason: "duplicate_issue",
+              ruleId: primary.ruleId,
+            });
           }
           this.activeIssue.lastDeviation = currentDeviation;
         }
       } else if (!primary && this.activeIssue) {
         // Previously incorrect posture is now recovered and acceptable
+        console.log(`[AI COACH][TRACE][7][EVENT_CREATED]`, {
+          eventType: "issue_resolved",
+          ruleId: this.activeIssue.ruleId,
+        });
+
+        console.log(
+          `[AI COACH][RUNTIME][IMPROVEMENT]\n` +
+          `activeIssue=${this.activeIssue.ruleId}\n` +
+          `decision=ISSUE_RESOLVED`
+        );
+
         events.push(
           CoachingEventBuilder.buildIssueResolvedEvent(
             asanaId,

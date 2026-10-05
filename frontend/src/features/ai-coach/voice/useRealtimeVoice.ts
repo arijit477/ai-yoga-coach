@@ -76,28 +76,26 @@ export function useRealtimeVoice() {
   }, []);
 
   const dispatchEvent = useCallback((event: CoachingEvent, context?: any) => {
-    console.log(`[AI COACH][EVENT]`, {
-      type: event.type,
-      id: event.id,
-      asanaId: event.asanaId,
-      severity: event.severity,
-      feedback: event.feedback,
-    });
+    const t0 = event.timestamp || Date.now();
     const decision = decisionEngineRef.current?.evaluate(event, context);
+    const tDecisionEnd = Date.now();
+
     if (decision?.shouldSpeak) {
-       console.log(`[AI COACH][DECISION]`, {
-         type: event.type,
-         shouldSpeak: true,
-         priority: decision.priority,
-         reason: decision.reason,
-       });
+       const tOrchestratorStart = Date.now();
        agentRef.current?.sendCoachingEvent(event);
-    } else if (decision) {
-       console.log(`[AI COACH][DECISION]`, {
-         type: event.type,
-         shouldSpeak: false,
-         priority: decision.priority,
-         reason: decision.reason,
+       const tVoiceEnd = Date.now();
+
+       console.log(`[AI COACH][DEBUG][TIMING]`, {
+         ruleDetected: t0,
+         eventCreated: event.timestamp || t0,
+         decision: tDecisionEnd,
+         orchestrator: tOrchestratorStart,
+         voiceRequest: tVoiceEnd,
+         ruleToEventMs: Math.max(0, (event.timestamp || t0) - t0),
+         eventToDecisionMs: Math.max(0, tDecisionEnd - (event.timestamp || t0)),
+         decisionToOrchestratorMs: Math.max(0, tOrchestratorStart - tDecisionEnd),
+         orchestratorToVoiceMs: Math.max(0, tVoiceEnd - tOrchestratorStart),
+         totalPipelineLatencyMs: Math.max(0, tVoiceEnd - t0),
        });
     }
   }, []);

@@ -33,6 +33,7 @@ export function usePoseTracking(
   const lastWorldLandmarksRef = useRef<PoseLandmarks | null>(null);
 
   const lastRenderTimeRef = useRef<number>(0);
+  const lastTraceLogTimeRef = useRef<number>(0);
   const lastVideoElementRef = useRef<HTMLVideoElement | null>(null);
 
   const [result, setResult] = useState<PoseTrackingResult | null>(null);
@@ -221,6 +222,25 @@ export function usePoseTracking(
       ) {
         try {
           const detection = processor.processFrame(video);
+          const now = Date.now();
+          if (now - lastTraceLogTimeRef.current >= 1000) {
+            lastTraceLogTimeRef.current = now;
+            if (detection && detection.landmarks) {
+              console.log(`[AI COACH][TRACE][1][POSE_TRACKING]`, {
+                mediaPipeInitialized: Boolean(serviceRef.current),
+                detectForVideoCalled: true,
+                landmarkCount: detection.landmarks.length,
+                timestamp: now,
+              });
+            } else {
+              console.log(`[AI COACH][TRACE][1][POSE_TRACKING] NO_MEDIAPIPE_RESULT`, {
+                mediaPipeInitialized: Boolean(serviceRef.current),
+                detectForVideoCalled: true,
+                landmarkCount: 0,
+                timestamp: now,
+              });
+            }
+          }
 
           /*
            * Update internal tracking refs on every valid frame.

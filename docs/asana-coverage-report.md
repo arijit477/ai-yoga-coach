@@ -46,7 +46,7 @@ These asanas feature well-separated joint landmarks, distinct geometry, and high
 | 5 | **Butterfly Pose** | *Baddha Konasana* | `seated` | `seated` | shoulders, hips, knees, ankles |
 | 6 | **Cat Pose** | *Marjariasana* | `restorative` | `all_fours` | shoulders, hips, ankles |
 | 7 | **Caterpillar Pose** | *Paschimottanasana Variation* | `restorative` | `all_fours` | shoulders, hips, knees, ankles |
-| 8 | **Chair Pose** | *Utkatasana* | `standing` | `standing` | shoulders, elbows, hips, knees, ankles |
+| 8 | **Chair Pose** | *Utkatasana* | `standing` | `standing` | shoulders, elbows, wrists, hips, knees, ankles |
 | 9 | **Child's Pose** | *Balasana* | `restorative` | `kneeling` | shoulders, hips, ankles |
 | 10 | **Cobra Pose** | *Bhujangasana* | `backbend` | `prone` | shoulders, elbows, wrists, hips, knees, ankles |
 | 11 | **Corpse Pose** | *Savasana* | `restorative` | `supine` | shoulders, hips, ankles |

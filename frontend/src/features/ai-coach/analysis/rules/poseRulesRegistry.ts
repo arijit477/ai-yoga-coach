@@ -1,6 +1,7 @@
 import type { PoseRule } from "../../types/pose-rules";
 
 import { registerPoseRules, getPoseRules, hasPoseRules } from "../RuleEngine";
+export { getPoseRules };
 
 let RULES_CACHE: Record<string, PoseRule[]> | null = null;
 
@@ -19,6 +20,7 @@ export async function fetchRulesCache() {
 export const ASANA_RULES_CATALOG: Record<string, PoseRule[]> = {}; // Kept for backwards compat during init, but empty
 
 import { getAsanaDefinition } from "./asanas";
+import { resolveCanonicalAsanaId } from "../../data/AsanaRegistry";
 
 /**
  * Ensures rules for the specified asana are registered in the RuleEngine.
@@ -37,9 +39,19 @@ export function ensureAsanaRules(asanaId: string, customRules?: PoseRule[]): Pos
   }
 
   const asanaDef = getAsanaDefinition(asanaId);
-  const defaultRules = asanaDef?.rules ?? (RULES_CACHE && RULES_CACHE[asanaId]) ?? ASANA_RULES_CATALOG[asanaId] ?? [];
+  const canonicalId = resolveCanonicalAsanaId(asanaId);
+  const defaultRules =
+    asanaDef?.rules ??
+    (RULES_CACHE && (RULES_CACHE[asanaId] || RULES_CACHE[canonicalId])) ??
+    ASANA_RULES_CATALOG[asanaId] ??
+    ASANA_RULES_CATALOG[canonicalId] ??
+    [];
+
   if (defaultRules.length > 0) {
     registerPoseRules(asanaId, defaultRules);
+    if (canonicalId && canonicalId !== asanaId) {
+      registerPoseRules(canonicalId, defaultRules);
+    }
   }
 
   return defaultRules;

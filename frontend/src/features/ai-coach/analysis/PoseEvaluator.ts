@@ -111,6 +111,22 @@ export function evaluatePose(
     issues
   );
 
+  if (evaluatedRules > 0) {
+    console.log(`[AI COACH][TRACE][4][RULE_EVALUATION]`, {
+      asanaId,
+      ruleCount: rules.length,
+      evaluatedRuleCount: evaluatedRules,
+      failedRuleCount: failedRules,
+      primaryRuleId: primaryIssue?.ruleId ?? null,
+      primaryRuleStatus: primaryIssue ? "FAIL" : "PASS",
+    });
+  } else {
+    console.log(`[AI COACH][TRACE][4][NO_RULE_EVALUATION]`, {
+      asanaId,
+      ruleCount: rules.length,
+    });
+  }
+
   console.log("[EVAL DEBUG]", {
     asanaId,
     totalRules: rules.length,

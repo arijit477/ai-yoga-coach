@@ -148,7 +148,21 @@ export class TemporalPoseEvaluator {
     if (sortedIssues.length > 0) {
       const topIssue = sortedIssues[0];
       const persistence = this.issuePersistence.get(topIssue.ruleId) || 0;
-      if (persistence >= ISSUE_PERSISTENCE_THRESHOLD || topIssue.severity === "high") {
+      const requiredCount = topIssue.severity === "high" ? 1 : ISSUE_PERSISTENCE_THRESHOLD;
+      const isPromoted = persistence >= ISSUE_PERSISTENCE_THRESHOLD || topIssue.severity === "high";
+
+      console.log(`[AI COACH][TRACE][6][TEMPORAL]`, {
+        ruleId: topIssue.ruleId,
+        severity: topIssue.severity,
+        persistenceCount: persistence,
+        requiredCount,
+        promoted: isPromoted,
+        reason: isPromoted
+          ? (topIssue.severity === "high" ? "high_severity_immediate" : "persistence_threshold_met")
+          : `persisting_${persistence}_of_${requiredCount}`,
+      });
+
+      if (isPromoted) {
          primaryIssue = topIssue;
          secondaryIssues = sortedIssues.slice(1);
       } else {

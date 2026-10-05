@@ -186,7 +186,7 @@ describe("Phase 4B — Context-Aware Real-Time Coaching Tests", () => {
       const ctx = agent.getCoachingContextManager().getContext();
       assert.ok(ctx);
       assert.equal(ctx?.asanaName, "Warrior II");
-      assert.equal(ctx?.state, "STARTING");
+      assert.equal(ctx?.state, "MOVING_INTO_POSE");
     });
 
     it("11. sendCoachingEvent updates context state on pose correction and resolution", () => {
