@@ -154,8 +154,11 @@ describe("Phase 3.5 — Asana Rule Quality & False-Positive Audit Tests", () => 
 
   // 6. Missing pose-defining rules are detected
   it("6. Asanas without high-severity critical rules are flagged as requiresDetectionRefinement", () => {
-    const reqs = getAsanaCompletionRequirements("chair-utkatasana");
-    assert.equal(reqs.requiresDetectionRefinement, true);
+    const unauthoredReqs = getAsanaCompletionRequirements("big-toe-padangushthasana");
+    assert.equal(unauthoredReqs.requiresDetectionRefinement, true);
+
+    const chairReqs = getAsanaCompletionRequirements("chair-utkatasana");
+    assert.equal(chairReqs.requiresDetectionRefinement, false);
   });
 
   // 7. Duplicate/redundant rules are detected where appropriate

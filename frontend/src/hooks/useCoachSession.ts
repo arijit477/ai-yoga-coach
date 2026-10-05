@@ -141,6 +141,7 @@ export function useCoachSession({
   const holdTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const transitionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scoreBufferRef = useRef<ScoreBuffer>(new ScoreBuffer());
+  const lastEligibilityLogTimeRef = useRef<number>(0);
   
   const calibrationTrackerRef = useRef<CalibrationTracker | null>(null);
   if (!calibrationTrackerRef.current) {
@@ -564,11 +565,36 @@ export function useCoachSession({
     });
 
     const isPoseValidForCompletion = frameState.isCompletionEligible;
+    const now = Date.now();
+
+    if (now - lastEligibilityLogTimeRef.current >= 1000) {
+      lastEligibilityLogTimeRef.current = now;
+      if (import.meta.env?.DEV) {
+        console.debug("[COMPLETION AUDIT] ELIGIBILITY", {
+          asanaId: activeAsanaId,
+          trackingValid: frameState.trackingValid,
+          identityValid: frameState.identityValid,
+          stanceValid: frameState.stanceValid,
+          formValid: frameState.formValid,
+          accuracyValid: frameState.accuracyValid,
+          accuracyScore: evaluation.score,
+          gateEligible: frameState.gateResult.isEligible,
+          requiresDetectionRefinement: frameState.gateResult.reason?.includes("DETECTION_REFINEMENT_REQUIRED") ?? false,
+          isCompletionEligible: frameState.isCompletionEligible,
+        });
+      }
+    }
 
     if (isPoseValidForCompletion) {
-      const now = Date.now();
       if (completionCandidateSinceRef.current === null) {
         completionCandidateSinceRef.current = now;
+        if (import.meta.env?.DEV) {
+          console.debug("[COMPLETION AUDIT] HOLD START", {
+            asanaId: activeAsanaId,
+            score: evaluation.score,
+            timestamp: now,
+          });
+        }
       }
 
       const elapsedHold = now - completionCandidateSinceRef.current;
@@ -595,6 +621,13 @@ export function useCoachSession({
           completionCandidateSinceRef.current = null;
           scoreBufferRef.current.setCompleted(true);
           const finalScore = Math.max(0, Math.min(100, Math.round(evaluation.score)));
+          if (import.meta.env?.DEV) {
+            console.debug("[COMPLETION AUDIT] HOLD COMPLETE", {
+              asanaId: activeAsanaId,
+              elapsedHold,
+              score: finalScore,
+            });
+          }
           onAsanaComplete?.(currentAsanaIndex, finalScore);
           onPoseReviewReady?.(finalScore);
           transitionTo("pose_review", "hold_duration_completed");
@@ -610,6 +643,16 @@ export function useCoachSession({
       }
     } else {
       // RESET candidate hold immediately on ANY signal invalidation (e.g. 75% -> 77% -> 73% or issue detected)
+      if (completionCandidateSinceRef.current !== null || state === "holding") {
+        const elapsed = completionCandidateSinceRef.current ? now - completionCandidateSinceRef.current : 0;
+        if (import.meta.env?.DEV) {
+          console.debug("[COMPLETION AUDIT] HOLD RESET", {
+            asanaId: activeAsanaId,
+            reason: frameState.failureReason || "signal_invalidation",
+            elapsedHold: elapsed,
+          });
+        }
+      }
       completionCandidateSinceRef.current = null;
       setHoldTime(0);
 

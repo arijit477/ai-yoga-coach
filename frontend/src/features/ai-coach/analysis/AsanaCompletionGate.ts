@@ -74,6 +74,9 @@ export const KNOWN_CRITICAL_RULES: Record<string, string[]> = {
   "cat": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
   "cat-marjaryasana": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
   "cat-pose": ["cat-marjaryasana.body.symmetry", "cat-cow-shoulder-wrist"],
+  "chair-utkatasana": ["chair-utkatasana.knees.bend", "chair-utkatasana.torso.incline"],
+  "chair-pose": ["chair-utkatasana.knees.bend", "chair-utkatasana.torso.incline"],
+  "utkatasana": ["chair-utkatasana.knees.bend", "chair-utkatasana.torso.incline"],
   "chaturanga": ["chaturanga.elbows.90", "chaturanga.body.line"],
   "chaturanga-dandasana": ["chaturanga.elbows.90", "chaturanga.body.line"],
   "childs-pose": ["balasana.hips.heels", "balasana.torso.fold"],
@@ -177,6 +180,16 @@ export function getAsanaCompletionRequirements(asanaId: string): AsanaCompletion
   };
 
   requirementsCache.set(normalizedId, requirements);
+
+  if (typeof window !== "undefined" && import.meta.env?.DEV) {
+    console.debug("[COMPLETION AUDIT] REQUIREMENTS", {
+      asanaId: normalizedId,
+      canonicalId,
+      criticalRuleIds,
+      requiresDetectionRefinement,
+    });
+  }
+
   return requirements;
 }
 

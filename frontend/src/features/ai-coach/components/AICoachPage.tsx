@@ -346,6 +346,12 @@ export function AICoachPage() {
     instructionsCount: (currentAsana.instructions || []).length,
     onAsanaComplete: useCallback(
       (idx: number, score?: number) => {
+        if (import.meta.env?.DEV) {
+          console.debug("[COMPLETION AUDIT] onAsanaComplete FIRED", {
+            asanaId: activeAsanas[idx]?.id,
+            score: score ?? 80,
+          });
+        }
         markAsanaCompleted(activeAsanas[idx].id, score ?? 80);
       },
       [activeAsanas, markAsanaCompleted],
@@ -414,6 +420,21 @@ export function AICoachPage() {
       ],
     ),
   });
+
+  useEffect(() => {
+    if (
+      sessionState === "pose_review" ||
+      sessionState === "user_choice" ||
+      sessionState === "completed"
+    ) {
+      if (import.meta.env?.DEV) {
+        console.debug("[COMPLETION AUDIT] POPUP STATE", {
+          sessionState,
+          asanaId: currentAsana.id,
+        });
+      }
+    }
+  }, [sessionState, currentAsana.id]);
 
   const isSessionActive =
     sessionState !== "idle" &&
@@ -1240,25 +1261,30 @@ export function AICoachPage() {
               </div>
             )}
 
-            {/* Pose Review / User Choice Choice Modal in Cinema Mode */}
-            {(sessionState === "completed" || sessionState === "pose_review" || sessionState === "user_choice") && (
-              <PoseReviewModal
-                asana={currentAsana}
-                score={
-                  finalAsanaScore ??
-                  completedAsanaScores[currentAsana.id] ??
-                  stableScore ??
-                  80
-                }
-                onMoveToNext={moveToNextAsana}
-                onStayHere={stayHere}
-                onEndSession={handleStopSession}
-                isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
-              />
-            )}
-
           </div>
         </div>
+      )}
+
+      {/* ====================================================== */}
+      {/* POSE REVIEW / ASANA COMPLETION POPUP MODAL            */}
+      {/* ====================================================== */}
+      {(sessionState === "completed" ||
+        sessionState === "pose_review" ||
+        sessionState === "user_choice") && (
+        <PoseReviewModal
+          asana={currentAsana}
+          score={
+            finalAsanaScore ??
+            completedAsanaScores[currentAsana.id] ??
+            stableScore ??
+            80
+          }
+          onMoveToNext={moveToNextAsana}
+          onStayHere={stayHere}
+          onEndSession={handleStopSession}
+          isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
+          autoAdvanceSeconds={5}
+        />
       )}
 
       {/* ====================================================== */}
@@ -1498,23 +1524,6 @@ export function AICoachPage() {
                       seconds
                     </span>
                   </div>
-                )}
-
-                {/* Pose Review / User Choice Modal */}
-                {(sessionState === "completed" || sessionState === "pose_review" || sessionState === "user_choice") && (
-                  <PoseReviewModal
-                    asana={currentAsana}
-                    score={
-                      finalAsanaScore ??
-                      completedAsanaScores[currentAsana.id] ??
-                      stableScore ??
-                      80
-                    }
-                    onMoveToNext={moveToNextAsana}
-                    onStayHere={stayHere}
-                    onEndSession={handleStopSession}
-                    isLastAsana={currentAsanaIndex + 1 >= activeAsanas.length}
-                  />
                 )}
 
               </div>

@@ -360,27 +360,26 @@ describe("Phase 10A — Completion Gate Architecture Fix (pmt.md Step 10)", () =
   // TEST 5 — Generic first-rule cannot establish completion
   // -------------------------------------------------------------------------
   it("5. Generic first-rule fallback CANNOT establish completion — requiresDetectionRefinement asanas are BLOCKED", () => {
-    // "chair-utkatasana" has only generic alignment rules (shoulder.level, spine.vertical, hip.level)
-    // After fix, this must be BLOCKED (requiresDetectionRefinement = true, no first-rule promoted)
-    const chairReqs = getAsanaCompletionRequirements("chair-utkatasana");
-    assert.equal(chairReqs.requiresDetectionRefinement, true, "Chair Pose must require detection refinement (no high-sev rules)");
-    assert.equal(chairReqs.criticalRuleIds.length, 0, "Chair Pose must have 0 critical rule IDs after first-rule removal");
+    // "big-toe-padangushthasana" has only low/medium rules and requiresDetectionRefinement = true
+    const bigToeReqs = getAsanaCompletionRequirements("big-toe-padangushthasana");
+    assert.equal(bigToeReqs.requiresDetectionRefinement, true, "Big Toe Pose must require detection refinement");
+    assert.equal(bigToeReqs.criticalRuleIds.length, 0, "Big Toe Pose must have 0 critical rule IDs");
 
     // Gate must return false regardless of score
     const result = evaluateCompletionGate({
-      asanaId: "chair-utkatasana",
-      evaluation: genericAlignmentEval("chair-utkatasana", 95), // 95% accuracy
+      asanaId: "big-toe-padangushthasana",
+      evaluation: genericAlignmentEval("big-toe-padangushthasana", 95), // 95% accuracy
       landmarks: standingLandmarks(),
       cameraReady: true,
       completionAccuracyThreshold: COMPLETION_ACCURACY_THRESHOLD,
     });
-    assert.equal(result.isEligible, false, "Chair Pose must be ineligible due to requiresDetectionRefinement");
+    assert.equal(result.isEligible, false, "Big Toe Pose must be ineligible due to requiresDetectionRefinement");
     assert.ok(result.reason?.includes("DETECTION_REFINEMENT_REQUIRED"), `Reason must indicate detection refinement, got: ${result.reason}`);
 
-    // Another blocked asana: "big-toe-padangushthasana"
-    const bigToeReqs = getAsanaCompletionRequirements("big-toe-padangushthasana");
-    assert.equal(bigToeReqs.requiresDetectionRefinement, true, "Big Toe Pose must require detection refinement");
-    assert.equal(bigToeReqs.criticalRuleIds.length, 0);
+    // Chair Pose has hand-authored critical rules in KNOWN_CRITICAL_RULES
+    const chairReqs = getAsanaCompletionRequirements("chair-utkatasana");
+    assert.equal(chairReqs.requiresDetectionRefinement, false, "Chair Pose must not require detection refinement");
+    assert.deepEqual(chairReqs.criticalRuleIds, ["chair-utkatasana.knees.bend", "chair-utkatasana.torso.incline"]);
   });
 
   // -------------------------------------------------------------------------

@@ -19,7 +19,7 @@ export function PoseReviewModal({
   onStayHere,
   onEndSession,
   isLastAsana = false,
-  autoAdvanceSeconds = 8,
+  autoAdvanceSeconds = 5,
 }: PoseReviewModalProps) {
   const [secondsRemaining, setSecondsRemaining] = useState(autoAdvanceSeconds);
   const [isPaused, setIsPaused] = useState(false);
@@ -56,7 +56,7 @@ export function PoseReviewModal({
   const progressPct = ((autoAdvanceSeconds - secondsRemaining) / autoAdvanceSeconds) * 100;
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 animate-in fade-in zoom-in-95 duration-200">
       <div className="relative w-full max-w-sm rounded-3xl border border-emerald-100 bg-white p-6 shadow-2xl text-center">
         {/* Close / Stay Button */}
         <button
@@ -106,7 +106,7 @@ export function PoseReviewModal({
             : "You successfully completed the pose with strong alignment."}
         </p>
 
-        {/* 8-Second Auto-Advance Countdown Bar */}
+        {/* 5-Second Auto-Advance Countdown Bar */}
         {!isLastAsana && !isPaused && (
           <div className="mb-4 flex flex-col gap-1.5 items-center bg-emerald-50/70 p-2.5 rounded-2xl border border-emerald-100">
             <div className="flex items-center justify-between w-full text-[11px] font-semibold text-emerald-800">
